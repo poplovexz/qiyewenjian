@@ -50,11 +50,77 @@ export interface PermissionListResponse {
   pages: number
 }
 
-// API函数类型定义
-export interface PermissionAPI {
-  getPermissionList(params: PermissionListRequest): Promise<PermissionListResponse>
-  getPermissionById(id: string): Promise<Permission>
-  createPermission(data: PermissionCreateRequest): Promise<Permission>
-  updatePermission(id: string, data: PermissionUpdateRequest): Promise<Permission>
-  deletePermission(id: string): Promise<void>
+export interface PermissionTreeNode {
+  id: string
+  label: string
+  quanxian_bianma?: string
+  ziyuan_leixing?: string
+  children?: PermissionTreeNode[]
+  is_permission: boolean
+}
+
+export interface PermissionStatistics {
+  total_permissions: number
+  menu_permissions: number
+  button_permissions: number
+  api_permissions: number
+  active_permissions: number
+  inactive_permissions: number
+  permissions_with_roles: number
+}
+
+import { request } from '../request'
+
+// API函数实现
+export const permissionAPI = {
+  // 获取权限列表
+  async getPermissionList(params: PermissionListRequest): Promise<PermissionListResponse> {
+    const response = await request.get('/user-management/permissions', { params })
+    return response.data
+  },
+
+  // 获取权限树形结构
+  async getPermissionTree(zhuangtai: string = 'active'): Promise<PermissionTreeNode[]> {
+    const response = await request.get('/user-management/permissions/tree', {
+      params: { zhuangtai }
+    })
+    return response.data
+  },
+
+  // 获取权限详情
+  async getPermissionById(id: string): Promise<Permission> {
+    const response = await request.get(`/user-management/permissions/${id}`)
+    return response.data
+  },
+
+  // 创建权限
+  async createPermission(data: PermissionCreateRequest): Promise<Permission> {
+    const response = await request.post('/user-management/permissions', data)
+    return response.data
+  },
+
+  // 更新权限
+  async updatePermission(id: string, data: PermissionUpdateRequest): Promise<Permission> {
+    const response = await request.put(`/user-management/permissions/${id}`, data)
+    return response.data
+  },
+
+  // 删除权限
+  async deletePermission(id: string): Promise<void> {
+    await request.delete(`/user-management/permissions/${id}`)
+  },
+
+  // 按资源类型获取权限
+  async getPermissionsByResourceType(ziyuan_leixing: string, zhuangtai: string = 'active'): Promise<Permission[]> {
+    const response = await request.get(`/user-management/permissions/by-resource-type/${ziyuan_leixing}`, {
+      params: { zhuangtai }
+    })
+    return response.data
+  },
+
+  // 获取权限统计信息
+  async getPermissionStatistics(): Promise<PermissionStatistics> {
+    const response = await request.get('/user-management/permissions/statistics/summary')
+    return response.data
+  }
 }

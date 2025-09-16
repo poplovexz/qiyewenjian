@@ -75,15 +75,53 @@ export interface RoleStatusRequest {
   reason?: string
 }
 
-// API函数类型定义
-export interface RoleAPI {
-  getRoleList(params: RoleListRequest): Promise<RoleListResponse>
-  getRoleById(id: string): Promise<Role>
-  createRole(data: RoleCreateRequest): Promise<Role>
-  updateRole(id: string, data: RoleUpdateRequest): Promise<Role>
-  deleteRole(id: string): Promise<void>
-  updateRoleStatus(id: string, data: RoleStatusRequest): Promise<Role>
-  getRolePermissions(id: string): Promise<Permission[]>
-  updateRolePermissions(id: string, data: RolePermissionRequest): Promise<void>
-  getRoleUsers(id: string): Promise<User[]>
+import { request } from '../request'
+
+// API函数实现
+export const roleAPI = {
+  // 获取角色列表
+  async getRoleList(params: RoleListRequest): Promise<RoleListResponse> {
+    const response = await request.get('/user-management/roles', { params })
+    return response.data
+  },
+
+  // 获取角色详情
+  async getRoleById(id: string): Promise<Role> {
+    const response = await request.get(`/user-management/roles/${id}`)
+    return response.data
+  },
+
+  // 创建角色
+  async createRole(data: RoleCreateRequest): Promise<Role> {
+    const response = await request.post('/user-management/roles', data)
+    return response.data
+  },
+
+  // 更新角色
+  async updateRole(id: string, data: RoleUpdateRequest): Promise<Role> {
+    const response = await request.put(`/user-management/roles/${id}`, data)
+    return response.data
+  },
+
+  // 删除角色
+  async deleteRole(id: string): Promise<void> {
+    await request.delete(`/user-management/roles/${id}`)
+  },
+
+  // 更新角色状态
+  async updateRoleStatus(id: string, data: RoleStatusRequest): Promise<Role> {
+    const response = await request.patch(`/user-management/roles/${id}/status`, data)
+    return response.data
+  },
+
+  // 获取角色权限
+  async getRolePermissions(id: string): Promise<{ permissions: Permission[] }> {
+    const response = await request.get(`/user-management/roles/${id}/permissions`)
+    return response.data
+  },
+
+  // 更新角色权限
+  async updateRolePermissions(id: string, data: RolePermissionRequest): Promise<void> {
+    await request.put(`/user-management/roles/${id}/permissions`, data)
+  }
 }
