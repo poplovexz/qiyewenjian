@@ -6,10 +6,15 @@ from fastapi import APIRouter
 # 创建 API 路由器
 api_router = APIRouter()
 
-# 这里将来会包含各个模块的路由
-# from src.api.api_v1.endpoints import auth, users, customers, contracts
+# 导入各个模块的路由
+from .endpoints import auth
 
-# api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
+# 注册路由
+api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
+
+# 这里将来会包含其他模块的路由
+# from .endpoints import users, customers, contracts
+# api_router.include_router(users.router, prefix="/users", tags=["用户管理"])
 # api_router.include_router(users.router, prefix="/users", tags=["用户管理"])
 # api_router.include_router(customers.router, prefix="/customers", tags=["客户管理"])
 # api_router.include_router(contracts.router, prefix="/contracts", tags=["合同管理"])
