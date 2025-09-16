@@ -18,7 +18,7 @@
             v-model="loginForm.yonghu_ming"
             placeholder="请输入用户名"
             size="large"
-            prefix-icon="User"
+            :prefix-icon="User"
             clearable
             @keyup.enter="handleLogin"
           />
@@ -30,7 +30,7 @@
             type="password"
             placeholder="请输入密码"
             size="large"
-            prefix-icon="Lock"
+            :prefix-icon="Lock"
             show-password
             clearable
             @keyup.enter="handleLogin"
@@ -60,6 +60,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElForm, ElMessage } from 'element-plus'
+import { User, Lock } from '@element-plus/icons-vue'
 import { useAuth } from '@/composables/useAuth'
 import type { LoginRequest } from '@/api/auth'
 

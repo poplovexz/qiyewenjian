@@ -15,31 +15,30 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/',
-    name: 'Home',
-    component: () => import('@/views/HomeView.vue'),
+    component: () => import('@/layouts/MainLayout.vue'),
+    redirect: '/dashboard',
     meta: {
-      title: '首页',
       requiresAuth: true
-    }
-  },
-  {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: () => import('@/views/Dashboard.vue'),
-    meta: {
-      title: '工作台',
-      requiresAuth: true
-    }
-  },
-  {
-    path: '/users',
-    name: 'UserList',
-    component: () => import('@/views/user/UserList.vue'),
-    meta: {
-      title: '用户管理',
-      requiresAuth: true,
-      permissions: ['user:read']
-    }
+    },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/Dashboard.vue'),
+        meta: {
+          title: '工作台'
+        }
+      },
+      {
+        path: 'users',
+        name: 'UserList',
+        component: () => import('@/views/user/UserList.vue'),
+        meta: {
+          title: '用户管理',
+          permissions: ['user:read']
+        }
+      }
+    ]
   },
   {
     path: '/about',
@@ -67,8 +66,6 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach(async (to, _from, next) => {
-  const authStore = useAuthStore()
-
   // 设置页面标题
   if (to.meta?.title) {
     document.title = `${to.meta.title} - 代理记账营运内部系统`
@@ -76,6 +73,8 @@ router.beforeEach(async (to, _from, next) => {
 
   // 检查是否需要认证
   if (to.meta?.requiresAuth) {
+    const authStore = useAuthStore()
+
     if (!authStore.isAuthenticated) {
       // 未登录，跳转到登录页
       ElMessage.warning('请先登录')
@@ -89,15 +88,14 @@ router.beforeEach(async (to, _from, next) => {
     // 已登录但用户信息为空，尝试获取用户信息
     if (!authStore.userInfo) {
       try {
-        await authStore.getCurrentUser()
+        const success = await authStore.getCurrentUser()
+        if (!success) {
+          console.warn('获取用户信息失败，但继续导航')
+          // 暂时不强制退出，允许继续导航
+        }
       } catch (error) {
         console.error('获取用户信息失败:', error)
-        authStore.logout()
-        next({
-          path: '/login',
-          query: { redirect: to.fullPath }
-        })
-        return
+        // 暂时不强制退出，允许继续导航
       }
     }
 
@@ -113,10 +111,13 @@ router.beforeEach(async (to, _from, next) => {
         return
       }
     }
-  } else if (to.path === '/login' && authStore.isAuthenticated) {
-    // 已登录用户访问登录页，跳转到首页
-    next('/')
-    return
+  } else if (to.path === '/login') {
+    const authStore = useAuthStore()
+    if (authStore.isAuthenticated) {
+      // 已登录用户访问登录页，跳转到首页
+      next('/')
+      return
+    }
   }
 
   next()
