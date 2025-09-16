@@ -2,7 +2,7 @@
 合同表模型
 """
 from sqlalchemy import Column, String, Text, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+
 from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
@@ -15,14 +15,14 @@ class Hetong(BaseModel):
     __table_args__ = {"comment": "合同表"}
     
     kehu_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("kehu.id", ondelete="CASCADE"),
         nullable=False,
         comment="客户ID"
     )
     
     hetong_moban_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("hetong_moban.id"),
         nullable=False,
         comment="合同模板ID"
@@ -90,7 +90,7 @@ class Hetong(BaseModel):
     
     # 审批信息
     shenpi_ren_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         nullable=True,
         comment="审批人ID"
     )

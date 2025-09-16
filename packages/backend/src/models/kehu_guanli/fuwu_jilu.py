@@ -2,7 +2,7 @@
 服务记录表模型
 """
 from sqlalchemy import Column, String, Text, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+
 from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
@@ -15,7 +15,7 @@ class FuwuJilu(BaseModel):
     __table_args__ = {"comment": "服务记录表"}
     
     kehu_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("kehu.id", ondelete="CASCADE"),
         nullable=False,
         comment="客户ID"
@@ -67,7 +67,7 @@ class FuwuJilu(BaseModel):
     )
     
     chuli_ren_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         nullable=True,
         comment="处理人ID"
     )

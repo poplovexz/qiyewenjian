@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import Any
 
 from sqlalchemy import Column, DateTime, String
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 import uuid
 
@@ -29,9 +28,9 @@ class BaseModel(Base):
     __abstract__ = True
     
     id = Column(
-        UUID(as_uuid=True),
+        String(36),
         primary_key=True,
-        default=uuid.uuid4,
+        default=lambda: str(uuid.uuid4()),
         comment="主键ID"
     )
     
@@ -51,13 +50,13 @@ class BaseModel(Base):
     )
     
     created_by = Column(
-        UUID(as_uuid=True),
+        String(36),
         nullable=True,
         comment="创建人ID"
     )
-    
+
     updated_by = Column(
-        UUID(as_uuid=True),
+        String(36),
         nullable=True,
         comment="更新人ID"
     )

@@ -1,8 +1,7 @@
 """
 用户角色关联表模型
 """
-from sqlalchemy import Column, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, ForeignKey, String, String
 from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
@@ -15,14 +14,14 @@ class YonghuJiaose(BaseModel):
     __table_args__ = {"comment": "用户角色关联表"}
     
     yonghu_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("yonghu.id", ondelete="CASCADE"),
         nullable=False,
         comment="用户ID"
     )
-    
+
     jiaose_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("jiaose.id", ondelete="CASCADE"),
         nullable=False,
         comment="角色ID"

@@ -1,8 +1,7 @@
 """
 角色权限关联表模型
 """
-from sqlalchemy import Column, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, ForeignKey, String, String
 from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
@@ -15,14 +14,14 @@ class JiaoseQuanxian(BaseModel):
     __table_args__ = {"comment": "角色权限关联表"}
     
     jiaose_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("jiaose.id", ondelete="CASCADE"),
         nullable=False,
         comment="角色ID"
     )
-    
+
     quanxian_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("quanxian.id", ondelete="CASCADE"),
         nullable=False,
         comment="权限ID"

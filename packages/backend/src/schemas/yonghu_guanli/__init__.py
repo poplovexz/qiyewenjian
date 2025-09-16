@@ -13,7 +13,15 @@ from .yonghu_schemas import (
     YonghuCreate,
     YonghuUpdate,
     YonghuResponse,
-    YonghuList
+    YonghuList,
+    JiaoseCreate,
+    JiaoseUpdate,
+    JiaoseResponse,
+    JiaoseList,
+    QuanxianCreate,
+    QuanxianUpdate,
+    QuanxianResponse,
+    QuanxianList
 )
 
 __all__ = [
@@ -29,5 +37,17 @@ __all__ = [
     "YonghuCreate",
     "YonghuUpdate",
     "YonghuResponse",
-    "YonghuList"
+    "YonghuList",
+
+    # 角色管理
+    "JiaoseCreate",
+    "JiaoseUpdate",
+    "JiaoseResponse",
+    "JiaoseList",
+
+    # 权限管理
+    "QuanxianCreate",
+    "QuanxianUpdate",
+    "QuanxianResponse",
+    "QuanxianList"
 ]

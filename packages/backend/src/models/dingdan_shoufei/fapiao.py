@@ -2,7 +2,7 @@
 发票表模型
 """
 from sqlalchemy import Column, String, Numeric, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+
 from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
@@ -15,14 +15,14 @@ class Fapiao(BaseModel):
     __table_args__ = {"comment": "发票表"}
     
     dingdan_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("dingdan.id", ondelete="CASCADE"),
         nullable=False,
         comment="订单ID"
     )
     
     kehu_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("kehu.id", ondelete="CASCADE"),
         nullable=False,
         comment="客户ID"

@@ -2,7 +2,7 @@
 账簿表模型
 """
 from sqlalchemy import Column, String, Numeric, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+
 
 from ..base import BaseModel
 
@@ -14,14 +14,14 @@ class Zhangbu(BaseModel):
     __table_args__ = {"comment": "账簿表"}
     
     kehu_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("kehu.id", ondelete="CASCADE"),
         nullable=False,
         comment="客户ID"
     )
     
     pingzheng_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("pingzheng.id"),
         nullable=False,
         comment="凭证ID"

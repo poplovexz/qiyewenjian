@@ -2,7 +2,7 @@
 订单表模型
 """
 from sqlalchemy import Column, String, Numeric, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+
 from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
@@ -15,7 +15,7 @@ class Dingdan(BaseModel):
     __table_args__ = {"comment": "订单表"}
     
     kehu_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("kehu.id", ondelete="CASCADE"),
         nullable=False,
         comment="客户ID"

@@ -2,7 +2,7 @@
 任务表模型
 """
 from sqlalchemy import Column, String, Text, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+
 
 from ..base import BaseModel
 
@@ -14,14 +14,14 @@ class Renwu(BaseModel):
     __table_args__ = {"comment": "任务表"}
     
     kehu_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("kehu.id", ondelete="CASCADE"),
         nullable=False,
         comment="客户ID"
     )
     
     zhixing_ren_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("yonghu.id"),
         nullable=True,
         comment="执行人ID（会计）"
@@ -94,7 +94,7 @@ class Renwu(BaseModel):
     )
     
     fenpei_ren_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         nullable=True,
         comment="分配人ID"
     )

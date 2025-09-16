@@ -2,7 +2,7 @@
 凭证表模型
 """
 from sqlalchemy import Column, String, Text, Numeric, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+
 
 from ..base import BaseModel
 
@@ -14,14 +14,14 @@ class Pingzheng(BaseModel):
     __table_args__ = {"comment": "凭证表"}
     
     kehu_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("kehu.id", ondelete="CASCADE"),
         nullable=False,
         comment="客户ID"
     )
     
     zhizuo_ren_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         ForeignKey("yonghu.id"),
         nullable=False,
         comment="制作人ID（会计）"
@@ -81,7 +81,7 @@ class Pingzheng(BaseModel):
     
     # 审核信息
     shenhe_ren_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         nullable=True,
         comment="审核人ID"
     )
@@ -119,7 +119,7 @@ class Pingzheng(BaseModel):
     )
     
     guozhang_ren_id = Column(
-        UUID(as_uuid=True),
+        String(36),
         nullable=True,
         comment="过账人ID"
     )
