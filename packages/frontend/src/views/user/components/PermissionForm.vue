@@ -202,6 +202,19 @@ const formRules: FormRules = {
   ]
 }
 
+// 重置表单
+const resetForm = () => {
+  formData.value = {
+    quanxian_ming: '',
+    quanxian_bianma: '',
+    miaoshu: '',
+    ziyuan_leixing: '',
+    ziyuan_lujing: '',
+    zhuangtai: 'active'
+  }
+  formRef.value?.clearValidate()
+}
+
 // 监听权限数据变化
 watch(() => props.permission, (newPermission) => {
   if (newPermission) {
@@ -217,19 +230,6 @@ watch(() => props.permission, (newPermission) => {
     resetForm()
   }
 }, { immediate: true })
-
-// 重置表单
-const resetForm = () => {
-  formData.value = {
-    quanxian_ming: '',
-    quanxian_bianma: '',
-    miaoshu: '',
-    ziyuan_leixing: '',
-    ziyuan_lujing: '',
-    zhuangtai: 'active'
-  }
-  formRef.value?.clearValidate()
-}
 
 // 处理关闭
 const handleClose = () => {

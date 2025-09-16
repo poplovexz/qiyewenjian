@@ -75,13 +75,13 @@ import { request } from '@/utils/request'
 export const permissionAPI = {
   // 获取权限列表
   async getPermissionList(params: PermissionListRequest): Promise<PermissionListResponse> {
-    const response = await request.get('/user-management/permissions', { params })
+    const response = await request.get('/api/v1/user-management/permissions', { params })
     return response.data
   },
 
   // 获取权限树形结构
   async getPermissionTree(zhuangtai: string = 'active'): Promise<PermissionTreeNode[]> {
-    const response = await request.get('/user-management/permissions/tree', {
+    const response = await request.get('/api/v1/user-management/permissions/tree', {
       params: { zhuangtai }
     })
     return response.data
@@ -89,30 +89,30 @@ export const permissionAPI = {
 
   // 获取权限详情
   async getPermissionById(id: string): Promise<Permission> {
-    const response = await request.get(`/user-management/permissions/${id}`)
+    const response = await request.get(`/api/v1/user-management/permissions/${id}`)
     return response.data
   },
 
   // 创建权限
   async createPermission(data: PermissionCreateRequest): Promise<Permission> {
-    const response = await request.post('/user-management/permissions', data)
+    const response = await request.post('/api/v1/user-management/permissions', data)
     return response.data
   },
 
   // 更新权限
   async updatePermission(id: string, data: PermissionUpdateRequest): Promise<Permission> {
-    const response = await request.put(`/user-management/permissions/${id}`, data)
+    const response = await request.put(`/api/v1/user-management/permissions/${id}`, data)
     return response.data
   },
 
   // 删除权限
   async deletePermission(id: string): Promise<void> {
-    await request.delete(`/user-management/permissions/${id}`)
+    await request.delete(`/api/v1/user-management/permissions/${id}`)
   },
 
   // 按资源类型获取权限
   async getPermissionsByResourceType(ziyuan_leixing: string, zhuangtai: string = 'active'): Promise<Permission[]> {
-    const response = await request.get(`/user-management/permissions/by-resource-type/${ziyuan_leixing}`, {
+    const response = await request.get(`/api/v1/user-management/permissions/by-resource-type/${ziyuan_leixing}`, {
       params: { zhuangtai }
     })
     return response.data
@@ -120,7 +120,7 @@ export const permissionAPI = {
 
   // 获取权限统计信息
   async getPermissionStatistics(): Promise<PermissionStatistics> {
-    const response = await request.get('/user-management/permissions/statistics/summary')
+    const response = await request.get('/api/v1/user-management/permissions/statistics/summary')
     return response.data
   }
 }

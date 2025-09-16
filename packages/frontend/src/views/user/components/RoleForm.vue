@@ -133,6 +133,17 @@ const formRules: FormRules = {
   ]
 }
 
+// 重置表单
+const resetForm = () => {
+  formData.value = {
+    jiaose_ming: '',
+    jiaose_bianma: '',
+    miaoshu: '',
+    zhuangtai: 'active'
+  }
+  formRef.value?.clearValidate()
+}
+
 // 监听角色数据变化
 watch(() => props.role, (newRole) => {
   if (newRole) {
@@ -146,17 +157,6 @@ watch(() => props.role, (newRole) => {
     resetForm()
   }
 }, { immediate: true })
-
-// 重置表单
-const resetForm = () => {
-  formData.value = {
-    jiaose_ming: '',
-    jiaose_bianma: '',
-    miaoshu: '',
-    zhuangtai: 'active'
-  }
-  formRef.value?.clearValidate()
-}
 
 // 处理关闭
 const handleClose = () => {
