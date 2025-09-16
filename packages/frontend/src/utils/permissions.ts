@@ -73,6 +73,72 @@ export const SERVICE_RECORD_PERMISSIONS = {
 } as const
 
 /**
+ * 用户管理相关权限常量
+ */
+export const USER_PERMISSIONS = {
+  // 菜单权限
+  MENU: 'user:menu',
+
+  // 基础权限
+  READ: 'user:read',
+  CREATE: 'user:create',
+  UPDATE: 'user:update',
+  DELETE: 'user:delete',
+
+  // 特殊权限
+  RESET_PASSWORD: 'user:reset_password',
+  STATUS_MANAGE: 'user:status_manage',
+
+  // 按钮权限
+  CREATE_BUTTON: 'user:create_button',
+  EDIT_BUTTON: 'user:edit_button',
+  DELETE_BUTTON: 'user:delete_button',
+  RESET_PASSWORD_BUTTON: 'user:reset_password_button'
+} as const
+
+/**
+ * 角色管理相关权限常量
+ */
+export const ROLE_PERMISSIONS = {
+  // 菜单权限
+  MENU: 'role:menu',
+
+  // 基础权限
+  READ: 'role:read',
+  CREATE: 'role:create',
+  UPDATE: 'role:update',
+  DELETE: 'role:delete',
+
+  // 特殊权限
+  PERMISSION_MANAGE: 'role:permission_manage',
+
+  // 按钮权限
+  CREATE_BUTTON: 'role:create_button',
+  EDIT_BUTTON: 'role:edit_button',
+  DELETE_BUTTON: 'role:delete_button',
+  PERMISSION_MANAGE_BUTTON: 'role:permission_manage_button'
+} as const
+
+/**
+ * 权限管理相关权限常量
+ */
+export const PERMISSION_PERMISSIONS = {
+  // 菜单权限
+  MENU: 'permission:menu',
+
+  // 基础权限
+  READ: 'permission:read',
+  CREATE: 'permission:create',
+  UPDATE: 'permission:update',
+  DELETE: 'permission:delete',
+
+  // 按钮权限
+  CREATE_BUTTON: 'permission:create_button',
+  EDIT_BUTTON: 'permission:edit_button',
+  DELETE_BUTTON: 'permission:delete_button'
+} as const
+
+/**
  * 权限检查指令 - Vue 3 Composition API
  */
 export function usePermission() {
@@ -99,7 +165,45 @@ export function usePermission() {
     showEditCustomerButton: () => hasPermission(CUSTOMER_PERMISSIONS.EDIT_BUTTON),
     showDeleteCustomerButton: () => hasPermission(CUSTOMER_PERMISSIONS.DELETE_BUTTON),
     showStatusManageButton: () => hasPermission(CUSTOMER_PERMISSIONS.STATUS_BUTTON),
-    showServiceRecordButton: () => hasPermission(SERVICE_RECORD_PERMISSIONS.MANAGE_BUTTON)
+    showServiceRecordButton: () => hasPermission(SERVICE_RECORD_PERMISSIONS.MANAGE_BUTTON),
+
+    // 用户管理权限检查
+    canViewUsers: () => hasPermission(USER_PERMISSIONS.READ),
+    canCreateUser: () => hasPermission(USER_PERMISSIONS.CREATE),
+    canEditUser: () => hasPermission(USER_PERMISSIONS.UPDATE),
+    canDeleteUser: () => hasPermission(USER_PERMISSIONS.DELETE),
+    canResetPassword: () => hasPermission(USER_PERMISSIONS.RESET_PASSWORD),
+    canManageUserStatus: () => hasPermission(USER_PERMISSIONS.STATUS_MANAGE),
+
+    // 用户管理按钮权限
+    showCreateUserButton: () => hasPermission(USER_PERMISSIONS.CREATE_BUTTON),
+    showEditUserButton: () => hasPermission(USER_PERMISSIONS.EDIT_BUTTON),
+    showDeleteUserButton: () => hasPermission(USER_PERMISSIONS.DELETE_BUTTON),
+    showResetPasswordButton: () => hasPermission(USER_PERMISSIONS.RESET_PASSWORD_BUTTON),
+
+    // 角色管理权限检查
+    canViewRoles: () => hasPermission(ROLE_PERMISSIONS.READ),
+    canCreateRole: () => hasPermission(ROLE_PERMISSIONS.CREATE),
+    canEditRole: () => hasPermission(ROLE_PERMISSIONS.UPDATE),
+    canDeleteRole: () => hasPermission(ROLE_PERMISSIONS.DELETE),
+    canManageRolePermissions: () => hasPermission(ROLE_PERMISSIONS.PERMISSION_MANAGE),
+
+    // 角色管理按钮权限
+    showCreateRoleButton: () => hasPermission(ROLE_PERMISSIONS.CREATE_BUTTON),
+    showEditRoleButton: () => hasPermission(ROLE_PERMISSIONS.EDIT_BUTTON),
+    showDeleteRoleButton: () => hasPermission(ROLE_PERMISSIONS.DELETE_BUTTON),
+    showPermissionManageButton: () => hasPermission(ROLE_PERMISSIONS.PERMISSION_MANAGE_BUTTON),
+
+    // 权限管理权限检查
+    canViewPermissions: () => hasPermission(PERMISSION_PERMISSIONS.READ),
+    canCreatePermission: () => hasPermission(PERMISSION_PERMISSIONS.CREATE),
+    canEditPermission: () => hasPermission(PERMISSION_PERMISSIONS.UPDATE),
+    canDeletePermission: () => hasPermission(PERMISSION_PERMISSIONS.DELETE),
+
+    // 权限管理按钮权限
+    showCreatePermissionButton: () => hasPermission(PERMISSION_PERMISSIONS.CREATE_BUTTON),
+    showEditPermissionButton: () => hasPermission(PERMISSION_PERMISSIONS.EDIT_BUTTON),
+    showDeletePermissionButton: () => hasPermission(PERMISSION_PERMISSIONS.DELETE_BUTTON)
   }
 }
 

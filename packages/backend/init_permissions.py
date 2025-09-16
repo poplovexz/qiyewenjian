@@ -84,25 +84,24 @@ def init_customer_permissions():
         db.commit()
         print("客户管理模块权限初始化完成！")
         
-        # 为管理员角色分配所有客户管理权限
-        print("\n为管理员角色分配客户管理权限...")
-        
+        # 为管理员角色分配所有权限
+        print("\n为管理员角色分配所有权限...")
+
         # 获取管理员角色ID
         admin_role = db.execute(text(
-            "SELECT id FROM jiaose WHERE jiaose_ming = '管理员'"
+            "SELECT id FROM jiaose WHERE jiaose_ming = '系统管理员'"
         )).fetchone()
-        
+
         if admin_role:
             admin_role_id = admin_role[0]
             
-            # 获取所有客户管理权限
-            customer_perms = db.execute(text("""
-                SELECT id, quanxian_ming FROM quanxian 
-                WHERE quanxian_bianma LIKE 'customer:%' 
-                   OR quanxian_bianma LIKE 'service_record:%'
+            # 获取所有权限
+            all_perms = db.execute(text("""
+                SELECT id, quanxian_ming FROM quanxian
+                WHERE zhuangtai = 'active'
             """)).fetchall()
             
-            for perm in customer_perms:
+            for perm in all_perms:
                 perm_id, perm_name = perm
                 
                 # 检查是否已分配
@@ -130,6 +129,41 @@ def init_customer_permissions():
             
             db.commit()
             print("管理员权限分配完成！")
+
+            # 为admin用户分配管理员角色
+            print("\n为admin用户分配管理员角色...")
+            admin_user = db.execute(text(
+                "SELECT id FROM yonghu WHERE yonghu_ming = 'admin'"
+            )).fetchone()
+
+            if admin_user:
+                admin_user_id = admin_user[0]
+
+                # 检查是否已分配
+                existing = db.execute(text("""
+                    SELECT id FROM yonghu_jiaose
+                    WHERE yonghu_id = :user_id AND jiaose_id = :role_id
+                """), {"user_id": admin_user_id, "role_id": admin_role_id}).fetchone()
+
+                if not existing:
+                    # 分配角色
+                    db.execute(text("""
+                        INSERT INTO yonghu_jiaose (
+                            id, yonghu_id, jiaose_id, created_by, created_at, updated_at, is_deleted
+                        ) VALUES (
+                            :id, :user_id, :role_id, 'system', NOW(), NOW(), 'N'
+                        )
+                    """), {
+                        "id": str(uuid.uuid4()),
+                        "user_id": admin_user_id,
+                        "role_id": admin_role_id
+                    })
+                    print("为admin用户分配管理员角色成功")
+                    db.commit()
+                else:
+                    print("admin用户已有管理员角色")
+            else:
+                print("未找到admin用户")
         else:
             print("未找到管理员角色")
         

@@ -39,6 +39,24 @@ const routes: RouteRecordRaw[] = [
         }
       },
       {
+        path: 'roles',
+        name: 'RoleList',
+        component: () => import('@/views/user/RoleList.vue'),
+        meta: {
+          title: '角色管理',
+          permissions: ['role:read']
+        }
+      },
+      {
+        path: 'permissions',
+        name: 'PermissionList',
+        component: () => import('@/views/user/PermissionList.vue'),
+        meta: {
+          title: '权限管理',
+          permissions: ['permission:read']
+        }
+      },
+      {
         path: 'customers',
         name: 'CustomerList',
         component: () => import('@/views/customer/CustomerList.vue'),
