@@ -45,7 +45,11 @@
       </div>
       
       <div class="search-right">
-        <el-button type="primary" @click="handleCreate">
+        <el-button
+          v-if="permission.showCreateCustomerButton()"
+          type="primary"
+          @click="handleCreate"
+        >
           <el-icon><Plus /></el-icon>
           新增客户
         </el-button>
@@ -140,21 +144,50 @@
         
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleView(row)">
+            <el-button
+              v-if="permission.canViewCustomers()"
+              type="primary"
+              size="small"
+              @click="handleView(row)"
+            >
               查看
             </el-button>
-            <el-button type="success" size="small" @click="handleEdit(row)">
+            <el-button
+              v-if="permission.showEditCustomerButton()"
+              type="success"
+              size="small"
+              @click="handleEdit(row)"
+            >
               编辑
             </el-button>
-            <el-dropdown @command="(command) => handleDropdownCommand(command, row)">
+            <el-dropdown
+              v-if="permission.showStatusManageButton() || permission.showServiceRecordButton() || permission.showDeleteCustomerButton()"
+              @command="(command) => handleDropdownCommand(command, row)"
+            >
               <el-button size="small">
                 更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item command="status">状态管理</el-dropdown-item>
-                  <el-dropdown-item command="records">服务记录</el-dropdown-item>
-                  <el-dropdown-item command="delete" divided>删除客户</el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="permission.showStatusManageButton()"
+                    command="status"
+                  >
+                    状态管理
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="permission.showServiceRecordButton()"
+                    command="records"
+                  >
+                    服务记录
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="permission.showDeleteCustomerButton()"
+                    command="delete"
+                    divided
+                  >
+                    删除客户
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -208,12 +241,14 @@ import {
   ArrowDown
 } from '@element-plus/icons-vue'
 import { useCustomerStore } from '@/stores/modules/customer'
+import { usePermission } from '@/utils/permissions'
 import CustomerForm from './components/CustomerForm.vue'
 import CustomerStatusDialog from './components/CustomerStatusDialog.vue'
 import type { Customer } from '@/api/modules/customer'
 
 const router = useRouter()
 const customerStore = useCustomerStore()
+const permission = usePermission()
 
 // 响应式数据
 const searchForm = ref({

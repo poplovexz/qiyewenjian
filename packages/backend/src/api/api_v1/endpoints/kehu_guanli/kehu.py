@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from src.core.database import get_db
 from src.core.security import get_current_user
+from src.core.security.permissions import require_permission
 from src.models.yonghu_guanli import Yonghu
 from src.services.kehu_guanli import KehuService
 from src.schemas.kehu_guanli.kehu_schemas import (
@@ -23,7 +24,7 @@ router = APIRouter()
 async def create_kehu(
     kehu_data: KehuCreate,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("customer:create"))
 ):
     """
     创建新客户
@@ -44,7 +45,7 @@ async def get_kehu_list(
     search: Optional[str] = Query(None, description="搜索关键词（公司名称、信用代码、法人姓名等）"),
     kehu_zhuangtai: Optional[str] = Query(None, description="客户状态筛选"),
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("customer:read"))
 ):
     """
     获取客户列表
@@ -64,7 +65,7 @@ async def get_kehu_list(
 async def get_kehu_detail(
     kehu_id: str,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("customer:read"))
 ):
     """
     根据ID获取客户详细信息
@@ -83,7 +84,7 @@ async def update_kehu(
     kehu_id: str,
     kehu_data: KehuUpdate,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("customer:update"))
 ):
     """
     更新客户信息
@@ -98,7 +99,7 @@ async def update_kehu(
 async def delete_kehu(
     kehu_id: str,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("customer:delete"))
 ):
     """
     删除客户（软删除）
@@ -114,7 +115,7 @@ async def update_kehu_status(
     kehu_id: str,
     new_status: str = Query(..., description="新状态（active/renewing/terminated）"),
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("customer:status_manage"))
 ):
     """
     更新客户状态

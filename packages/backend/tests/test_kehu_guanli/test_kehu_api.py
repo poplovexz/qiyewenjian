@@ -60,7 +60,7 @@ class TestKehuAPI:
         """测试创建客户时统一社会信用代码重复"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
-        
+
         # 第一次创建
         response1 = client.post(
             "/api/v1/customers/",
@@ -68,8 +68,8 @@ class TestKehuAPI:
             headers=headers
         )
         assert response1.status_code == 200
-        
-        # 第二次创建相同信用代码的客户
+
+        # 第二次创建相同信用代码的客户（使用相同的token和数据库会话）
         response2 = client.post(
             "/api/v1/customers/",
             json=test_customer_data,
@@ -257,7 +257,7 @@ class TestKehuAPI:
         """测试未授权访问"""
         # 不提供token
         response = client.post("/api/v1/customers/", json=test_customer_data)
-        assert response.status_code == 401
-        
+        assert response.status_code == 403
+
         response = client.get("/api/v1/customers/")
-        assert response.status_code == 401
+        assert response.status_code == 403

@@ -42,7 +42,8 @@ def get_test_db():
 
 def create_test_user() -> Tuple[dict, str]:
     """创建测试用户并返回用户数据和token"""
-    # 创建测试数据库会话
+    # 每次都重新创建数据库表，确保隔离
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
 

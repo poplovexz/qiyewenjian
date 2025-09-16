@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from src.core.database import get_db
 from src.core.security import get_current_user
+from src.core.security.permissions import require_permission
 from src.models.yonghu_guanli import Yonghu
 from src.services.kehu_guanli import FuwuJiluService
 from src.schemas.kehu_guanli.fuwu_jilu_schemas import (
@@ -23,7 +24,7 @@ router = APIRouter()
 async def create_fuwu_jilu(
     fuwu_jilu_data: FuwuJiluCreate,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("service_record:create"))
 ):
     """
     创建新的服务记录
