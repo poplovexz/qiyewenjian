@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'roles',
         name: 'RoleList',
-        component: () => import('@/views/user/RoleList.vue'),
+        component: () => import('@/views/user/RoleListSimple.vue'),
         meta: {
           title: '角色管理',
           permissions: ['role:read']
@@ -50,7 +50,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'permissions',
         name: 'PermissionList',
-        component: () => import('@/views/user/PermissionList.vue'),
+        component: () => import('@/views/user/PermissionListSimple.vue'),
         meta: {
           title: '权限管理',
           permissions: ['permission:read']

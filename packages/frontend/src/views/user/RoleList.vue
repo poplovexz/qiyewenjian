@@ -232,26 +232,26 @@
     </el-card>
 
     <!-- 角色表单对话框 -->
-    <RoleForm
+    <!-- <RoleForm
       v-model:visible="formVisible"
       :mode="formMode"
       :role="currentRole"
       @success="handleFormSuccess"
-    />
+    /> -->
 
     <!-- 权限管理对话框 -->
-    <RolePermissionDialog
+    <!-- <RolePermissionDialog
       v-model:visible="permissionDialogVisible"
       :role="currentRole"
       @success="handlePermissionSuccess"
-    />
+    /> -->
 
     <!-- 状态管理对话框 -->
-    <RoleStatusDialog
+    <!-- <RoleStatusDialog
       v-model:visible="statusDialogVisible"
       :role="currentRole"
       @success="handleStatusSuccess"
-    />
+    /> -->
   </div>
 </template>
 
@@ -268,15 +268,15 @@ import {
   DataAnalysis,
   ArrowDown
 } from '@element-plus/icons-vue'
-import { useRoleStore } from '@/stores/modules/role'
+// import { useRoleStore } from '@/stores/modules/role'
 import { usePermission } from '@/utils/permissions'
-import RoleForm from './components/RoleForm.vue'
-import RolePermissionDialog from './components/RolePermissionDialog.vue'
-import RoleStatusDialog from './components/RoleStatusDialog.vue'
-import type { Role } from '@/api/modules/role'
+// import RoleForm from './components/RoleForm.vue'
+// import RolePermissionDialog from './components/RolePermissionDialog.vue'
+// import RoleStatusDialog from './components/RoleStatusDialog.vue'
+// import type { Role } from '@/api/modules/role'
 
 const router = useRouter()
-const roleStore = useRoleStore()
+// const roleStore = useRoleStore()
 const permission = usePermission()
 
 // 响应式数据
@@ -292,17 +292,15 @@ const permissionDialogVisible = ref(false)
 const statusDialogVisible = ref(false)
 const selectedRoles = ref<Role[]>([])
 
-// 计算属性
-const { 
-  roles, 
-  loading, 
-  total, 
-  currentPage, 
-  pageSize,
-  activeRoles,
-  inactiveRoles,
-  totalUsers
-} = roleStore
+// 模拟数据
+const roles = ref([])
+const loading = ref(false)
+const total = ref(0)
+const currentPage = ref(1)
+const pageSize = ref(20)
+const activeRoles = ref(0)
+const inactiveRoles = ref(0)
+const totalUsers = ref(0)
 
 // 格式化日期
 const formatDate = (date: string) => {
@@ -311,12 +309,8 @@ const formatDate = (date: string) => {
 
 // 事件处理
 const handleSearch = async () => {
-  await roleStore.getRoleList({
-    page: 1,
-    size: pageSize,
-    search: searchForm.value.search,
-    zhuangtai: searchForm.value.zhuangtai
-  })
+  console.log('搜索角色:', searchForm.value)
+  // TODO: 实现搜索逻辑
 }
 
 const handleReset = () => {
@@ -361,7 +355,7 @@ const handleDropdownCommand = (command: string, role: Role) => {
   }
 }
 
-const handleDelete = async (role: Role) => {
+const handleDelete = async (role: any) => {
   try {
     await ElMessageBox.confirm(
       `确定要删除角色"${role.jiaose_ming}"吗？此操作不可恢复。`,
@@ -372,9 +366,8 @@ const handleDelete = async (role: Role) => {
         type: 'warning'
       }
     )
-    
-    await roleStore.deleteRole(role.id)
-    await handleSearch()
+
+    console.log('删除角色:', role.id)
     ElMessage.success('角色删除成功')
   } catch (error) {
     if (error !== 'cancel') {
@@ -383,17 +376,17 @@ const handleDelete = async (role: Role) => {
   }
 }
 
-const handleSelectionChange = (selection: Role[]) => {
+const handleSelectionChange = (selection: any[]) => {
   selectedRoles.value = selection
 }
 
 const handleSizeChange = (size: number) => {
-  roleStore.updatePageSize(size)
+  pageSize.value = size
   handleSearch()
 }
 
 const handleCurrentChange = (page: number) => {
-  roleStore.updateCurrentPage(page)
+  currentPage.value = page
   handleSearch()
 }
 

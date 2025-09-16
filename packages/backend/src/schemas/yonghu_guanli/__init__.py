@@ -13,15 +13,26 @@ from .yonghu_schemas import (
     YonghuCreate,
     YonghuUpdate,
     YonghuResponse,
-    YonghuList,
+    YonghuList
+)
+from .jiaose_schemas import (
     JiaoseCreate,
     JiaoseUpdate,
     JiaoseResponse,
-    JiaoseList,
+    JiaoseListResponse,
+    JiaoseListItem,
+    JiaoseStatusUpdate,
+    JiaosePermissionUpdate,
+    JiaoseStatistics
+)
+from .quanxian_schemas import (
     QuanxianCreate,
     QuanxianUpdate,
     QuanxianResponse,
-    QuanxianList
+    QuanxianListResponse,
+    QuanxianListItem,
+    QuanxianTreeResponse,
+    QuanxianStatistics
 )
 
 __all__ = [
@@ -43,11 +54,18 @@ __all__ = [
     "JiaoseCreate",
     "JiaoseUpdate",
     "JiaoseResponse",
-    "JiaoseList",
+    "JiaoseListResponse",
+    "JiaoseListItem",
+    "JiaoseStatusUpdate",
+    "JiaosePermissionUpdate",
+    "JiaoseStatistics",
 
     # 权限管理
     "QuanxianCreate",
     "QuanxianUpdate",
     "QuanxianResponse",
-    "QuanxianList"
+    "QuanxianListResponse",
+    "QuanxianListItem",
+    "QuanxianTreeResponse",
+    "QuanxianStatistics"
 ]

@@ -7,13 +7,17 @@ from fastapi import APIRouter
 api_router = APIRouter()
 
 # 导入各个模块的路由
-from .endpoints import auth, yonghu, jiaose
+from .endpoints import auth, yonghu
 from .endpoints.kehu_guanli import kehu, fuwu_jilu
+from .endpoints.yonghu_guanli import jiaose as role_api, quanxian
 
 # 注册路由
 api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
 api_router.include_router(yonghu.router, prefix="/users", tags=["用户管理"])
-api_router.include_router(jiaose.router, prefix="/roles", tags=["角色管理"])
+
+# 用户管理模块路由
+api_router.include_router(role_api.router, prefix="/user-management/roles", tags=["角色管理"])
+api_router.include_router(quanxian.router, prefix="/user-management/permissions", tags=["权限管理"])
 
 # 客户管理模块路由
 api_router.include_router(kehu.router, prefix="/customers", tags=["客户管理"])
