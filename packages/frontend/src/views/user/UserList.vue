@@ -92,13 +92,14 @@
             {{ formatDateTime(row.created_at) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="240" fixed="right">
           <template #default="{ row }">
             <el-button
               type="primary"
               size="small"
               :icon="View"
               @click="handleView(row)"
+              v-if="hasPermission('user:read')"
             >
               查看
             </el-button>

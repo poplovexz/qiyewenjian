@@ -28,18 +28,21 @@
       </div>
       
       <div class="search-right">
-        <el-button type="primary" @click="handleCreate">
+        <el-button type="primary" @click="handleCreate" v-if="hasPermission('role:create')">
           <el-icon><Plus /></el-icon>
           新增角色
+        </el-button>
+        <el-button @click="handleRefresh">
+          刷新
         </el-button>
       </div>
     </div>
 
     <!-- 角色列表 -->
     <el-card class="table-card">
-      <el-table 
-        :data="roles" 
-        :loading="loading"
+      <el-table
+        :data="roleStore.roles"
+        :loading="roleStore.loading"
         stripe
         style="width: 100%"
       >
@@ -56,21 +59,66 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleView(row)">
+            <el-button
+              type="primary"
+              size="small"
+              @click="handleView(row)"
+              v-if="hasPermission('role:read')"
+            >
               查看
             </el-button>
-            <el-button type="success" size="small" @click="handleEdit(row)">
+            <el-button
+              type="warning"
+              size="small"
+              @click="handleEdit(row)"
+              v-if="hasPermission('role:update')"
+            >
               编辑
             </el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">
+            <el-button
+              type="info"
+              size="small"
+              @click="handlePermissions(row)"
+              v-if="hasPermission('role:permission_manage')"
+            >
+              权限
+            </el-button>
+            <el-button
+              type="danger"
+              size="small"
+              @click="handleDelete(row)"
+              v-if="hasPermission('role:delete')"
+            >
               删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- 角色表单对话框 -->
+    <RoleForm
+      v-model:visible="formVisible"
+      :role="currentRole"
+      :mode="formMode"
+      @success="handleFormSuccess"
+    />
+
+    <!-- 权限管理对话框 -->
+    <RolePermissionDialog
+      v-model:visible="permissionVisible"
+      :role="currentRole"
+      @success="handlePermissionSuccess"
+    />
+
+    <!-- 状态管理对话框 -->
+    <RoleStatusDialog
+      v-model:visible="statusVisible"
+      :role="currentRole"
+      @success="handleStatusSuccess"
+    />
   </div>
 </template>
 
@@ -78,84 +126,104 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus } from '@element-plus/icons-vue'
+import { useRoleStore } from '@/stores/modules/role'
+import { hasPermission } from '@/utils/permissions'
+import type { Role } from '@/api/modules/role'
+import RoleForm from './components/RoleForm.vue'
+import RolePermissionDialog from './components/RolePermissionDialog.vue'
+import RoleStatusDialog from './components/RoleStatusDialog.vue'
+
+// Store
+const roleStore = useRoleStore()
 
 // 响应式数据
 const searchForm = ref({
-  search: ''
+  search: '',
+  zhuangtai: ''
 })
 
-const loading = ref(false)
+const formVisible = ref(false)
+const permissionVisible = ref(false)
+const statusVisible = ref(false)
+const currentRole = ref<Role | null>(null)
+const formMode = ref<'create' | 'edit' | 'view'>('create')
 
-// 模拟角色数据
-const roles = ref([
-  {
-    id: '1',
-    jiaose_ming: '系统管理员',
-    jiaose_bianma: 'admin',
-    miaoshu: '系统最高权限管理员',
-    zhuangtai: 'active'
-  },
-  {
-    id: '2',
-    jiaose_ming: '会计',
-    jiaose_bianma: 'accountant',
-    miaoshu: '负责财务处理和账务管理',
-    zhuangtai: 'active'
-  },
-  {
-    id: '3',
-    jiaose_ming: '客服',
-    jiaose_bianma: 'customer_service',
-    miaoshu: '负责客户服务和沟通',
-    zhuangtai: 'active'
-  }
-])
+// 方法
+const handleSearch = async () => {
+  await roleStore.getRoleList(searchForm.value)
+}
 
-// 事件处理
-const handleSearch = () => {
-  console.log('搜索角色:', searchForm.value.search)
-  ElMessage.info('搜索功能开发中...')
+const handleRefresh = async () => {
+  searchForm.value = { search: '', zhuangtai: '' }
+  await roleStore.getRoleList()
 }
 
 const handleCreate = () => {
-  console.log('创建角色')
-  ElMessage.info('创建角色功能开发中...')
+  currentRole.value = null
+  formMode.value = 'create'
+  formVisible.value = true
 }
 
-const handleView = (role: any) => {
-  console.log('查看角色:', role)
-  ElMessage.info(`查看角色: ${role.jiaose_ming}`)
+const handleView = (role: Role) => {
+  currentRole.value = role
+  formMode.value = 'view'
+  formVisible.value = true
 }
 
-const handleEdit = (role: any) => {
-  console.log('编辑角色:', role)
-  ElMessage.info(`编辑角色: ${role.jiaose_ming}`)
+const handleEdit = (role: Role) => {
+  currentRole.value = role
+  formMode.value = 'edit'
+  formVisible.value = true
 }
 
-const handleDelete = async (role: any) => {
+const handlePermissions = (role: Role) => {
+  currentRole.value = role
+  permissionVisible.value = true
+}
+
+const handleStatusChange = (role: Role) => {
+  currentRole.value = role
+  statusVisible.value = true
+}
+
+const handleDelete = async (role: Role) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除角色"${role.jiaose_ming}"吗？`,
-      '确认删除',
+      `确定要删除角色 "${role.jiaose_ming}" 吗？此操作不可恢复。`,
+      '删除确认',
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }
     )
-    
-    console.log('删除角色:', role)
-    ElMessage.success('角色删除成功')
+
+    await roleStore.deleteRole(role.id)
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('角色删除失败')
+      console.error('删除角色失败:', error)
     }
   }
 }
 
-// 初始化
+const handleFormSuccess = () => {
+  formVisible.value = false
+  handleRefresh()
+}
+
+const handlePermissionSuccess = () => {
+  permissionVisible.value = false
+  handleRefresh()
+}
+
+const handleStatusSuccess = () => {
+  statusVisible.value = false
+  handleRefresh()
+}
+
+// 生命周期
 onMounted(() => {
-  console.log('角色管理页面已加载')
+  handleRefresh()
 })
 </script>
 

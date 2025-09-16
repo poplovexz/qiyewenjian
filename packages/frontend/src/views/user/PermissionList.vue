@@ -54,9 +54,9 @@
       </div>
       
       <div class="search-right">
-        <el-button 
-          v-if="permission.showCreatePermissionButton()"
-          type="primary" 
+        <el-button
+          v-if="hasPermission('permission:create')"
+          type="primary"
           @click="handleCreate"
         >
           <el-icon><Plus /></el-icon>
@@ -172,28 +172,28 @@
           </template>
         </el-table-column>
         
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="240" fixed="right">
           <template #default="{ row }">
-            <el-button 
-              v-if="permission.canViewPermissions()"
-              type="primary" 
-              size="small" 
+            <el-button
+              v-if="hasPermission('permission:read')"
+              type="primary"
+              size="small"
               @click="handleView(row)"
             >
               查看
             </el-button>
-            <el-button 
-              v-if="permission.showEditPermissionButton()"
-              type="success" 
-              size="small" 
+            <el-button
+              v-if="hasPermission('permission:update')"
+              type="warning"
+              size="small"
               @click="handleEdit(row)"
             >
               编辑
             </el-button>
-            <el-button 
-              v-if="permission.showDeletePermissionButton()"
-              type="danger" 
-              size="small" 
+            <el-button
+              v-if="hasPermission('permission:delete')"
+              type="danger"
+              size="small"
               @click="handleDelete(row)"
             >
               删除
@@ -240,13 +240,12 @@ import {
   DataAnalysis
 } from '@element-plus/icons-vue'
 import { usePermissionStore } from '@/stores/modules/permission'
-import { usePermission } from '@/utils/permissions'
+import { hasPermission } from '@/utils/permissions'
 import PermissionForm from './components/PermissionForm.vue'
 import type { Permission } from '@/api/modules/permission'
 
 const router = useRouter()
 const permissionStore = usePermissionStore()
-const permission = usePermission()
 
 // 响应式数据
 const searchForm = ref({
