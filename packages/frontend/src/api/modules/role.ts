@@ -75,7 +75,7 @@ export interface RoleStatusRequest {
   reason?: string
 }
 
-import { request } from '../request'
+import { request } from '@/utils/request'
 
 // API函数实现
 export const roleAPI = {

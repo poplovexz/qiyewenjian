@@ -69,7 +69,7 @@ export interface PermissionStatistics {
   permissions_with_roles: number
 }
 
-import { request } from '../request'
+import { request } from '@/utils/request'
 
 // API函数实现
 export const permissionAPI = {
