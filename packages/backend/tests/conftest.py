@@ -3,13 +3,16 @@
 """
 import pytest
 import uuid
+from typing import Tuple
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import StaticPool
+from fastapi.testclient import TestClient
 
 from src.models.yonghu_guanli import Yonghu, Jiaose, Quanxian
-from src.core.security import get_password_hash
-from src.core.database import Base
+from src.core.security import get_password_hash, create_access_token
+from src.core.database import Base, get_db
+from src.main import app
 # 导入所有模型以确保表被创建
 from src.models import *
 
@@ -26,6 +29,51 @@ engine = create_engine(
 )
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def get_test_db():
+    """获取测试数据库会话"""
+    try:
+        db = TestingSessionLocal()
+        yield db
+    finally:
+        db.close()
+
+
+def create_test_user() -> Tuple[dict, str]:
+    """创建测试用户并返回用户数据和token"""
+    # 创建测试数据库会话
+    Base.metadata.create_all(bind=engine)
+    db = TestingSessionLocal()
+
+    try:
+        # 创建测试用户
+        user_data = {
+            "yonghu_ming": f"testuser_{uuid.uuid4().hex[:8]}",
+            "mima": get_password_hash("testpassword"),
+            "youxiang": f"test_{uuid.uuid4().hex[:8]}@example.com",
+            "xingming": "测试用户",
+            "shouji": "13800138000",
+            "zhuangtai": "active",
+            "denglu_cishu": 1,
+            "created_by": str(uuid.uuid4())
+        }
+
+        user = Yonghu(**user_data)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+        # 创建访问token
+        token = create_access_token(data={"sub": user.yonghu_ming})
+
+        return user_data, token
+    finally:
+        db.close()
+
+
+# 覆盖应用的数据库依赖
+app.dependency_overrides[get_db] = get_test_db
 
 
 @pytest.fixture(scope="function")

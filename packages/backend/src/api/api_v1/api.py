@@ -8,15 +8,19 @@ api_router = APIRouter()
 
 # 导入各个模块的路由
 from .endpoints import auth, yonghu, jiaose
+from .endpoints.kehu_guanli import kehu, fuwu_jilu
 
 # 注册路由
 api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
 api_router.include_router(yonghu.router, prefix="/users", tags=["用户管理"])
 api_router.include_router(jiaose.router, prefix="/roles", tags=["角色管理"])
 
+# 客户管理模块路由
+api_router.include_router(kehu.router, prefix="/customers", tags=["客户管理"])
+api_router.include_router(fuwu_jilu.router, prefix="/service-records", tags=["服务记录管理"])
+
 # 这里将来会包含其他模块的路由
-# from .endpoints import customers, contracts
-# api_router.include_router(customers.router, prefix="/customers", tags=["客户管理"])
+# from .endpoints import contracts
 # api_router.include_router(contracts.router, prefix="/contracts", tags=["合同管理"])
 
 

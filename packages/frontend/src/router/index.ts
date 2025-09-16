@@ -37,6 +37,24 @@ const routes: RouteRecordRaw[] = [
           title: '用户管理',
           permissions: ['user:read']
         }
+      },
+      {
+        path: 'customers',
+        name: 'CustomerList',
+        component: () => import('@/views/customer/CustomerList.vue'),
+        meta: {
+          title: '客户管理',
+          permissions: ['customer:read']
+        }
+      },
+      {
+        path: 'customers/:id',
+        name: 'CustomerDetail',
+        component: () => import('@/views/customer/CustomerDetail.vue'),
+        meta: {
+          title: '客户详情',
+          permissions: ['customer:read']
+        }
       }
     ]
   },
