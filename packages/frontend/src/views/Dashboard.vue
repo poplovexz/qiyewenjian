@@ -44,6 +44,41 @@
         </el-col>
       </el-row>
 
+      <!-- 快捷导航 -->
+      <el-row :gutter="20" style="margin-top: 20px;">
+        <el-col :span="24">
+          <el-card>
+            <template #header>
+              <span>快捷导航</span>
+            </template>
+            <div class="quick-nav">
+              <el-button
+                v-if="hasPermission('user:read')"
+                type="primary"
+                :icon="User"
+                @click="$router.push('/users')"
+              >
+                用户管理
+              </el-button>
+              <el-button
+                type="success"
+                :icon="UserFilled"
+                @click="$router.push('/customers')"
+              >
+                客户管理
+              </el-button>
+              <el-button
+                type="warning"
+                :icon="Document"
+                @click="$router.push('/contracts')"
+              >
+                合同管理
+              </el-button>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+
       <el-row :gutter="20" style="margin-top: 20px;">
         <el-col :span="12">
           <el-card>
@@ -89,9 +124,10 @@
 
 <script setup lang="ts">
 import { useAuth } from '@/composables/useAuth'
+import { User, UserFilled, Document } from '@element-plus/icons-vue'
 
 // 组合式函数
-const { userInfo, userRoles, userPermissions, logout } = useAuth()
+const { userInfo, userRoles, userPermissions, logout, hasPermission } = useAuth()
 
 // 处理登出
 const handleLogout = async () => {
@@ -168,5 +204,11 @@ const formatDate = (dateString?: string) => {
 .roles-section,
 .permissions-section {
   line-height: 1.8;
+}
+
+.quick-nav {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 </style>

@@ -32,6 +32,16 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/users',
+    name: 'UserList',
+    component: () => import('@/views/user/UserList.vue'),
+    meta: {
+      title: '用户管理',
+      requiresAuth: true,
+      permissions: ['user:read']
+    }
+  },
+  {
     path: '/about',
     name: 'About',
     component: () => import('@/views/About.vue'),
@@ -87,6 +97,19 @@ router.beforeEach(async (to, _from, next) => {
           path: '/login',
           query: { redirect: to.fullPath }
         })
+        return
+      }
+    }
+
+    // 检查页面权限
+    if (to.meta?.permissions && Array.isArray(to.meta.permissions)) {
+      const hasPermission = to.meta.permissions.some((permission: string) =>
+        authStore.hasPermission(permission)
+      )
+
+      if (!hasPermission) {
+        ElMessage.error('您没有访问该页面的权限')
+        next('/dashboard')
         return
       }
     }
