@@ -10,6 +10,7 @@ api_router = APIRouter()
 from .endpoints import auth, yonghu
 from .endpoints.kehu_guanli import kehu, fuwu_jilu
 from .endpoints.yonghu_guanli import jiaose as role_api, quanxian
+from .endpoints.chanpin_guanli import chanpin_fenlei, chanpin_xiangmu, chanpin_buzou
 
 # 注册路由
 api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
@@ -22,6 +23,11 @@ api_router.include_router(quanxian.router, prefix="/user-management/permissions"
 # 客户管理模块路由
 api_router.include_router(kehu.router, prefix="/customers", tags=["客户管理"])
 api_router.include_router(fuwu_jilu.router, prefix="/service-records", tags=["服务记录管理"])
+
+# 产品管理模块路由
+api_router.include_router(chanpin_fenlei.router, prefix="/product-management/categories", tags=["产品分类管理"])
+api_router.include_router(chanpin_xiangmu.router, prefix="/product-management/products", tags=["产品项目管理"])
+api_router.include_router(chanpin_buzou.router, prefix="/product-management", tags=["产品步骤管理"])
 
 # 这里将来会包含其他模块的路由
 # from .endpoints import contracts

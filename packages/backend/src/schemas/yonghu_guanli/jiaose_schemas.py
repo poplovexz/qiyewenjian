@@ -109,7 +109,7 @@ class JiaoseResponse(JiaoseBase):
     id: str
     created_at: datetime
     updated_at: datetime
-    created_by: str
+    created_by: Optional[str] = None
     updated_by: Optional[str] = None
     permissions: Optional[List[QuanxianSimple]] = []
     users: Optional[List[YonghuSimple]] = []

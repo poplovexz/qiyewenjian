@@ -158,7 +158,7 @@ class JiaoseService:
         users = []
         if result.user_ids and result.user_ids[0]:
             user_query = """
-                SELECT id, yonghu_ming, xing_ming, zhuangtai
+                SELECT id, yonghu_ming, xingming, zhuangtai
                 FROM yonghu
                 WHERE id = ANY(:user_ids) AND is_deleted = 'N'
             """
@@ -167,7 +167,7 @@ class JiaoseService:
                 {
                     "id": row.id,
                     "yonghu_ming": row.yonghu_ming,
-                    "xing_ming": row.xing_ming,
+                    "xing_ming": row.xingming,
                     "zhuangtai": row.zhuangtai
                 }
                 for row in user_result

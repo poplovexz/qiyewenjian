@@ -73,6 +73,15 @@
             <el-menu-item index="/customers">客户列表</el-menu-item>
             <el-menu-item index="/customer-services">服务记录</el-menu-item>
           </el-sub-menu>
+
+          <el-sub-menu index="product">
+            <template #title>
+              <el-icon><goods /></el-icon>
+              <span>产品管理</span>
+            </template>
+            <el-menu-item index="/product-management?type=zengzhi">增值服务</el-menu-item>
+            <el-menu-item index="/bookkeeping-packages">代理记账服务</el-menu-item>
+          </el-sub-menu>
           
           <el-sub-menu index="contract">
             <template #title>
@@ -138,7 +147,8 @@ import {
   Document,
   ShoppingCart,
   List,
-  Money
+  Money,
+  Goods
 } from '@element-plus/icons-vue'
 
 const route = useRoute()

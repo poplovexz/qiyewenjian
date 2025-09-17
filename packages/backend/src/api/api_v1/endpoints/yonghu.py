@@ -30,8 +30,8 @@ def create_yonghu(
 
 @router.get("/", response_model=YonghuList)
 def get_yonghu_list(
-    skip: int = Query(0, ge=0, description="跳过的记录数"),
-    limit: int = Query(100, ge=1, le=1000, description="返回的记录数"),
+    page: int = Query(1, ge=1, description="页码"),
+    size: int = Query(20, ge=1, le=100, description="每页数量"),
     search: Optional[str] = Query(None, description="搜索关键词"),
     zhuangtai: Optional[str] = Query(None, description="用户状态"),
     db: Session = Depends(get_db),
@@ -39,7 +39,7 @@ def get_yonghu_list(
 ):
     """获取用户列表"""
     yonghu_service = YonghuService(db)
-    return yonghu_service.get_yonghu_list(skip, limit, search, zhuangtai)
+    return yonghu_service.get_yonghu_list(page, size, search, zhuangtai)
 
 
 @router.get("/{yonghu_id}", response_model=YonghuResponse)

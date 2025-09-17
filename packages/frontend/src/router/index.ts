@@ -50,7 +50,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'permissions',
         name: 'PermissionList',
-        component: () => import('@/views/user/PermissionListSimple.vue'),
+        component: () => import('@/views/user/PermissionList.vue'),
         meta: {
           title: '权限管理',
           permissions: ['permission:read']
@@ -72,6 +72,26 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: '客户详情',
           permissions: ['customer:read']
+        }
+      },
+      // 产品管理路由
+      {
+        path: 'product-management',
+        name: 'ProductManagement',
+        component: () => import('@/views/product/ProductManagement.vue'),
+        meta: {
+          title: '产品管理',
+          permissions: ['product_category:read', 'product:read']
+        }
+      },
+      // 代理记账套餐管理
+      {
+        path: 'bookkeeping-packages',
+        name: 'BookkeepingPackages',
+        component: () => import('@/views/product/BookkeepingPackages.vue'),
+        meta: {
+          title: '代理记账套餐管理',
+          permissions: ['product:read']
         }
       }
     ]

@@ -115,6 +115,7 @@
 import { ref, computed, watch } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { Menu, Mouse, Connection } from '@element-plus/icons-vue'
+import { usePermissionStore } from '@/stores/modules/permission'
 import type { Permission } from '@/api/modules/permission'
 
 interface Props {
@@ -137,6 +138,7 @@ const emit = defineEmits<Emits>()
 // 响应式数据
 const formRef = ref<FormInstance>()
 const loading = ref(false)
+const permissionStore = usePermissionStore()
 
 const formData = ref({
   quanxian_ming: '',
@@ -240,17 +242,17 @@ const handleClose = () => {
 // 处理提交
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     loading.value = true
-    
-    // TODO: 调用API创建或更新权限
+
+    // 调用API创建或更新权限
     if (props.mode === 'create') {
-      // await permissionApi.createPermission(formData.value)
+      await permissionStore.createPermission(formData.value)
       ElMessage.success('权限创建成功')
     } else {
-      // await permissionApi.updatePermission(props.permission!.id, formData.value)
+      await permissionStore.updatePermission(props.permission!.id, formData.value)
       ElMessage.success('权限更新成功')
     }
     

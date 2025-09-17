@@ -77,6 +77,8 @@ import { ref, computed, watch, nextTick } from 'vue'
 import { ElMessage, ElTree } from 'element-plus'
 import { Menu, Mouse, Connection, Folder, Document } from '@element-plus/icons-vue'
 import type { Role } from '@/api/modules/role'
+import { useRoleStore } from '@/stores/modules/role'
+import { usePermissionStore } from '@/stores/modules/permission'
 
 interface Props {
   visible: boolean
@@ -94,10 +96,15 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
+// Store
+const roleStore = useRoleStore()
+const permissionStore = usePermissionStore()
+
 // 响应式数据
 const treeRef = ref<InstanceType<typeof ElTree>>()
 const loading = ref(false)
 const checkedPermissions = ref<string[]>([])
+const permissionTree = ref<any[]>([])
 
 // 计算属性
 const dialogVisible = computed({
@@ -111,110 +118,33 @@ const treeProps = {
   label: 'label'
 }
 
-// 模拟权限树数据
-const permissionTree = ref([
-  {
-    id: 'user-management',
-    label: '用户管理',
-    icon: 'User',
-    children: [
-      {
-        id: 'user:menu',
-        label: '用户管理菜单',
-        type: 'menu'
-      },
-      {
-        id: 'user:read',
-        label: '查看用户',
-        type: 'api'
-      },
-      {
-        id: 'user:create',
-        label: '创建用户',
-        type: 'api'
-      },
-      {
-        id: 'user:update',
-        label: '编辑用户',
-        type: 'api'
-      },
-      {
-        id: 'user:delete',
-        label: '删除用户',
-        type: 'api'
-      },
-      {
-        id: 'user:create_button',
-        label: '新增用户按钮',
-        type: 'button'
-      }
-    ]
-  },
-  {
-    id: 'role-management',
-    label: '角色管理',
-    icon: 'UserFilled',
-    children: [
-      {
-        id: 'role:menu',
-        label: '角色管理菜单',
-        type: 'menu'
-      },
-      {
-        id: 'role:read',
-        label: '查看角色',
-        type: 'api'
-      },
-      {
-        id: 'role:create',
-        label: '创建角色',
-        type: 'api'
-      },
-      {
-        id: 'role:update',
-        label: '编辑角色',
-        type: 'api'
-      },
-      {
-        id: 'role:delete',
-        label: '删除角色',
-        type: 'api'
-      }
-    ]
-  },
-  {
-    id: 'customer-management',
-    label: '客户管理',
-    icon: 'UserFilled',
-    children: [
-      {
-        id: 'customer:menu',
-        label: '客户管理菜单',
-        type: 'menu'
-      },
-      {
-        id: 'customer:read',
-        label: '查看客户',
-        type: 'api'
-      },
-      {
-        id: 'customer:create',
-        label: '创建客户',
-        type: 'api'
-      },
-      {
-        id: 'customer:update',
-        label: '编辑客户',
-        type: 'api'
-      },
-      {
-        id: 'customer:delete',
-        label: '删除客户',
-        type: 'api'
-      }
-    ]
+// 加载权限树数据
+const loadPermissionTree = async () => {
+  try {
+    const tree = await permissionStore.getPermissionTree('active')
+    permissionTree.value = tree
+  } catch (error) {
+    console.error('加载权限树失败:', error)
   }
-])
+}
+
+// 加载角色权限
+const loadRolePermissions = async (roleId: string) => {
+  try {
+    const permissions = await roleStore.getRolePermissions(roleId)
+    const permissionIds = permissions.map(p => p.id)
+    checkedPermissions.value = permissionIds
+
+    // 等待下一个tick，确保树组件已经渲染
+    await nextTick()
+    if (treeRef.value) {
+      treeRef.value.setCheckedKeys(permissionIds)
+    }
+  } catch (error) {
+    console.error('加载角色权限失败:', error)
+    checkedPermissions.value = []
+  }
+}
 
 // 工具函数
 const getPermissionTypeTag = (type: string) => {
@@ -273,33 +203,73 @@ const getAllNodeKeys = (nodes: any[]): string[] => {
   return keys
 }
 
+const findNodeById = (nodes: any[], id: string): any => {
+  for (const node of nodes) {
+    if (node.id === id) {
+      return node
+    }
+    if (node.children) {
+      const found = findNodeById(node.children, id)
+      if (found) {
+        return found
+      }
+    }
+  }
+  return null
+}
+
 // 监听角色变化
-watch(() => props.role, (newRole) => {
+watch(() => props.role, async (newRole) => {
   if (newRole) {
-    // TODO: 加载角色的权限数据
-    checkedPermissions.value = []
+    // 加载权限树（如果还没有加载）
+    if (permissionTree.value.length === 0) {
+      await loadPermissionTree()
+    }
+    // 加载角色的权限数据
+    await loadRolePermissions(newRole.id)
   }
 }, { immediate: true })
+
+// 监听对话框显示状态
+watch(() => props.visible, async (visible) => {
+  if (visible) {
+    // 对话框打开时加载权限树
+    await loadPermissionTree()
+  }
+})
 
 // 处理关闭
 const handleClose = () => {
   dialogVisible.value = false
+  // 重置状态
+  checkedPermissions.value = []
+  if (treeRef.value) {
+    treeRef.value.setCheckedKeys([])
+  }
 }
 
 // 处理提交
 const handleSubmit = async () => {
   if (!props.role) return
-  
+
   try {
     loading.value = true
-    
+
     const checkedKeys = treeRef.value?.getCheckedKeys() || []
     const halfCheckedKeys = treeRef.value?.getHalfCheckedKeys() || []
     const allCheckedKeys = [...checkedKeys, ...halfCheckedKeys]
-    
-    // TODO: 调用API保存角色权限
-    console.log('保存权限:', allCheckedKeys)
-    
+
+    // 过滤出真实的权限ID（排除分组节点）
+    const realPermissionIds = allCheckedKeys.filter(key => {
+      const node = findNodeById(permissionTree.value, key)
+      return node && node.is_permission === true
+    })
+
+    // 调用API保存角色权限
+    await roleStore.updateRolePermissions(props.role.id, {
+      permission_ids: realPermissionIds
+    })
+
     ElMessage.success('权限保存成功')
     emit('success')
     handleClose()

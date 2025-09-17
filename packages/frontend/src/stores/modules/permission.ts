@@ -210,5 +210,6 @@ export const usePermissionStore = defineStore('permission', () => {
     },
     updatePageSize: (size: number) => {
       pageSize.value = size
+    }
   }
 })

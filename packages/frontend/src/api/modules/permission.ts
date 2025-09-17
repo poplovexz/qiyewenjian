@@ -12,7 +12,7 @@ export interface Permission {
   zhuangtai: 'active' | 'inactive'
   created_at: string
   updated_at: string
-  created_by: string
+  created_by?: string
   updated_by?: string
 }
 
@@ -75,8 +75,8 @@ import { request } from '@/utils/request'
 export const permissionAPI = {
   // 获取权限列表
   async getPermissionList(params: PermissionListRequest): Promise<PermissionListResponse> {
-    const response = await request.get('/api/v1/user-management/permissions', { params })
-    return response.data
+    const response = await request.get('/api/v1/user-management/permissions/', { params })
+    return response
   },
 
   // 获取权限树形结构
@@ -84,25 +84,25 @@ export const permissionAPI = {
     const response = await request.get('/api/v1/user-management/permissions/tree', {
       params: { zhuangtai }
     })
-    return response.data
+    return response
   },
 
   // 获取权限详情
   async getPermissionById(id: string): Promise<Permission> {
     const response = await request.get(`/api/v1/user-management/permissions/${id}`)
-    return response.data
+    return response
   },
 
   // 创建权限
   async createPermission(data: PermissionCreateRequest): Promise<Permission> {
-    const response = await request.post('/api/v1/user-management/permissions', data)
-    return response.data
+    const response = await request.post('/api/v1/user-management/permissions/', data)
+    return response
   },
 
   // 更新权限
   async updatePermission(id: string, data: PermissionUpdateRequest): Promise<Permission> {
     const response = await request.put(`/api/v1/user-management/permissions/${id}`, data)
-    return response.data
+    return response
   },
 
   // 删除权限
@@ -115,12 +115,12 @@ export const permissionAPI = {
     const response = await request.get(`/api/v1/user-management/permissions/by-resource-type/${ziyuan_leixing}`, {
       params: { zhuangtai }
     })
-    return response.data
+    return response
   },
 
   // 获取权限统计信息
   async getPermissionStatistics(): Promise<PermissionStatistics> {
     const response = await request.get('/api/v1/user-management/permissions/statistics/summary')
-    return response.data
+    return response
   }
 }

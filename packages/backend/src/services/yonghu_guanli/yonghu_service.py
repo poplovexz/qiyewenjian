@@ -86,15 +86,15 @@ class YonghuService:
         return YonghuResponse.model_validate(yonghu)
     
     def get_yonghu_list(
-        self, 
-        skip: int = 0, 
-        limit: int = 100,
+        self,
+        page: int = 1,
+        size: int = 20,
         search: Optional[str] = None,
         zhuangtai: Optional[str] = None
     ) -> YonghuList:
         """获取用户列表"""
         query = self.db.query(Yonghu).filter(Yonghu.is_deleted == 'N')
-        
+
         # 搜索条件
         if search:
             search_filter = or_(
@@ -104,22 +104,25 @@ class YonghuService:
                 Yonghu.shouji.contains(search)
             )
             query = query.filter(search_filter)
-        
+
         # 状态筛选
         if zhuangtai:
             query = query.filter(Yonghu.zhuangtai == zhuangtai)
-        
+
         # 获取总数
         total = query.count()
-        
+
+        # 计算跳过的记录数
+        skip = (page - 1) * size
+
         # 分页查询
-        yonghu_list = query.offset(skip).limit(limit).all()
-        
+        yonghu_list = query.offset(skip).limit(size).all()
+
         return YonghuList(
             items=[YonghuResponse.model_validate(yonghu) for yonghu in yonghu_list],
             total=total,
-            page=skip // limit + 1,
-            size=limit
+            page=page,
+            size=size
         )
     
     def update_yonghu(
