@@ -149,3 +149,67 @@ async def update_chuli_zhuangtai(
     """
     service = FuwuJiluService(db)
     return service.update_chuli_zhuangtai(fuwu_jilu_id, new_status, chuli_jieguo, current_user.id)
+
+
+@router.get("/statistics/overview", summary="获取服务记录统计信息")
+async def get_service_statistics(
+    kehu_id: Optional[str] = Query(None, description="客户ID（可选，不传则统计全部）"),
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(get_current_user)
+):
+    """
+    获取服务记录统计概览信息
+
+    返回记录总数、状态分布、沟通方式分布等统计数据
+    """
+    service = FuwuJiluService(db)
+    return service.get_service_statistics(kehu_id)
+
+
+@router.post("/batch/status", summary="批量更新服务记录状态")
+async def batch_update_service_status(
+    record_ids: list[str],
+    new_status: str = Query(..., description="新状态（pending/processing/completed/cancelled）"),
+    chuli_jieguo: Optional[str] = Query(None, description="处理结果"),
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(require_permission("service_record:update"))
+):
+    """
+    批量更新服务记录状态
+
+    - **record_ids**: 服务记录ID列表
+    - **new_status**: 新状态
+    - **chuli_jieguo**: 处理结果（可选）
+    """
+    service = FuwuJiluService(db)
+    return service.batch_update_status(record_ids, new_status, chuli_jieguo, current_user.id)
+
+
+@router.post("/batch/delete", summary="批量删除服务记录")
+async def batch_delete_service_records(
+    record_ids: list[str],
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(require_permission("service_record:delete"))
+):
+    """
+    批量删除服务记录（软删除）
+
+    - **record_ids**: 服务记录ID列表
+    """
+    service = FuwuJiluService(db)
+    return service.batch_delete(record_ids, current_user.id)
+
+
+@router.get("/kehu/{kehu_id}/summary", summary="获取客户服务记录摘要")
+async def get_customer_service_summary(
+    kehu_id: str,
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(get_current_user)
+):
+    """
+    获取指定客户的服务记录摘要
+
+    包含客户信息、服务统计、最近记录、待处理问题等
+    """
+    service = FuwuJiluService(db)
+    return service.get_customer_service_summary(kehu_id)

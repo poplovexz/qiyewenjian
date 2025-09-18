@@ -250,6 +250,32 @@ const dialogTitle = computed(() => {
   return titleMap[props.mode]
 })
 
+// 方法
+const resetForm = () => {
+  formData.value = {
+    gongsi_mingcheng: '',
+    tongyi_shehui_xinyong_daima: '',
+    chengli_riqi: '',
+    zhuce_dizhi: '',
+    faren_xingming: '',
+    faren_shenfenzheng: '',
+    faren_lianxi: '',
+    lianxi_dianhua: '',
+    lianxi_youxiang: '',
+    lianxi_dizhi: '',
+    yingye_zhizhao_lujing: '',
+    yingye_zhizhao_youxiao_qi: '',
+    kehu_zhuangtai: 'active',
+    fuwu_kaishi_riqi: '',
+    fuwu_jieshu_riqi: ''
+  }
+
+  // 清除表单验证
+  nextTick(() => {
+    formRef.value?.clearValidate()
+  })
+}
+
 // 监听客户数据变化
 watch(
   () => props.customer,
@@ -280,31 +306,6 @@ watch(
   },
   { immediate: true }
 )
-
-// 方法
-const resetForm = () => {
-  formData.value = {
-    gongsi_mingcheng: '',
-    tongyi_shehui_xinyong_daima: '',
-    chengli_riqi: '',
-    zhuce_dizhi: '',
-    faren_xingming: '',
-    faren_shenfenzheng: '',
-    faren_lianxi: '',
-    lianxi_dianhua: '',
-    lianxi_youxiang: '',
-    lianxi_dizhi: '',
-    yingye_zhizhao_lujing: '',
-    yingye_zhizhao_youxiao_qi: '',
-    kehu_zhuangtai: 'active',
-    fuwu_kaishi_riqi: '',
-    fuwu_jieshu_riqi: ''
-  }
-  
-  nextTick(() => {
-    formRef.value?.clearValidate()
-  })
-}
 
 const handleSubmit = async () => {
   if (!formRef.value) return

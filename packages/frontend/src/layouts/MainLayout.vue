@@ -74,6 +74,16 @@
             <el-menu-item index="/customer-services">服务记录</el-menu-item>
           </el-sub-menu>
 
+          <el-sub-menu index="leads">
+            <template #title>
+              <el-icon><phone /></el-icon>
+              <span>线索管理</span>
+            </template>
+            <el-menu-item index="/leads">线索列表</el-menu-item>
+            <el-menu-item index="/lead-sources">线索来源</el-menu-item>
+            <el-menu-item index="/lead-statuses">线索状态</el-menu-item>
+          </el-sub-menu>
+
           <el-sub-menu index="product">
             <template #title>
               <el-icon><goods /></el-icon>
@@ -129,6 +139,9 @@
         </div>
       </main>
     </div>
+
+    <!-- 认证修复组件 -->
+    <AuthFix />
   </div>
 </template>
 
@@ -137,6 +150,7 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/modules/auth'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import AuthFix from '@/components/AuthFix.vue'
 import {
   ArrowDown,
   Expand,
@@ -144,6 +158,7 @@ import {
   House,
   User,
   UserFilled,
+  Phone,
   Document,
   ShoppingCart,
   List,
@@ -257,7 +272,9 @@ const handleCommand = async (command: string) => {
   background: #304156;
   transition: width 0.3s;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
 }
 
 .main-sidebar.collapsed {
@@ -283,12 +300,36 @@ const handleCommand = async (command: string) => {
 
 .sidebar-menu {
   border: none;
-  height: 100%;
+  height: calc(100vh - 60px);
   padding-top: 50px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar-menu:not(.el-menu--collapse) {
   width: 200px;
+}
+
+/* 自定义滚动条样式 */
+.main-sidebar::-webkit-scrollbar,
+.sidebar-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-sidebar::-webkit-scrollbar-track,
+.sidebar-menu::-webkit-scrollbar-track {
+  background: #2c3e50;
+}
+
+.main-sidebar::-webkit-scrollbar-thumb,
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: #409eff;
+  border-radius: 3px;
+}
+
+.main-sidebar::-webkit-scrollbar-thumb:hover,
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: #66b1ff;
 }
 
 /* 主内容区域 */

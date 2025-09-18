@@ -22,7 +22,19 @@ class Settings(BaseSettings):
     
     # 数据库配置
     DATABASE_URL: PostgresDsn
-    
+
+    # Redis 配置
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_PASSWORD: str = ""
+    REDIS_DB: int = 0
+    REDIS_URL: str = ""
+
+    # 缓存配置
+    CACHE_DEFAULT_TTL: int = 900  # 15分钟
+    CACHE_LONG_TTL: int = 86400   # 24小时
+    CACHE_SHORT_TTL: int = 60     # 1分钟
+
     # CORS 配置
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
@@ -35,6 +47,16 @@ class Settings(BaseSettings):
         elif isinstance(v, (list, str)):
             return v
         raise ValueError(v)
+
+    def get_redis_url(self) -> str:
+        """获取Redis连接URL"""
+        if self.REDIS_URL:
+            return self.REDIS_URL
+
+        if self.REDIS_PASSWORD:
+            return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
+        else:
+            return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
 
     class Config:
         """配置类"""

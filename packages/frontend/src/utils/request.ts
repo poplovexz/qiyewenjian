@@ -4,6 +4,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/modules/auth'
+import { tokenManager } from '@/utils/tokenManager'
 import router from '@/router'
 
 // 创建 axios 实例
@@ -17,14 +18,26 @@ const instance: AxiosInstance = axios.create({
 
 // 请求拦截器
 instance.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    // 🔧 修复死锁：检查是否是刷新token请求，避免循环依赖
+    if (config.url?.includes('/auth/refresh')) {
+      // 刷新token请求不需要等待初始化，直接放行
+      return config
+    }
+
+    // 等待认证初始化完成
+    await tokenManager.waitForAuthInit()
+
+    // 检查是否需要预防性刷新token
+    await tokenManager.preventiveRefresh()
+
     const authStore = useAuthStore()
-    const token = authStore.accessToken
-    
+    const token = authStore.accessToken || localStorage.getItem('access_token')
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
-    
+
     return config
   },
   (error) => {
@@ -46,24 +59,34 @@ instance.interceptors.response.use(
       
       switch (status) {
         case 401:
-          // 未授权，尝试刷新令牌
-          if (authStore.refreshToken && !error.config._retry) {
-            error.config._retry = true
-            try {
-              await authStore.refreshAccessToken()
-              // 重新发送原请求
-              return instance(error.config)
-            } catch (refreshError) {
-              // 刷新失败，跳转到登录页
-              authStore.logout()
-              router.push('/login')
-              ElMessage.error('登录已过期，请重新登录')
-              return Promise.reject(refreshError)
+          // 未授权，使用Token管理器处理
+          console.log('🔄 收到401错误，使用Token管理器处理')
+
+          try {
+            // 如果已经在刷新中，将请求加入队列
+            if (tokenManager.isTokenRefreshing) {
+              console.log('⏳ Token正在刷新中，将请求加入队列')
+              const retryConfig = await tokenManager.addPendingRequest(error.config)
+              return instance(retryConfig)
             }
-          } else {
-            authStore.logout()
-            router.push('/login')
-            ElMessage.error('登录已过期，请重新登录')
+
+            // 尝试刷新token
+            const refreshSuccess = await tokenManager.refreshToken()
+            if (refreshSuccess) {
+              console.log('✅ Token刷新成功，重试请求')
+              // 更新请求头
+              const newToken = localStorage.getItem('access_token')
+              if (newToken) {
+                error.config.headers.Authorization = `Bearer ${newToken}`
+              }
+              return instance(error.config)
+            } else {
+              console.log('❌ Token刷新失败')
+              return Promise.reject(error)
+            }
+          } catch (refreshError) {
+            console.error('❌ Token刷新过程出错:', refreshError)
+            return Promise.reject(refreshError)
           }
           break
         case 403:

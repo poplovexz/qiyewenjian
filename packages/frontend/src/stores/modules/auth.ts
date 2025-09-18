@@ -19,24 +19,47 @@ export const useAuthStore = defineStore('auth', () => {
   const userPermissions = computed(() => userInfo.value?.permissions || [])
 
   // 从本地存储恢复状态
-  const restoreFromStorage = () => {
+  const restoreFromStorage = async () => {
     const storedAccessToken = localStorage.getItem('access_token')
     const storedRefreshToken = localStorage.getItem('refresh_token')
     const storedUserInfo = localStorage.getItem('user_info')
 
+    console.log('恢复认证状态:', {
+      hasAccessToken: !!storedAccessToken,
+      hasRefreshToken: !!storedRefreshToken,
+      hasUserInfo: !!storedUserInfo
+    })
+
+    // 如果没有任何存储的认证信息，直接返回
+    if (!storedAccessToken && !storedRefreshToken && !storedUserInfo) {
+      console.log('ℹ️ 无存储的认证信息，跳过恢复')
+      return
+    }
+
+    // 恢复token信息
     if (storedAccessToken) {
       accessToken.value = storedAccessToken
     }
     if (storedRefreshToken) {
       refreshToken.value = storedRefreshToken
     }
+
+    // 恢复用户信息
     if (storedUserInfo) {
       try {
         userInfo.value = JSON.parse(storedUserInfo)
+        console.log('✅ 认证状态恢复成功')
       } catch (error) {
         console.error('解析用户信息失败:', error)
-        clearStorage()
+        // 只清除用户信息，保留token
+        localStorage.removeItem('user_info')
+        userInfo.value = null
       }
+    }
+
+    // 如果有token但没有用户信息，静默处理（不进行API调用）
+    if (storedAccessToken && !storedUserInfo) {
+      console.log('ℹ️ 有token但无用户信息，将在首次API调用时验证')
     }
   }
 
@@ -166,8 +189,7 @@ export const useAuthStore = defineStore('auth', () => {
     return userRoles.value.includes(role)
   }
 
-  // 初始化时恢复状态
-  restoreFromStorage()
+  // 注意：不在这里自动调用 restoreFromStorage()，而是在 main.ts 中显式调用
 
   return {
     // 状态

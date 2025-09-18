@@ -211,6 +211,14 @@
       :customer="customer"
       @success="handleStatusSuccess"
     />
+
+    <!-- 服务记录管理对话框 -->
+    <ServiceRecordDialog
+      v-model:visible="serviceRecordDialogVisible"
+      :customer-id="customer?.id || ''"
+      :customer-name="customer?.gongsi_mingcheng || ''"
+      @success="loadServiceRecords"
+    />
   </div>
 </template>
 
@@ -231,6 +239,7 @@ import {
 import { useCustomerStore } from '@/stores/modules/customer'
 import CustomerForm from './components/CustomerForm.vue'
 import CustomerStatusDialog from './components/CustomerStatusDialog.vue'
+import ServiceRecordDialog from './components/ServiceRecordDialog.vue'
 import type { Customer, ServiceRecord } from '@/api/modules/customer'
 
 const route = useRoute()
@@ -242,6 +251,7 @@ const customer = ref<Customer | null>(null)
 const serviceRecords = ref<ServiceRecord[]>([])
 const formVisible = ref(false)
 const statusDialogVisible = ref(false)
+const serviceRecordDialogVisible = ref(false)
 const loading = ref(false)
 
 // 方法
@@ -279,7 +289,7 @@ const handleStatusChange = () => {
 const handleDropdownCommand = (command: string) => {
   switch (command) {
     case 'records':
-      viewAllRecords()
+      serviceRecordDialogVisible.value = true
       break
     case 'contracts':
       // TODO: 跳转到合同管理

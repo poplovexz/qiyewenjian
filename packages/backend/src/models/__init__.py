@@ -41,6 +41,23 @@ from .caiwu_zhangwu import (
     Zhangbu
 )
 
+# 产品管理模块
+from .chanpin_guanli import (
+    ChanpinFenlei,
+    ChanpinXiangmu,
+    ChanpinBuzou
+)
+
+# 线索管理模块
+from .xiansuo_guanli import (
+    Xiansuo,
+    XiansuoLaiyuan,
+    XiansuoZhuangtai,
+    XiansuoGenjin,
+    XiansuoBaojia,
+    XiansuoBaojiaXiangmu
+)
+
 __all__ = [
     # 基础类
     "Base",
@@ -70,5 +87,18 @@ __all__ = [
     
     # 财务与账务
     "Pingzheng",
-    "Zhangbu"
+    "Zhangbu",
+
+    # 产品管理
+    "ChanpinFenlei",
+    "ChanpinXiangmu",
+    "ChanpinBuzou",
+
+    # 线索管理
+    "Xiansuo",
+    "XiansuoLaiyuan",
+    "XiansuoZhuangtai",
+    "XiansuoGenjin",
+    "XiansuoBaojia",
+    "XiansuoBaojiaXiangmu"
 ]

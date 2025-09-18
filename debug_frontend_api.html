@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端API调试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .result {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>前端API调试工具</h1>
+    
+    <div class="section">
+        <h3>1. 登录测试</h3>
+        <button onclick="testLogin()">测试登录</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+    
+    <div class="section">
+        <h3>2. 客户列表API测试</h3>
+        <button onclick="testCustomerList()">测试客户列表</button>
+        <div id="customerResult" class="result"></div>
+    </div>
+    
+    <div class="section">
+        <h3>3. 前端页面测试</h3>
+        <button onclick="testFrontendPages()">测试前端页面</button>
+        <div id="pageResult" class="result"></div>
+    </div>
+
+    <script>
+        let authToken = null;
+        const API_BASE = 'http://localhost:8000/api/v1';
+        const FRONTEND_BASE = 'http://localhost:5174';
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.textContent = '正在测试登录...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        yonghu_ming: 'admin',
+                        mima: 'admin123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token.access_token;
+                    resultDiv.innerHTML = `<span class="success">✅ 登录成功</span>\n状态码: ${response.status}\nToken: ${authToken.substring(0, 50)}...\n用户信息: ${JSON.stringify(data.user, null, 2)}`;
+                } else {
+                    resultDiv.innerHTML = `<span class="error">❌ 登录失败</span>\n状态码: ${response.status}\n错误信息: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ 登录异常</span>\n错误: ${error.message}`;
+            }
+        }
+
+        async function testCustomerList() {
+            const resultDiv = document.getElementById('customerResult');
+            
+            if (!authToken) {
+                resultDiv.innerHTML = '<span class="error">❌ 请先登录获取Token</span>';
+                return;
+            }
+            
+            resultDiv.textContent = '正在测试客户列表API...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/customers/?page=1&size=10`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<span class="success">✅ 客户列表获取成功</span>\n状态码: ${response.status}\n客户总数: ${data.total}\n返回客户数: ${data.items.length}\n\n客户列表:\n${data.items.map(customer => `- ${customer.gongsi_mingcheng} (${customer.kehu_zhuangtai})`).join('\n')}`;
+                } else {
+                    resultDiv.innerHTML = `<span class="error">❌ 客户列表获取失败</span>\n状态码: ${response.status}\n错误信息: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ 客户列表获取异常</span>\n错误: ${error.message}`;
+            }
+        }
+
+        async function testFrontendPages() {
+            const resultDiv = document.getElementById('pageResult');
+            resultDiv.textContent = '正在测试前端页面...';
+            
+            const pages = [
+                { name: '首页', url: `${FRONTEND_BASE}/` },
+                { name: '登录页', url: `${FRONTEND_BASE}/login` },
+                { name: '客户列表', url: `${FRONTEND_BASE}/customers` },
+                { name: '服务记录', url: `${FRONTEND_BASE}/customer-services` }
+            ];
+            
+            let results = [];
+            
+            for (const page of pages) {
+                try {
+                    const response = await fetch(page.url, { method: 'HEAD' });
+                    if (response.ok) {
+                        results.push(`✅ ${page.name}: 可访问 (${response.status})`);
+                    } else {
+                        results.push(`❌ ${page.name}: 访问失败 (${response.status})`);
+                    }
+                } catch (error) {
+                    results.push(`❌ ${page.name}: 连接失败 (${error.message})`);
+                }
+            }
+            
+            resultDiv.innerHTML = results.join('\n');
+        }
+
+        // 页面加载时自动测试登录
+        window.onload = function() {
+            testLogin();
+        };
+    </script>
+</body>
+</html>

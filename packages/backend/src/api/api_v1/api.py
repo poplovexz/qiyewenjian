@@ -11,6 +11,8 @@ from .endpoints import auth, yonghu
 from .endpoints.kehu_guanli import kehu, fuwu_jilu
 from .endpoints.yonghu_guanli import jiaose as role_api, quanxian
 from .endpoints.chanpin_guanli import chanpin_fenlei, chanpin_xiangmu, chanpin_buzou
+from .endpoints.hetong_guanli import hetong_moban
+from .endpoints.xiansuo_guanli import xiansuo, xiansuo_laiyuan, xiansuo_zhuangtai, xiansuo_genjin, xiansuo_baojia
 
 # 注册路由
 api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
@@ -29,9 +31,15 @@ api_router.include_router(chanpin_fenlei.router, prefix="/product-management/cat
 api_router.include_router(chanpin_xiangmu.router, prefix="/product-management/products", tags=["产品项目管理"])
 api_router.include_router(chanpin_buzou.router, prefix="/product-management", tags=["产品步骤管理"])
 
-# 这里将来会包含其他模块的路由
-# from .endpoints import contracts
-# api_router.include_router(contracts.router, prefix="/contracts", tags=["合同管理"])
+# 合同管理模块路由
+api_router.include_router(hetong_moban.router, prefix="/contract-templates", tags=["合同模板管理"])
+
+# 线索管理模块路由
+api_router.include_router(xiansuo.router, prefix="/leads", tags=["线索管理"])
+api_router.include_router(xiansuo_laiyuan.router, prefix="/lead-sources", tags=["线索来源管理"])
+api_router.include_router(xiansuo_zhuangtai.router, prefix="/lead-statuses", tags=["线索状态管理"])
+api_router.include_router(xiansuo_genjin.router, prefix="/lead-followups", tags=["线索跟进管理"])
+api_router.include_router(xiansuo_baojia.router, prefix="/lead-quotes", tags=["线索报价管理"])
 
 
 @api_router.get("/")

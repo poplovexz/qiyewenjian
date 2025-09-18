@@ -30,7 +30,21 @@ poetry run uvicorn src.main:app --reload --port 8000
 ```
 DATABASE_URL=postgresql://user:password@localhost/proxy_db
 JWT_SECRET=your-secret-key
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
 ```
+
+## Redis 连接验证
+
+项目在无法连接 Redis 时会自动降级为无缓存模式，并通过日志输出告警。建议在部署或开发环境下手动验证配置：
+
+```bash
+poetry run python -m src.scripts.verify_redis
+```
+
+该脚本会尝试建立连接并执行一次缓存预热，便于确认 Redis 服务和凭据是否正确。
 
 ## 测试
 

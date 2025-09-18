@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户页面测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { background: #f5f5f5; padding: 10px; border-radius: 3px; white-space: pre-wrap; font-family: monospace; max-height: 400px; overflow-y: auto; }
+        button { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .error { color: red; }
+        .success { color: green; }
+        .warning { color: orange; }
+        iframe { width: 100%; height: 600px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>客户页面测试工具</h1>
+    
+    <div class="section">
+        <h3>1. 登录并获取Token</h3>
+        <button onclick="loginAndGetToken()">登录获取Token</button>
+        <div id="loginResult" class="result">等待登录...</div>
+    </div>
+    
+    <div class="section">
+        <h3>2. 测试客户API</h3>
+        <button onclick="testCustomerAPI()">测试客户API</button>
+        <div id="apiResult" class="result">等待测试...</div>
+    </div>
+    
+    <div class="section">
+        <h3>3. 前端页面预览</h3>
+        <button onclick="loadCustomerPage()">加载客户页面</button>
+        <div id="pageContainer">
+            <iframe id="customerFrame" src="about:blank" style="display:none;"></iframe>
+        </div>
+        <div id="pageResult" class="result">等待加载...</div>
+    </div>
+    
+    <div class="section">
+        <h3>4. 手动访问链接</h3>
+        <p>请点击以下链接手动测试：</p>
+        <ul>
+            <li><a href="http://localhost:5174/login" target="_blank">登录页面</a></li>
+            <li><a href="http://localhost:5174/customers" target="_blank">客户列表页面</a></li>
+            <li><a href="http://localhost:5174/dashboard" target="_blank">工作台</a></li>
+        </ul>
+    </div>
+
+    <script>
+        let authToken = null;
+        const API_BASE = 'http://localhost:8000/api/v1';
+        const FRONTEND_BASE = 'http://localhost:5174';
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            element.innerHTML += `[${timestamp}] ${prefix} ${message}\n`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        async function loginAndGetToken() {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.innerHTML = '';
+            log('loginResult', '正在登录...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        yonghu_ming: 'admin',
+                        mima: 'admin123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token.access_token;
+                    log('loginResult', `登录成功！`, 'success');
+                    log('loginResult', `用户: ${data.user.xingming} (${data.user.yonghu_ming})`);
+                    log('loginResult', `Token: ${authToken.substring(0, 50)}...`);
+                    log('loginResult', `权限数量: ${data.user.permissions.length}`);
+                    
+                    // 保存到localStorage模拟前端行为
+                    localStorage.setItem('access_token', authToken);
+                    localStorage.setItem('user_info', JSON.stringify(data.user));
+                    log('loginResult', '已保存到localStorage', 'success');
+                } else {
+                    log('loginResult', `登录失败: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log('loginResult', `登录异常: ${error.message}`, 'error');
+            }
+        }
+
+        async function testCustomerAPI() {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = '';
+            
+            if (!authToken) {
+                log('apiResult', '请先登录获取Token', 'error');
+                return;
+            }
+            
+            log('apiResult', '正在测试客户API...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/customers/?page=1&size=10`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('apiResult', `API调用成功！`, 'success');
+                    log('apiResult', `客户总数: ${data.total}`);
+                    log('apiResult', `当前页客户数: ${data.items.length}`);
+                    log('apiResult', `分页信息: 第${data.page}页，每页${data.size}条`);
+                    
+                    if (data.items.length > 0) {
+                        log('apiResult', '\n客户列表:');
+                        data.items.forEach((customer, index) => {
+                            const statusMap = {
+                                'active': '活跃',
+                                'renewing': '续约中',
+                                'terminated': '已终止'
+                            };
+                            const status = statusMap[customer.kehu_zhuangtai] || customer.kehu_zhuangtai;
+                            log('apiResult', `  ${index + 1}. ${customer.gongsi_mingcheng} (${status})`);
+                        });
+                    }
+                } else {
+                    log('apiResult', `API调用失败: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log('apiResult', `API调用异常: ${error.message}`, 'error');
+            }
+        }
+
+        async function loadCustomerPage() {
+            const resultDiv = document.getElementById('pageResult');
+            const iframe = document.getElementById('customerFrame');
+            
+            resultDiv.innerHTML = '';
+            log('pageResult', '正在加载客户页面...');
+            
+            try {
+                // 首先检查页面是否可访问
+                const response = await fetch(`${FRONTEND_BASE}/customers`);
+                const html = await response.text();
+                
+                if (response.ok) {
+                    log('pageResult', `页面加载成功 (${response.status})`, 'success');
+                    log('pageResult', `页面大小: ${html.length} 字符`);
+                    
+                    // 分析页面内容
+                    if (html.includes('客户管理') || html.includes('customer')) {
+                        log('pageResult', '页面包含客户管理内容', 'success');
+                    } else {
+                        log('pageResult', '页面可能不包含客户管理内容', 'warning');
+                    }
+                    
+                    if (html.includes('Vue') || html.includes('vite')) {
+                        log('pageResult', '检测到Vue应用', 'success');
+                    }
+                    
+                    if (html.includes('login') || html.includes('登录')) {
+                        log('pageResult', '页面可能重定向到登录页', 'warning');
+                    }
+                    
+                    // 显示页面内容预览
+                    log('pageResult', '\n页面内容预览:');
+                    log('pageResult', html.substring(0, 500) + (html.length > 500 ? '...' : ''));
+                    
+                    // 在iframe中显示页面
+                    iframe.src = `${FRONTEND_BASE}/customers`;
+                    iframe.style.display = 'block';
+                    log('pageResult', '\n页面已在下方iframe中显示', 'success');
+                    
+                } else {
+                    log('pageResult', `页面加载失败 (${response.status})`, 'error');
+                }
+            } catch (error) {
+                log('pageResult', `页面加载异常: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载时自动登录
+        window.onload = function() {
+            setTimeout(loginAndGetToken, 1000);
+        };
+    </script>
+</body>
+</html>

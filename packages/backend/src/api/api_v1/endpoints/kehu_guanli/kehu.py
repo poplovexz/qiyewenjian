@@ -126,3 +126,64 @@ async def update_kehu_status(
     """
     service = KehuService(db)
     return service.update_kehu_status(kehu_id, new_status, current_user.id)
+
+
+@router.get("/statistics/overview", summary="获取客户统计信息")
+async def get_customer_statistics(
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(require_permission("customer:read"))
+):
+    """
+    获取客户统计概览信息
+
+    返回客户总数、状态分布、本月新增等统计数据
+    """
+    service = KehuService(db)
+    return service.get_kehu_statistics()
+
+
+@router.post("/batch/status", summary="批量更新客户状态")
+async def batch_update_customer_status(
+    kehu_ids: list[str],
+    new_status: str = Query(..., description="新状态（active/renewing/terminated）"),
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(require_permission("customer:status_manage"))
+):
+    """
+    批量更新客户状态
+
+    - **kehu_ids**: 客户ID列表
+    - **new_status**: 新状态
+    """
+    service = KehuService(db)
+    return service.batch_update_status(kehu_ids, new_status, current_user.id)
+
+
+@router.post("/batch/delete", summary="批量删除客户")
+async def batch_delete_customers(
+    kehu_ids: list[str],
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(require_permission("customer:delete"))
+):
+    """
+    批量删除客户（软删除）
+
+    - **kehu_ids**: 客户ID列表
+    """
+    service = KehuService(db)
+    return service.batch_delete(kehu_ids, current_user.id)
+
+
+@router.post("/search/advanced", response_model=KehuListResponse, summary="高级搜索客户")
+async def advanced_search_customers(
+    search_params: dict,
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(require_permission("customer:read"))
+):
+    """
+    高级搜索客户
+
+    支持多字段组合搜索和日期范围筛选
+    """
+    service = KehuService(db)
+    return service.search_customers_advanced(search_params)

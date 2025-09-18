@@ -190,3 +190,151 @@ class FuwuJiluService:
         self.db.refresh(fuwu_jilu)
         
         return FuwuJiluResponse.model_validate(fuwu_jilu)
+
+    def get_service_statistics(self, kehu_id: Optional[str] = None) -> dict:
+        """获取服务记录统计信息"""
+        from sqlalchemy import func
+
+        query = self.db.query(FuwuJilu).filter(FuwuJilu.is_deleted == "N")
+
+        # 如果指定客户ID，只统计该客户的记录
+        if kehu_id:
+            query = query.filter(FuwuJilu.kehu_id == kehu_id)
+
+        # 总记录数
+        total_records = query.count()
+
+        # 按沟通方式统计
+        communication_stats = query.with_entities(
+            FuwuJilu.goutong_fangshi,
+            func.count(FuwuJilu.id).label('count')
+        ).group_by(FuwuJilu.goutong_fangshi).all()
+
+        # 按问题类型统计
+        problem_stats = query.filter(
+            FuwuJilu.wenti_leixing.isnot(None)
+        ).with_entities(
+            FuwuJilu.wenti_leixing,
+            func.count(FuwuJilu.id).label('count')
+        ).group_by(FuwuJilu.wenti_leixing).all()
+
+        # 按处理状态统计
+        status_stats = query.with_entities(
+            FuwuJilu.chuli_zhuangtai,
+            func.count(FuwuJilu.id).label('count')
+        ).group_by(FuwuJilu.chuli_zhuangtai).all()
+
+        # 本月记录数
+        from datetime import datetime, timedelta
+        current_month_start = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        monthly_records = query.filter(
+            FuwuJilu.created_at >= current_month_start
+        ).count()
+
+        return {
+            "total_records": total_records,
+            "monthly_records": monthly_records,
+            "communication_distribution": {method: count for method, count in communication_stats},
+            "problem_type_distribution": {ptype: count for ptype, count in problem_stats},
+            "status_distribution": {status: count for status, count in status_stats},
+            "pending_count": dict(status_stats).get("pending", 0),
+            "processing_count": dict(status_stats).get("processing", 0),
+            "completed_count": dict(status_stats).get("completed", 0)
+        }
+
+    def batch_update_status(self, record_ids: List[str], new_status: str, chuli_jieguo: Optional[str], updated_by: str) -> dict:
+        """批量更新服务记录状态"""
+        # 验证状态值
+        allowed_statuses = ["pending", "processing", "completed", "cancelled"]
+        if new_status not in allowed_statuses:
+            raise HTTPException(status_code=400, detail=f"无效的处理状态: {new_status}")
+
+        # 查询要更新的记录
+        records = self.db.query(FuwuJilu).filter(
+            FuwuJilu.id.in_(record_ids),
+            FuwuJilu.is_deleted == "N"
+        ).all()
+
+        if not records:
+            raise HTTPException(status_code=404, detail="未找到要更新的服务记录")
+
+        # 批量更新
+        updated_count = 0
+        for record in records:
+            record.chuli_zhuangtai = new_status
+            if chuli_jieguo:
+                record.chuli_jieguo = chuli_jieguo
+            record.chuli_ren_id = updated_by
+            record.updated_by = updated_by
+            updated_count += 1
+
+        self.db.commit()
+
+        return {
+            "updated_count": updated_count,
+            "total_requested": len(record_ids),
+            "new_status": new_status
+        }
+
+    def batch_delete(self, record_ids: List[str], deleted_by: str) -> dict:
+        """批量删除服务记录（软删除）"""
+        # 查询要删除的记录
+        records = self.db.query(FuwuJilu).filter(
+            FuwuJilu.id.in_(record_ids),
+            FuwuJilu.is_deleted == "N"
+        ).all()
+
+        if not records:
+            raise HTTPException(status_code=404, detail="未找到要删除的服务记录")
+
+        # 批量软删除
+        deleted_count = 0
+        for record in records:
+            record.is_deleted = "Y"
+            record.updated_by = deleted_by
+            deleted_count += 1
+
+        self.db.commit()
+
+        return {
+            "deleted_count": deleted_count,
+            "total_requested": len(record_ids)
+        }
+
+    def get_customer_service_summary(self, kehu_id: str) -> dict:
+        """获取客户服务记录摘要"""
+        # 验证客户是否存在
+        kehu = self.db.query(Kehu).filter(
+            Kehu.id == kehu_id,
+            Kehu.is_deleted == "N"
+        ).first()
+
+        if not kehu:
+            raise HTTPException(status_code=404, detail="客户不存在")
+
+        # 获取该客户的服务统计
+        stats = self.get_service_statistics(kehu_id)
+
+        # 最近的服务记录
+        recent_records = self.db.query(FuwuJilu).filter(
+            FuwuJilu.kehu_id == kehu_id,
+            FuwuJilu.is_deleted == "N"
+        ).order_by(FuwuJilu.created_at.desc()).limit(5).all()
+
+        # 待处理的问题数量
+        pending_issues = self.db.query(FuwuJilu).filter(
+            FuwuJilu.kehu_id == kehu_id,
+            FuwuJilu.chuli_zhuangtai.in_(["pending", "processing"]),
+            FuwuJilu.is_deleted == "N"
+        ).count()
+
+        return {
+            "customer_info": {
+                "id": kehu.id,
+                "gongsi_mingcheng": kehu.gongsi_mingcheng,
+                "kehu_zhuangtai": kehu.kehu_zhuangtai
+            },
+            "service_statistics": stats,
+            "recent_records": [FuwuJiluResponse.model_validate(record) for record in recent_records],
+            "pending_issues": pending_issues
+        }

@@ -108,6 +108,53 @@ export const customerApi = {
     return request.patch<Customer>(`/api/v1/customers/${id}/status`, null, {
       params: { new_status: status }
     })
+  },
+
+  // 获取客户统计信息
+  getStatistics: () => {
+    return request.get<{
+      total_customers: number
+      active_customers: number
+      renewing_customers: number
+      terminated_customers: number
+      monthly_new_customers: number
+      status_distribution: Record<string, number>
+    }>('/api/v1/customers/statistics/overview')
+  },
+
+  // 批量更新客户状态
+  batchUpdateStatus: (customerIds: string[], status: string) => {
+    return request.post<{
+      updated_count: number
+      total_requested: number
+      new_status: string
+    }>('/api/v1/customers/batch/status', customerIds, {
+      params: { new_status: status }
+    })
+  },
+
+  // 批量删除客户
+  batchDelete: (customerIds: string[]) => {
+    return request.post<{
+      deleted_count: number
+      total_requested: number
+    }>('/api/v1/customers/batch/delete', customerIds)
+  },
+
+  // 高级搜索客户
+  advancedSearch: (searchParams: {
+    gongsi_mingcheng?: string
+    tongyi_shehui_xinyong_daima?: string
+    faren_xingming?: string
+    kehu_zhuangtai?: string
+    fuwu_kaishi_start?: string
+    fuwu_kaishi_end?: string
+    created_start?: string
+    created_end?: string
+    page?: number
+    size?: number
+  }) => {
+    return request.post<CustomerListResponse>('/api/v1/customers/search/advanced', searchParams)
   }
 }
 
@@ -205,5 +252,54 @@ export const serviceRecordApi = {
     return request.patch<ServiceRecord>(`/api/v1/service-records/${id}/status`, null, {
       params: { new_status: status, chuli_jieguo: result }
     })
+  },
+
+  // 获取服务记录统计信息
+  getStatistics: (customerId?: string) => {
+    return request.get<{
+      total_records: number
+      monthly_records: number
+      communication_distribution: Record<string, number>
+      problem_type_distribution: Record<string, number>
+      status_distribution: Record<string, number>
+      pending_count: number
+      processing_count: number
+      completed_count: number
+    }>('/api/v1/service-records/statistics/overview', {
+      params: customerId ? { kehu_id: customerId } : {}
+    })
+  },
+
+  // 批量更新服务记录状态
+  batchUpdateStatus: (recordIds: string[], status: string, result?: string) => {
+    return request.post<{
+      updated_count: number
+      total_requested: number
+      new_status: string
+    }>('/api/v1/service-records/batch/status', recordIds, {
+      params: { new_status: status, chuli_jieguo: result }
+    })
+  },
+
+  // 批量删除服务记录
+  batchDelete: (recordIds: string[]) => {
+    return request.post<{
+      deleted_count: number
+      total_requested: number
+    }>('/api/v1/service-records/batch/delete', recordIds)
+  },
+
+  // 获取客户服务记录摘要
+  getCustomerSummary: (customerId: string) => {
+    return request.get<{
+      customer_info: {
+        id: string
+        gongsi_mingcheng: string
+        kehu_zhuangtai: string
+      }
+      service_statistics: any
+      recent_records: ServiceRecord[]
+      pending_issues: number
+    }>(`/api/v1/service-records/kehu/${customerId}/summary`)
   }
 }

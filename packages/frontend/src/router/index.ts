@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/modules/auth'
+import { tokenManager } from '@/utils/tokenManager'
 import { ElMessage } from 'element-plus'
 
 const routes: RouteRecordRaw[] = [
@@ -74,6 +75,15 @@ const routes: RouteRecordRaw[] = [
           permissions: ['customer:read']
         }
       },
+      {
+        path: 'customer-services',
+        name: 'ServiceRecordList',
+        component: () => import('@/views/customer/ServiceRecordList.vue'),
+        meta: {
+          title: '服务记录',
+          permissions: ['service_record:read']
+        }
+      },
       // 产品管理路由
       {
         path: 'product-management',
@@ -82,6 +92,33 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: '产品管理',
           permissions: ['product_category:read', 'product:read']
+        }
+      },
+      {
+        path: 'leads',
+        name: 'XiansuoList',
+        component: () => import('@/views/xiansuo/XiansuoList.vue'),
+        meta: {
+          title: '线索管理',
+          permissions: ['xiansuo:read']
+        }
+      },
+      {
+        path: 'lead-sources',
+        name: 'XiansuoLaiyuanList',
+        component: () => import('@/views/xiansuo/XiansuoLaiyuanList.vue'),
+        meta: {
+          title: '线索来源管理',
+          permissions: ['xiansuo:source_read']
+        }
+      },
+      {
+        path: 'lead-statuses',
+        name: 'XiansuoZhuangtaiList',
+        component: () => import('@/views/xiansuo/XiansuoZhuangtaiList.vue'),
+        meta: {
+          title: '线索状态管理',
+          permissions: ['xiansuo:status_read']
         }
       },
       // 代理记账套餐管理
@@ -93,6 +130,26 @@ const routes: RouteRecordRaw[] = [
           title: '代理记账套餐管理',
           permissions: ['product:read']
         }
+      },
+      // 合同列表
+      {
+        path: 'contracts',
+        name: 'ContractList',
+        component: () => import('@/views/contract/ContractList.vue'),
+        meta: {
+          title: '合同列表',
+          permissions: ['contract_manage']
+        }
+      },
+      // 合同模板管理
+      {
+        path: 'contract-templates',
+        name: 'ContractTemplateList',
+        component: () => import('@/views/contract/ContractTemplateList.vue'),
+        meta: {
+          title: '合同模板管理',
+          permissions: ['contract_template_manage']
+        }
       }
     ]
   },
@@ -102,6 +159,15 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/About.vue'),
     meta: {
       title: '关于',
+      requiresAuth: false
+    }
+  },
+  {
+    path: '/quote-preview/:id',
+    name: 'QuotePreview',
+    component: () => import('@/views/xiansuo/QuotePreview.vue'),
+    meta: {
+      title: '报价预览',
       requiresAuth: false
     }
   },
@@ -126,6 +192,9 @@ router.beforeEach(async (to, _from, next) => {
   if (to.meta?.title) {
     document.title = `${to.meta.title} - 代理记账营运内部系统`
   }
+
+  // 等待认证状态初始化完成
+  await tokenManager.waitForAuthInit()
 
   // 检查是否需要认证
   if (to.meta?.requiresAuth) {

@@ -51,13 +51,13 @@ export const useCustomerStore = defineStore('customer', () => {
         size: pageSize.value,
         ...params
       })
-      
-      customers.value = response.data.items
-      total.value = response.data.total
-      currentPage.value = response.data.page
-      pageSize.value = response.data.size
-      
-      return response.data
+
+      customers.value = response.items
+      total.value = response.total
+      currentPage.value = response.page
+      pageSize.value = response.size
+
+      return response
     } catch (error) {
       console.error('获取客户列表失败:', error)
       ElMessage.error('获取客户列表失败')
@@ -189,8 +189,8 @@ export const useCustomerStore = defineStore('customer', () => {
     try {
       loading.value = true
       const response = await serviceRecordApi.getList(params)
-      serviceRecords.value = response.data.items
-      return response.data
+      serviceRecords.value = response.items
+      return response
     } catch (error) {
       console.error('获取服务记录失败:', error)
       ElMessage.error('获取服务记录失败')
@@ -204,8 +204,8 @@ export const useCustomerStore = defineStore('customer', () => {
     try {
       loading.value = true
       const response = await serviceRecordApi.getCustomerRecords(customerId, params)
-      serviceRecords.value = response.data.items
-      return response.data
+      serviceRecords.value = response.items
+      return response
     } catch (error) {
       console.error('获取客户服务记录失败:', error)
       ElMessage.error('获取客户服务记录失败')

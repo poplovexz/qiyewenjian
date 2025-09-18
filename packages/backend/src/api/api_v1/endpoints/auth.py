@@ -67,7 +67,7 @@ async def get_current_user_info(
     auth_service = AuthService(db)
     
     # 获取用户角色和权限
-    from ....core.security import get_user_permissions
+    from src.core.security import get_user_permissions
     user_roles = auth_service.get_user_roles(current_user)
     user_permissions = list(get_user_permissions(current_user, db))
     

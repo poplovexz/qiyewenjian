@@ -46,6 +46,22 @@
       
       <div class="search-right">
         <el-button
+          v-if="selectedCustomers.length > 0"
+          type="warning"
+          @click="handleBatchUpdateStatus"
+        >
+          <el-icon><Edit /></el-icon>
+          批量更新状态
+        </el-button>
+        <el-button
+          v-if="selectedCustomers.length > 0"
+          type="danger"
+          @click="handleBatchDelete"
+        >
+          <el-icon><Delete /></el-icon>
+          批量删除
+        </el-button>
+        <el-button
           v-if="permission.showCreateCustomerButton()"
           type="primary"
           @click="handleCreate"
@@ -230,21 +246,23 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  Search, 
-  Refresh, 
-  Plus, 
-  User, 
-  Clock, 
-  Close, 
+import {
+  Search,
+  Refresh,
+  Plus,
+  User,
+  Clock,
+  Close,
   DataAnalysis,
-  ArrowDown
+  ArrowDown,
+  Edit,
+  Delete
 } from '@element-plus/icons-vue'
 import { useCustomerStore } from '@/stores/modules/customer'
 import { usePermission } from '@/utils/permissions'
 import CustomerForm from './components/CustomerForm.vue'
 import CustomerStatusDialog from './components/CustomerStatusDialog.vue'
-import type { Customer } from '@/api/modules/customer'
+import { customerApi, type Customer } from '@/api/modules/customer'
 
 const router = useRouter()
 const customerStore = useCustomerStore()
@@ -360,6 +378,61 @@ const handleFormSuccess = async () => {
 const handleStatusSuccess = async () => {
   statusDialogVisible.value = false
   await handleSearch()
+}
+
+const handleBatchUpdateStatus = async () => {
+  if (selectedCustomers.value.length === 0) {
+    ElMessage.warning('请选择要更新的客户')
+    return
+  }
+
+  try {
+    const { value: status } = await ElMessageBox.prompt('请选择新状态', '批量更新客户状态', {
+      inputType: 'select',
+      inputOptions: [
+        { label: '活跃', value: 'active' },
+        { label: '续约中', value: 'renewing' },
+        { label: '已终止', value: 'terminated' }
+      ]
+    })
+
+    const customerIds = selectedCustomers.value.map(customer => customer.id)
+    await customerApi.batchUpdateStatus(customerIds, status)
+    ElMessage.success('批量更新成功')
+    selectedCustomers.value = []
+    await handleSearch()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('批量更新失败:', error)
+      ElMessage.error('批量更新失败')
+    }
+  }
+}
+
+const handleBatchDelete = async () => {
+  if (selectedCustomers.value.length === 0) {
+    ElMessage.warning('请选择要删除的客户')
+    return
+  }
+
+  try {
+    await ElMessageBox.confirm(
+      `确定要删除选中的 ${selectedCustomers.value.length} 个客户吗？`,
+      '确认批量删除',
+      { type: 'warning' }
+    )
+
+    const customerIds = selectedCustomers.value.map(customer => customer.id)
+    await customerApi.batchDelete(customerIds)
+    ElMessage.success('批量删除成功')
+    selectedCustomers.value = []
+    await handleSearch()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('批量删除失败:', error)
+      ElMessage.error('批量删除失败')
+    }
+  }
 }
 
 // 工具方法

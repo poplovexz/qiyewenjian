@@ -2,9 +2,8 @@
   <div class="dashboard-container">
     <div class="dashboard-header">
       <h1>工作台</h1>
-      <div class="user-info">
-        <span>欢迎，{{ userInfo?.xingming || userInfo?.yonghu_ming }}</span>
-        <el-button type="primary" @click="handleLogout">退出登录</el-button>
+      <div class="welcome-info">
+        <span>欢迎回来，{{ userInfo?.xingming || userInfo?.yonghu_ming }}！</span>
       </div>
     </div>
 
@@ -127,12 +126,7 @@ import { useAuth } from '@/composables/useAuth'
 import { User, UserFilled, Document } from '@element-plus/icons-vue'
 
 // 组合式函数
-const { userInfo, userRoles, userPermissions, logout, hasPermission } = useAuth()
-
-// 处理登出
-const handleLogout = async () => {
-  await logout()
-}
+const { userInfo, userRoles, userPermissions, hasPermission } = useAuth()
 
 // 格式化日期
 const formatDate = (dateString?: string) => {
@@ -160,10 +154,9 @@ const formatDate = (dateString?: string) => {
   color: #2c3e50;
 }
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.welcome-info {
+  color: #666;
+  font-size: 14px;
 }
 
 .stat-card {
