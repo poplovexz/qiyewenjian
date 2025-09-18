@@ -22,7 +22,8 @@ from .shenhe_jilu_schemas import (
     ShenheJiluCreate,
     ShenheJiluUpdate,
     ShenheJiluResponse,
-    ShenheJiluListParams
+    ShenheJiluListParams,
+    ShenheActionRequest
 )
 
 __all__ = [
@@ -44,6 +45,7 @@ __all__ = [
     "ShenheJiluBase",
     "ShenheJiluCreate",
     "ShenheJiluUpdate",
-    "ShenheJiluResponse", 
-    "ShenheJiluListParams"
+    "ShenheJiluResponse",
+    "ShenheJiluListParams",
+    "ShenheActionRequest"
 ]

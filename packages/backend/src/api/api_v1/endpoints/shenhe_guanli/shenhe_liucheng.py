@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.core.database import get_db
-from src.core.auth import get_current_user
+from src.core.security import get_current_user
 from src.models.yonghu_guanli import Yonghu
 from src.services.shenhe_guanli import ShenheLiuchengService
 from src.schemas.shenhe_guanli import (

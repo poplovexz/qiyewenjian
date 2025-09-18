@@ -1,7 +1,7 @@
 """
 银行汇款单据数据模式
 """
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field
@@ -64,6 +64,14 @@ class YinhangHuikuanDanjuResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class YinhangHuikuanDanjuListResponse(BaseModel):
+    """银行汇款单据列表响应模型"""
+    total: int = Field(..., description="总数量")
+    items: List[YinhangHuikuanDanjuResponse] = Field(..., description="汇款单据列表")
+    page: int = Field(..., description="当前页码")
+    size: int = Field(..., description="每页大小")
 
 
 class YinhangHuikuanDanjuListParams(BaseModel):

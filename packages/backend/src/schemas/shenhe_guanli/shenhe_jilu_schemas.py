@@ -68,3 +68,11 @@ class ShenheJiluListParams(BaseModel):
     jilu_zhuangtai: Optional[str] = Field(None, description="记录状态筛选")
     sort_by: Optional[str] = Field(default="buzhou_bianhao", description="排序字段")
     sort_order: Optional[str] = Field(default="asc", description="排序方向")
+
+
+class ShenheActionRequest(BaseModel):
+    """审核操作请求模型"""
+    shenhe_jieguo: str = Field(..., description="审核结果：approved、rejected")
+    shenhe_yijian: Optional[str] = Field(None, description="审核意见")
+    fujian_lujing: Optional[str] = Field(None, description="附件文件路径")
+    fujian_miaoshu: Optional[str] = Field(None, description="附件描述")

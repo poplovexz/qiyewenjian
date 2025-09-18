@@ -33,6 +33,17 @@ from .hetong_zhifu_fangshi_schemas import (
     HetongZhifuFangshiResponse,
     HetongZhifuFangshiListResponse
 )
+from .hetong_qianshu_schemas import (
+    HetongQianshuBase,
+    HetongQianshuCreate,
+    HetongQianshuUpdate,
+    HetongQianshuResponse,
+    HetongQianshuListResponse,
+    HetongQianshuSignRequest,
+    HetongQianshuVerifyResponse,
+    HetongQianshuLinkRequest,
+    HetongQianshuLinkResponse
+)
 
 __all__ = [
     # 合同模板相关
@@ -65,5 +76,16 @@ __all__ = [
     "HetongZhifuFangshiCreate",
     "HetongZhifuFangshiUpdate",
     "HetongZhifuFangshiResponse",
-    "HetongZhifuFangshiListResponse"
+    "HetongZhifuFangshiListResponse",
+
+    # 合同签署相关
+    "HetongQianshuBase",
+    "HetongQianshuCreate",
+    "HetongQianshuUpdate",
+    "HetongQianshuResponse",
+    "HetongQianshuListResponse",
+    "HetongQianshuSignRequest",
+    "HetongQianshuVerifyResponse",
+    "HetongQianshuLinkRequest",
+    "HetongQianshuLinkResponse"
 ]

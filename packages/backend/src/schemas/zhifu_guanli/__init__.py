@@ -23,6 +23,23 @@ from .zhifu_tongzhi_schemas import (
     ZhifuTongzhiListResponse,
     ZhifuTongzhiListParams
 )
+from .hetong_zhifu_schemas import (
+    HetongZhifuBase,
+    HetongZhifuCreate,
+    HetongZhifuUpdate,
+    HetongZhifuResponse,
+    HetongZhifuListResponse,
+    HetongZhifuListParams
+)
+from .yinhang_huikuan_danju_schemas import (
+    YinhangHuikuanDanjuBase,
+    YinhangHuikuanDanjuCreate,
+    YinhangHuikuanDanjuUpdate,
+    YinhangHuikuanDanjuResponse,
+    YinhangHuikuanDanjuListResponse,
+    YinhangHuikuanDanjuListParams,
+    HuikuanDanjuAuditRequest
+)
 
 __all__ = [
     # 支付订单
@@ -44,6 +61,23 @@ __all__ = [
     "ZhifuTongzhiCreate",
     "ZhifuTongzhiUpdate",
     "ZhifuTongzhiResponse",
-    "ZhifuTongzhiListResponse", 
-    "ZhifuTongzhiListParams"
+    "ZhifuTongzhiListResponse",
+    "ZhifuTongzhiListParams",
+
+    # 合同支付
+    "HetongZhifuBase",
+    "HetongZhifuCreate",
+    "HetongZhifuUpdate",
+    "HetongZhifuResponse",
+    "HetongZhifuListResponse",
+    "HetongZhifuListParams",
+
+    # 银行汇款单据
+    "YinhangHuikuanDanjuBase",
+    "YinhangHuikuanDanjuCreate",
+    "YinhangHuikuanDanjuUpdate",
+    "YinhangHuikuanDanjuResponse",
+    "YinhangHuikuanDanjuListResponse",
+    "YinhangHuikuanDanjuListParams",
+    "HuikuanDanjuAuditRequest"
 ]

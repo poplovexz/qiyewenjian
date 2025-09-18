@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from src.core.database import get_db
-from src.core.auth import get_current_user
+from src.core.security import get_current_user
 from src.models.yonghu_guanli import Yonghu
 from src.services.hetong_guanli.hetong_qianshu_service import HetongQianshuService
 from src.schemas.hetong_guanli import HetongQianshuCreate, HetongQianshuUpdate

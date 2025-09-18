@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 
 from src.core.database import get_db
-from src.core.auth import get_current_user
+from src.core.security import get_current_user
 from src.models.yonghu_guanli import Yonghu
 from src.services.zhifu_guanli.yinhang_huikuan_danju_service import YinhangHuikuanDanjuService
 from src.schemas.zhifu_guanli import (

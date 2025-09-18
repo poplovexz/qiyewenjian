@@ -1,7 +1,7 @@
 """
 合同支付数据模式
 """
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field
@@ -54,6 +54,14 @@ class HetongZhifuResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class HetongZhifuListResponse(BaseModel):
+    """合同支付列表响应模型"""
+    total: int = Field(..., description="总数量")
+    items: List[HetongZhifuResponse] = Field(..., description="支付记录列表")
+    page: int = Field(..., description="当前页码")
+    size: int = Field(..., description="每页大小")
 
 
 class HetongZhifuListParams(BaseModel):
