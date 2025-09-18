@@ -21,13 +21,25 @@ from .kehu_guanli import (
 # 合同管理模块
 from .hetong_guanli import (
     HetongMoban,
-    Hetong
+    Hetong,
+    HetongYifangZhuti,
+    HetongZhifuFangshi,
+    HetongJineBiangeng
 )
 
 # 订单与收费模块
 from .dingdan_shoufei import (
     Dingdan,
     Fapiao
+)
+
+# 支付管理模块
+from .zhifu_guanli import (
+    ZhifuDingdan,
+    ZhifuLiushui,
+    ZhifuTongzhi,
+    HetongZhifu,
+    YinhangHuikuanDanju
 )
 
 # 任务管理模块
@@ -58,6 +70,13 @@ from .xiansuo_guanli import (
     XiansuoBaojiaXiangmu
 )
 
+# 审核管理模块
+from .shenhe_guanli import (
+    ShenheGuize,
+    ShenheLiucheng,
+    ShenheJilu
+)
+
 __all__ = [
     # 基础类
     "Base",
@@ -77,10 +96,20 @@ __all__ = [
     # 合同管理
     "HetongMoban",
     "Hetong",
+    "HetongYifangZhuti",
+    "HetongZhifuFangshi",
+    "HetongJineBiangeng",
     
     # 订单与收费
     "Dingdan",
     "Fapiao",
+
+    # 支付管理
+    "ZhifuDingdan",
+    "ZhifuLiushui",
+    "ZhifuTongzhi",
+    "HetongZhifu",
+    "YinhangHuikuanDanju",
     
     # 任务管理
     "Renwu",
@@ -100,5 +129,10 @@ __all__ = [
     "XiansuoZhuangtai",
     "XiansuoGenjin",
     "XiansuoBaojia",
-    "XiansuoBaojiaXiangmu"
+    "XiansuoBaojiaXiangmu",
+
+    # 审核管理
+    "ShenheGuize",
+    "ShenheLiucheng",
+    "ShenheJilu"
 ]

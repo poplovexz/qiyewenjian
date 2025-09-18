@@ -158,6 +158,28 @@ async def delete_baojia(
         )
 
 
+@router.post("/{baojia_id}/confirm", response_model=XiansuoBaojiaResponse)
+async def confirm_baojia(
+    baojia_id: str,
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(require_permission("xiansuo:baojia_status_update"))
+):
+    """确认报价"""
+    service = XiansuoBaojiaService(db)
+    return await service.confirm_baojia(baojia_id, current_user.id)
+
+
+@router.post("/{baojia_id}/reject", response_model=XiansuoBaojiaResponse)
+async def reject_baojia(
+    baojia_id: str,
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(require_permission("xiansuo:baojia_status_update"))
+):
+    """拒绝报价"""
+    service = XiansuoBaojiaService(db)
+    return await service.reject_baojia(baojia_id, current_user.id)
+
+
 @router.post("/check-expired")
 async def check_expired_baojia(
     db: Session = Depends(get_db),

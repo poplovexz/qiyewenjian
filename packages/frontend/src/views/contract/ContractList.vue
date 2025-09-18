@@ -4,10 +4,25 @@
       <template #header>
         <div class="card-header">
           <span>合同列表</span>
-          <el-button type="primary" @click="handleCreate">
-            <el-icon><Plus /></el-icon>
-            新增合同
-          </el-button>
+          <div class="header-actions">
+            <el-button @click="handlePartyManage">
+              <el-icon><User /></el-icon>
+              乙方主体管理
+            </el-button>
+            <el-dropdown @command="handleCreateAction">
+              <el-button type="primary">
+                <el-icon><Plus /></el-icon>
+                新增合同
+                <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="create">创建空白合同</el-dropdown-item>
+                  <el-dropdown-item command="from_quote">基于报价创建</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
         </div>
       </template>
 
@@ -121,7 +136,10 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, Refresh } from '@element-plus/icons-vue'
+import { Plus, Search, Refresh, User, ArrowDown } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 // 响应式数据
 const loading = ref(false)
@@ -251,9 +269,19 @@ const handleReset = () => {
   getContractList()
 }
 
-// 新增
+// 新增合同下拉菜单处理
+const handleCreateAction = (command: string) => {
+  if (command === 'create') {
+    router.push('/contracts/create')
+  } else if (command === 'from_quote') {
+    ElMessage.info('请先在线索列表中选择已确认的报价，然后点击"生成合同"按钮')
+    router.push('/xiansuo')
+  }
+}
+
+// 新增（保持向后兼容）
 const handleCreate = () => {
-  ElMessage.info('新增合同功能开发中...')
+  router.push('/contracts/create')
 }
 
 // 查看
@@ -299,6 +327,11 @@ const handleCurrentChange = (page: number) => {
   getContractList()
 }
 
+// 乙方主体管理
+const handlePartyManage = () => {
+  router.push('/contract-parties')
+}
+
 // 组件挂载
 onMounted(() => {
   getContractList()
@@ -314,6 +347,11 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .search-area {

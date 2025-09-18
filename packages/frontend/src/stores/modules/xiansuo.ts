@@ -512,6 +512,46 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     }
   }
 
+  const confirmBaojia = async (id: string) => {
+    try {
+      quoteLoading.value = true
+      const response = await xiansuoBaojiaApi.confirm(id)
+      current_baojia.value = response
+
+      // 更新缓存中的报价状态
+      const list = baojiaMap.value[response.xiansuo_id] || []
+      const updatedList = list.map(item => (item.id === id ? response : item))
+      setBaojiaList(response.xiansuo_id, updatedList)
+
+      return response
+    } catch (error) {
+      console.error('确认报价失败:', error)
+      throw error
+    } finally {
+      quoteLoading.value = false
+    }
+  }
+
+  const rejectBaojia = async (id: string) => {
+    try {
+      quoteLoading.value = true
+      const response = await xiansuoBaojiaApi.reject(id)
+      current_baojia.value = response
+
+      // 更新缓存中的报价状态
+      const list = baojiaMap.value[response.xiansuo_id] || []
+      const updatedList = list.map(item => (item.id === id ? response : item))
+      setBaojiaList(response.xiansuo_id, updatedList)
+
+      return response
+    } catch (error) {
+      console.error('拒绝报价失败:', error)
+      throw error
+    } finally {
+      quoteLoading.value = false
+    }
+  }
+
   const fetchProductData = async () => {
     try {
       if (product_data.value) {
@@ -606,6 +646,8 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     createBaojia,
     updateBaojia,
     deleteBaojia,
+    confirmBaojia,
+    rejectBaojia,
     fetchProductData,
     getBaojiaDetail,
     getBaojiaDetailWithXiansuo,

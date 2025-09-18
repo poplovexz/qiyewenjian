@@ -59,6 +59,19 @@ class XiansuoBaojia(BaseModel):
         nullable=True,
         comment="备注"
     )
+
+    # 报价确认相关字段
+    queren_ren_id = Column(
+        String(36),
+        nullable=True,
+        comment="确认人ID（外键关联用户表）"
+    )
+
+    queren_shijian = Column(
+        DateTime,
+        nullable=True,
+        comment="确认时间（报价被确认或拒绝的时间戳）"
+    )
     
     # 关联关系
     xiansuo = relationship(
@@ -71,6 +84,11 @@ class XiansuoBaojia(BaseModel):
         back_populates="baojia",
         cascade="all, delete-orphan",
         order_by="XiansuoBaojiaXiangmu.paixu"
+    )
+
+    hetong_list = relationship(
+        "Hetong",
+        back_populates="baojia"
     )
     
     @property

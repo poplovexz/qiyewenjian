@@ -194,9 +194,9 @@
       <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination
-          v-model:current-page="contractStore.page"
-          v-model:page-size="contractStore.size"
-          :total="contractStore.total"
+          v-model:current-page="contractStore.templatePage"
+          v-model:page-size="contractStore.templateSize"
+          :total="contractStore.templateTotal"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"

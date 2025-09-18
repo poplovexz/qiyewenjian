@@ -150,6 +150,140 @@ const routes: RouteRecordRaw[] = [
           title: '合同模板管理',
           permissions: ['contract_template_manage']
         }
+      },
+      // 合同预览
+      {
+        path: 'contracts/:id',
+        name: 'ContractPreview',
+        component: () => import('@/views/contract/ContractPreview.vue'),
+        meta: {
+          title: '合同预览',
+          permissions: ['contract_manage']
+        }
+      },
+      // 合同创建
+      {
+        path: 'contracts/create',
+        name: 'ContractCreate',
+        component: () => import('@/views/contract/ContractForm.vue'),
+        meta: {
+          title: '新建合同',
+          permissions: ['contract_manage']
+        }
+      },
+      // 合同编辑
+      {
+        path: 'contracts/:id/edit',
+        name: 'ContractEdit',
+        component: () => import('@/views/contract/ContractForm.vue'),
+        meta: {
+          title: '编辑合同',
+          permissions: ['contract_manage']
+        }
+      },
+
+    ]
+  },
+  // 财务管理模块
+  {
+    path: '/finance',
+    component: () => import('@/layouts/MainLayout.vue'),
+    redirect: '/finance/dashboard',
+    meta: {
+      title: '财务管理',
+      icon: 'Money',
+      requiresAuth: true
+    },
+    children: [
+      // 财务管理首页
+      {
+        path: 'dashboard',
+        name: 'FinanceDashboard',
+        component: () => import('@/views/finance/FinanceDashboard.vue'),
+        meta: {
+          title: '财务概览',
+          permissions: ['finance_manage']
+        }
+      },
+      // 支付订单管理
+      {
+        path: 'payment-orders',
+        name: 'PaymentOrderList',
+        component: () => import('@/views/finance/PaymentOrderList.vue'),
+        meta: {
+          title: '支付订单',
+          permissions: ['finance_manage']
+        }
+      },
+      // 支付流水管理
+      {
+        path: 'payment-records',
+        name: 'PaymentRecordList',
+        component: () => import('@/views/finance/PaymentRecordList.vue'),
+        meta: {
+          title: '支付流水',
+          permissions: ['finance_manage']
+        }
+      },
+      // 乙方主体管理
+      {
+        path: 'contract-parties',
+        name: 'ContractPartyList',
+        component: () => import('@/views/contract/ContractPartyList.vue'),
+        meta: {
+          title: '乙方主体管理',
+          permissions: ['finance_manage']
+        }
+      },
+      // 乙方主体创建
+      {
+        path: 'contract-parties/create',
+        name: 'ContractPartyCreate',
+        component: () => import('@/views/contract/ContractPartyForm.vue'),
+        meta: {
+          title: '新建乙方主体',
+          permissions: ['finance_manage']
+        }
+      },
+      // 乙方主体编辑
+      {
+        path: 'contract-parties/:id/edit',
+        name: 'ContractPartyEdit',
+        component: () => import('@/views/contract/ContractPartyForm.vue'),
+        meta: {
+          title: '编辑乙方主体',
+          permissions: ['finance_manage']
+        }
+      },
+      // 支付方式管理
+      {
+        path: 'payment-methods',
+        name: 'PaymentMethodList',
+        component: () => import('@/views/contract/PaymentMethodList.vue'),
+        meta: {
+          title: '支付方式管理',
+          permissions: ['finance_manage']
+        }
+      },
+      // 支付方式创建
+      {
+        path: 'payment-methods/create',
+        name: 'PaymentMethodCreate',
+        component: () => import('@/views/contract/PaymentMethodForm.vue'),
+        meta: {
+          title: '新建支付方式',
+          permissions: ['finance_manage']
+        }
+      },
+      // 支付方式编辑
+      {
+        path: 'payment-methods/:id/edit',
+        name: 'PaymentMethodEdit',
+        component: () => import('@/views/contract/PaymentMethodForm.vue'),
+        meta: {
+          title: '编辑支付方式',
+          permissions: ['finance_manage']
+        }
       }
     ]
   },
@@ -160,6 +294,15 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '关于',
       requiresAuth: false
+    }
+  },
+  {
+    path: '/test/api',
+    name: 'ApiTest',
+    component: () => import('@/views/test/ApiTest.vue'),
+    meta: {
+      title: 'API测试',
+      requiresAuth: true
     }
   },
   {

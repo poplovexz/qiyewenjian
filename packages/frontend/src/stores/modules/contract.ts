@@ -4,58 +4,113 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import { 
-  contractTemplateApi, 
-  type ContractTemplate, 
-  type ContractTemplateCreate, 
+import {
+  contractTemplateApi,
+  contractApi,
+  contractPartyApi,
+  paymentMethodApi,
+  type ContractTemplate,
+  type ContractTemplateCreate,
   type ContractTemplateUpdate,
   type ContractTemplateListParams,
-  type ContractTemplateStatistics
+  type ContractTemplateStatistics,
+  type Contract,
+  type ContractCreate,
+  type ContractUpdate,
+  type ContractListParams,
+  type ContractPreview,
+  type ContractSignature,
+  type ContractParty,
+  type ContractPartyCreate,
+  type ContractPartyUpdate,
+  type ContractPartyListParams,
+  type PaymentMethod,
+  type PaymentMethodCreate,
+  type PaymentMethodUpdate,
+  type PaymentMethodListParams
 } from '@/api/modules/contract'
 
 export const useContractStore = defineStore('contract', () => {
-  // 状态
+  // 合同模板状态
   const templates = ref<ContractTemplate[]>([])
   const currentTemplate = ref<ContractTemplate | null>(null)
-  const loading = ref(false)
-  const total = ref(0)
-  const page = ref(1)
-  const size = ref(20)
+  const templateLoading = ref(false)
+  const templateTotal = ref(0)
+  const templatePage = ref(1)
+  const templateSize = ref(20)
   const statistics = ref<ContractTemplateStatistics | null>(null)
+
+  // 合同状态
+  const contracts = ref<Contract[]>([])
+  const currentContract = ref<Contract | null>(null)
+  const contractLoading = ref(false)
+  const contractTotal = ref(0)
+  const contractPage = ref(1)
+  const contractSize = ref(20)
+
+  // 乙方主体状态
+  const parties = ref<ContractParty[]>([])
+  const currentParty = ref<ContractParty | null>(null)
+  const partyLoading = ref(false)
+  const partyTotal = ref(0)
+  const partyPage = ref(1)
+  const partySize = ref(20)
+
+  // 支付方式状态
+  const paymentMethods = ref<PaymentMethod[]>([])
+  const currentPaymentMethod = ref<PaymentMethod | null>(null)
+  const paymentLoading = ref(false)
+  const paymentTotal = ref(0)
+  const paymentPage = ref(1)
+  const paymentSize = ref(20)
+
+  // 通用loading状态
+  const loading = ref(false)
 
   // 计算属性
   const hasTemplates = computed(() => templates.value.length > 0)
-  const totalPages = computed(() => Math.ceil(total.value / size.value))
+  const templateTotalPages = computed(() => Math.ceil(templateTotal.value / templateSize.value))
+
+  const hasContracts = computed(() => contracts.value.length > 0)
+  const contractTotalPages = computed(() => Math.ceil(contractTotal.value / contractSize.value))
+
+  const hasParties = computed(() => parties.value.length > 0)
+  const partyTotalPages = computed(() => Math.ceil(partyTotal.value / partySize.value))
+
+  const hasPaymentMethods = computed(() => paymentMethods.value.length > 0)
+  const paymentTotalPages = computed(() => Math.ceil(paymentTotal.value / paymentSize.value))
+
+  // ==================== 合同模板相关方法 ====================
 
   // 获取合同模板列表
   const fetchTemplates = async (params: ContractTemplateListParams = {}) => {
     try {
-      loading.value = true
+      templateLoading.value = true
       const response = await contractTemplateApi.getList({
-        page: page.value,
-        size: size.value,
+        page: templatePage.value,
+        size: templateSize.value,
         ...params
       })
-      
+
       templates.value = response.items
-      total.value = response.total
-      page.value = response.page
-      size.value = response.size
-      
+      templateTotal.value = response.total
+      templatePage.value = response.page
+      templateSize.value = response.size
+
       return response
     } catch (error) {
       console.error('获取合同模板列表失败:', error)
       ElMessage.error('获取合同模板列表失败')
       throw error
     } finally {
-      loading.value = false
+      templateLoading.value = false
     }
   }
 
   // 获取合同模板详情
   const fetchTemplateDetail = async (id: string) => {
     try {
-      loading.value = true
+      templateLoading.value = true
       const response = await contractTemplateApi.getDetail(id)
       currentTemplate.value = response
       return response
@@ -64,20 +119,20 @@ export const useContractStore = defineStore('contract', () => {
       ElMessage.error('获取合同模板详情失败')
       throw error
     } finally {
-      loading.value = false
+      templateLoading.value = false
     }
   }
 
   // 创建合同模板
   const createTemplate = async (data: ContractTemplateCreate) => {
     try {
-      loading.value = true
+      templateLoading.value = true
       const response = await contractTemplateApi.create(data)
-      
+
       // 添加到列表开头
       templates.value.unshift(response)
-      total.value += 1
-      
+      templateTotal.value += 1
+
       ElMessage.success('合同模板创建成功')
       return response
     } catch (error) {
@@ -85,7 +140,7 @@ export const useContractStore = defineStore('contract', () => {
       ElMessage.error('创建合同模板失败')
       throw error
     } finally {
-      loading.value = false
+      templateLoading.value = false
     }
   }
 
@@ -127,7 +182,7 @@ export const useContractStore = defineStore('contract', () => {
       const index = templates.value.findIndex(item => item.id === id)
       if (index !== -1) {
         templates.value.splice(index, 1)
-        total.value -= 1
+        templateTotal.value -= 1
       }
       
       // 清空当前模板
@@ -221,7 +276,7 @@ export const useContractStore = defineStore('contract', () => {
       
       // 从列表中移除
       templates.value = templates.value.filter(item => !ids.includes(item.id))
-      total.value -= ids.length
+      templateTotal.value -= ids.length
       
       ElMessage.success(`成功删除 ${ids.length} 个合同模板`)
     } catch (error) {
@@ -258,22 +313,22 @@ export const useContractStore = defineStore('contract', () => {
 
   // 设置分页参数
   const setPage = (newPage: number) => {
-    page.value = newPage
+    templatePage.value = newPage
   }
 
   const setSize = (newSize: number) => {
-    size.value = newSize
-    page.value = 1 // 重置到第一页
+    templateSize.value = newSize
+    templatePage.value = 1 // 重置到第一页
   }
 
   // 重置状态
   const resetState = () => {
     templates.value = []
     currentTemplate.value = null
-    loading.value = false
-    total.value = 0
-    page.value = 1
-    size.value = 20
+    templateLoading.value = false
+    templateTotal.value = 0
+    templatePage.value = 1
+    templateSize.value = 20
     statistics.value = null
   }
 
@@ -281,15 +336,15 @@ export const useContractStore = defineStore('contract', () => {
     // 状态
     templates,
     currentTemplate,
-    loading,
-    total,
-    page,
-    size,
+    templateLoading,
+    templateTotal,
+    templatePage,
+    templateSize,
     statistics,
-    
+
     // 计算属性
     hasTemplates,
-    totalPages,
+    templateTotalPages,
     
     // 方法
     fetchTemplates,

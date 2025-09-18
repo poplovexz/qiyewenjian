@@ -211,5 +211,15 @@ export const xiansuoBaojiaApi = {
   // 获取产品数据用于报价
   getProductData: () => {
     return request.get<ChanpinDataForBaojia>('/api/v1/lead-quotes/product-data')
+  },
+
+  // 确认报价
+  confirm: (id: string) => {
+    return request.post<XiansuoBaojia>(`/api/v1/lead-quotes/${id}/confirm`)
+  },
+
+  // 拒绝报价
+  reject: (id: string) => {
+    return request.post<XiansuoBaojia>(`/api/v1/lead-quotes/${id}/reject`)
   }
 }

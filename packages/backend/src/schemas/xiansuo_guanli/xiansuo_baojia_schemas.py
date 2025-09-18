@@ -82,6 +82,9 @@ class XiansuoBaojiaResponse(XiansuoBaojiaBase):
     baojia_zhuangtai: str = Field(..., description="报价状态")
     is_expired: bool = Field(..., description="是否已过期")
     xiangmu_list: List[XiansuoBaojiaXiangmuResponse] = Field(default=[], description="报价项目列表")
+    # 报价确认相关字段
+    queren_ren_id: Optional[str] = Field(None, description="确认人ID")
+    queren_shijian: Optional[datetime] = Field(None, description="确认时间")
     created_at: datetime
     updated_at: datetime
     created_by: str
@@ -100,6 +103,9 @@ class XiansuoBaojiaListItem(BaseModel):
     youxiao_qi: datetime
     is_expired: bool
     xiangmu_count: int = Field(..., description="项目数量")
+    # 报价确认相关字段
+    queren_ren_id: Optional[str] = Field(None, description="确认人ID")
+    queren_shijian: Optional[datetime] = Field(None, description="确认时间")
     created_at: datetime
     created_by: str
 

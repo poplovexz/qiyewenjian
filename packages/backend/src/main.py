@@ -26,6 +26,13 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️ Redis连接失败，跳过缓存功能: {e}")
 
+    # 加载事件处理器
+    try:
+        from src.services.xiansuo_guanli.baojia_event_handlers import register_baojia_event_handlers
+        print("✅ 事件处理器加载完成")
+    except Exception as e:
+        print(f"⚠️ 事件处理器加载失败: {e}")
+
     print("✅ 系统启动完成")
 
     yield

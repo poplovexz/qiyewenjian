@@ -210,7 +210,20 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+
+        <el-table-column label="报价状态" width="100">
+          <template #default="{ row }">
+            <el-tag
+              v-if="getBaojiaStatus(row.id)"
+              :type="getBaojiaStatusTagType(getBaojiaStatus(row.id)!)"
+              size="small"
+            >
+              {{ getBaojiaStatusText(getBaojiaStatus(row.id)!) }}
+            </el-tag>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+        </el-table-column>
+
         <el-table-column prop="genjin_cishu" label="跟进次数" width="80" />
         
         <el-table-column prop="zuijin_genjin_shijian" label="最近跟进" width="120">
@@ -259,6 +272,17 @@
               @click="handleCopyQuoteLink(row)"
             >
               分享报价
+            </el-button>
+
+            <!-- 生成合同按钮 -->
+            <el-button
+              v-if="canGenerateContract(row)"
+              type="primary"
+              size="small"
+              @click="handleGenerateContract(row)"
+              :loading="contractGenerating"
+            >
+              生成合同
             </el-button>
 
             <el-dropdown @command="(command) => handleAction(command, row)">
@@ -340,6 +364,7 @@ import {
 } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
+import { useContractManagementStore } from '@/stores/modules/contractManagement'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/modules/auth'
 import XiansuoForm from '@/components/xiansuo/XiansuoForm.vue'
@@ -349,6 +374,8 @@ import type { Xiansuo, XiansuoBaojia } from '@/types/xiansuo'
 
 // 使用store
 const xiansuoStore = useXiansuoStore()
+const contractStore = useContractManagementStore()
+const authStore = useAuthStore()
 const router = useRouter()
 
 // 响应式数据
@@ -371,6 +398,9 @@ const baojiaFormVisible = ref(false)
 const baojiaFormMode = ref<'create' | 'edit'>('create')
 const currentBaojia = ref<XiansuoBaojia | null>(null)
 const currentBaojiaXiansuo = ref<Xiansuo | null>(null)
+
+// 合同生成相关
+const contractGenerating = ref(false)
 
 // 计算属性
 const {
@@ -608,6 +638,68 @@ const handleBaojiaSuccess = async () => {
   await handleSearch()
 }
 
+// 判断是否可以生成合同
+const canGenerateContract = (xiansuo: Xiansuo) => {
+  const baojiaStatus = getBaojiaStatus(xiansuo.id)
+  return baojiaStatus === 'accepted' && hasValidBaojia(xiansuo)
+}
+
+// 生成合同
+const handleGenerateContract = async (xiansuo: Xiansuo) => {
+  try {
+    contractGenerating.value = true
+
+    // 获取已确认的报价
+    const baojiaList = await xiansuoStore.fetchBaojiaByXiansuo(xiansuo.id)
+    const acceptedBaojia = baojiaList.find(b => b.baojia_zhuangtai === 'accepted' && !b.is_expired)
+
+    if (!acceptedBaojia) {
+      ElMessage.warning('未找到已确认的报价')
+      return
+    }
+
+    // 显示生成方式选择对话框
+    const action = await ElMessageBox.confirm(
+      `基于报价"${acceptedBaojia.baojia_mingcheng}"生成合同，请选择生成方式：`,
+      '生成合同',
+      {
+        confirmButtonText: '直接生成',
+        cancelButtonText: '自定义生成',
+        distinguishCancelAndClose: true,
+        type: 'info'
+      }
+    ).then(() => 'direct').catch((action) => {
+      if (action === 'cancel') {
+        return 'custom'
+      }
+      throw action
+    })
+
+    if (action === 'direct') {
+      // 直接生成合同
+      await contractStore.createContractFromQuote(acceptedBaojia.id)
+      ElMessage.success('合同生成成功！')
+
+      // 刷新线索列表
+      await xiansuoStore.fetchXiansuoList()
+    } else if (action === 'custom') {
+      // 跳转到合同创建页面，预填报价信息
+      router.push({
+        path: '/contracts/create',
+        query: { baojia_id: acceptedBaojia.id }
+      })
+    }
+
+  } catch (error: any) {
+    if (error !== 'cancel' && error !== 'close') {
+      console.error('生成合同失败:', error)
+      ElMessage.error('生成合同失败')
+    }
+  } finally {
+    contractGenerating.value = false
+  }
+}
+
 // 工具方法
 const getQualityTagType = (quality: string) => {
   const types: Record<string, string> = {
@@ -647,6 +739,45 @@ const getStatusText = (status: string) => {
     quoted: '已报价',
     won: '成交',
     lost: '无效'
+  }
+  return texts[status] || status
+}
+
+// 获取线索的最新报价状态
+const getBaojiaStatus = (xiansuoId: string) => {
+  const baojiaList = xiansuoStore.getBaojiaListByXiansuo(xiansuoId)
+  if (!baojiaList || baojiaList.length === 0) {
+    return null
+  }
+
+  // 获取最新的非过期、非拒绝的报价
+  const validBaojia = baojiaList
+    .filter(baojia => !baojia.is_expired && baojia.baojia_zhuangtai !== 'rejected')
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+  return validBaojia.length > 0 ? validBaojia[0].baojia_zhuangtai : null
+}
+
+// 获取报价状态的标签类型
+const getBaojiaStatusTagType = (status: string) => {
+  const types: Record<string, string> = {
+    draft: 'info',
+    sent: 'warning',
+    accepted: 'success',
+    rejected: 'danger',
+    expired: 'danger'
+  }
+  return types[status] || 'info'
+}
+
+// 获取报价状态的文本
+const getBaojiaStatusText = (status: string) => {
+  const texts: Record<string, string> = {
+    draft: '草稿',
+    sent: '已发送',
+    accepted: '已确认',
+    rejected: '已拒绝',
+    expired: '已过期'
   }
   return texts[status] || status
 }

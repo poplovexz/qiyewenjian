@@ -27,6 +27,22 @@ class Hetong(BaseModel):
         nullable=False,
         comment="合同模板ID"
     )
+
+    # 阶段2新增：报价关联
+    baojia_id = Column(
+        String(36),
+        ForeignKey("xiansuo_baojia.id"),
+        nullable=True,
+        comment="关联报价ID"
+    )
+
+    # 阶段2新增：乙方主体关联
+    yifang_zhuti_id = Column(
+        String(36),
+        ForeignKey("hetong_yifang_zhuti.id"),
+        nullable=True,
+        comment="乙方主体ID"
+    )
     
     # 合同基本信息
     hetong_bianhao = Column(
@@ -106,9 +122,75 @@ class Hetong(BaseModel):
         nullable=True,
         comment="审批意见"
     )
-    
+
+    # 阶段2新增：电子签名相关字段
+    dianziqianming_lujing = Column(
+        String(500),
+        nullable=True,
+        comment="电子签名文件路径"
+    )
+
+    qianming_ren_id = Column(
+        String(36),
+        nullable=True,
+        comment="签名人ID"
+    )
+
+    qianming_shijian = Column(
+        DateTime,
+        nullable=True,
+        comment="签名时间"
+    )
+
+    qianming_ip = Column(
+        String(50),
+        nullable=True,
+        comment="签名IP地址"
+    )
+
+    qianming_beizhu = Column(
+        Text,
+        nullable=True,
+        comment="签名备注"
+    )
+
+    # 阶段2新增：合同来源信息
+    hetong_laiyuan = Column(
+        String(50),
+        default="manual",
+        nullable=False,
+        comment="合同来源：manual(手动创建)、auto_from_quote(报价自动生成)"
+    )
+
+    zidong_shengcheng = Column(
+        String(1),
+        default="N",
+        nullable=False,
+        comment="是否自动生成：Y(是)、N(否)"
+    )
+
     # 关联关系
     hetong_moban = relationship("HetongMoban", back_populates="hetong_list")
+    baojia = relationship("XiansuoBaojia", back_populates="hetong_list")
+    yifang_zhuti = relationship("HetongYifangZhuti", back_populates="hetong_list")
+    zhifu_dingdan_list = relationship(
+        "ZhifuDingdan",
+        back_populates="hetong",
+        cascade="all, delete-orphan"
+    )
+
+    # 新增关联关系
+    zhifu_list = relationship(
+        "HetongZhifu",
+        back_populates="hetong",
+        cascade="all, delete-orphan"
+    )
+
+    jine_biangeng_list = relationship(
+        "HetongJineBiangeng",
+        back_populates="hetong",
+        cascade="all, delete-orphan"
+    )
     
     def __repr__(self) -> str:
         return f"<Hetong(hetong_bianhao='{self.hetong_bianhao}', hetong_zhuangtai='{self.hetong_zhuangtai}')>"

@@ -125,9 +125,11 @@
               <el-icon><money /></el-icon>
               <span>财务管理</span>
             </template>
-            <el-menu-item index="/invoices">发票管理</el-menu-item>
-            <el-menu-item index="/payments">收付款管理</el-menu-item>
-            <el-menu-item index="/reports">财务报表</el-menu-item>
+            <el-menu-item index="/finance/dashboard">财务概览</el-menu-item>
+            <el-menu-item index="/finance/payment-orders">支付订单</el-menu-item>
+            <el-menu-item index="/finance/payment-records">支付流水</el-menu-item>
+            <el-menu-item index="/finance/contract-parties">乙方主体</el-menu-item>
+            <el-menu-item index="/finance/payment-methods">支付方式</el-menu-item>
           </el-sub-menu>
         </el-menu>
       </aside>

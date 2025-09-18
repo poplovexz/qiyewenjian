@@ -11,6 +11,25 @@
           <p class="quote-code">报价编号：{{ baojia.baojia_bianma }}</p>
         </div>
         <div class="quote-actions">
+          <!-- 报价确认操作按钮 -->
+          <div v-if="showConfirmActions" class="confirm-actions">
+            <el-button
+              type="success"
+              @click="confirmQuote"
+              :loading="confirmLoading"
+              :disabled="!canConfirm"
+            >
+              确认报价
+            </el-button>
+            <el-button
+              type="danger"
+              @click="rejectQuote"
+              :loading="rejectLoading"
+              :disabled="!canReject"
+            >
+              拒绝报价
+            </el-button>
+          </div>
           <el-button type="primary" @click="printQuote" :icon="Printer">打印/导出PDF</el-button>
         </div>
       </header>
@@ -88,19 +107,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { Printer } from '@element-plus/icons-vue'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
+import { useAuthStore } from '@/stores/modules/auth'
 import type { XiansuoBaojiaDetail } from '@/types/xiansuo'
 
 const route = useRoute()
+const router = useRouter()
 const xiansuoStore = useXiansuoStore()
+const authStore = useAuthStore()
 
 const loading = ref(false)
 const error = ref<string | null>(null)
 const baojia = ref<XiansuoBaojiaDetail | null>(null)
+
+// 确认/拒绝操作状态
+const confirmLoading = ref(false)
+const rejectLoading = ref(false)
 
 const normalizeBaojia = (detail: XiansuoBaojiaDetail): XiansuoBaojiaDetail => {
   return {
@@ -150,6 +176,26 @@ const getStatusText = (status: string) => {
   return map[status] || status
 }
 
+// 计算属性：是否显示确认操作按钮
+const showConfirmActions = computed(() => {
+  // 只有已登录用户才能看到确认操作按钮
+  return authStore.isAuthenticated && baojia.value && !route.query.payload
+})
+
+// 计算属性：是否可以确认
+const canConfirm = computed(() => {
+  if (!baojia.value) return false
+  // 只有草稿或已发送状态的未过期报价可以确认
+  return ['draft', 'sent'].includes(baojia.value.baojia_zhuangtai) && !baojia.value.is_expired
+})
+
+// 计算属性：是否可以拒绝
+const canReject = computed(() => {
+  if (!baojia.value) return false
+  // 只有草稿或已发送状态的报价可以拒绝（即使过期也可以拒绝）
+  return ['draft', 'sent'].includes(baojia.value.baojia_zhuangtai)
+})
+
 const fetchDetail = async () => {
   const id = route.params.id as string
   if (!id) {
@@ -196,6 +242,91 @@ const reload = () => {
 const printQuote = () => {
   window.print()
   ElMessage.success('正在调用浏览器打印功能，可选择保存为PDF。')
+}
+
+// 确认报价
+const confirmQuote = async () => {
+  if (!baojia.value) return
+
+  try {
+    await ElMessageBox.confirm(
+      '确认此报价后，将自动触发合同生成流程。确定要确认这个报价吗？',
+      '确认报价',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
+    confirmLoading.value = true
+    await xiansuoStore.confirmBaojia(baojia.value.id)
+
+    // 重新获取报价详情以更新状态
+    await fetchDetail()
+
+    ElMessage.success('报价确认成功！')
+
+    // 询问是否生成合同
+    try {
+      await ElMessageBox.confirm(
+        '报价已确认成功！是否立即基于此报价生成合同？',
+        '生成合同',
+        {
+          confirmButtonText: '生成合同',
+          cancelButtonText: '稍后处理',
+          type: 'info'
+        }
+      )
+
+      // 跳转到合同创建页面，并预填报价信息
+      router.push({
+        path: '/contracts/create',
+        query: { baojia_id: baojia.value.id }
+      })
+    } catch (error) {
+      // 用户选择稍后处理，不做任何操作
+    }
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      console.error('确认报价失败:', error)
+      ElMessage.error(error.message || '确认报价失败')
+    }
+  } finally {
+    confirmLoading.value = false
+  }
+}
+
+// 拒绝报价
+const rejectQuote = async () => {
+  if (!baojia.value) return
+
+  try {
+    await ElMessageBox.confirm(
+      '确定要拒绝这个报价吗？拒绝后可以重新创建新的报价。',
+      '拒绝报价',
+      {
+        confirmButtonText: '拒绝',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
+    rejectLoading.value = true
+    await xiansuoStore.rejectBaojia(baojia.value.id)
+
+    // 重新获取报价详情以更新状态
+    await fetchDetail()
+
+    ElMessage.success('报价已拒绝')
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      console.error('拒绝报价失败:', error)
+      ElMessage.error(error.message || '拒绝报价失败')
+    }
+  } finally {
+    rejectLoading.value = false
+  }
 }
 
 onMounted(() => {

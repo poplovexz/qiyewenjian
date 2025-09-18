@@ -594,3 +594,127 @@ class XiansuoBaojiaService:
             self.db.commit()
 
         return count
+
+    @invalidate_xiansuo_cache()
+    async def confirm_baojia(self, baojia_id: str, queren_ren_id: str) -> XiansuoBaojiaResponse:
+        """确认报价"""
+        # 获取报价信息
+        baojia = self.db.query(XiansuoBaojia).options(
+            joinedload(XiansuoBaojia.xiangmu_list),
+            joinedload(XiansuoBaojia.xiansuo)
+        ).filter(
+            and_(
+                XiansuoBaojia.id == baojia_id,
+                XiansuoBaojia.is_deleted == "N"
+            )
+        ).first()
+
+        if not baojia:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="报价不存在"
+            )
+
+        # 检查报价状态是否可以确认
+        if baojia.baojia_zhuangtai not in ['draft', 'sent']:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"报价状态为 {baojia.baojia_zhuangtai}，无法确认"
+            )
+
+        # 检查报价是否过期
+        if baojia.is_expired:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="报价已过期，无法确认"
+            )
+
+        # 更新报价状态和确认信息
+        baojia.baojia_zhuangtai = 'accepted'
+        baojia.queren_ren_id = queren_ren_id
+        baojia.queren_shijian = datetime.now()
+        baojia.updated_at = datetime.now()
+
+        try:
+            self.db.commit()
+
+            # 发布报价确认事件
+            from src.core.events import publish, EventNames
+            publish(EventNames.BAOJIA_CONFIRMED, {
+                "baojia_id": baojia_id,
+                "xiansuo_id": baojia.xiansuo_id,
+                "queren_ren_id": queren_ren_id,
+                "baojia_bianma": baojia.baojia_bianma,
+                "zongji_jine": float(baojia.zongji_jine)
+            })
+
+            # 返回更新后的报价详情
+            return await self.get_baojia_detail(baojia_id)
+
+        except Exception as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"确认报价失败: {str(e)}"
+            )
+
+    @invalidate_xiansuo_cache()
+    async def reject_baojia(self, baojia_id: str, queren_ren_id: str, reject_reason: str = None) -> XiansuoBaojiaResponse:
+        """拒绝报价"""
+        # 获取报价信息
+        baojia = self.db.query(XiansuoBaojia).options(
+            joinedload(XiansuoBaojia.xiangmu_list),
+            joinedload(XiansuoBaojia.xiansuo)
+        ).filter(
+            and_(
+                XiansuoBaojia.id == baojia_id,
+                XiansuoBaojia.is_deleted == "N"
+            )
+        ).first()
+
+        if not baojia:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="报价不存在"
+            )
+
+        # 检查报价状态是否可以拒绝
+        if baojia.baojia_zhuangtai not in ['draft', 'sent']:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"报价状态为 {baojia.baojia_zhuangtai}，无法拒绝"
+            )
+
+        # 更新报价状态和确认信息
+        baojia.baojia_zhuangtai = 'rejected'
+        baojia.queren_ren_id = queren_ren_id
+        baojia.queren_shijian = datetime.now()
+        baojia.updated_at = datetime.now()
+
+        # 如果有拒绝原因，可以记录在备注中
+        if reject_reason:
+            original_beizhu = baojia.beizhu or ""
+            baojia.beizhu = f"{original_beizhu}\n[拒绝原因] {reject_reason}".strip()
+
+        try:
+            self.db.commit()
+
+            # 发布报价拒绝事件
+            from src.core.events import publish, EventNames
+            publish(EventNames.BAOJIA_REJECTED, {
+                "baojia_id": baojia_id,
+                "xiansuo_id": baojia.xiansuo_id,
+                "queren_ren_id": queren_ren_id,
+                "baojia_bianma": baojia.baojia_bianma,
+                "reject_reason": reject_reason or "未提供拒绝原因"
+            })
+
+            # 返回更新后的报价详情
+            return await self.get_baojia_detail(baojia_id)
+
+        except Exception as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"拒绝报价失败: {str(e)}"
+            )
