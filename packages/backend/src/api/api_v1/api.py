@@ -15,6 +15,7 @@ from .endpoints.hetong_guanli import hetong_moban, hetong, hetong_yifang_zhuti, 
 from .endpoints.xiansuo_guanli import xiansuo, xiansuo_laiyuan, xiansuo_zhuangtai, xiansuo_genjin, xiansuo_baojia
 from .endpoints.zhifu_guanli import zhifu_dingdan, zhifu_liushui, zhifu_tongzhi, hetong_zhifu, yinhang_huikuan_danju
 from .endpoints.shenhe_guanli import shenhe_guize, shenhe_liucheng, shenhe_jilu
+from .endpoints import audit_workflows, audit_records
 
 # 注册路由
 api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
@@ -54,10 +55,14 @@ api_router.include_router(zhifu_tongzhi.router, prefix="/notifications", tags=["
 api_router.include_router(hetong_zhifu.router, prefix="/contract-payments", tags=["合同支付管理"])
 api_router.include_router(yinhang_huikuan_danju.router, prefix="/bank-transfers", tags=["银行汇款单据管理"])
 
-# 审核管理模块路由
-api_router.include_router(shenhe_guize.router, prefix="/audit-rules", tags=["审核规则管理"])
-api_router.include_router(shenhe_liucheng.router, prefix="/audit-workflows", tags=["审核流程管理"])
-api_router.include_router(shenhe_jilu.router, prefix="/audit-records", tags=["审核记录管理"])
+# 审核管理模块路由 - 暂时禁用旧的API
+# api_router.include_router(shenhe_guize.router, prefix="/audit-rules", tags=["审核规则管理"])
+# api_router.include_router(shenhe_liucheng.router, prefix="/audit-workflows-old", tags=["审核流程管理(旧)"])
+# api_router.include_router(shenhe_jilu.router, prefix="/audit-records-old", tags=["审核记录管理(旧)"])
+
+# 新的审核管理API
+api_router.include_router(audit_workflows.router, prefix="/audit-workflows", tags=["审核工作流"])
+api_router.include_router(audit_records.router, prefix="/audit-records", tags=["审核记录"])
 
 
 @api_router.get("/")

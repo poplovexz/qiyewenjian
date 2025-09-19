@@ -181,6 +181,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   // 检查权限
   const hasPermission = (permission: string): boolean => {
+    // admin用户拥有所有权限
+    if (userInfo.value?.yonghu_ming === 'admin') {
+      return true
+    }
     return userPermissions.value.includes(permission)
   }
 

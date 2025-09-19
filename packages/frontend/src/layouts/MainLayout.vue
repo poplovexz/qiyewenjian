@@ -54,6 +54,21 @@
             <el-icon><house /></el-icon>
             <template #title>工作台</template>
           </el-menu-item>
+
+          <el-menu-item index="/feature-demo">
+            <el-icon><star /></el-icon>
+            <template #title>功能演示</template>
+          </el-menu-item>
+
+          <el-menu-item index="/permission-manager">
+            <el-icon><setting /></el-icon>
+            <template #title>权限管理工具</template>
+          </el-menu-item>
+
+          <el-menu-item index="/permission-test">
+            <el-icon><check /></el-icon>
+            <template #title>权限测试</template>
+          </el-menu-item>
           
           <el-sub-menu index="user">
             <template #title>
@@ -100,6 +115,18 @@
             </template>
             <el-menu-item index="/contracts">合同列表</el-menu-item>
             <el-menu-item index="/contract-templates">合同模板</el-menu-item>
+            <el-menu-item index="/contract-parties">乙方主体</el-menu-item>
+            <el-menu-item index="/payment-methods">支付方式</el-menu-item>
+          </el-sub-menu>
+
+          <el-sub-menu index="audit">
+            <template #title>
+              <el-icon><check /></el-icon>
+              <span>审核管理</span>
+            </template>
+            <el-menu-item index="/audit/tasks">我的审核任务</el-menu-item>
+            <el-menu-item index="/audit/workflow-config">审核流程配置</el-menu-item>
+            <el-menu-item index="/audit/rule-config">审核规则配置</el-menu-item>
           </el-sub-menu>
           
           <el-sub-menu index="order">
@@ -165,7 +192,10 @@ import {
   ShoppingCart,
   List,
   Money,
-  Goods
+  Goods,
+  Check,
+  Star,
+  Setting
 } from '@element-plus/icons-vue'
 
 const route = useRoute()

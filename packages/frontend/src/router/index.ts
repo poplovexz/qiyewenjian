@@ -30,6 +30,33 @@ const routes: RouteRecordRaw[] = [
           title: '工作台'
         }
       },
+      // 功能演示页面
+      {
+        path: 'feature-demo',
+        name: 'FeatureDemo',
+        component: () => import('@/views/FeatureDemo.vue'),
+        meta: {
+          title: '功能演示'
+        }
+      },
+      // 权限管理工具
+      {
+        path: 'permission-manager',
+        name: 'PermissionManager',
+        component: () => import('@/views/PermissionManager.vue'),
+        meta: {
+          title: '权限管理工具'
+        }
+      },
+      // 权限测试页面
+      {
+        path: 'permission-test',
+        name: 'PermissionTest',
+        component: () => import('@/views/PermissionTest.vue'),
+        meta: {
+          title: '权限测试'
+        }
+      },
       {
         path: 'users',
         name: 'UserList',
@@ -179,6 +206,36 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: '编辑合同',
           permissions: ['contract_manage']
+        }
+      },
+      // 审核任务列表
+      {
+        path: 'audit/tasks',
+        name: 'AuditTaskList',
+        component: () => import('@/views/audit/AuditTaskList.vue'),
+        meta: {
+          title: '审核任务',
+          permissions: ['audit_manage']
+        }
+      },
+      // 审核流程配置
+      {
+        path: 'audit/workflow-config',
+        name: 'AuditWorkflowConfig',
+        component: () => import('@/views/audit/AuditWorkflowConfig.vue'),
+        meta: {
+          title: '审核流程配置',
+          permissions: ['audit_config']
+        }
+      },
+      // 审核规则配置
+      {
+        path: 'audit/rule-config',
+        name: 'AuditRuleConfig',
+        component: () => import('@/views/audit/AuditRuleConfig.vue'),
+        meta: {
+          title: '审核规则配置',
+          permissions: ['audit_config']
         }
       },
 

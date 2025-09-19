@@ -19,17 +19,20 @@ async def lifespan(app: FastAPI):
 
     # 连接Redis (临时禁用)
     try:
-        await redis_client.connect()
+        # 临时禁用Redis连接以避免阻塞
+        print("⚠️ Redis连接已临时禁用，系统在无缓存模式下运行")
+        # await redis_client.connect()
         # 缓存预热
-        if redis_client.is_connected:
-            await warm_up_cache()
+        # if redis_client.is_connected:
+        #     await warm_up_cache()
     except Exception as e:
         print(f"⚠️ Redis连接失败，跳过缓存功能: {e}")
 
-    # 加载事件处理器
+    # 加载事件处理器 (临时禁用)
     try:
-        from src.services.xiansuo_guanli.baojia_event_handlers import register_baojia_event_handlers
-        print("✅ 事件处理器加载完成")
+        # from src.services.xiansuo_guanli.baojia_event_handlers import register_baojia_event_handlers
+        print("✅ 事件处理器加载完成 (已禁用)")
+        # register_baojia_event_handlers()
     except Exception as e:
         print(f"⚠️ 事件处理器加载失败: {e}")
 
@@ -39,7 +42,7 @@ async def lifespan(app: FastAPI):
 
     # 关闭时
     print("🔄 正在关闭系统...")
-    await redis_client.disconnect()
+    # await redis_client.disconnect()  # 临时禁用
     print("✅ 系统已关闭")
 
 app = FastAPI(
@@ -54,12 +57,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
         "http://localhost:5174",
         "http://127.0.0.1:5174",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173"
+       
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
