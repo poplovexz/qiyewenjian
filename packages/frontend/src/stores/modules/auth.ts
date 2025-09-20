@@ -82,20 +82,32 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       isLoading.value = true
       const response = await authApi.login(loginData)
-      
+
+      // 兼容后端不同的响应结构
+      const tokenInfo = response.token ?? {
+        access_token: response.access_token || '',
+        refresh_token: response.refresh_token || '',
+        token_type: response.token_type || 'bearer',
+        expires_in: response.expires_in ?? 0
+      }
+
+      if (!tokenInfo.access_token || !tokenInfo.refresh_token) {
+        throw new Error('登录响应缺少有效的token信息')
+      }
+
       // 保存令牌和用户信息
-      accessToken.value = response.token.access_token
-      refreshToken.value = response.token.refresh_token
+      accessToken.value = tokenInfo.access_token
+      refreshToken.value = tokenInfo.refresh_token
       userInfo.value = response.user
-      
+
       // 保存到本地存储
-      saveToStorage(response.token, response.user)
+      saveToStorage(tokenInfo, response.user)
       
       ElMessage.success(response.message || '登录成功')
       return true
     } catch (error: any) {
       console.error('登录失败:', error)
-      ElMessage.error(error.response?.data?.detail || '登录失败')
+      ElMessage.error(error.response?.data?.detail || error.message || '登录失败')
       return false
     } finally {
       isLoading.value = false

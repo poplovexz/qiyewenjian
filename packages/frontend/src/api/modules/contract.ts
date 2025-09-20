@@ -423,10 +423,18 @@ export const contractApi = {
   },
 
   // 基于报价自动生成合同
-  createFromQuote: (baojiaId: string, mobanId?: string) => {
-    return request.post<Contract>('/api/v1/contracts/from-quote', {
+  createFromQuote: (baojiaId: string) => {
+    return request.post<Contract>(`/api/v1/contracts/from-quote/${baojiaId}`)
+  },
+
+  // 基于报价生成合同并支持自定义金额
+  createFromQuoteDirect: (
+    baojiaId: string,
+    payload: { custom_amount?: number; change_reason?: string } = {}
+  ) => {
+    return request.post<Contract>('/api/v1/contracts/from-quote-direct', {
       baojia_id: baojiaId,
-      moban_id: mobanId
+      ...payload
     })
   },
 
@@ -442,8 +450,8 @@ export const contractApi = {
 
   // 更新合同状态
   updateStatus: (id: string, status: string) => {
-    return request.patch<Contract>(`/api/v1/contracts/${id}/status`, null, {
-      params: { new_status: status }
+    return request.put<Contract>(`/api/v1/contracts/${id}`, {
+      hetong_zhuangtai: status
     })
   },
 

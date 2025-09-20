@@ -208,6 +208,62 @@ const routes: RouteRecordRaw[] = [
           permissions: ['contract_manage']
         }
       },
+      // 乙方主体管理（合同模块快捷入口）
+      {
+        path: 'contract-parties',
+        name: 'ContractPartyListRoot',
+        component: () => import('@/views/contract/ContractPartyList.vue'),
+        meta: {
+          title: '乙方主体管理',
+          permissions: ['contract_manage']
+        }
+      },
+      {
+        path: 'contract-parties/create',
+        name: 'ContractPartyCreateRoot',
+        component: () => import('@/views/contract/ContractPartyForm.vue'),
+        meta: {
+          title: '新建乙方主体',
+          permissions: ['contract_manage']
+        }
+      },
+      {
+        path: 'contract-parties/:id/edit',
+        name: 'ContractPartyEditRoot',
+        component: () => import('@/views/contract/ContractPartyForm.vue'),
+        meta: {
+          title: '编辑乙方主体',
+          permissions: ['contract_manage']
+        }
+      },
+      // 支付方式管理（合同模块快捷入口）
+      {
+        path: 'payment-methods',
+        name: 'PaymentMethodListRoot',
+        component: () => import('@/views/contract/PaymentMethodList.vue'),
+        meta: {
+          title: '支付方式管理',
+          permissions: ['contract_manage']
+        }
+      },
+      {
+        path: 'payment-methods/create',
+        name: 'PaymentMethodCreateRoot',
+        component: () => import('@/views/contract/PaymentMethodForm.vue'),
+        meta: {
+          title: '新建支付方式',
+          permissions: ['contract_manage']
+        }
+      },
+      {
+        path: 'payment-methods/:id/edit',
+        name: 'PaymentMethodEditRoot',
+        component: () => import('@/views/contract/PaymentMethodForm.vue'),
+        meta: {
+          title: '编辑支付方式',
+          permissions: ['contract_manage']
+        }
+      },
       // 审核任务列表
       {
         path: 'audit/tasks',

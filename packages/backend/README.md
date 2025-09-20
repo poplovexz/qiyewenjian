@@ -2,6 +2,17 @@
 
 基于 FastAPI 的后端服务，提供代理记账系统的 API 接口。
 
+## 🚀 快速开始（推荐）
+
+**使用模块化结构**：
+```bash
+cd packages/backend
+source venv/bin/activate
+python3 run_server.py
+```
+
+详细说明请参考 [README_SIMPLE.md](README_SIMPLE.md)。
+
 ## 技术栈
 
 - FastAPI (Python 3.11)

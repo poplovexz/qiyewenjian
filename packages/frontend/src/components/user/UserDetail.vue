@@ -73,7 +73,7 @@
                 class="role-tag"
                 type="primary"
               >
-                {{ role.jiaose_mingcheng }}
+                {{ role.jiaose_ming }}
               </el-tag>
             </template>
             <el-empty v-else description="暂无角色" :image-size="60" />
@@ -96,7 +96,7 @@
                 class="permission-tag"
                 type="info"
               >
-                {{ permission.quanxian_mingcheng }}
+                {{ permission.quanxian_ming }}
               </el-tag>
             </template>
             <el-empty v-else description="暂无权限" :image-size="60" />

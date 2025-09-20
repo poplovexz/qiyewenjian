@@ -85,11 +85,28 @@ class TokenManager {
   }
 
   /**
+   * 解码JWT载荷，兼容base64url编码
+   */
+  private _decodeTokenPayload(token: string): Record<string, any> {
+    const parts = token.split('.')
+    if (parts.length < 2) {
+      throw new Error('Invalid token format')
+    }
+
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+    const paddingLength = (4 - (base64.length % 4)) % 4
+    const padded = base64 + '='.repeat(paddingLength)
+
+    const decoded = atob(padded)
+    return JSON.parse(decoded)
+  }
+
+  /**
    * 检查token是否已过期
    */
   private _isTokenExpired(token: string): boolean {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]))
+      const payload = this._decodeTokenPayload(token)
       const exp = payload.exp * 1000 // 转换为毫秒
       const now = Date.now()
       return now >= exp
@@ -268,7 +285,7 @@ class TokenManager {
     if (!token) return false
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]))
+      const payload = this._decodeTokenPayload(token)
       const exp = payload.exp * 1000 // 转换为毫秒
       const now = Date.now()
       const fiveMinutes = 5 * 60 * 1000

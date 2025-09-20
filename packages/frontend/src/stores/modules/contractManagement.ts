@@ -124,10 +124,22 @@ export const useContractManagementStore = defineStore('contractManagement', () =
   }
 
   // 基于报价自动生成合同
-  const createContractFromQuote = async (baojiaId: string, mobanId?: string) => {
+  const createContractFromQuote = async (
+    baojiaId: string,
+    options: { customAmount?: number; changeReason?: string } = {}
+  ) => {
     try {
       contractLoading.value = true
-      const response = await contractApi.createFromQuote(baojiaId, mobanId)
+      let response
+
+      if (options.customAmount !== undefined || options.changeReason) {
+        response = await contractApi.createFromQuoteDirect(baojiaId, {
+          custom_amount: options.customAmount,
+          change_reason: options.changeReason
+        })
+      } else {
+        response = await contractApi.createFromQuote(baojiaId)
+      }
       
       // 添加到列表开头
       contracts.value.unshift(response)

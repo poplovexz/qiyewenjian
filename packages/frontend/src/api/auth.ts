@@ -12,7 +12,17 @@ export interface LoginRequest {
 export interface LoginResponse {
   message: string
   user: UserInfo
-  token: TokenResponse
+  /**
+   * 新版本接口返回的令牌信息
+   */
+  token?: TokenResponse
+  /**
+   * 兼容旧版本直接返回在根节点的令牌字段
+   */
+  access_token?: string
+  refresh_token?: string
+  token_type?: string
+  expires_in?: number
 }
 
 export interface UserInfo {
@@ -22,8 +32,8 @@ export interface UserInfo {
   youxiang: string
   shouji: string
   zhuangtai: string
-  zuihou_denglu: string
-  denglu_cishu: number
+  zuihou_denglu: string | null
+  denglu_cishu: string
   roles: string[]
   permissions: string[]
 }

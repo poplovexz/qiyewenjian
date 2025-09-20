@@ -175,9 +175,12 @@ const uploadAction = computed(() => {
 })
 
 const uploadHeaders = computed(() => {
-  return {
-    'Authorization': `Bearer ${authStore.token}`
-  }
+  const token = authStore.accessToken || localStorage.getItem('access_token') || ''
+  return token
+    ? {
+        Authorization: `Bearer ${token}`
+      }
+    : {}
 })
 
 // 表单验证规则

@@ -14,29 +14,38 @@ export interface BaseListResponse<T> {
   total: number
   page: number
   size: number
-  pages: number
+  pages?: number
 }
 
 // 权限
 export interface Permission {
   id: string
-  quanxian_bianma: string
-  quanxian_mingcheng: string
+  quanxian_ming: string
+  quanxian_bianma?: string
   miaoshu?: string
+  ziyuan_leixing: 'menu' | 'button' | 'api'
+  ziyuan_lujing?: string
+  zhuangtai: 'active' | 'inactive'
   created_at: string
   updated_at: string
+  created_by?: string
+  updated_by?: string
 }
 
 // 角色
 export interface Role {
   id: string
-  jiaose_bianma: string
-  jiaose_mingcheng: string
+  jiaose_ming: string
+  jiaose_bianma?: string
   miaoshu?: string
   zhuangtai: 'active' | 'inactive'
   permissions?: Permission[]
   created_at: string
   updated_at: string
+  created_by?: string
+  updated_by?: string
+  permission_count?: number
+  user_count?: number
 }
 
 // 用户
@@ -86,22 +95,22 @@ export interface UserListResponse extends BaseListResponse<User> {}
 
 // 角色创建参数
 export interface RoleCreate {
-  jiaose_bianma: string
-  jiaose_mingcheng: string
+  jiaose_bianma?: string
+  jiaose_ming: string
   miaoshu?: string
   zhuangtai: 'active' | 'inactive'
 }
 
 // 角色更新参数
 export interface RoleUpdate {
-  jiaose_mingcheng?: string
+  jiaose_ming?: string
   miaoshu?: string
   zhuangtai?: 'active' | 'inactive'
 }
 
 // 角色列表查询参数
 export interface RoleListParams extends BaseListParams {
-  jiaose_mingcheng?: string
+  jiaose_ming?: string
   zhuangtai?: 'active' | 'inactive' | ''
 }
 
@@ -110,20 +119,29 @@ export interface RoleListResponse extends BaseListResponse<Role> {}
 
 // 权限创建参数
 export interface PermissionCreate {
-  quanxian_bianma: string
-  quanxian_mingcheng: string
+  quanxian_ming: string
+  quanxian_bianma?: string
   miaoshu?: string
+  ziyuan_leixing: 'menu' | 'button' | 'api'
+  ziyuan_lujing?: string
+  zhuangtai: 'active' | 'inactive'
 }
 
 // 权限更新参数
 export interface PermissionUpdate {
-  quanxian_mingcheng?: string
+  quanxian_ming?: string
+  quanxian_bianma?: string
   miaoshu?: string
+  ziyuan_leixing?: 'menu' | 'button' | 'api'
+  ziyuan_lujing?: string
+  zhuangtai?: 'active' | 'inactive'
 }
 
 // 权限列表查询参数
 export interface PermissionListParams extends BaseListParams {
-  quanxian_mingcheng?: string
+  quanxian_ming?: string
+  ziyuan_leixing?: 'menu' | 'button' | 'api'
+  zhuangtai?: 'active' | 'inactive'
 }
 
 // 权限列表响应

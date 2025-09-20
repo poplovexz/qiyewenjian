@@ -27,7 +27,7 @@
             :label="role.id"
           >
             <div class="role-item">
-              <div class="role-name">{{ role.jiaose_mingcheng }}</div>
+              <div class="role-name">{{ role.jiaose_ming }}</div>
               <div class="role-desc">{{ role.miaoshu || '暂无描述' }}</div>
             </div>
           </el-checkbox>
@@ -95,7 +95,7 @@ const visible = computed({
 // 获取角色名称
 const getRoleName = (roleId: string) => {
   const role = availableRoles.value.find(r => r.id === roleId)
-  return role?.jiaose_mingcheng || ''
+  return role?.jiaose_ming || ''
 }
 
 // 获取用户信息

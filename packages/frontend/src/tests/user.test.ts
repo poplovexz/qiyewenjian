@@ -194,15 +194,22 @@ describe('用户管理模块测试', () => {
         roles: [
           {
             id: 'role1',
-            jiaose_mingcheng: '管理员',
-            jiaose_bianma: 'admin'
+            jiaose_ming: '管理员',
+            jiaose_bianma: 'admin',
+            zhuangtai: 'active',
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
           }
         ],
         permissions: [
           {
             id: 'perm1',
-            quanxian_mingcheng: '用户管理',
-            quanxian_bianma: 'user:manage'
+            quanxian_ming: '用户管理',
+            quanxian_bianma: 'user:manage',
+            ziyuan_leixing: 'menu',
+            zhuangtai: 'active',
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
           }
         ]
       }
@@ -366,7 +373,8 @@ describe('用户管理模块测试', () => {
     })
 
     it('应该正确调用角色分配 API', async () => {
-      vi.mocked(userApi.assignRoles).mockResolvedValue(true)
+      const mockResponse = { message: '角色分配成功' }
+      vi.mocked(userApi.assignRoles).mockResolvedValue(mockResponse)
 
       const userId = '1'
       const roleIds = ['role1', 'role2']
@@ -374,7 +382,7 @@ describe('用户管理模块测试', () => {
       const result = await userApi.assignRoles(userId, roleIds)
 
       expect(userApi.assignRoles).toHaveBeenCalledWith(userId, roleIds)
-      expect(result).toBe(true)
+      expect(result).toEqual(mockResponse)
     })
   })
 })

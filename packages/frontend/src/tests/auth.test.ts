@@ -57,7 +57,7 @@ describe('认证 Store 测试', () => {
         shouji: '13800138000',
         zhuangtai: '正常',
         zuihou_denglu: '2024-01-01T00:00:00Z',
-        denglu_cishu: 1,
+        denglu_cishu: '1',
         roles: ['user'],
         permissions: ['read']
       },
@@ -119,7 +119,7 @@ describe('认证 Store 测试', () => {
       shouji: '13800138000',
       zhuangtai: '正常',
       zuihou_denglu: '2024-01-01T00:00:00Z',
-      denglu_cishu: 1,
+      denglu_cishu: '1',
       roles: ['user'],
       permissions: ['read']
     }
@@ -153,7 +153,7 @@ describe('认证 Store 测试', () => {
       shouji: '13800138000',
       zhuangtai: '正常',
       zuihou_denglu: '2024-01-01T00:00:00Z',
-      denglu_cishu: 1,
+      denglu_cishu: '1',
       roles: ['admin', 'user'],
       permissions: ['read', 'write', 'delete']
     }
@@ -176,7 +176,7 @@ describe('认证 Store 测试', () => {
       shouji: '13800138000',
       zhuangtai: '正常',
       zuihou_denglu: '2024-01-01T00:00:00Z',
-      denglu_cishu: 1,
+      denglu_cishu: '1',
       roles: ['user'],
       permissions: ['read']
     }
