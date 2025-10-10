@@ -6,16 +6,16 @@ from typing import Optional, List, Set
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from ...models import Yonghu, Jiaose, YonghuJiaose, JiaoseQuanxian, Quanxian
-from ...core.security import (
+from models import Yonghu, Jiaose, YonghuJiaose, JiaoseQuanxian, Quanxian
+from core.security import (
     verify_password, 
     get_password_hash, 
     create_access_token, 
     create_refresh_token,
     get_user_permissions
 )
-from ...core.config import settings
-from ...schemas.yonghu_guanli import LoginRequest, TokenResponse, UserInfo
+from core.config import settings
+from schemas.yonghu_guanli import LoginRequest, TokenResponse, UserInfo
 
 
 class AuthService:
@@ -79,7 +79,13 @@ class AuthService:
         
         # 更新登录信息
         user.zuihou_denglu = datetime.utcnow()
-        user.denglu_cishu = str(int(user.denglu_cishu) + 1)
+
+        try:
+            login_count = int(user.denglu_cishu or 0)
+        except (TypeError, ValueError):
+            login_count = 0
+
+        user.denglu_cishu = str(login_count + 1)
         self.db.commit()
         
         # 生成令牌
@@ -157,7 +163,7 @@ class AuthService:
         Raises:
             HTTPException: 刷新令牌无效时抛出异常
         """
-        from ...core.security.jwt_handler import verify_token
+        from core.security.jwt_handler import verify_token
         
         try:
             payload = verify_token(refresh_token)

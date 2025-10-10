@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from fastapi import HTTPException
 
-from src.models.xiansuo_guanli import XiansuoZhuangtai
-from src.schemas.xiansuo_guanli import (
+from models.xiansuo_guanli import XiansuoZhuangtai
+from schemas.xiansuo_guanli import (
     XiansuoZhuangtaiCreate,
     XiansuoZhuangtaiUpdate,
     XiansuoZhuangtaiResponse,
@@ -157,7 +157,7 @@ class XiansuoZhuangtaiService:
             raise HTTPException(status_code=404, detail="线索状态不存在")
         
         # 检查是否有关联的线索
-        from src.models.xiansuo_guanli import Xiansuo
+        from models.xiansuo_guanli import Xiansuo
         xiansuo_count = self.db.query(Xiansuo).filter(
             Xiansuo.xiansuo_zhuangtai == zhuangtai.zhuangtai_bianma,
             Xiansuo.is_deleted == "N"

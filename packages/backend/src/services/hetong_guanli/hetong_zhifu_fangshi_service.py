@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from fastapi import HTTPException
 
-from ...models.hetong_guanli import HetongZhifuFangshi, HetongYifangZhuti
-from ...schemas.hetong_guanli import (
+from models.hetong_guanli import HetongZhifuFangshi, HetongYifangZhuti
+from schemas.hetong_guanli import (
     HetongZhifuFangshiCreate,
     HetongZhifuFangshiUpdate,
     HetongZhifuFangshiResponse,

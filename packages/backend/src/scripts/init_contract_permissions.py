@@ -8,8 +8,8 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy.orm import Session
-from src.core.database import SessionLocal
-from src.models.yonghu_guanli import Quanxian, Jiaose, JiaoseQuanxian
+from core.database import SessionLocal
+from models.yonghu_guanli import Quanxian, Jiaose, JiaoseQuanxian
 
 
 def init_contract_permissions():

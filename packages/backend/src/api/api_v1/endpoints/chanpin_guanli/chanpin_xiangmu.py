@@ -5,17 +5,17 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security.permissions import require_permission
-from src.models.yonghu_guanli import Yonghu
-from src.schemas.chanpin_guanli import (
+from core.database import get_db
+from core.security.permissions import require_permission
+from models.yonghu_guanli import Yonghu
+from schemas.chanpin_guanli import (
     ChanpinXiangmuCreate,
     ChanpinXiangmuUpdate,
     ChanpinXiangmuResponse,
     ChanpinXiangmuListResponse,
     ChanpinXiangmuDetailResponse
 )
-from src.services.chanpin_guanli import ChanpinXiangmuService
+from services.chanpin_guanli import ChanpinXiangmuService
 
 
 router = APIRouter()

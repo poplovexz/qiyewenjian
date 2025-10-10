@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报价数据加载测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .lead-item {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .lead-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .button-group {
+            margin-top: 10px;
+        }
+        .btn {
+            padding: 5px 10px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-primary { background: #409eff; color: white; }
+        .btn-success { background: #67c23a; color: white; }
+        .btn-warning { background: #e6a23c; color: white; }
+        .btn-disabled { background: #ccc; color: #666; cursor: not-allowed; }
+        .status-tag {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .status-new { background: #e4e7ed; color: #606266; }
+        .status-quoted { background: #f56c6c; color: white; }
+        .status-accepted { background: #67c23a; color: white; }
+        .log-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-item {
+            margin: 5px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>报价数据加载测试</h1>
+        <div id="status">正在加载...</div>
+        <div id="leads-container"></div>
+        <div class="log-section">
+            <h3>调试日志</h3>
+            <div id="logs"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let authToken = '';
+        
+        // 日志记录
+        function log(message) {
+            const logsDiv = document.getElementById('logs');
+            const logItem = document.createElement('div');
+            logItem.className = 'log-item';
+            logItem.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logsDiv.appendChild(logItem);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            console.log(message);
+        }
+
+        // 登录
+        async function login() {
+            try {
+                log('🔐 开始登录...');
+                const response = await fetch(`${API_BASE}/api/v1/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        yonghu_ming: 'admin',
+                        mima: 'admin123'
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.token?.access_token || data.token;
+                    log('✅ 登录成功');
+                    return true;
+                } else {
+                    log(`❌ 登录失败: ${response.status}`);
+                    return false;
+                }
+            } catch (error) {
+                log(`❌ 登录错误: ${error.message}`);
+                return false;
+            }
+        }
+
+        // 获取线索列表
+        async function getLeads() {
+            try {
+                log('📋 获取线索列表...');
+                const response = await fetch(`${API_BASE}/api/v1/leads/`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const leads = data.items || [];
+                    log(`✅ 获取到 ${leads.length} 个线索`);
+                    return leads;
+                } else {
+                    log(`❌ 获取线索失败: ${response.status}`);
+                    return [];
+                }
+            } catch (error) {
+                log(`❌ 获取线索错误: ${error.message}`);
+                return [];
+            }
+        }
+
+        // 获取报价列表
+        async function getBaojiaList(leadId) {
+            try {
+                log(`💰 获取线索 ${leadId} 的报价列表...`);
+                const response = await fetch(`${API_BASE}/api/v1/lead-quotes/xiansuo/${leadId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const baojiaList = await response.json();
+                    log(`✅ 线索 ${leadId} 获取到 ${baojiaList.length} 个报价`);
+                    return baojiaList;
+                } else {
+                    log(`❌ 获取报价失败: ${response.status}`);
+                    return [];
+                }
+            } catch (error) {
+                log(`❌ 获取报价错误: ${error.message}`);
+                return [];
+            }
+        }
+
+        // 检查按钮显示逻辑
+        function checkButtonLogic(lead, baojiaList) {
+            const leadStatus = lead.dangqian_zhuangtai || lead.xiansuo_zhuangtai;
+            
+            // 检查是否有有效报价
+            const hasValidBaojia = baojiaList.some(
+                b => !b.is_expired && b.baojia_zhuangtai !== 'rejected'
+            ) || ['quoted', 'won'].includes(leadStatus);
+
+            // 获取最新有效报价状态
+            const validBaojia = baojiaList
+                .filter(b => !b.is_expired && b.baojia_zhuangtai !== 'rejected')
+                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+            
+            const latestBaojiaStatus = validBaojia.length > 0 ? validBaojia[0].baojia_zhuangtai : null;
+            
+            // 判断是否可以生成合同
+            const canGenerateContract = hasValidBaojia && latestBaojiaStatus === 'accepted';
+
+            log(`🔍 线索 ${lead.gongsi_mingcheng} 按钮逻辑:`);
+            log(`   - 线索状态: ${leadStatus}`);
+            log(`   - 报价数量: ${baojiaList.length}`);
+            log(`   - 有有效报价: ${hasValidBaojia}`);
+            log(`   - 最新报价状态: ${latestBaojiaStatus || '无'}`);
+            log(`   - 可生成合同: ${canGenerateContract}`);
+
+            return {
+                hasValidBaojia,
+                latestBaojiaStatus,
+                canGenerateContract,
+                leadStatus
+            };
+        }
+
+        // 渲染线索列表
+        function renderLeads(leads, baojiaData) {
+            const container = document.getElementById('leads-container');
+            container.innerHTML = '';
+
+            leads.forEach(lead => {
+                const baojiaList = baojiaData[lead.id] || [];
+                const buttonLogic = checkButtonLogic(lead, baojiaList);
+
+                const leadDiv = document.createElement('div');
+                leadDiv.className = 'lead-item';
+                
+                leadDiv.innerHTML = `
+                    <div class="lead-header">
+                        ${lead.gongsi_mingcheng}
+                        <span class="status-tag status-${buttonLogic.leadStatus}">${buttonLogic.leadStatus}</span>
+                        ${buttonLogic.latestBaojiaStatus ? `<span class="status-tag status-${buttonLogic.latestBaojiaStatus}">${buttonLogic.latestBaojiaStatus}</span>` : ''}
+                    </div>
+                    <div>ID: ${lead.id}</div>
+                    <div>报价数量: ${baojiaList.length}</div>
+                    <div class="button-group">
+                        ${!buttonLogic.hasValidBaojia ? 
+                            '<button class="btn btn-primary">报价</button>' : 
+                            '<button class="btn btn-disabled" disabled>报价</button>'
+                        }
+                        ${buttonLogic.hasValidBaojia ? 
+                            '<button class="btn btn-warning">查看报价</button>' : 
+                            '<button class="btn btn-disabled" disabled>查看报价</button>'
+                        }
+                        ${buttonLogic.canGenerateContract ? 
+                            '<button class="btn btn-success">生成合同</button>' : 
+                            '<button class="btn btn-disabled" disabled>生成合同</button>'
+                        }
+                    </div>
+                `;
+                
+                container.appendChild(leadDiv);
+            });
+        }
+
+        // 主函数
+        async function main() {
+            document.getElementById('status').textContent = '正在初始化...';
+            
+            // 登录
+            if (!await login()) {
+                document.getElementById('status').textContent = '登录失败';
+                return;
+            }
+
+            // 获取线索列表
+            const leads = await getLeads();
+            if (leads.length === 0) {
+                document.getElementById('status').textContent = '没有线索数据';
+                return;
+            }
+
+            // 获取每个线索的报价数据
+            const baojiaData = {};
+            for (const lead of leads) {
+                baojiaData[lead.id] = await getBaojiaList(lead.id);
+            }
+
+            // 渲染页面
+            renderLeads(leads, baojiaData);
+            document.getElementById('status').textContent = `加载完成，共 ${leads.length} 个线索`;
+            
+            log('🎉 测试完成！');
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', main);
+    </script>
+</body>
+</html>

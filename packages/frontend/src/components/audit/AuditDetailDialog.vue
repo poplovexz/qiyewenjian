@@ -12,20 +12,20 @@
           <h4>基本信息</h4>
           <el-descriptions :column="2" border>
             <el-descriptions-item label="流程编号">
-              {{ workflowDetail.liucheng_bianhao }}
+              {{ workflowDetail.workflow_number }}
             </el-descriptions-item>
             <el-descriptions-item label="审核类型">
-              <el-tag :type="getAuditTypeTagType(workflowDetail.shenhe_leixing)">
-                {{ getAuditTypeText(workflowDetail.shenhe_leixing) }}
+              <el-tag :type="getAuditTypeTagType(workflowDetail.audit_type)">
+                {{ getAuditTypeText(workflowDetail.audit_type) }}
               </el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="审核状态">
-              <el-tag :type="getStatusTagType(workflowDetail.shenhe_zhuangtai)">
-                {{ getStatusText(workflowDetail.shenhe_zhuangtai) }}
+              <el-tag :type="getStatusTagType(workflowDetail.status)">
+                {{ getStatusText(workflowDetail.status) }}
               </el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="申请人">
-              {{ workflowDetail.shenqing_ren_mingcheng }}
+              {{ workflowDetail.submitter }}
             </el-descriptions-item>
             <el-descriptions-item label="创建时间">
               {{ formatDateTime(workflowDetail.created_at) }}

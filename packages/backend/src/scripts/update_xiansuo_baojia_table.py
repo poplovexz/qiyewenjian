@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from src.core.database import SessionLocal
+from core.database import SessionLocal
 
 
 def update_xiansuo_baojia_table():

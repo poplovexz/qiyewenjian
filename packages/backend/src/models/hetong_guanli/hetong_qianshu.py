@@ -3,8 +3,8 @@
 """
 from sqlalchemy import Column, String, Text, DateTime, Boolean
 from sqlalchemy.dialects.mysql import CHAR
-from src.core.database import Base
-from src.core.mixins import TimestampMixin, UUIDMixin
+from core.database import Base
+from core.mixins import TimestampMixin, UUIDMixin
 import uuid
 from datetime import datetime
 

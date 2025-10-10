@@ -2,8 +2,8 @@
 import asyncio
 import logging
 
-from src.core.cache_decorator import warm_up_cache
-from src.core.redis_client import redis_client
+from core.cache_decorator import warm_up_cache
+from core.redis_client import redis_client
 
 
 async def verify() -> int:

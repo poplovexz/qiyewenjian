@@ -9,11 +9,11 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import create_engine
-from src.core.config import settings
-from src.models import Base
-from src.models.shenhe_guanli import ShenheGuize, ShenheLiucheng, ShenheJilu
-from src.models.zhifu_guanli import HetongZhifu, YinhangHuikuanDanju
-from src.models.hetong_guanli import HetongJineBiangeng
+from core.config import settings
+from models import Base
+from models.shenhe_guanli import ShenheGuize, ShenheLiucheng, ShenheJilu
+from models.zhifu_guanli import HetongZhifu, YinhangHuikuanDanju
+from models.hetong_guanli import HetongJineBiangeng
 
 
 def create_tables():

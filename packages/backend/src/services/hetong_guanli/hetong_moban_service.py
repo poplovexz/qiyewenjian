@@ -9,8 +9,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, desc, asc
 from fastapi import HTTPException
 
-from src.models.hetong_guanli import HetongMoban
-from src.schemas.hetong_guanli.hetong_moban_schemas import (
+from models.hetong_guanli import HetongMoban
+from schemas.hetong_guanli.hetong_moban_schemas import (
     HetongMobanCreate,
     HetongMobanUpdate,
     HetongMobanResponse,

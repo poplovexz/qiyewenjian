@@ -33,6 +33,17 @@
             <el-option label="其他" value="qita" />
           </el-select>
         </el-form-item>
+        <el-form-item label="状态">
+          <el-select
+            v-model="searchForm.zhifu_zhuangtai"
+            placeholder="请选择状态"
+            clearable
+            style="width: 150px"
+          >
+            <el-option label="启用" value="active" />
+            <el-option label="停用" value="inactive" />
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
           <el-button @click="handleReset">重置</el-button>
@@ -47,7 +58,11 @@
       stripe
       style="width: 100%"
     >
-      <el-table-column prop="yifang_zhuti.zhuti_mingcheng" label="乙方主体" width="150" />
+      <el-table-column label="乙方主体" width="180">
+        <template #default="{ row }">
+          {{ row.yifang_zhuti?.zhuti_mingcheng || '-' }}
+        </template>
+      </el-table-column>
       <el-table-column prop="zhifu_leixing" label="支付方式" width="120">
         <template #default="{ row }">
           <el-tag :type="getPaymentTypeTag(row.zhifu_leixing)">
@@ -130,7 +145,8 @@ const tableData = ref<PaymentMethod[]>([])
 // 搜索表单
 const searchForm = reactive({
   search: '',
-  zhifu_leixing: ''
+  zhifu_leixing: '',
+  zhifu_zhuangtai: ''
 })
 
 // 分页
@@ -176,7 +192,9 @@ const loadData = async () => {
     const params = {
       page: pagination.page,
       size: pagination.size,
-      ...searchForm
+      search: searchForm.search || undefined,
+      zhifu_leixing: searchForm.zhifu_leixing || undefined,
+      zhifu_zhuangtai: searchForm.zhifu_zhuangtai || undefined
     }
     const response = await contractStore.fetchPaymentMethods(params)
     tableData.value = response.items
@@ -198,7 +216,8 @@ const handleSearch = () => {
 const handleReset = () => {
   Object.assign(searchForm, {
     search: '',
-    zhifu_leixing: ''
+    zhifu_leixing: '',
+    zhifu_zhuangtai: ''
   })
   pagination.page = 1
   loadData()

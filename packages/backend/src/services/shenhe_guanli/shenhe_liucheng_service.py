@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, or_, desc, asc
 from fastapi import HTTPException
 
-from src.models.shenhe_guanli import ShenheLiucheng, ShenheJilu, ShenheGuize
-from src.schemas.shenhe_guanli import (
+from models.shenhe_guanli import ShenheLiucheng, ShenheJilu, ShenheGuize
+from schemas.shenhe_guanli import (
     ShenheLiuchengResponse,
     ShenheLiuchengListParams,
     ShenheActionRequest
@@ -185,7 +185,7 @@ class ShenheLiuchengService:
     def _get_related_object_info(self, audit_type: str, related_id: str) -> Dict[str, Any]:
         """获取关联业务对象信息"""
         if audit_type == "hetong":
-            from src.models.hetong_guanli import Hetong
+            from models.hetong_guanli import Hetong
             hetong = self.db.query(Hetong).filter(
                 Hetong.id == related_id,
                 Hetong.is_deleted == "N"
@@ -200,7 +200,7 @@ class ShenheLiuchengService:
                 }
         
         elif audit_type == "baojia":
-            from src.models.xiansuo_guanli import XiansuoBaojia
+            from models.xiansuo_guanli import XiansuoBaojia
             baojia = self.db.query(XiansuoBaojia).filter(
                 XiansuoBaojia.id == related_id,
                 XiansuoBaojia.is_deleted == "N"

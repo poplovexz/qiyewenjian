@@ -138,8 +138,10 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search, Refresh, User, ArrowDown } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { useContractManagementStore } from '@/stores/modules/contractManagement'
 
 const router = useRouter()
+const contractStore = useContractManagementStore()
 
 // 响应式数据
 const loading = ref(false)
@@ -163,48 +165,40 @@ const pagination = reactive({
 const getContractList = async () => {
   loading.value = true
   try {
-    // 模拟数据，实际应该调用API
-    const mockData = [
-      {
-        id: '1',
-        contractNumber: 'HT202509001',
-        customerName: '北京科技创新有限公司',
-        contractType: 'daili_jizhang',
-        amount: 24000,
-        startDate: '2025-01-01',
-        endDate: '2025-12-31',
-        status: 'active',
-        createdAt: '2025-09-01 10:00:00'
-      },
-      {
-        id: '2',
-        contractNumber: 'HT202509002',
-        customerName: '上海智能制造股份有限公司',
-        contractType: 'zengzhi_fuwu',
-        amount: 15000,
-        startDate: '2025-02-01',
-        endDate: '2025-07-31',
-        status: 'completed',
-        createdAt: '2025-09-02 14:30:00'
-      },
-      {
-        id: '3',
-        contractNumber: 'HT202509003',
-        customerName: '深圳互联网科技有限公司',
-        contractType: 'zixun_fuwu',
-        amount: 8000,
-        startDate: '2025-03-01',
-        endDate: '2025-05-31',
-        status: 'draft',
-        createdAt: '2025-09-03 09:15:00'
-      }
-    ]
-    
-    contractList.value = mockData
-    pagination.total = mockData.length
+    // 调用真实的API
+    const params = {
+      page: pagination.page,
+      size: pagination.size,
+      hetong_bianhao: searchForm.contractNumber || undefined,
+      kehu_mingcheng: searchForm.customerName || undefined,
+      hetong_zhuangtai: searchForm.status || undefined
+    }
+
+    const response = await contractStore.fetchContracts(params)
+
+    // 转换数据格式以适配现有的表格结构
+    contractList.value = response.items.map(contract => ({
+      id: contract.id,
+      contractNumber: contract.hetong_bianhao,
+      customerName: contract.kehu?.gongsi_mingcheng || '未知客户',
+      contractType: contract.hetong_moban?.hetong_leixing || 'unknown',
+      amount: contract.hetong_jine || 0,
+      startDate: contract.shengxiao_riqi ? contract.shengxiao_riqi.split('T')[0] : '',
+      endDate: contract.daoqi_riqi ? contract.daoqi_riqi.split('T')[0] : '',
+      status: contract.hetong_zhuangtai,
+      createdAt: contract.created_at ? contract.created_at.replace('T', ' ').split('.')[0] : '',
+      // 保留原始数据以便详细查看
+      _original: contract
+    }))
+
+    pagination.total = response.total
   } catch (error) {
-    ElMessage.error('获取合同列表失败')
     console.error('获取合同列表失败:', error)
+    ElMessage.error('获取合同列表失败')
+
+    // 如果API调用失败，显示空列表
+    contractList.value = []
+    pagination.total = 0
   } finally {
     loading.value = false
   }
@@ -275,7 +269,7 @@ const handleCreateAction = (command: string) => {
     router.push('/contracts/create')
   } else if (command === 'from_quote') {
     ElMessage.info('请先在线索列表中选择已确认的报价，然后点击"生成合同"按钮')
-    router.push('/xiansuo')
+    router.push('/leads')
   }
 }
 

@@ -17,6 +17,7 @@ class TokenManager {
   private refreshPromise: Promise<boolean> | null = null
   private authInitialized = false
   private initPromise: Promise<void> | null = null
+  private lastRefreshTime = 0 // 上次刷新时间，用于防抖
 
   /**
    * 检查是否正在刷新
@@ -180,16 +181,19 @@ class TokenManager {
     try {
       // 🔧 修复死锁：使用不带拦截器的原生fetch避免循环依赖
       const response = await this._refreshTokenWithFetch(refreshToken)
-      
+
       // 更新localStorage
       localStorage.setItem('access_token', response.access_token)
       localStorage.setItem('refresh_token', response.refresh_token)
-      
+
       console.log('✅ Token刷新成功')
       return true
     } catch (error) {
       console.error('❌ Token刷新失败:', error)
-      this._clearAuth()
+      // 清除认证状态，但不立即跳转（由request拦截器处理）
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+      localStorage.removeItem('user_info')
       return false
     }
   }
@@ -278,7 +282,7 @@ class TokenManager {
   }
 
   /**
-   * 检查token是否即将过期（提前5分钟刷新）
+   * 检查token是否即将过期（提前30分钟刷新，适合8小时token）
    */
   shouldRefreshToken(): boolean {
     const token = localStorage.getItem('access_token')
@@ -288,9 +292,16 @@ class TokenManager {
       const payload = this._decodeTokenPayload(token)
       const exp = payload.exp * 1000 // 转换为毫秒
       const now = Date.now()
-      const fiveMinutes = 5 * 60 * 1000
+      const thirtyMinutes = 30 * 60 * 1000 // 30分钟缓冲时间
 
-      return (exp - now) < fiveMinutes
+      const remaining = exp - now
+      const shouldRefresh = remaining < thirtyMinutes
+
+      if (shouldRefresh) {
+        console.log(`⏰ Token将在 ${Math.round(remaining / 60000)} 分钟后过期，需要刷新`)
+      }
+
+      return shouldRefresh
     } catch (error) {
       console.error('解析token失败:', error)
       return true // 解析失败时也尝试刷新
@@ -298,11 +309,27 @@ class TokenManager {
   }
 
   /**
-   * 预防性刷新token
+   * 预防性刷新token（增加防抖逻辑）
    */
   async preventiveRefresh(): Promise<void> {
-    if (this.shouldRefreshToken() && !this._isRefreshing) {
+    // 如果已经在刷新中，跳过
+    if (this._isRefreshing) {
+      console.log('⏳ Token正在刷新中，跳过预防性刷新')
+      return
+    }
+
+    // 防抖：如果距离上次刷新不到1分钟，跳过
+    const now = Date.now()
+    const oneMinute = 60 * 1000
+    if (now - this.lastRefreshTime < oneMinute) {
+      console.log('⏳ 距离上次刷新不到1分钟，跳过预防性刷新')
+      return
+    }
+
+    // 检查是否需要刷新
+    if (this.shouldRefreshToken()) {
       console.log('🔄 执行预防性token刷新')
+      this.lastRefreshTime = now
       await this.refreshToken()
     }
   }

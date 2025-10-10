@@ -3,8 +3,8 @@ import functools
 import logging
 from typing import Any, Callable, Optional
 
-from src.core.redis_client import CacheKeys, redis_client
-from src.core.config import settings
+from core.redis_client import CacheKeys, redis_client
+from core.config import settings
 
 
 logger = logging.getLogger(__name__)
@@ -120,7 +120,7 @@ def cache_xiansuo_laiyuan(ttl: int = settings.CACHE_LONG_TTL):
             if cached_result is not None:
                 logger.info("Cache hit for key '%s'", cache_key)
                 # 重新构造Pydantic模型
-                from src.schemas.xiansuo_guanli.xiansuo_laiyuan_schemas import XiansuoLaiyuanResponse
+                from schemas.xiansuo_guanli.xiansuo_laiyuan_schemas import XiansuoLaiyuanResponse
                 if isinstance(cached_result, list):
                     return [XiansuoLaiyuanResponse.model_validate(item) for item in cached_result]
                 else:
@@ -274,7 +274,7 @@ async def cache_health_check() -> dict:
         await redis_client.delete(test_key)
         
         # 获取统计信息
-        from src.core.redis_client import cache_manager
+        from core.redis_client import cache_manager
         stats = await cache_manager.get_cache_stats()
         
         return {

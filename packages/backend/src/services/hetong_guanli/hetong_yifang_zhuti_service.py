@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from fastapi import HTTPException
 
-from ...models.hetong_guanli import HetongYifangZhuti
-from ...schemas.hetong_guanli import (
+from models.hetong_guanli import HetongYifangZhuti
+from schemas.hetong_guanli import (
     HetongYifangZhutiCreate,
     HetongYifangZhutiUpdate,
     HetongYifangZhutiResponse,
@@ -164,7 +164,7 @@ class HetongYifangZhutiService:
             raise HTTPException(status_code=404, detail="乙方主体不存在")
         
         # 检查是否有关联的合同
-        from ...models.hetong_guanli import Hetong
+        from models.hetong_guanli import Hetong
         related_hetong = self.db.query(Hetong).filter(
             Hetong.yifang_zhuti_id == zhuti_id,
             Hetong.is_deleted == "N"

@@ -11,12 +11,17 @@ import { useAuthStore } from '@/stores/modules/auth'
 export function hasPermission(permission: string): boolean {
   const authStore = useAuthStore()
   const userPermissions = authStore.userPermissions || []
-  
+
   // 超级管理员拥有所有权限
-  if (authStore.user?.yonghu_ming === 'admin') {
+  if (authStore.userInfo?.yonghu_ming === 'admin') {
     return true
   }
-  
+
+  // 拥有全量权限标记
+  if (userPermissions.includes('all')) {
+    return true
+  }
+
   return userPermissions.includes(permission)
 }
 

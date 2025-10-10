@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
-from src.models.hetong_guanli import HetongQianshu, Hetong
-from src.schemas.hetong_guanli import HetongQianshuCreate, HetongQianshuUpdate
-from src.core.exceptions import BusinessException
+from models.hetong_guanli import HetongQianshu, Hetong
+from schemas.hetong_guanli import HetongQianshuCreate, HetongQianshuUpdate
+from core.exceptions import BusinessException
 import uuid
 import base64
 import hashlib
@@ -251,3 +251,146 @@ class HetongQianshuService:
             return True
         
         return False
+
+    def get_contract_by_token(self, token: str) -> Dict[str, Any]:
+        """
+        根据签署令牌获取合同信息
+
+        Args:
+            token: 签署令牌
+
+        Returns:
+            Dict[str, Any]: 合同和签署信息
+        """
+        # 查找签署记录
+        qianshu = self.db.query(HetongQianshu).filter(
+            and_(
+                HetongQianshu.qianshu_token == token,
+                HetongQianshu.is_deleted == "N"
+            )
+        ).first()
+
+        if not qianshu:
+            raise BusinessException("签署链接无效")
+
+        # 检查是否过期
+        if qianshu.youxiao_jieshu < datetime.utcnow():
+            qianshu.qianshu_zhuangtai = "guoqi"
+            self.db.commit()
+            raise BusinessException("签署链接已过期")
+
+        # 获取合同信息
+        hetong = self.db.query(Hetong).filter(
+            Hetong.id == qianshu.hetong_id
+        ).first()
+
+        if not hetong:
+            raise BusinessException("合同不存在")
+
+        # 获取客户信息
+        from models.kehu_guanli.kehu import Kehu
+        kehu = self.db.query(Kehu).filter(
+            Kehu.id == hetong.kehu_id
+        ).first()
+
+        return {
+            "contract": {
+                "id": hetong.id,
+                "hetong_bianhao": hetong.hetong_bianhao,
+                "hetong_mingcheng": hetong.hetong_mingcheng,
+                "hetong_neirong": hetong.hetong_neirong,
+                "hetong_jine": float(hetong.hetong_jine) if hetong.hetong_jine else 0,
+                "hetong_zhuangtai": hetong.hetong_zhuangtai,
+                "shengxiao_riqi": hetong.shengxiao_riqi.isoformat() if hetong.shengxiao_riqi else None,
+                "daoqi_riqi": hetong.daoqi_riqi.isoformat() if hetong.daoqi_riqi else None,
+                "kehu": {
+                    "id": kehu.id if kehu else None,
+                    "gongsi_mingcheng": kehu.gongsi_mingcheng if kehu else None
+                }
+            },
+            "signing_info": {
+                "id": qianshu.id,
+                "qianshu_zhuangtai": qianshu.qianshu_zhuangtai,
+                "qianshu_ren_mingcheng": qianshu.qianshu_ren_mingcheng,
+                "qianshu_shijian": qianshu.qianshu_shijian.isoformat() if qianshu.qianshu_shijian else None,
+                "youxiao_jieshu": qianshu.youxiao_jieshu.isoformat() if qianshu.youxiao_jieshu else None
+            }
+        }
+
+    def sign_contract(
+        self,
+        token: str,
+        signer_name: str,
+        signer_phone: str,
+        signer_email: str,
+        signature_image: str,
+        signature_type: str,
+        client_ip: str,
+        user_agent: str
+    ) -> Dict[str, Any]:
+        """
+        签署合同
+
+        Args:
+            token: 签署令牌
+            signer_name: 签署人姓名
+            signer_phone: 签署人电话
+            signer_email: 签署人邮箱
+            signature_image: 签名图片
+            signature_type: 签名类型
+            client_ip: 客户端IP
+            user_agent: 用户代理
+
+        Returns:
+            Dict[str, Any]: 签署结果
+        """
+        # 查找签署记录
+        qianshu = self.db.query(HetongQianshu).filter(
+            and_(
+                HetongQianshu.qianshu_token == token,
+                HetongQianshu.qianshu_zhuangtai == "daiqianshu",
+                HetongQianshu.is_deleted == "N"
+            )
+        ).first()
+
+        if not qianshu:
+            raise BusinessException("签署链接无效或已过期")
+
+        # 检查是否过期
+        if qianshu.youxiao_jieshu < datetime.utcnow():
+            qianshu.qianshu_zhuangtai = "guoqi"
+            self.db.commit()
+            raise BusinessException("签署链接已过期")
+
+        # 获取合同
+        hetong = self.db.query(Hetong).filter(
+            Hetong.id == qianshu.hetong_id
+        ).first()
+
+        if not hetong:
+            raise BusinessException("合同不存在")
+
+        # 更新签署信息
+        now = datetime.utcnow()
+        qianshu.qianshu_zhuangtai = "yiqianshu"
+        qianshu.qianshu_ren_mingcheng = signer_name
+        qianshu.qianshu_ren_dianhua = signer_phone
+        qianshu.qianshu_ren_youxiang = signer_email
+        qianshu.qianshu_shijian = now
+        qianshu.qianshu_ip = client_ip
+        qianshu.qianshu_shebei = user_agent
+        qianshu.qianming_tupian = signature_image
+
+        # 更新合同状态
+        hetong.hetong_zhuangtai = "signed"
+        hetong.qianshu_riqi = now
+        hetong.shengxiao_riqi = now
+
+        self.db.commit()
+
+        return {
+            "success": True,
+            "message": "合同签署成功",
+            "contract_id": hetong.id,
+            "signed_at": now.isoformat()
+        }

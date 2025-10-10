@@ -17,8 +17,8 @@ class Settings(BaseSettings):
     # JWT 配置
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 480  # 8小时
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30     # 30天
     
     # 数据库配置
     DATABASE_URL: PostgresDsn
@@ -60,7 +60,7 @@ class Settings(BaseSettings):
 
     class Config:
         """配置类"""
-        env_file = ".env"
+        env_file = "../.env"
         case_sensitive = True
 
 

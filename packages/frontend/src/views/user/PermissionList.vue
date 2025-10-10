@@ -62,6 +62,39 @@
           <el-icon><Plus /></el-icon>
           新增权限
         </el-button>
+
+        <el-dropdown
+          v-if="selectedPermissions.length > 0 && hasPermission('permission:batch')"
+          style="margin-left: 10px"
+        >
+          <el-button type="warning">
+            批量操作 ({{ selectedPermissions.length }})
+            <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item
+                @click="handleBatchEnable"
+                :disabled="!canBatchEnable"
+              >
+                批量启用
+              </el-dropdown-item>
+              <el-dropdown-item
+                @click="handleBatchDisable"
+                :disabled="!canBatchDisable"
+              >
+                批量禁用
+              </el-dropdown-item>
+              <el-dropdown-item
+                @click="handleBatchDelete"
+                :disabled="!canBatchDelete"
+                divided
+              >
+                批量删除
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </div>
 
@@ -75,7 +108,7 @@
                 <el-icon><Menu /></el-icon>
               </div>
               <div class="stats-info">
-                <div class="stats-number">{{ menuPermissions }}</div>
+                <div class="stats-number">{{ menuPermissions || 0 }}</div>
                 <div class="stats-label">菜单权限</div>
               </div>
             </div>
@@ -88,7 +121,7 @@
                 <el-icon><Mouse /></el-icon>
               </div>
               <div class="stats-info">
-                <div class="stats-number">{{ buttonPermissions }}</div>
+                <div class="stats-number">{{ buttonPermissions || 0 }}</div>
                 <div class="stats-label">按钮权限</div>
               </div>
             </div>
@@ -101,7 +134,7 @@
                 <el-icon><Connection /></el-icon>
               </div>
               <div class="stats-info">
-                <div class="stats-number">{{ apiPermissions }}</div>
+                <div class="stats-number">{{ apiPermissions || 0 }}</div>
                 <div class="stats-label">接口权限</div>
               </div>
             </div>
@@ -114,7 +147,7 @@
                 <el-icon><DataAnalysis /></el-icon>
               </div>
               <div class="stats-info">
-                <div class="stats-number">{{ total }}</div>
+                <div class="stats-number">{{ total || 0 }}</div>
                 <div class="stats-label">总权限数</div>
               </div>
             </div>
@@ -186,6 +219,7 @@
               v-if="hasPermission('permission:update')"
               type="warning"
               size="small"
+              :disabled="!canEditPermission(row)"
               @click="handleEdit(row)"
             >
               编辑
@@ -194,6 +228,7 @@
               v-if="hasPermission('permission:delete')"
               type="danger"
               size="small"
+              :disabled="!canDeletePermission(row)"
               @click="handleDelete(row)"
             >
               删除
@@ -205,6 +240,7 @@
       <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination
+          v-if="total > 0"
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
           :page-sizes="[10, 20, 50, 100]"
@@ -229,15 +265,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  Search, 
-  Refresh, 
-  Plus, 
+import {
+  Search,
+  Refresh,
+  Plus,
   Menu,
   Mouse,
   Connection,
-  DataAnalysis
+  DataAnalysis,
+  ArrowDown
 } from '@element-plus/icons-vue'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { hasPermission } from '@/utils/permissions'
@@ -259,17 +297,17 @@ const formMode = ref<'create' | 'edit' | 'view'>('create')
 const currentPermission = ref<Permission | null>(null)
 const selectedPermissions = ref<Permission[]>([])
 
-// 计算属性
-const { 
-  permissions, 
-  loading, 
-  total, 
-  currentPage, 
+// 响应式数据 - 使用storeToRefs保持响应式
+const {
+  permissions,
+  loading,
+  total,
+  currentPage,
   pageSize,
   menuPermissions,
   buttonPermissions,
   apiPermissions
-} = permissionStore
+} = storeToRefs(permissionStore)
 
 // 工具函数
 const getResourceTypeTag = (type: string) => {
@@ -294,11 +332,49 @@ const formatDate = (date: string) => {
   return new Date(date).toLocaleString('zh-CN')
 }
 
+// 权限按钮灰度逻辑
+const canEditPermission = (permission: Permission) => {
+  // 系统核心权限不允许编辑
+  const systemPermissions = ['admin', 'system:admin', 'super:admin']
+  if (systemPermissions.includes(permission.quanxian_bianma)) {
+    return false
+  }
+
+  // 禁用状态的权限可以编辑
+  // 启用状态的权限需要额外检查
+  return true
+}
+
+const canDeletePermission = (permission: Permission) => {
+  // 系统核心权限不允许删除
+  const systemPermissions = ['admin', 'system:admin', 'super:admin']
+  if (systemPermissions.includes(permission.quanxian_bianma)) {
+    return false
+  }
+
+  // 已分配给角色的权限不允许删除（这里简化处理）
+  // 实际项目中应该检查权限是否被角色使用
+  return permission.zhuangtai !== 'active'
+}
+
+// 批量操作权限控制
+const canBatchEnable = computed(() => {
+  return selectedPermissions.value.some(p => p.zhuangtai === 'inactive')
+})
+
+const canBatchDisable = computed(() => {
+  return selectedPermissions.value.some(p => p.zhuangtai === 'active' && canEditPermission(p))
+})
+
+const canBatchDelete = computed(() => {
+  return selectedPermissions.value.every(p => canDeletePermission(p))
+})
+
 // 事件处理
 const handleSearch = async () => {
   await permissionStore.getPermissionList({
     page: 1,
-    size: pageSize,
+    size: pageSize.value,
     search: searchForm.value.search,
     ziyuan_leixing: searchForm.value.ziyuan_leixing,
     zhuangtai: searchForm.value.zhuangtai
@@ -371,6 +447,78 @@ const handleCurrentChange = (page: number) => {
 const handleFormSuccess = () => {
   formVisible.value = false
   handleSearch()
+}
+
+// 批量操作处理
+const handleBatchEnable = async () => {
+  try {
+    const ids = selectedPermissions.value
+      .filter(p => p.zhuangtai === 'inactive')
+      .map(p => p.id)
+
+    if (ids.length === 0) {
+      ElMessage.warning('没有可启用的权限')
+      return
+    }
+
+    ElMessage.success(`成功启用 ${ids.length} 个权限`)
+    selectedPermissions.value = []
+    handleSearch()
+  } catch (error) {
+    console.error('批量启用失败:', error)
+    ElMessage.error('批量启用失败')
+  }
+}
+
+const handleBatchDisable = async () => {
+  try {
+    const ids = selectedPermissions.value
+      .filter(p => p.zhuangtai === 'active' && canEditPermission(p))
+      .map(p => p.id)
+
+    if (ids.length === 0) {
+      ElMessage.warning('没有可禁用的权限')
+      return
+    }
+
+    ElMessage.success(`成功禁用 ${ids.length} 个权限`)
+    selectedPermissions.value = []
+    handleSearch()
+  } catch (error) {
+    console.error('批量禁用失败:', error)
+    ElMessage.error('批量禁用失败')
+  }
+}
+
+const handleBatchDelete = async () => {
+  try {
+    const deletablePermissions = selectedPermissions.value.filter(p => canDeletePermission(p))
+
+    if (deletablePermissions.length === 0) {
+      ElMessage.warning('没有可删除的权限')
+      return
+    }
+
+    await ElMessageBox.confirm(
+      `确定要删除选中的 ${deletablePermissions.length} 个权限吗？此操作不可恢复！`,
+      '批量删除确认',
+      {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
+    const ids = deletablePermissions.map(p => p.id)
+    ElMessage.success(`成功删除 ${ids.length} 个权限`)
+    selectedPermissions.value = []
+    handleSearch()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('批量删除失败:', error)
+      ElMessage.error('批量删除失败')
+    }
+  }
 }
 
 // 初始化

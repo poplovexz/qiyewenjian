@@ -9,8 +9,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, desc, asc
 from fastapi import HTTPException
 
-from src.models.shenhe_guanli import ShenheGuize
-from src.schemas.shenhe_guanli import (
+from models.shenhe_guanli import ShenheGuize
+from schemas.shenhe_guanli import (
     ShenheGuizeCreate,
     ShenheGuizeUpdate,
     ShenheGuizeResponse,
@@ -170,7 +170,7 @@ class ShenheGuizeService:
             raise HTTPException(status_code=404, detail="审核规则不存在")
         
         # 检查是否有关联的审核流程
-        from src.models.shenhe_guanli import ShenheLiucheng
+        from models.shenhe_guanli import ShenheLiucheng
         related_workflows = self.db.query(ShenheLiucheng).filter(
             ShenheLiucheng.chufa_guize_id == guize_id,
             ShenheLiucheng.is_deleted == "N"

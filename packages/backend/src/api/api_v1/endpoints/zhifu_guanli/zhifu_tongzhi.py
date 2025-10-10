@@ -6,13 +6,13 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from src.core.database import get_db
-from src.core.security.permissions import require_permission
-from src.core.security import get_current_user
-from src.models.yonghu_guanli import Yonghu
-from src.models.zhifu_guanli import ZhifuTongzhi
-from src.services.zhifu_guanli.zhifu_tongzhi_service import ZhifuTongzhiService
-from src.schemas.zhifu_guanli.zhifu_tongzhi_schemas import (
+from core.database import get_db
+from core.security.permissions import require_permission
+from core.security import get_current_user
+from models.yonghu_guanli import Yonghu
+from models.zhifu_guanli import ZhifuTongzhi
+from services.zhifu_guanli.zhifu_tongzhi_service import ZhifuTongzhiService
+from schemas.zhifu_guanli.zhifu_tongzhi_schemas import (
     ZhifuTongzhiCreate,
     ZhifuTongzhiUpdate,
     ZhifuTongzhiResponse,

@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, or_, func
 from fastapi import HTTPException, status
 
-from ...models.chanpin_guanli import ChanpinFenlei, ChanpinXiangmu, ChanpinBuzou
-from ...schemas.chanpin_guanli import (
+from models.chanpin_guanli import ChanpinFenlei, ChanpinXiangmu, ChanpinBuzou
+from schemas.chanpin_guanli import (
     ChanpinXiangmuCreate,
     ChanpinXiangmuUpdate,
     ChanpinXiangmuResponse,

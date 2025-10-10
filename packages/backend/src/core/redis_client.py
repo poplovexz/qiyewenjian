@@ -6,7 +6,7 @@ from typing import Any, List, Optional
 
 import redis.asyncio as redis
 
-from src.core.config import settings
+from core.config import settings
 
 
 logger = logging.getLogger(__name__)

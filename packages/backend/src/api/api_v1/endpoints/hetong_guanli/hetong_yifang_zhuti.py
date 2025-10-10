@@ -5,16 +5,16 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security import get_current_user
-from src.models.yonghu_guanli import Yonghu
-from src.schemas.hetong_guanli import (
+from core.database import get_db
+from core.security import get_current_user
+from models.yonghu_guanli import Yonghu
+from schemas.hetong_guanli import (
     HetongYifangZhutiCreate,
     HetongYifangZhutiUpdate,
     HetongYifangZhutiResponse,
     HetongYifangZhutiListResponse
 )
-from src.services.hetong_guanli.hetong_yifang_zhuti_service import HetongYifangZhutiService
+from services.hetong_guanli.hetong_yifang_zhuti_service import HetongYifangZhutiService
 
 router = APIRouter()
 

@@ -39,18 +39,16 @@
             {{ formatTriggerCondition(row.chufa_tiaojian) }}
           </template>
         </el-table-column>
-        <el-table-column prop="guize_zhuangtai" label="状态" width="100">
+        <el-table-column prop="shi_qiyong" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="getStatusTagType(row.guize_zhuangtai)">
-              {{ getStatusLabel(row.guize_zhuangtai) }}
+            <el-tag :type="getStatusTagType(row.shi_qiyong)">
+              {{ getStatusLabel(row.shi_qiyong) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="youxian_ji" label="优先级" width="100">
+        <el-table-column prop="liucheng_mingcheng" label="关联流程" width="150">
           <template #default="{ row }">
-            <el-tag :type="getPriorityTagType(row.youxian_ji)">
-              {{ getPriorityLabel(row.youxian_ji) }}
-            </el-tag>
+            {{ row.liucheng_mingcheng || '-' }}
           </template>
         </el-table-column>
         <el-table-column prop="created_at" label="创建时间" width="180">
@@ -62,11 +60,12 @@
           <template #default="{ row }">
             <el-button size="small" @click="handleView(row)">查看</el-button>
             <el-button size="small" type="primary" @click="handleEdit(row)">编辑</el-button>
-            <el-button 
-              size="small" 
-              type="danger" 
+            <el-button size="small" type="warning" @click="handleTest(row)">测试</el-button>
+            <el-button
+              size="small"
+              type="danger"
               @click="handleDelete(row)"
-              :disabled="row.guize_zhuangtai === 'active'"
+              :disabled="row.shi_qiyong === 'Y'"
             >
               删除
             </el-button>
@@ -201,9 +200,9 @@
                   >
                     <el-option
                       v-for="workflow in workflowOptions"
-                      :key="workflow.id"
-                      :label="workflow.liucheng_mingcheng"
-                      :value="workflow.id"
+                      :key="workflow.value"
+                      :label="workflow.label"
+                      :value="workflow.value"
                     />
                   </el-select>
                 </el-form-item>
@@ -235,6 +234,164 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 规则详情抽屉 -->
+    <el-drawer
+      v-model="detailDrawerVisible"
+      title="审核规则详情"
+      size="600px"
+      direction="rtl"
+    >
+      <div v-if="currentRule" class="rule-detail">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="规则名称">
+            {{ currentRule.guize_mingcheng }}
+          </el-descriptions-item>
+          <el-descriptions-item label="规则类型">
+            <el-tag :type="getTypeTagType(currentRule.guize_leixing)">
+              {{ getTypeLabel(currentRule.guize_leixing) }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="状态">
+            <el-tag :type="getStatusTagType(currentRule.shi_qiyong)">
+              {{ getStatusLabel(currentRule.shi_qiyong) }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="排序">
+            {{ currentRule.paixu }}
+          </el-descriptions-item>
+          <el-descriptions-item label="规则描述">
+            {{ currentRule.guize_miaoshu || '-' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="创建时间">
+            {{ formatDateTime(currentRule.created_at) }}
+          </el-descriptions-item>
+          <el-descriptions-item label="更新时间">
+            {{ formatDateTime(currentRule.updated_at) }}
+          </el-descriptions-item>
+        </el-descriptions>
+
+        <el-divider>触发条件配置</el-divider>
+        <div class="condition-config">
+          <pre>{{ formatJSON(currentRule.chufa_tiaojian) }}</pre>
+        </div>
+
+        <el-divider>审核流程配置</el-divider>
+        <div class="workflow-config">
+          <pre>{{ formatJSON(currentRule.shenhe_liucheng_peizhi) }}</pre>
+        </div>
+      </div>
+    </el-drawer>
+
+    <!-- 规则测试对话框 -->
+    <el-dialog
+      v-model="testDialogVisible"
+      title="规则测试"
+      width="800px"
+      :close-on-click-modal="false"
+    >
+      <div v-if="testRule" class="rule-test">
+        <el-alert
+          title="规则测试说明"
+          description="输入测试数据来验证规则的触发条件和工作流程"
+          type="info"
+          :closable="false"
+          style="margin-bottom: 20px"
+        />
+
+        <el-descriptions :column="2" border style="margin-bottom: 20px">
+          <el-descriptions-item label="规则名称">{{ testRule.guize_mingcheng }}</el-descriptions-item>
+          <el-descriptions-item label="规则类型">{{ getTypeLabel(testRule.guize_leixing) }}</el-descriptions-item>
+        </el-descriptions>
+
+        <el-form ref="testFormRef" :model="testData" label-width="120px">
+          <el-card header="测试数据" style="margin-bottom: 20px">
+            <div v-if="testRule.guize_leixing === 'hetong_jine_xiuzheng'">
+              <el-form-item label="原始金额">
+                <el-input-number v-model="testData.original_amount" :min="0" :precision="2" />
+              </el-form-item>
+              <el-form-item label="新金额">
+                <el-input-number v-model="testData.new_amount" :min="0" :precision="2" />
+              </el-form-item>
+              <el-form-item label="变更原因">
+                <el-input v-model="testData.change_reason" placeholder="请输入变更原因" />
+              </el-form-item>
+            </div>
+
+            <div v-else-if="testRule.guize_leixing === 'baojia_shenhe'">
+              <el-form-item label="报价金额">
+                <el-input-number v-model="testData.amount" :min="0" :precision="2" />
+              </el-form-item>
+              <el-form-item label="客户名称">
+                <el-input v-model="testData.customer" placeholder="请输入客户名称" />
+              </el-form-item>
+              <el-form-item label="折扣率">
+                <el-input-number v-model="testData.discount_rate" :min="0" :max="1" :precision="2" />
+              </el-form-item>
+            </div>
+
+            <div v-else>
+              <el-form-item label="金额">
+                <el-input-number v-model="testData.amount" :min="0" :precision="2" />
+              </el-form-item>
+              <el-form-item label="备注">
+                <el-input v-model="testData.remark" placeholder="请输入备注" />
+              </el-form-item>
+            </div>
+          </el-card>
+
+          <el-card header="测试结果" v-if="testResult">
+            <div class="test-result">
+              <el-result
+                :icon="testResult.triggered ? 'success' : 'info'"
+                :title="testResult.triggered ? '规则已触发' : '规则未触发'"
+                :sub-title="testResult.trigger_reason"
+              >
+                <template #extra>
+                  <el-descriptions :column="1" border>
+                    <el-descriptions-item label="规则名称">{{ testResult.rule_name }}</el-descriptions-item>
+                    <el-descriptions-item label="触发状态">
+                      <el-tag :type="testResult.triggered ? 'success' : 'info'">
+                        {{ testResult.triggered ? '已触发' : '未触发' }}
+                      </el-tag>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="触发原因">{{ testResult.trigger_reason }}</el-descriptions-item>
+                  </el-descriptions>
+
+                  <div v-if="testResult.workflow_preview" style="margin-top: 20px">
+                    <h4>工作流预览</h4>
+                    <el-timeline>
+                      <el-timeline-item
+                        v-for="step in testResult.workflow_preview.steps"
+                        :key="step.step"
+                        :type="step.applicable ? 'primary' : 'info'"
+                      >
+                        <div class="timeline-step">
+                          <h5>{{ step.name }}</h5>
+                          <p>审批角色: {{ step.role }}</p>
+                          <p v-if="step.applicable">预计时间: {{ step.estimated_time }}</p>
+                          <p v-else>跳过原因: {{ step.skip_reason }}</p>
+                        </div>
+                      </el-timeline-item>
+                    </el-timeline>
+                  </div>
+                </template>
+              </el-result>
+            </div>
+          </el-card>
+        </el-form>
+      </div>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="testDialogVisible = false">关闭</el-button>
+          <el-button type="primary" @click="runTest" :loading="testing">
+            {{ testing ? '测试中...' : '运行测试' }}
+          </el-button>
+          <el-button type="success" @click="loadTestTemplate">加载模板</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -244,6 +401,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh } from '@element-plus/icons-vue'
 import { formatDateTime } from '@/utils/date'
 import type { FormInstance, FormRules } from 'element-plus'
+import { auditRuleApi, auditWorkflowApi } from '@/api/modules/audit'
 
 // 响应式数据
 const loading = ref(false)
@@ -253,6 +411,13 @@ const isEdit = ref(false)
 const ruleList = ref([])
 const workflowOptions = ref([])
 const formRef = ref<FormInstance>()
+const detailDrawerVisible = ref(false)
+const currentRule = ref(null)
+const testDialogVisible = ref(false)
+const testRule = ref(null)
+const testing = ref(false)
+const testResult = ref(null)
+const testFormRef = ref<FormInstance>()
 
 // 分页数据
 const pagination = reactive({
@@ -283,6 +448,17 @@ const actionData = reactive({
   workflow_id: '',
   auto_assign: true,
   notification_methods: ['system']
+})
+
+// 测试数据
+const testData = reactive({
+  amount: 0,
+  original_amount: 0,
+  new_amount: 0,
+  change_reason: '',
+  customer: '',
+  discount_rate: 0,
+  remark: ''
 })
 
 // 表单验证规则
@@ -325,6 +501,8 @@ const getTypeLabel = (type: string) => {
 // 获取状态标签样式
 const getStatusTagType = (status: string) => {
   const statusMap: Record<string, string> = {
+    'Y': 'success',  // 启用
+    'N': 'info',     // 禁用
     active: 'success',
     inactive: 'info'
   }
@@ -334,10 +512,109 @@ const getStatusTagType = (status: string) => {
 // 获取状态标签文本
 const getStatusLabel = (status: string) => {
   const statusMap: Record<string, string> = {
+    'Y': '启用',     // 后端返回Y表示启用
+    'N': '禁用',     // 后端返回N表示禁用
     active: '启用',
     inactive: '禁用'
   }
   return statusMap[status] || status
+}
+
+// 格式化JSON显示
+const formatJSON = (data: any) => {
+  if (!data) return '-'
+  try {
+    if (typeof data === 'string') {
+      return JSON.stringify(JSON.parse(data), null, 2)
+    }
+    return JSON.stringify(data, null, 2)
+  } catch (error) {
+    return data.toString()
+  }
+}
+
+// 测试相关方法
+const resetTestData = () => {
+  Object.assign(testData, {
+    amount: 0,
+    original_amount: 0,
+    new_amount: 0,
+    change_reason: '',
+    customer: '',
+    discount_rate: 0,
+    remark: ''
+  })
+}
+
+const runTest = async () => {
+  if (!testRule.value) return
+
+  try {
+    testing.value = true
+
+    // 构建测试数据
+    const requestData = {
+      rule_id: testRule.value.id,
+      test_data: { ...testData }
+    }
+
+    // 调用测试API
+    const response = await fetch('/api/v1/audit-rules/test/single', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(requestData)
+    })
+
+    if (!response.ok) {
+      throw new Error('测试请求失败')
+    }
+
+    const result = await response.json()
+    testResult.value = result
+
+    ElMessage.success('测试完成')
+  } catch (error) {
+    console.error('规则测试失败:', error)
+    ElMessage.error('规则测试失败')
+  } finally {
+    testing.value = false
+  }
+}
+
+const loadTestTemplate = async () => {
+  if (!testRule.value) return
+
+  try {
+    // 获取测试模板
+    const response = await fetch('/api/v1/audit-rules/test/templates', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('获取模板失败')
+    }
+
+    const data = await response.json()
+    const templates = data.templates || []
+
+    // 查找匹配的模板
+    const template = templates.find(t => t.type === testRule.value.guize_leixing)
+
+    if (template) {
+      Object.assign(testData, template.template)
+      ElMessage.success('模板加载成功')
+    } else {
+      ElMessage.warning('未找到匹配的测试模板')
+    }
+  } catch (error) {
+    console.error('加载测试模板失败:', error)
+    ElMessage.error('加载测试模板失败')
+  }
 }
 
 // 获取优先级标签样式
@@ -375,14 +652,13 @@ const formatTriggerCondition = (condition: any) => {
 const fetchRuleList = async () => {
   loading.value = true
   try {
-    // TODO: 调用API获取审核规则列表
-    // const response = await auditRuleApi.getList(pagination)
-    // ruleList.value = response.data.items
-    // pagination.total = response.data.total
-    
-    // 模拟数据
-    ruleList.value = []
-    pagination.total = 0
+    // 修复：调用真实API获取审核规则列表
+    const response = await auditRuleApi.getList({
+      page: pagination.page,
+      size: pagination.size
+    })
+    ruleList.value = response.items || []
+    pagination.total = response.total || 0
   } catch (error) {
     console.error('获取审核规则列表失败:', error)
     ElMessage.error('获取审核规则列表失败')
@@ -393,12 +669,10 @@ const fetchRuleList = async () => {
 
 const fetchWorkflowOptions = async () => {
   try {
-    // TODO: 调用API获取审核流程选项
-    // const response = await auditWorkflowApi.getOptions()
-    // workflowOptions.value = response.data
-    
-    // 模拟数据
-    workflowOptions.value = []
+    // 修复：调用真实API获取审核流程选项
+    const optionsResponse = await fetch('/api/v1/audit-rules/workflows/options')
+    const optionsData = await optionsResponse.json()
+    workflowOptions.value = optionsData.options || []
   } catch (error) {
     console.error('获取审核流程选项失败:', error)
   }
@@ -416,38 +690,60 @@ const handleCreate = () => {
 
 const handleEdit = (row: any) => {
   isEdit.value = true
-  Object.assign(formData, row)
-  
+
+  // 修复：正确映射后端字段到前端表单
+  formData.id = row.id
+  formData.guize_mingcheng = row.guize_mingcheng
+  formData.guize_leixing = row.guize_leixing
+  formData.guize_miaoshu = row.guize_miaoshu
+  formData.guize_zhuangtai = row.shi_qiyong === 'Y' ? 'active' : 'inactive'  // 状态字段映射
+
   // 解析触发条件
   if (row.chufa_tiaojian) {
     try {
-      const condition = typeof row.chufa_tiaojian === 'string' 
-        ? JSON.parse(row.chufa_tiaojian) 
+      const condition = typeof row.chufa_tiaojian === 'string'
+        ? JSON.parse(row.chufa_tiaojian)
         : row.chufa_tiaojian
       Object.assign(conditionData, condition)
     } catch (error) {
       console.error('解析触发条件失败:', error)
     }
   }
-  
-  // 解析审核动作
-  if (row.shenhe_dongzuo) {
+
+  // 修复：解析审核流程配置而不是shenhe_dongzuo
+  if (row.shenhe_liucheng_peizhi) {
     try {
-      const action = typeof row.shenhe_dongzuo === 'string' 
-        ? JSON.parse(row.shenhe_dongzuo) 
-        : row.shenhe_dongzuo
-      Object.assign(actionData, action)
+      const workflow = typeof row.shenhe_liucheng_peizhi === 'string'
+        ? JSON.parse(row.shenhe_liucheng_peizhi)
+        : row.shenhe_liucheng_peizhi
+      actionData.workflow_id = workflow.workflow_id || ''
+      actionData.auto_assign = workflow.auto_assign || true
+      actionData.notification_methods = workflow.notification_methods || ['system']
     } catch (error) {
-      console.error('解析审核动作失败:', error)
+      console.error('解析审核流程配置失败:', error)
     }
   }
-  
+
   dialogVisible.value = true
 }
 
-const handleView = (row: any) => {
-  // TODO: 实现查看详情
-  ElMessage.info('查看功能开发中')
+const handleView = async (row: any) => {
+  try {
+    // 获取规则详情
+    const response = await auditRuleApi.getById(row.id)
+    currentRule.value = response.data || response
+    detailDrawerVisible.value = true
+  } catch (error) {
+    console.error('获取规则详情失败:', error)
+    ElMessage.error('获取规则详情失败')
+  }
+}
+
+const handleTest = (row: any) => {
+  testRule.value = row
+  testResult.value = null
+  resetTestData()
+  testDialogVisible.value = true
 }
 
 const handleDelete = async (row: any) => {
@@ -462,8 +758,8 @@ const handleDelete = async (row: any) => {
       }
     )
     
-    // TODO: 调用删除API
-    // await auditRuleApi.delete(row.id)
+    // 修复：调用真实删除API
+    await auditRuleApi.delete(row.id)
     ElMessage.success('删除成功')
     fetchRuleList()
   } catch (error) {
@@ -481,19 +777,27 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     submitting.value = true
     
-    // 构建提交数据
+    // 修复：构建正确的提交数据，字段名与后端Schema匹配
     const submitData = {
-      ...formData,
-      chufa_tiaojian: JSON.stringify(conditionData),
-      shenhe_dongzuo: JSON.stringify(actionData)
+      guize_mingcheng: formData.guize_mingcheng,
+      guize_leixing: formData.guize_leixing,
+      guize_miaoshu: formData.guize_miaoshu,
+      chufa_tiaojian: conditionData,  // 触发条件配置对象
+      shenhe_liucheng_peizhi: {  // 修复：使用正确的字段名shenhe_liucheng_peizhi
+        workflow_id: actionData.workflow_id,
+        auto_assign: actionData.auto_assign,
+        notification_methods: actionData.notification_methods
+      },
+      shi_qiyong: formData.guize_zhuangtai === 'active' ? 'Y' : 'N',  // 修复：状态字段映射
+      paixu: 0  // 默认排序
     }
-    
-    // TODO: 调用API保存数据
+
+    // 修复：调用真实API保存数据
     if (isEdit.value) {
-      // await auditRuleApi.update(formData.id, submitData)
+      await auditRuleApi.update(formData.id, submitData)
       ElMessage.success('更新成功')
     } else {
-      // await auditRuleApi.create(submitData)
+      await auditRuleApi.create(submitData)
       ElMessage.success('创建成功')
     }
     
@@ -638,5 +942,49 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+/* 规则详情样式 */
+.rule-detail {
+  padding: 20px;
+}
+
+.rule-detail .condition-config,
+.rule-detail .workflow-config {
+  background: #f5f7fa;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #e4e7ed;
+}
+
+.rule-detail .condition-config pre,
+.rule-detail .workflow-config pre {
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #2c3e50;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* 规则测试样式 */
+.rule-test {
+  padding: 20px;
+}
+
+.test-result {
+  margin-top: 20px;
+}
+
+.timeline-step h5 {
+  margin: 0 0 5px 0;
+  color: #2c3e50;
+}
+
+.timeline-step p {
+  margin: 2px 0;
+  color: #606266;
+  font-size: 14px;
 }
 </style>

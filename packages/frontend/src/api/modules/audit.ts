@@ -48,6 +48,21 @@ export const auditWorkflowApi = {
     return request.get(`/api/v1/audit-workflows/${id}`)
   },
 
+  // 创建审核流程
+  create: (data: any) => {
+    return request.post('/api/v1/audit-workflows', data)
+  },
+
+  // 更新审核流程
+  update: (id: string, data: any) => {
+    return request.put(`/api/v1/audit-workflows/${id}`, data)
+  },
+
+  // 删除审核流程
+  delete: (id: string) => {
+    return request.delete(`/api/v1/audit-workflows/${id}`)
+  },
+
   // 获取我的待审核任务
   getMyPendingAudits: () => {
     return request.get('/api/v1/audit-workflows/pending/my')

@@ -5,17 +5,17 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security.permissions import require_permission
-from src.models.yonghu_guanli.yonghu import Yonghu
-from src.schemas.yonghu_guanli.quanxian_schemas import (
+from core.database import get_db
+from core.security.permissions import require_permission
+from models.yonghu_guanli.yonghu import Yonghu
+from schemas.yonghu_guanli.quanxian_schemas import (
     QuanxianCreate,
     QuanxianUpdate,
     QuanxianResponse,
     QuanxianListResponse,
     QuanxianTreeResponse
 )
-from src.services.yonghu_guanli.quanxian_service import QuanxianService
+from services.yonghu_guanli.quanxian_service import QuanxianService
 
 router = APIRouter()
 
@@ -32,7 +32,7 @@ async def get_quanxian_list(
 ):
     """获取权限列表"""
     # 返回模拟数据，避免数据库查询错误
-    from src.schemas.yonghu_guanli.quanxian_schemas import QuanxianListItem
+    from schemas.yonghu_guanli.quanxian_schemas import QuanxianListItem
 
     mock_items = [
         QuanxianListItem(

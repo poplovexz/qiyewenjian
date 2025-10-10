@@ -5,10 +5,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from src.core.config import settings
-from src.api.api_v1.api import api_router
-from src.core.redis_client import redis_client
-from src.core.cache_decorator import warm_up_cache, cache_health_check
+from core.config import settings
+from api.api_v1.api import api_router
+from core.redis_client import redis_client
+from core.cache_decorator import warm_up_cache, cache_health_check
 
 
 @asynccontextmanager
@@ -17,18 +17,22 @@ async def lifespan(app: FastAPI):
     # 启动时
     print("🚀 启动代理记账营运内部系统...")
 
-    # 连接Redis
+    # 连接Redis（可选）
     try:
         await redis_client.connect()
+        print("✅ Redis连接成功")
         # 缓存预热
         if redis_client.is_connected:
             await warm_up_cache()
+            print("✅ 缓存预热完成")
     except Exception as e:
-        print(f"⚠️ Redis连接失败，跳过缓存功能: {e}")
+        print(f"⚠️ Redis连接失败，系统将在无缓存模式下运行: {e}")
+        # 确保Redis客户端状态正确
+        redis_client.is_connected = False
 
     # 加载事件处理器
     try:
-        from src.services.xiansuo_guanli.baojia_event_handlers import register_baojia_event_handlers
+        from services.xiansuo_guanli.baojia_event_handlers import register_baojia_event_handlers
         print("✅ 事件处理器加载完成")
         register_baojia_event_handlers()
     except Exception as e:
@@ -40,7 +44,12 @@ async def lifespan(app: FastAPI):
 
     # 关闭时
     print("🔄 正在关闭系统...")
-    await redis_client.disconnect()
+    try:
+        if redis_client.is_connected:
+            await redis_client.disconnect()
+            print("✅ Redis连接已关闭")
+    except Exception as e:
+        print(f"⚠️ Redis关闭时出现错误: {e}")
     print("✅ 系统已关闭")
 
 app = FastAPI(
@@ -52,13 +61,25 @@ app = FastAPI(
 )
 
 # 设置 CORS
+default_cors_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174"
+]
+
+configured_origins = [str(origin) for origin in settings.BACKEND_CORS_ORIGINS]
+
+# 去重并保留顺序，确保默认值始终生效
+allow_origins = []
+for origin in configured_origins + default_cors_origins:
+    if origin and origin not in allow_origins:
+        allow_origins.append(origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-       
-    ],
+    allow_origins=allow_origins,
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
@@ -108,3 +129,15 @@ async def health_check() -> dict:
             "performance_impact": "可能影响响应速度" if redis_status != "healthy" else None
         }
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    print("🚀 启动代理记账营运内部系统后端服务...")
+    uvicorn.run(
+        "src.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        reload_dirs=["src"]
+    )

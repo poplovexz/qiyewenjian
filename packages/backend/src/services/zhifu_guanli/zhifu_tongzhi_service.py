@@ -7,17 +7,17 @@ from sqlalchemy import and_, or_, func, desc
 from fastapi import HTTPException, status
 from datetime import datetime
 
-from ...models.zhifu_guanli import ZhifuTongzhi, ZhifuDingdan
-from ...models.hetong_guanli import Hetong
-from ...models.yonghu_guanli import Yonghu
-from ...schemas.zhifu_guanli.zhifu_tongzhi_schemas import (
+from models.zhifu_guanli import ZhifuTongzhi, ZhifuDingdan
+from models.hetong_guanli import Hetong
+from models.yonghu_guanli import Yonghu
+from schemas.zhifu_guanli.zhifu_tongzhi_schemas import (
     ZhifuTongzhiCreate,
     ZhifuTongzhiUpdate,
     ZhifuTongzhiResponse,
     ZhifuTongzhiListResponse,
     ZhifuTongzhiListParams
 )
-from ...core.events import publish, EventNames
+from core.events import publish, EventNames
 
 
 class ZhifuTongzhiService:

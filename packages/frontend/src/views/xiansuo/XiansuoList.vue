@@ -344,6 +344,19 @@
       :baojia="currentBaojia"
       @success="handleBaojiaSuccess"
     />
+
+    <!-- 分配对话框 -->
+    <XiansuoAssignDialog
+      v-model:visible="assignDialogVisible"
+      :xiansuo="currentAssignXiansuo"
+      @success="handleAssignSuccess"
+    />
+
+    <!-- 跟进对话框 -->
+    <XiansuoFollowupDialog
+      v-model:visible="followupDialogVisible"
+      :xiansuo="currentFollowupXiansuo"
+    />
   </div>
 </template>
 
@@ -370,6 +383,8 @@ import { useAuthStore } from '@/stores/modules/auth'
 import XiansuoForm from '@/components/xiansuo/XiansuoForm.vue'
 import XiansuoDetail from '@/components/xiansuo/XiansuoDetail.vue'
 import XiansuoBaojiaForm from '@/components/xiansuo/XiansuoBaojiaForm.vue'
+import XiansuoAssignDialog from './components/XiansuoAssignDialog.vue'
+import XiansuoFollowupDialog from './components/XiansuoFollowupDialog.vue'
 import type { Xiansuo, XiansuoBaojia } from '@/types/xiansuo'
 
 // 使用store
@@ -398,6 +413,14 @@ const baojiaFormVisible = ref(false)
 const baojiaFormMode = ref<'create' | 'edit'>('create')
 const currentBaojia = ref<XiansuoBaojia | null>(null)
 const currentBaojiaXiansuo = ref<Xiansuo | null>(null)
+
+// 分配相关
+const assignDialogVisible = ref(false)
+const currentAssignXiansuo = ref<Xiansuo | null>(null)
+
+// 跟进相关
+const followupDialogVisible = ref(false)
+const currentFollowupXiansuo = ref<Xiansuo | null>(null)
 
 // 合同生成相关
 const contractGenerating = ref(false)
@@ -483,16 +506,16 @@ const handleEdit = (xiansuo: Xiansuo) => {
 const handleAction = async (command: string, xiansuo: Xiansuo) => {
   switch (command) {
     case 'assign':
-      // TODO: 实现分配功能
-      ElMessage.info('分配功能开发中')
+      currentAssignXiansuo.value = xiansuo
+      assignDialogVisible.value = true
       break
     case 'status':
       // TODO: 实现状态更新功能
       ElMessage.info('状态更新功能开发中')
       break
     case 'followup':
-      // TODO: 实现跟进功能
-      ElMessage.info('跟进功能开发中')
+      currentFollowupXiansuo.value = xiansuo
+      followupDialogVisible.value = true
       break
     case 'edit_baojia':
       await handleEditBaojia(xiansuo)
@@ -638,6 +661,12 @@ const handleBaojiaSuccess = async () => {
   await handleSearch()
 }
 
+const handleAssignSuccess = async () => {
+  assignDialogVisible.value = false
+  // 刷新线索列表以更新状态
+  await handleSearch()
+}
+
 // 判断是否可以生成合同
 const canGenerateContract = (xiansuo: Xiansuo) => {
   const baojiaStatus = getBaojiaStatus(xiansuo.id)
@@ -683,9 +712,9 @@ const handleGenerateContract = async (xiansuo: Xiansuo) => {
       // 刷新线索列表
       await xiansuoStore.fetchXiansuoList()
     } else if (action === 'custom') {
-      // 跳转到合同创建页面，预填报价信息
+      // 跳转到合同生成页面，预填报价信息
       router.push({
-        path: '/contracts/create',
+        path: '/contracts/generate',
         query: { baojia_id: acceptedBaojia.id }
       })
     }
@@ -693,7 +722,15 @@ const handleGenerateContract = async (xiansuo: Xiansuo) => {
   } catch (error: any) {
     if (error !== 'cancel' && error !== 'close') {
       console.error('生成合同失败:', error)
-      ElMessage.error('生成合同失败')
+
+      // 检查是否是400错误（重复创建）
+      if (error.response?.status === 400) {
+        ElMessage.warning('该报价已经生成过合同，请在合同管理页面查看')
+        // 可以选择跳转到合同管理页面
+        // router.push('/contracts')
+      } else {
+        ElMessage.error('生成合同失败: ' + (error.message || '未知错误'))
+      }
     }
   } finally {
     contractGenerating.value = false
@@ -746,7 +783,11 @@ const getStatusText = (status: string) => {
 // 获取线索的最新报价状态
 const getBaojiaStatus = (xiansuoId: string) => {
   const baojiaList = xiansuoStore.getBaojiaListByXiansuo(xiansuoId)
+  console.log(`🔍 获取线索 ${xiansuoId} 的报价状态:`)
+  console.log(`   - 从store获取的报价列表长度: ${baojiaList ? baojiaList.length : 0}`)
+  
   if (!baojiaList || baojiaList.length === 0) {
+    console.log(`   - 结果: 无报价数据`)
     return null
   }
 
@@ -755,7 +796,14 @@ const getBaojiaStatus = (xiansuoId: string) => {
     .filter(baojia => !baojia.is_expired && baojia.baojia_zhuangtai !== 'rejected')
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-  return validBaojia.length > 0 ? validBaojia[0].baojia_zhuangtai : null
+  console.log(`   - 有效报价数量: ${validBaojia.length}`)
+  if (validBaojia.length > 0) {
+    console.log(`   - 最新有效报价状态: ${validBaojia[0].baojia_zhuangtai}`)
+  }
+
+  const result = validBaojia.length > 0 ? validBaojia[0].baojia_zhuangtai : null
+  console.log(`   - 结果: ${result || '无有效报价'}`)
+  return result
 }
 
 // 获取报价状态的标签类型

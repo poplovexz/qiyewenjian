@@ -7,13 +7,13 @@ from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, desc
 
-from src.models.zhifu_guanli.hetong_zhifu import HetongZhifu
-from src.schemas.zhifu_guanli.hetong_zhifu_schemas import (
+from models.zhifu_guanli.hetong_zhifu import HetongZhifu
+from schemas.zhifu_guanli.hetong_zhifu_schemas import (
     HetongZhifuCreate,
     HetongZhifuUpdate,
     HetongZhifuResponse
 )
-from src.core.exceptions import BusinessException, ResourceNotFoundException
+from core.exceptions import BusinessException, ResourceNotFoundException
 
 
 class HetongZhifuService:

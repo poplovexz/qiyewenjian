@@ -8,9 +8,9 @@ from fastapi import HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-from ..config import settings
-from ..database import get_db
-from ...models import Yonghu
+from core.config import settings
+from core.database import get_db
+from models import Yonghu
 
 
 # JWT 安全方案

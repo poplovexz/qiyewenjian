@@ -172,12 +172,36 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     loading.value = true
     
-    // TODO: 调用API创建或更新角色
+    // 调用API创建或更新角色
     if (props.mode === 'create') {
-      // await roleApi.createRole(formData.value)
+      const response = await fetch('/api/v1/roles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(formData.value)
+      })
+
+      if (!response.ok) {
+        throw new Error('创建角色失败')
+      }
+
       ElMessage.success('角色创建成功')
     } else {
-      // await roleApi.updateRole(props.role!.id, formData.value)
+      const response = await fetch(`/api/v1/roles/${props.role!.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(formData.value)
+      })
+
+      if (!response.ok) {
+        throw new Error('更新角色失败')
+      }
+
       ElMessage.success('角色更新成功')
     }
     

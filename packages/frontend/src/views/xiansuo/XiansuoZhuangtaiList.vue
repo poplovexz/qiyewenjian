@@ -210,8 +210,18 @@ const {
 
 // 方法
 const handleSearch = async () => {
-  // TODO: 实现状态列表获取
-  ElMessage.info('状态列表功能开发中')
+  try {
+    await xiansuoStore.fetchZhuangtaiList({
+      page: currentPage.value,
+      size: pageSize.value,
+      search: searchForm.value.search,
+      zhuangtai_leixing: searchForm.value.zhuangtai_leixing,
+      zhuangtai: searchForm.value.zhuangtai
+    })
+  } catch (error) {
+    console.error('获取状态列表失败:', error)
+    ElMessage.error('获取状态列表失败')
+  }
 }
 
 const handleReset = async () => {
@@ -251,7 +261,7 @@ const handleDelete = async (zhuangtai: XiansuoZhuangtai) => {
       }
     )
     
-    // TODO: 实现删除功能
+    await xiansuoStore.deleteZhuangtai(zhuangtai.id)
     ElMessage.success('删除成功')
     await handleSearch()
   } catch (error) {

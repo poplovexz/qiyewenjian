@@ -113,11 +113,16 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       const isExpired = cachedData ? now - cachedData.timestamp > CACHE_EXPIRE_TIME : true
 
       if (!forceRefresh && cachedData && !isExpired) {
-        console.log('使用缓存的线索列表数据')
+        console.log('🎯🎯🎯 [FETCH_XIANSUO_LIST] 使用缓存的线索列表数据')
         xiansuo_list.value = cachedData.data
         total.value = cachedData.total
         currentPage.value = params.page || currentPage.value
         pageSize.value = params.size || pageSize.value
+        
+        // 即使使用缓存数据，也要预取报价信息以确保按钮状态正确
+        console.log(`🎯🎯🎯 [FETCH_XIANSUO_LIST] 缓存数据加载完成，准备调用prefetchBaojiaForLeads，线索数量: ${cachedData.data.length}`)
+        await prefetchBaojiaForLeads(cachedData.data)
+        console.log(`🎯🎯🎯 [FETCH_XIANSUO_LIST] 缓存数据的prefetchBaojiaForLeads调用完成`)
         return
       }
 
@@ -145,7 +150,9 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       })
 
       // 预取报价信息，保证按钮状态准确
+      console.log(`🎯🎯🎯 [FETCH_XIANSUO_LIST] 准备调用prefetchBaojiaForLeads，线索数量: ${response.items.length}`)
       await prefetchBaojiaForLeads(response.items)
+      console.log(`🎯🎯🎯 [FETCH_XIANSUO_LIST] prefetchBaojiaForLeads调用完成`)
 
     } catch (error) {
       console.error('获取线索列表失败:', error)
@@ -341,6 +348,34 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     }
   }
 
+  const fetchZhuangtaiList = async (params: { page?: number; size?: number; search?: string; zhuangtai_leixing?: string; zhuangtai?: string } = {}) => {
+    try {
+      loading.value = true
+      const response = await xiansuoZhuangtaiApi.getList(params)
+      zhuangtai_list.value = response.items
+      total.value = response.total
+      currentPage.value = response.page
+      pageSize.value = response.size
+    } catch (error) {
+      console.error('获取线索状态列表失败:', error)
+      ElMessage.error('获取线索状态列表失败')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const deleteZhuangtai = async (id: string) => {
+    try {
+      await xiansuoZhuangtaiApi.delete(id)
+      // 清除缓存，强制重新获取
+      cache.value.zhuangtai_loaded = false
+    } catch (error) {
+      console.error('删除线索状态失败:', error)
+      ElMessage.error('删除线索状态失败')
+      throw error
+    }
+  }
+
   // 跟进记录管理方法
   const createGenjin = async (data: XiansuoGenjinCreate) => {
     try {
@@ -414,20 +449,34 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
   }
 
   const prefetchBaojiaForLeads = async (leads: Xiansuo[]) => {
+    console.log(`🚀🚀🚀 [PREFETCH_BAOJIA] 开始预取 ${leads.length} 个线索的报价数据...`)
+    console.log(`🚀🚀🚀 [PREFETCH_BAOJIA] 当前时间: ${new Date().toLocaleTimeString()}`)
+    console.log(`🚀🚀🚀 [PREFETCH_BAOJIA] 线索列表:`, leads.map(l => ({ id: l.id, name: l.gongsi_mingcheng })))
+    
     const ids = leads
       .filter(lead => !baojiaMap.value[lead.id])
       .map(lead => lead.id)
 
-    if (!ids.length) return
+    console.log(`🚀🚀🚀 [PREFETCH_BAOJIA] 需要预取报价的线索ID: ${ids.length} 个`, ids)
+    console.log('💾 当前缓存的报价数据:', Object.keys(baojiaMap.value))
+
+    if (!ids.length) {
+      console.log('✅ 所有线索的报价数据已缓存，跳过预取')
+      return
+    }
 
     await Promise.all(ids.map(async (id) => {
       try {
+        console.log(`🔍 正在获取线索 ${id} 的报价数据...`)
         const list = await xiansuoBaojiaApi.getByXiansuo(id)
+        console.log(`✅ 线索 ${id} 获取到 ${list.length} 个报价`)
         setBaojiaList(id, list)
       } catch (error) {
-        console.warn('预取线索报价失败:', id, error)
+        console.warn('❌ 预取线索报价失败:', id, error)
       }
     }))
+    
+    console.log('🎉 报价数据预取完成，最终缓存状态:', Object.keys(baojiaMap.value))
   }
 
   const fetchBaojiaByXiansuo = async (xiansuoId: string, forceRefresh = false) => {
@@ -570,9 +619,22 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
   // 辅助方法：检查特定线索是否有有效报价
   const hasValidBaojia = (xiansuoId: string): boolean => {
-    return (baojiaMap.value[xiansuoId] || []).some(
+    const baojiaList = baojiaMap.value[xiansuoId] || []
+    console.log(`🔍 检查线索 ${xiansuoId} 的有效报价:`)
+    console.log(`   - 缓存中的报价数量: ${baojiaList.length}`)
+    
+    if (baojiaList.length > 0) {
+      baojiaList.forEach((b, index) => {
+        console.log(`   - 报价 ${index + 1}: ${b.baojia_bianma} (状态: ${b.baojia_zhuangtai}, 过期: ${b.is_expired})`)
+      })
+    }
+    
+    const hasValid = baojiaList.some(
       b => !b.is_expired && b.baojia_zhuangtai !== 'rejected'
     )
+    
+    console.log(`   - 结果: ${hasValid ? '有有效报价' : '无有效报价'}`)
+    return hasValid
   }
 
   const getBaojiaListByXiansuo = (xiansuoId: string): XiansuoBaojia[] => {
@@ -638,6 +700,8 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     fetchActiveLaiyuanList,
     createLaiyuan,
     fetchActiveZhuangtaiList,
+    fetchZhuangtaiList,
+    deleteZhuangtai,
     createGenjin,
     fetchGenjinByXiansuo,
 

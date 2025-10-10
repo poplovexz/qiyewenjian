@@ -5,14 +5,15 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
-from ....core.database import get_db
-from ....core.security import get_current_user
-from ....models.yonghu_guanli import Yonghu
-from ....schemas.yonghu_guanli import (
+from core.database import get_db
+from core.security import get_current_user
+from core.security.permissions import require_permission
+from models.yonghu_guanli import Yonghu
+from schemas.yonghu_guanli import (
     YonghuCreate, YonghuUpdate, YonghuResponse, YonghuList,
     JiaoseResponse, QuanxianResponse
 )
-from ....services.yonghu_guanli.yonghu_service import YonghuService
+from services.yonghu_guanli.yonghu_service import YonghuService
 
 router = APIRouter()
 
@@ -21,7 +22,7 @@ router = APIRouter()
 def create_yonghu(
     yonghu_data: YonghuCreate,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("user:create"))
 ):
     """创建用户"""
     yonghu_service = YonghuService(db)
@@ -35,7 +36,7 @@ def get_yonghu_list(
     search: Optional[str] = Query(None, description="搜索关键词"),
     zhuangtai: Optional[str] = Query(None, description="用户状态"),
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("user:read"))
 ):
     """获取用户列表"""
     yonghu_service = YonghuService(db)
@@ -46,18 +47,18 @@ def get_yonghu_list(
 def get_yonghu(
     yonghu_id: str,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("user:read"))
 ):
     """获取用户详情"""
     yonghu_service = YonghuService(db)
     yonghu = yonghu_service.get_yonghu_by_id(yonghu_id)
-    
+
     if not yonghu:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="用户不存在"
         )
-    
+
     return yonghu
 
 
@@ -66,7 +67,7 @@ def update_yonghu(
     yonghu_id: str,
     yonghu_data: YonghuUpdate,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("user:update"))
 ):
     """更新用户信息"""
     yonghu_service = YonghuService(db)
@@ -77,7 +78,7 @@ def update_yonghu(
 def delete_yonghu(
     yonghu_id: str,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("user:delete"))
 ):
     """删除用户"""
     yonghu_service = YonghuService(db)
@@ -89,12 +90,12 @@ def assign_yonghu_roles(
     yonghu_id: str,
     jiaose_ids: List[str],
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("user:role_manage"))
 ):
     """为用户分配角色"""
     yonghu_service = YonghuService(db)
     success = yonghu_service.assign_roles(yonghu_id, jiaose_ids, current_user.id)
-    
+
     if success:
         return {"message": "角色分配成功"}
     else:
@@ -108,7 +109,7 @@ def assign_yonghu_roles(
 def get_yonghu_roles(
     yonghu_id: str,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("user:read"))
 ):
     """获取用户的角色列表"""
     yonghu_service = YonghuService(db)
@@ -119,7 +120,7 @@ def get_yonghu_roles(
 def get_yonghu_permissions(
     yonghu_id: str,
     db: Session = Depends(get_db),
-    current_user: Yonghu = Depends(get_current_user)
+    current_user: Yonghu = Depends(require_permission("user:read"))
 ):
     """获取用户的权限列表"""
     yonghu_service = YonghuService(db)

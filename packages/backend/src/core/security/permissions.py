@@ -6,9 +6,9 @@ from typing import List, Optional
 from fastapi import HTTPException, status, Depends
 from sqlalchemy.orm import Session
 
-from ..database import get_db
+from core.database import get_db
 from .jwt_handler import get_current_user
-from ...models.yonghu_guanli import Yonghu, Jiaose, Quanxian, JiaoseQuanxian
+from models.yonghu_guanli import Yonghu, Jiaose, Quanxian, JiaoseQuanxian
 
 
 def check_permission(permission_code: str):
@@ -73,7 +73,7 @@ def has_permission(db: Session, user: Yonghu, permission_code: str) -> bool:
         return True
     
     # 查询用户的所有角色
-    from ...models.yonghu_guanli import YonghuJiaose
+    from models.yonghu_guanli import YonghuJiaose
     user_roles = db.query(Jiaose).join(
         YonghuJiaose, YonghuJiaose.jiaose_id == Jiaose.id
     ).filter(

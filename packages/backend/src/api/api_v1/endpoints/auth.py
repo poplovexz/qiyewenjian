@@ -4,10 +4,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from ....core.database import get_db
-from ....core.security import get_current_user
-from ....models import Yonghu
-from ....schemas.yonghu_guanli import (
+from core.database import get_db
+from core.security import get_current_user
+from models import Yonghu
+from schemas.yonghu_guanli import (
     LoginRequest,
     LoginResponse,
     TokenResponse,
@@ -15,7 +15,7 @@ from ....schemas.yonghu_guanli import (
     ChangePasswordRequest,
     UserInfo
 )
-from ....services.yonghu_guanli import AuthService
+from services.yonghu_guanli import AuthService
 
 
 router = APIRouter()
@@ -67,7 +67,7 @@ async def get_current_user_info(
     auth_service = AuthService(db)
     
     # 获取用户角色和权限
-    from src.core.security import get_user_permissions
+    from core.security import get_user_permissions
     user_roles = auth_service.get_user_roles(current_user)
     user_permissions = list(get_user_permissions(current_user, db))
     

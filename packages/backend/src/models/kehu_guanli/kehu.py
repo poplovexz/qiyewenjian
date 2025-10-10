@@ -116,6 +116,18 @@ class Kehu(BaseModel):
         back_populates="kehu",
         cascade="all, delete-orphan"
     )
+
+    fuwu_gongdan_list = relationship(
+        "FuwuGongdan",
+        back_populates="kehu",
+        cascade="all, delete-orphan"
+    )
+
+    heguishixiang_peizhi_list = relationship(
+        "KehuHeguishixiang",
+        back_populates="kehu",
+        cascade="all, delete-orphan"
+    )
     
     def __repr__(self) -> str:
         return f"<Kehu(gongsi_mingcheng='{self.gongsi_mingcheng}', kehu_zhuangtai='{self.kehu_zhuangtai}')>"

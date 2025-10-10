@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
 from fastapi import HTTPException
 
-from src.models.xiansuo_guanli import XiansuoGenjin, Xiansuo
-from src.models.yonghu_guanli import Yonghu
-from src.schemas.xiansuo_guanli import (
+from models.xiansuo_guanli import XiansuoGenjin, Xiansuo
+from models.yonghu_guanli import Yonghu
+from schemas.xiansuo_guanli import (
     XiansuoGenjinCreate,
     XiansuoGenjinUpdate,
     XiansuoGenjinResponse,

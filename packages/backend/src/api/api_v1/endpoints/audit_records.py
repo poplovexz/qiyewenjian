@@ -5,10 +5,10 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security.permissions import check_permission
-from src.core.security.jwt_handler import get_current_user
-from src.models.yonghu_guanli import Yonghu
+from core.database import get_db
+from core.security.permissions import check_permission
+from core.security.jwt_handler import get_current_user
+from models.yonghu_guanli import Yonghu
 
 router = APIRouter()
 

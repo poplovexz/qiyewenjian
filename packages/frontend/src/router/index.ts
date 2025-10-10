@@ -39,6 +39,15 @@ const routes: RouteRecordRaw[] = [
           title: '功能演示'
         }
       },
+      // 组件测试页面
+      {
+        path: 'test-components',
+        name: 'TestComponents',
+        component: () => import('@/views/TestComponents.vue'),
+        meta: {
+          title: '组件测试'
+        }
+      },
       // 权限管理工具
       {
         path: 'permission-manager',
@@ -198,6 +207,16 @@ const routes: RouteRecordRaw[] = [
           permissions: ['contract_manage']
         }
       },
+      // 合同生成
+      {
+        path: 'contracts/generate',
+        name: 'ContractGenerate',
+        component: () => import('@/views/contract/ContractGenerate.vue'),
+        meta: {
+          title: '合同生成',
+          permissions: ['contract_manage']
+        }
+      },
       // 合同编辑
       {
         path: 'contracts/:id/edit',
@@ -291,6 +310,26 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/audit/AuditRuleConfig.vue'),
         meta: {
           title: '审核规则配置',
+          permissions: ['audit_config']
+        }
+      },
+      // 支付审核
+      {
+        path: 'audit/payment-audit',
+        name: 'PaymentAudit',
+        component: () => import('@/views/audit/PaymentAudit.vue'),
+        meta: {
+          title: '支付审核',
+          permissions: ['audit_record:read']
+        }
+      },
+      // 审批权责矩阵
+      {
+        path: 'audit/approval-matrix',
+        name: 'ApprovalMatrix',
+        component: () => import('@/views/audit/ApprovalMatrix.vue'),
+        meta: {
+          title: '审批权责矩阵',
           permissions: ['audit_config']
         }
       },
@@ -397,6 +436,66 @@ const routes: RouteRecordRaw[] = [
           title: '编辑支付方式',
           permissions: ['finance_manage']
         }
+      },
+      // 开票申请管理
+      {
+        path: 'invoices',
+        name: 'InvoiceList',
+        component: () => import('@/views/finance/InvoiceList.vue'),
+        meta: {
+          title: '开票申请',
+          permissions: ['invoice:read']
+        }
+      },
+      // 开票申请创建
+      {
+        path: 'invoices/create',
+        name: 'InvoiceCreate',
+        component: () => import('@/views/finance/InvoiceForm.vue'),
+        meta: {
+          title: '新建开票申请',
+          permissions: ['invoice:create']
+        }
+      },
+      // 开票申请编辑
+      {
+        path: 'invoices/:id/edit',
+        name: 'InvoiceEdit',
+        component: () => import('@/views/finance/InvoiceForm.vue'),
+        meta: {
+          title: '编辑开票申请',
+          permissions: ['invoice:update']
+        }
+      },
+      // 成本记录管理
+      {
+        path: 'costs',
+        name: 'CostList',
+        component: () => import('@/views/finance/CostList.vue'),
+        meta: {
+          title: '成本记录',
+          permissions: ['cost:read']
+        }
+      },
+      // 成本记录创建
+      {
+        path: 'costs/create',
+        name: 'CostCreate',
+        component: () => import('@/views/finance/CostForm.vue'),
+        meta: {
+          title: '新建成本记录',
+          permissions: ['cost:create']
+        }
+      },
+      // 成本记录编辑
+      {
+        path: 'costs/:id/edit',
+        name: 'CostEdit',
+        component: () => import('@/views/finance/CostForm.vue'),
+        meta: {
+          title: '编辑成本记录',
+          permissions: ['cost:update']
+        }
       }
     ]
   },
@@ -418,6 +517,80 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: true
     }
   },
+
+  // 服务工单管理
+  {
+    path: '/service-orders',
+    component: () => import('@/layouts/MainLayout.vue'),
+    redirect: '/service-orders',
+    meta: {
+      title: '服务工单',
+      icon: 'Document',
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: '',
+        name: 'ServiceOrderList',
+        component: () => import('@/views/service-orders/ServiceOrderList.vue'),
+        meta: {
+          title: '服务工单列表',
+          permissions: ['service_order:read']
+        }
+      },
+      {
+        path: ':id',
+        name: 'ServiceOrderDetail',
+        component: () => import('@/views/service-orders/ServiceOrderDetail.vue'),
+        meta: {
+          title: '服务工单详情',
+          permissions: ['service_order:read']
+        }
+      },
+      {
+        path: ':id/edit',
+        name: 'ServiceOrderEdit',
+        component: () => import('@/views/service-orders/components/ServiceOrderForm.vue'),
+        meta: {
+          title: '编辑服务工单',
+          permissions: ['service_order:write']
+        }
+      }
+    ]
+  },
+
+  // 合规管理
+  {
+    path: '/compliance',
+    component: () => import('@/layouts/MainLayout.vue'),
+    redirect: '/compliance/calendar',
+    meta: {
+      title: '合规管理',
+      icon: 'Calendar',
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: 'calendar',
+        name: 'ComplianceCalendar',
+        component: () => import('@/views/compliance/ComplianceCalendar.vue'),
+        meta: {
+          title: '合规日历',
+          permissions: ['compliance:read']
+        }
+      },
+      {
+        path: 'templates',
+        name: 'ComplianceTemplates',
+        component: () => import('@/views/compliance/ComplianceTemplates.vue'),
+        meta: {
+          title: '合规模板',
+          permissions: ['compliance:manage']
+        }
+      }
+    ]
+  },
+
   {
     path: '/quote-preview/:id',
     name: 'QuotePreview',
@@ -426,6 +599,34 @@ const routes: RouteRecordRaw[] = [
       title: '报价预览',
       requiresAuth: false
     }
+  },
+
+  // 公共页面（无需登录）
+  {
+    path: '/public',
+    name: 'Public',
+    children: [
+      // 合同确认页面
+      {
+        path: 'contract-confirm/:token',
+        name: 'ContractConfirm',
+        component: () => import('@/views/public/ContractConfirm.vue'),
+        meta: {
+          title: '合同确认',
+          requiresAuth: false
+        }
+      },
+      // 合同支付页面
+      {
+        path: 'contract-payment/:contractId',
+        name: 'ContractPayment',
+        component: () => import('@/views/public/ContractPayment.vue'),
+        meta: {
+          title: '合同支付',
+          requiresAuth: false
+        }
+      }
+    ]
   },
   {
     path: '/:pathMatch(.*)*',

@@ -26,23 +26,27 @@
         stripe
         style="width: 100%"
       >
-        <el-table-column prop="liucheng_mingcheng" label="流程名称" width="200" />
-        <el-table-column prop="liucheng_leixing" label="流程类型" width="120">
+        <el-table-column prop="workflow_name" label="流程名称" width="200" />
+        <el-table-column prop="audit_type" label="流程类型" width="120">
           <template #default="{ row }">
-            <el-tag :type="getTypeTagType(row.liucheng_leixing)">
-              {{ getTypeLabel(row.liucheng_leixing) }}
+            <el-tag :type="getTypeTagType(row.audit_type)">
+              {{ getTypeLabel(row.audit_type) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="liucheng_zhuangtai" label="状态" width="100">
+        <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="getStatusTagType(row.liucheng_zhuangtai)">
-              {{ getStatusLabel(row.liucheng_zhuangtai) }}
+            <el-tag :type="getStatusTagType(row.status)">
+              {{ getStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="buzhou_shuliang" label="步骤数量" width="100" />
-        <el-table-column prop="liucheng_miaoshu" label="描述" show-overflow-tooltip />
+        <el-table-column label="步骤数量" width="100">
+          <template #default="{ row }">
+            {{ row.steps?.length || 0 }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="description" label="描述" show-overflow-tooltip />
         <el-table-column prop="created_at" label="创建时间" width="180">
           <template #default="{ row }">
             {{ formatDateTime(row.created_at) }}
@@ -52,11 +56,11 @@
           <template #default="{ row }">
             <el-button size="small" @click="handleView(row)">查看</el-button>
             <el-button size="small" type="primary" @click="handleEdit(row)">编辑</el-button>
-            <el-button 
-              size="small" 
-              type="danger" 
+            <el-button
+              size="small"
+              type="danger"
               @click="handleDelete(row)"
-              :disabled="row.liucheng_zhuangtai === 'active'"
+              :disabled="row.status === 'active'"
             >
               删除
             </el-button>
@@ -95,14 +99,14 @@
           <el-input v-model="formData.liucheng_mingcheng" placeholder="请输入流程名称" />
         </el-form-item>
         
-        <el-form-item label="流程类型" prop="liucheng_leixing">
-          <el-select v-model="formData.liucheng_leixing" placeholder="请选择流程类型">
+        <el-form-item label="流程类型" prop="shenhe_leixing">
+          <el-select v-model="formData.shenhe_leixing" placeholder="请选择流程类型">
             <el-option label="合同审核" value="contract" />
-            <el-option label="报价审核" value="quote" />
-            <el-option label="金额变更审核" value="amount_change" />
+            <el-option label="客户审核" value="customer" />
+            <el-option label="财务审核" value="financial" />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item label="流程描述" prop="liucheng_miaoshu">
           <el-input
             v-model="formData.liucheng_miaoshu"
@@ -111,11 +115,11 @@
             placeholder="请输入流程描述"
           />
         </el-form-item>
-        
-        <el-form-item label="流程状态" prop="liucheng_zhuangtai">
-          <el-radio-group v-model="formData.liucheng_zhuangtai">
+
+        <el-form-item label="流程状态" prop="zhuangtai">
+          <el-radio-group v-model="formData.zhuangtai">
             <el-radio label="active">启用</el-radio>
-            <el-radio label="inactive">禁用</el-radio>
+            <el-radio label="draft">草稿</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -158,7 +162,7 @@
                           v-for="role in availableRoles"
                           :key="role.id"
                           :label="role.jiaose_ming"
-                          :value="role.id"
+                          :value="role.jiaose_bianma"
                         />
                       </el-select>
                     </el-form-item>
@@ -195,6 +199,90 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 流程详情抽屉 -->
+    <el-drawer
+      v-model="detailDrawerVisible"
+      title="审核流程详情"
+      size="700px"
+      direction="rtl"
+    >
+      <div v-if="currentWorkflow" class="workflow-detail">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="流程名称">
+            {{ currentWorkflow.name }}
+          </el-descriptions-item>
+          <el-descriptions-item label="流程类型">
+            <el-tag :type="getTypeTagType(currentWorkflow.audit_type || 'contract')">
+              {{ getTypeLabel(currentWorkflow.audit_type || 'contract') }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="状态">
+            <el-tag :type="getStatusTagType(currentWorkflow.status)">
+              {{ getStatusLabel(currentWorkflow.status) }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="步骤数量">
+            {{ currentWorkflow.steps?.length || 0 }}
+          </el-descriptions-item>
+          <el-descriptions-item label="流程描述">
+            {{ currentWorkflow.description || '-' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="创建时间">
+            {{ formatDateTime(currentWorkflow.created_at) }}
+          </el-descriptions-item>
+          <el-descriptions-item label="更新时间">
+            {{ formatDateTime(currentWorkflow.updated_at) }}
+          </el-descriptions-item>
+        </el-descriptions>
+
+        <el-divider>流程步骤预览</el-divider>
+        <div class="workflow-steps">
+          <el-timeline>
+            <el-timeline-item
+              v-for="(step, index) in currentWorkflow.steps"
+              :key="index"
+              :icon="getStepIcon(step)"
+              :type="getStepType(step)"
+              :timestamp="getStepTimestamp(step)"
+            >
+              <el-card class="step-card">
+                <div class="step-header">
+                  <h4>{{ step.name || step.step_name }}</h4>
+                  <el-tag size="small" :type="step.is_required ? 'danger' : 'info'">
+                    {{ step.is_required ? '必需' : '可选' }}
+                  </el-tag>
+                </div>
+                <div class="step-content">
+                  <p><strong>审批角色：</strong>{{ step.approver_role || step.role }}</p>
+                  <p><strong>预期时间：</strong>{{ step.expected_time || 24 }}小时</p>
+                  <p v-if="step.description"><strong>步骤描述：</strong>{{ step.description }}</p>
+                  <p v-if="step.condition"><strong>触发条件：</strong>{{ step.condition }}</p>
+                </div>
+              </el-card>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+
+        <el-divider>SLA设置</el-divider>
+        <div class="sla-settings">
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="总预期时间">
+              {{ getTotalExpectedTime(currentWorkflow.steps) }}小时
+            </el-descriptions-item>
+            <el-descriptions-item label="最大处理时间">
+              {{ getMaxProcessingTime(currentWorkflow.steps) }}小时
+            </el-descriptions-item>
+            <el-descriptions-item label="平均处理时间">
+              {{ getAverageProcessingTime(currentWorkflow.steps) }}小时
+            </el-descriptions-item>
+            <el-descriptions-item label="关键路径">
+              {{ getCriticalPath(currentWorkflow.steps) }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -205,6 +293,7 @@ import { Plus, Refresh, Clock, Check, Warning } from '@element-plus/icons-vue'
 import { formatDateTime } from '@/utils/date'
 import type { FormInstance, FormRules } from 'element-plus'
 import { roleAPI, type Role } from '@/api/modules/role'
+import { auditWorkflowApi } from '@/api/modules/audit'
 
 // 响应式数据
 const loading = ref(false)
@@ -215,6 +304,8 @@ const workflowList = ref([])
 const formRef = ref<FormInstance>()
 const rolesLoading = ref(false)
 const availableRoles = ref<Role[]>([])
+const detailDrawerVisible = ref(false)
+const currentWorkflow = ref(null)
 
 // 分页数据
 const pagination = reactive({
@@ -227,9 +318,9 @@ const pagination = reactive({
 const formData = reactive({
   id: '',
   liucheng_mingcheng: '',
-  liucheng_leixing: '',
+  shenhe_leixing: '',
   liucheng_miaoshu: '',
-  liucheng_zhuangtai: 'active',
+  zhuangtai: 'active',
   buzhou_peizhi: [
     {
       buzhou_mingcheng: '',
@@ -244,7 +335,7 @@ const formRules: FormRules = {
   liucheng_mingcheng: [
     { required: true, message: '请输入流程名称', trigger: 'blur' }
   ],
-  liucheng_leixing: [
+  shenhe_leixing: [
     { required: true, message: '请选择流程类型', trigger: 'change' }
   ]
 }
@@ -296,14 +387,13 @@ const getStatusLabel = (status: string) => {
 const fetchWorkflowList = async () => {
   loading.value = true
   try {
-    // TODO: 调用API获取审核流程列表
-    // const response = await auditWorkflowApi.getList(pagination)
-    // workflowList.value = response.data.items
-    // pagination.total = response.data.total
-    
-    // 模拟数据
-    workflowList.value = []
-    pagination.total = 0
+    // 修复：调用真实API获取审核流程列表
+    const response = await auditWorkflowApi.getList({
+      page: pagination.page,
+      size: pagination.size
+    })
+    workflowList.value = response.items || []
+    pagination.total = response.total || 0
   } catch (error) {
     console.error('获取审核流程列表失败:', error)
     ElMessage.error('获取审核流程列表失败')
@@ -343,20 +433,39 @@ const handleCreate = async () => {
 
 const handleEdit = async (row: any) => {
   isEdit.value = true
-  Object.assign(formData, row)
+  // 修复：正确映射后端字段到前端表单字段
+  Object.assign(formData, {
+    id: row.id,
+    liucheng_mingcheng: row.workflow_name,
+    shenhe_leixing: row.audit_type,
+    liucheng_miaoshu: row.description,
+    zhuangtai: row.status,
+    buzhou_peizhi: row.steps?.map(step => ({
+      buzhou_mingcheng: step.step_name,
+      buzhou_miaoshu: step.description,
+      shenhe_ren_jiaose: step.approver_role
+    })) || []
+  })
   await fetchAvailableRoles()
   dialogVisible.value = true
 }
 
-const handleView = (row: any) => {
-  // TODO: 实现查看详情
-  ElMessage.info('查看功能开发中')
+const handleView = async (row: any) => {
+  try {
+    // 获取工作流详情
+    const response = await auditWorkflowApi.getById(row.id)
+    currentWorkflow.value = response.data || response
+    detailDrawerVisible.value = true
+  } catch (error) {
+    console.error('获取工作流详情失败:', error)
+    ElMessage.error('获取工作流详情失败')
+  }
 }
 
 const handleDelete = async (row: any) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除流程"${row.liucheng_mingcheng}"吗？`,
+      `确定要删除流程"${row.workflow_name}"吗？`,
       '确认删除',
       {
         confirmButtonText: '确定',
@@ -364,9 +473,9 @@ const handleDelete = async (row: any) => {
         type: 'warning'
       }
     )
-    
-    // TODO: 调用删除API
-    // await auditWorkflowApi.delete(row.id)
+
+    // 修复：调用真实删除API
+    await auditWorkflowApi.delete(row.id)
     ElMessage.success('删除成功')
     fetchWorkflowList()
   } catch (error) {
@@ -384,12 +493,27 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     submitting.value = true
     
-    // TODO: 调用API保存数据
+    // 修复：调用真实API保存数据，转换字段名
+    const submitData = {
+      workflow_name: formData.liucheng_mingcheng,
+      audit_type: formData.shenhe_leixing,
+      description: formData.liucheng_miaoshu,
+      status: formData.zhuangtai,
+      steps: formData.buzhou_peizhi.map((step, index) => ({
+        step_name: step.buzhou_mingcheng,
+        step_order: index + 1,
+        approver_role: step.shenhe_ren_jiaose,
+        description: step.buzhou_miaoshu,
+        expected_time: 24, // 默认24小时
+        is_required: true
+      }))
+    }
+
     if (isEdit.value) {
-      // await auditWorkflowApi.update(formData.id, formData)
+      await auditWorkflowApi.update(formData.id, submitData)
       ElMessage.success('更新成功')
     } else {
-      // await auditWorkflowApi.create(formData)
+      await auditWorkflowApi.create(submitData)
       ElMessage.success('创建成功')
     }
     
@@ -419,9 +543,9 @@ const resetForm = () => {
   Object.assign(formData, {
     id: '',
     liucheng_mingcheng: '',
-    liucheng_leixing: '',
+    shenhe_leixing: '',
     liucheng_miaoshu: '',
-    liucheng_zhuangtai: 'active',
+    zhuangtai: 'active',
     buzhou_peizhi: [
       {
         buzhou_mingcheng: '',
@@ -441,6 +565,49 @@ const handleSizeChange = (size: number) => {
 const handleCurrentChange = (page: number) => {
   pagination.page = page
   fetchWorkflowList()
+}
+
+// 步骤预览相关函数
+const getStepIcon = (step: any) => {
+  const icons = {
+    1: 'User',
+    2: 'Document',
+    3: 'Check',
+    default: 'Operation'
+  }
+  return icons[step.step || step.step_order] || icons.default
+}
+
+const getStepType = (step: any) => {
+  if (step.is_required === false) return 'info'
+  return step.step <= 2 ? 'primary' : 'success'
+}
+
+const getStepTimestamp = (step: any) => {
+  return `步骤 ${step.step || step.step_order}`
+}
+
+// SLA相关函数
+const getTotalExpectedTime = (steps: any[]) => {
+  if (!steps || steps.length === 0) return 0
+  return steps.reduce((total, step) => total + (step.expected_time || 24), 0)
+}
+
+const getMaxProcessingTime = (steps: any[]) => {
+  if (!steps || steps.length === 0) return 0
+  return Math.max(...steps.map(step => step.expected_time || 24))
+}
+
+const getAverageProcessingTime = (steps: any[]) => {
+  if (!steps || steps.length === 0) return 0
+  const total = getTotalExpectedTime(steps)
+  return Math.round(total / steps.length)
+}
+
+const getCriticalPath = (steps: any[]) => {
+  if (!steps || steps.length === 0) return '-'
+  const requiredSteps = steps.filter(step => step.is_required !== false)
+  return requiredSteps.map(step => step.name || step.step_name).join(' → ')
 }
 
 // 生命周期
@@ -508,5 +675,45 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+/* 工作流详情样式 */
+.workflow-detail {
+  padding: 20px;
+}
+
+.workflow-steps {
+  margin-top: 20px;
+}
+
+.step-card {
+  margin-bottom: 10px;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.step-header h4 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.step-content p {
+  margin: 5px 0;
+  color: #606266;
+  font-size: 14px;
+}
+
+.sla-settings {
+  margin-top: 20px;
+}
+
+.el-timeline-item__timestamp {
+  font-weight: bold;
+  color: #409eff;
 }
 </style>

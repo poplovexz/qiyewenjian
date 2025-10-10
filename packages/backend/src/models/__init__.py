@@ -77,6 +77,28 @@ from .shenhe_guanli import (
     ShenheJilu
 )
 
+# 财务管理模块
+from .caiwu_guanli import (
+    KaipiaoShenqing,
+    ChengbenJilu
+)
+
+# 服务管理模块
+from .fuwu_guanli import (
+    FuwuGongdan,
+    FuwuGongdanXiangmu,
+    FuwuGongdanRizhi
+)
+
+# 合规事项管理模块
+from .heguishixiang_guanli import (
+    HeguishixiangMoban,
+    KehuHeguishixiang,
+    HeguishixiangShili,
+    HeguishixiangTixing,
+    TixingJilu
+)
+
 __all__ = [
     # 基础类
     "Base",
@@ -134,5 +156,21 @@ __all__ = [
     # 审核管理
     "ShenheGuize",
     "ShenheLiucheng",
-    "ShenheJilu"
+    "ShenheJilu",
+
+    # 财务管理
+    "KaipiaoShenqing",
+    "ChengbenJilu",
+
+    # 服务管理
+    "FuwuGongdan",
+    "FuwuGongdanXiangmu",
+    "FuwuGongdanRizhi",
+
+    # 合规事项管理
+    "HeguishixiangMoban",
+    "KehuHeguishixiang",
+    "HeguishixiangShili",
+    "HeguishixiangTixing",
+    "TixingJilu"
 ]

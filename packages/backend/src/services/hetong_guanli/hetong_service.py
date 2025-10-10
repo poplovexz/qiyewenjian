@@ -10,10 +10,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from fastapi import HTTPException
 
-from ...models.hetong_guanli import Hetong, HetongMoban, HetongJineBiangeng
-from ...models.xiansuo_guanli import XiansuoBaojia
-from ...models.kehu_guanli import Kehu
-from ...schemas.hetong_guanli import (
+from models.hetong_guanli import Hetong, HetongMoban, HetongJineBiangeng
+from models.xiansuo_guanli import XiansuoBaojia
+from models.kehu_guanli import Kehu
+from schemas.hetong_guanli import (
     HetongCreate,
     HetongUpdate,
     HetongResponse,
@@ -22,7 +22,7 @@ from ...schemas.hetong_guanli import (
     HetongPreviewResponse,
     HetongSignRequest
 )
-from ...core.events import event_bus
+from core.events import event_bus
 
 
 class HetongService:
@@ -142,7 +142,7 @@ class HetongService:
         hetong_bianhao = self._generate_hetong_bianhao()
         
         # 生成合同名称
-        hetong_mingcheng = f"{kehu.kehu_mingcheng}代理记账服务合同"
+        hetong_mingcheng = f"{kehu.gongsi_mingcheng}代理记账服务合同"
         
         # 基于模板和报价数据生成合同内容
         hetong_neirong = self._generate_hetong_content_from_baojia(moban, baojia, kehu)
@@ -185,12 +185,12 @@ class HetongService:
         
         # 准备变量值
         bianliang_zhis = {
-            "客户名称": kehu.kehu_mingcheng,
-            "客户联系人": kehu.lianxi_ren or "",
+            "客户名称": kehu.gongsi_mingcheng,
+            "客户联系人": kehu.faren_xingming or "",
             "客户电话": kehu.lianxi_dianhua or "",
-            "客户地址": kehu.kehu_dizhi or "",
+            "客户地址": kehu.lianxi_dizhi or "",
             "报价编码": baojia.baojia_bianma,
-            "报价总金额": str(baojia.zongjine),
+            "报价总金额": str(baojia.zongji_jine),
             "服务期限": "一年",
             "签约日期": datetime.now().strftime('%Y年%m月%d日')
         }
@@ -469,7 +469,7 @@ class HetongService:
                                    new_amount: float, change_reason: str, applicant_id: str) -> str:
         """触发合同金额变更审核"""
         try:
-            from ...services.shenhe_guanli.shenhe_workflow_engine import ShenheWorkflowEngine
+            from services.shenhe_guanli.shenhe_workflow_engine import ShenheWorkflowEngine
 
             # 创建金额变更记录
             change_record = HetongJineBiangeng(

@@ -6,9 +6,9 @@ import asyncio
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 
-from src.core.config import settings
-from src.core.database import engine
-from src.models import Base
+from core.config import settings
+from core.database import engine
+from models import Base
 
 
 def create_database_if_not_exists():
@@ -61,7 +61,7 @@ def create_tables():
 def init_basic_data():
     """初始化基础数据"""
     from sqlalchemy.orm import sessionmaker
-    from src.models import Jiaose, Quanxian, JiaoseQuanxian
+    from models import Jiaose, Quanxian, JiaoseQuanxian
     
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     

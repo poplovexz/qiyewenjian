@@ -5,10 +5,10 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security.permissions import require_permission
-from src.models.yonghu_guanli.yonghu import Yonghu
-from src.schemas.yonghu_guanli.jiaose_schemas import (
+from core.database import get_db
+from core.security.permissions import require_permission
+from models.yonghu_guanli.yonghu import Yonghu
+from schemas.yonghu_guanli.jiaose_schemas import (
     JiaoseCreate,
     JiaoseUpdate,
     JiaoseResponse,
@@ -16,7 +16,7 @@ from src.schemas.yonghu_guanli.jiaose_schemas import (
     JiaoseStatusUpdate,
     JiaosePermissionUpdate
 )
-from src.services.yonghu_guanli.jiaose_service import JiaoseService
+from services.yonghu_guanli.jiaose_service import JiaoseService
 
 router = APIRouter()
 

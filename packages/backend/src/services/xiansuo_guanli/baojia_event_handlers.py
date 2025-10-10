@@ -6,10 +6,10 @@ import logging
 from typing import Dict, Any
 from datetime import datetime
 
-from src.core.events import subscribe, EventNames
-from src.core.database import SessionLocal
-from src.models.xiansuo_guanli.xiansuo import Xiansuo
-from src.models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
+from core.events import subscribe, EventNames
+from core.database import SessionLocal
+from models.xiansuo_guanli.xiansuo import Xiansuo
+from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ def handle_baojia_confirmed(payload: Dict[str, Any]) -> None:
                 logger.warning(f"未找到线索: {xiansuo_id}")
             
             # 2. 触发合同草稿生成事件
-            from src.core.events import publish
+            from core.events import publish
             hetong_payload = {
                 "baojia_id": baojia_id,
                 "xiansuo_id": xiansuo_id,
@@ -170,7 +170,7 @@ def handle_hetong_draft_triggered(payload: Dict[str, Any]) -> None:
             
             # 阶段2：实现真正的合同生成逻辑
             try:
-                from src.services.hetong_guanli.hetong_service import HetongService
+                from services.hetong_guanli.hetong_service import HetongService
                 hetong_service = HetongService(db)
 
                 # 基于报价自动生成合同

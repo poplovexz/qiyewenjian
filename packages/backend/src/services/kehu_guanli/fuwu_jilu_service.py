@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 from fastapi import HTTPException
 
-from src.models.kehu_guanli import FuwuJilu, Kehu
-from src.schemas.kehu_guanli.fuwu_jilu_schemas import (
+from models.kehu_guanli import FuwuJilu, Kehu
+from schemas.kehu_guanli.fuwu_jilu_schemas import (
     FuwuJiluCreate,
     FuwuJiluUpdate,
     FuwuJiluResponse,

@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, or_, desc, asc
 from fastapi import HTTPException
 
-from src.models.shenhe_guanli import ShenheJilu, ShenheLiucheng
-from src.schemas.shenhe_guanli import (
+from models.shenhe_guanli import ShenheJilu, ShenheLiucheng
+from schemas.shenhe_guanli import (
     ShenheJiluResponse,
     ShenheJiluListParams,
     ShenheJiluUpdate

@@ -6,11 +6,11 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security.permissions import require_permission
-from src.models.yonghu_guanli import Yonghu
-from src.services.xiansuo_guanli import XiansuoService
-from src.schemas.xiansuo_guanli import (
+from core.database import get_db
+from core.security.permissions import require_permission, has_permission
+from models.yonghu_guanli import Yonghu
+from services.xiansuo_guanli import XiansuoService
+from schemas.xiansuo_guanli import (
     XiansuoCreate,
     XiansuoUpdate,
     XiansuoResponse,
@@ -60,10 +60,15 @@ async def get_xiansuo_list(
 ):
     """
     获取线索列表
-    
+
     支持分页、搜索和多维度筛选
+    数据隔离：普通用户只能查看自己创建的线索，有read_all权限的用户可以查看所有线索
     """
     service = XiansuoService(db)
+
+    # 检查是否有全局查看权限
+    has_read_all = has_permission(db, current_user, "xiansuo:read_all")
+
     return service.get_xiansuo_list(
         page=page,
         size=size,
@@ -74,7 +79,9 @@ async def get_xiansuo_list(
         zhiliang_pinggu=zhiliang_pinggu,
         hangye_leixing=hangye_leixing,
         start_date=start_date,
-        end_date=end_date
+        end_date=end_date,
+        current_user_id=current_user.id,
+        has_read_all_permission=has_read_all
     )
 
 
@@ -124,12 +131,17 @@ async def update_xiansuo(
 ):
     """
     更新线索信息
-    
+
     - 支持部分字段更新
     - 更新来源时会验证来源是否存在
+    - 数据隔离：普通用户只能更新自己创建的线索，有update_all权限的用户可以更新所有线索
     """
     service = XiansuoService(db)
-    return service.update_xiansuo(xiansuo_id, xiansuo_data, current_user.id)
+
+    # 检查是否有全局更新权限
+    has_update_all = has_permission(db, current_user, "xiansuo:update_all")
+
+    return service.update_xiansuo(xiansuo_id, xiansuo_data, current_user.id, has_update_all)
 
 
 @router.patch("/{xiansuo_id}/status", response_model=XiansuoResponse, summary="更新线索状态")
@@ -174,11 +186,16 @@ async def delete_xiansuo(
 ):
     """
     删除线索（软删除）
-    
+
     - 会同步更新来源的线索统计数据
+    - 数据隔离：普通用户只能删除自己创建的线索，有delete_all权限的用户可以删除所有线索
     """
     service = XiansuoService(db)
-    success = service.delete_xiansuo(xiansuo_id, current_user.id)
+
+    # 检查是否有全局删除权限
+    has_delete_all = has_permission(db, current_user, "xiansuo:delete_all")
+
+    success = service.delete_xiansuo(xiansuo_id, current_user.id, has_delete_all)
     
     if success:
         return {"message": "线索删除成功"}

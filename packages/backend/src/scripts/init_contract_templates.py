@@ -9,8 +9,8 @@ import json
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy.orm import Session
-from src.core.database import SessionLocal
-from src.models.hetong_guanli import HetongMoban
+from core.database import SessionLocal
+from models.hetong_guanli import HetongMoban
 
 
 def init_contract_templates():

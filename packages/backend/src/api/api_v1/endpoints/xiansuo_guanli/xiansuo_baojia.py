@@ -5,11 +5,11 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security.permissions import require_permission
-from src.models.yonghu_guanli import Yonghu
-from src.services.xiansuo_guanli.xiansuo_baojia_service import XiansuoBaojiaService
-from src.schemas.xiansuo_guanli.xiansuo_baojia_schemas import (
+from core.database import get_db
+from core.security.permissions import require_permission
+from models.yonghu_guanli import Yonghu
+from services.xiansuo_guanli.xiansuo_baojia_service import XiansuoBaojiaService
+from schemas.xiansuo_guanli.xiansuo_baojia_schemas import (
     XiansuoBaojiaCreate,
     XiansuoBaojiaUpdate,
     XiansuoBaojiaResponse,

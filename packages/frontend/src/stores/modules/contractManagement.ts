@@ -147,14 +147,33 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       
       ElMessage.success('基于报价生成合同成功')
       return response
-    } catch (error) {
+    } catch (error: any) {
       console.error('基于报价生成合同失败:', error)
-      ElMessage.error('基于报价生成合同失败')
+
+      // 检查是否是400错误（重复创建）
+      if (error.response?.status === 400) {
+        ElMessage.warning('该报价已经生成过合同，请在合同管理页面查看')
+      } else {
+        ElMessage.error('基于报价生成合同失败: ' + (error.message || '未知错误'))
+      }
       throw error
     } finally {
       contractLoading.value = false
     }
   }
+
+  // 检查报价是否已生成合同
+  const checkContractByQuote = async (baojiaId: string) => {
+    try {
+      const response = await contractApi.checkContractByQuote(baojiaId)
+      return response.data
+    } catch (error) {
+      console.error('检查报价合同状态失败:', error)
+      throw error
+    }
+  }
+
+
 
   // 更新合同
   const updateContract = async (id: string, data: ContractUpdate) => {
@@ -585,8 +604,11 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       const response = await paymentMethodApi.setDefault(id)
 
       // 更新列表中的数据
-      paymentMethods.value.forEach(item => {
-        item.shi_moren = item.id === id
+      paymentMethods.value = paymentMethods.value.map(item => {
+        if (item.id === id) {
+          return response
+        }
+        return { ...item, shi_moren: false }
       })
 
       // 更新当前支付方式
@@ -722,6 +744,7 @@ export const useContractManagementStore = defineStore('contractManagement', () =
     fetchContractDetail,
     createContract,
     createContractFromQuote,
+    checkContractByQuote,
     updateContract,
     deleteContract,
     previewContract,

@@ -1,0 +1,33 @@
+#!/usr/bin/env python3
+"""
+启动脚本 - 设置正确的Python路径并启动应用
+"""
+import sys
+import os
+from pathlib import Path
+
+# 添加src目录到Python路径
+backend_dir = Path(__file__).parent
+src_dir = backend_dir / "src"
+sys.path.insert(0, str(src_dir))
+
+# 设置环境变量
+os.environ.setdefault("PYTHONPATH", str(src_dir))
+
+if __name__ == "__main__":
+    # 切换到src目录
+    os.chdir(src_dir)
+
+    # 导入并运行应用
+    from main import app
+    import uvicorn
+
+    # 启动应用
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        reload_dirs=[str(src_dir)],
+        log_level="info"
+    )

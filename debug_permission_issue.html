@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>权限页面问题调试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .debug-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .error-box {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .solution-box {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>权限页面问题调试报告</h1>
+    
+    <div class="debug-section">
+        <h3>错误1: 422 Unprocessable Entity</h3>
+        <div class="error-box">
+错误信息：
+8000/api/v1/user-management/permissions/?page=1&size=&search=&ziyuan_leixing=&zhuangtai=:1  
+Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)
+
+原因：
+size参数为空字符串，后端期望整数
+
+修复前代码：
+size: pageSize,  // pageSize是ref，直接使用会得到ref对象
+
+修复后代码：
+size: pageSize.value,  // 正确获取ref的值
+        </div>
+        <div class="solution-box">
+            ✅ 已修复：在handleSearch函数中使用pageSize.value
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h3>错误2: InvalidCharacterError</h3>
+        <div class="error-box">
+错误信息：
+InvalidCharacterError: Failed to execute 'setAttribute' on 'Element': '0' is not a valid attribute name.
+
+可能原因：
+1. Vue试图将数字0作为DOM属性名
+2. 可能与Element Plus组件的属性绑定有关
+3. 可能与分页组件的v-model绑定有关
+
+错误堆栈指向：
+- patchAttr (chunk-VQXF3376.js:11231:10)
+- patchProp (chunk-VQXF3376.js:11401:5)
+- mountElement (chunk-VQXF3376.js:7061:11)
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h3>可能的解决方案</h3>
+        <div class="solution-box">
+            <h4>方案1: 检查分页组件绑定</h4>
+            <p>确保currentPage、pageSize、total都正确使用.value</p>
+            
+            <h4>方案2: 添加初始值保护</h4>
+            <p>确保计算属性在初始状态下不返回undefined或null</p>
+            
+            <h4>方案3: 使用v-if保护</h4>
+            <p>在数据加载完成前不渲染某些组件</p>
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h3>测试API调用</h3>
+        <button onclick="testAPI()">测试修复后的API</button>
+        <div id="api-result" style="margin-top: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; font-size: 12px;"></div>
+    </div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.textContent = '正在测试...';
+            
+            try {
+                // 登录
+                const loginResponse = await fetch('http://localhost:8000/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ yonghu_ming: 'admin', mima: 'admin123' })
+                });
+                
+                if (!loginResponse.ok) {
+                    throw new Error('登录失败');
+                }
+                
+                const loginData = await loginResponse.json();
+                const token = loginData.token.access_token;
+                
+                // 测试修复后的API调用
+                const apiResponse = await fetch('http://localhost:8000/api/v1/user-management/permissions/?page=1&size=20&search=&ziyuan_leixing=&zhuangtai=', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (apiResponse.ok) {
+                    const data = await apiResponse.json();
+                    resultDiv.innerHTML = `
+✅ API调用成功！
+状态码: ${apiResponse.status}
+总数: ${data.total}
+当前页: ${data.page}
+页大小: ${data.size}
+权限数量: ${data.items.length}
+
+这证明422错误已经修复。
+剩下的InvalidCharacterError需要在前端组件中解决。
+                    `;
+                } else {
+                    throw new Error(`API调用失败: ${apiResponse.status}`);
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ 测试失败: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

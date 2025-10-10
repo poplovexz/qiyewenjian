@@ -5,8 +5,8 @@ from typing import List, Set
 from fastapi import HTTPException, status, Depends
 from sqlalchemy.orm import Session
 
-from ..database import get_db
-from ...models import Yonghu, YonghuJiaose, JiaoseQuanxian, Quanxian
+from core.database import get_db
+from models import Yonghu, YonghuJiaose, JiaoseQuanxian, Quanxian
 from .jwt_handler import get_current_user
 
 
@@ -128,7 +128,7 @@ def has_role(user: Yonghu, role_code: str, db: Session) -> bool:
     Returns:
         是否有指定角色
     """
-    from ...models import Jiaose
+    from models import Jiaose
     
     user_role = db.query(YonghuJiaose).join(Jiaose).filter(
         YonghuJiaose.yonghu_id == user.id,

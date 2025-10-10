@@ -7,13 +7,13 @@ from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, desc
 
-from src.models.zhifu_guanli.yinhang_huikuan_danju import YinhangHuikuanDanju
-from src.schemas.zhifu_guanli.yinhang_huikuan_danju_schemas import (
+from models.zhifu_guanli.yinhang_huikuan_danju import YinhangHuikuanDanju
+from schemas.zhifu_guanli.yinhang_huikuan_danju_schemas import (
     YinhangHuikuanDanjuCreate,
     YinhangHuikuanDanjuUpdate,
     YinhangHuikuanDanjuResponse
 )
-from src.core.exceptions import BusinessException, ResourceNotFoundException
+from core.exceptions import BusinessException, ResourceNotFoundException
 
 
 class YinhangHuikuanDanjuService:

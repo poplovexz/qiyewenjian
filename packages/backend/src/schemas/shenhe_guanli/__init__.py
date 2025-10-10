@@ -26,26 +26,43 @@ from .shenhe_jilu_schemas import (
     ShenheActionRequest
 )
 
+from .audit_workflow_schemas import (
+    WorkflowStepBase,
+    AuditWorkflowBase,
+    AuditWorkflowCreate,
+    AuditWorkflowUpdate,
+    AuditWorkflowResponse,
+    AuditWorkflowListParams
+)
+
 __all__ = [
     # 审核规则
     "ShenheGuizeBase",
-    "ShenheGuizeCreate", 
+    "ShenheGuizeCreate",
     "ShenheGuizeUpdate",
     "ShenheGuizeResponse",
     "ShenheGuizeListParams",
-    
+
     # 审核流程
     "ShenheLiuchengBase",
     "ShenheLiuchengCreate",
-    "ShenheLiuchengUpdate", 
+    "ShenheLiuchengUpdate",
     "ShenheLiuchengResponse",
     "ShenheLiuchengListParams",
-    
+
     # 审核记录
     "ShenheJiluBase",
     "ShenheJiluCreate",
     "ShenheJiluUpdate",
     "ShenheJiluResponse",
     "ShenheJiluListParams",
-    "ShenheActionRequest"
+    "ShenheActionRequest",
+
+    # 审核工作流模板
+    "WorkflowStepBase",
+    "AuditWorkflowBase",
+    "AuditWorkflowCreate",
+    "AuditWorkflowUpdate",
+    "AuditWorkflowResponse",
+    "AuditWorkflowListParams"
 ]

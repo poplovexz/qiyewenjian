@@ -228,10 +228,14 @@ const handleSubmit = async () => {
 
     submitting.value = true
 
+    // 修复：使用正确的参数调用审核操作
     await auditStore.processAuditAction(
-      props.task.workflow_id,
-      props.task.step_id,
-      formData.value
+      props.task.id,
+      formData.value.action,
+      {
+        comment: formData.value.comment,
+        approver: 'admin'  // 实际应该从用户信息获取
+      }
     )
 
     emit('success')

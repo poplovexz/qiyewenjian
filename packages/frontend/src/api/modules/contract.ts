@@ -278,6 +278,8 @@ export interface ContractParty {
   created_at: string
   updated_at: string
   created_by: string
+  payment_method_count?: number
+  payment_methods?: PaymentMethod[]
 }
 
 export interface ContractPartyCreate {
@@ -443,6 +445,23 @@ export const contractApi = {
     return request.post<{ content: string }>('/api/v1/contracts/preview', data)
   },
 
+  // 生成合同（新的合同生成API）
+  generateContracts: (data: any) => {
+    return request.post<any>('/api/v1/contract-generate/generate', data)
+  },
+
+  // 预览合同（新的预览API）
+  previewContract: (data: any) => {
+    return request.post<any>('/api/v1/contract-generate/preview', data)
+  },
+
+  // 获取合同模板列表
+  getTemplates: (contractType?: string) => {
+    return request.get<any>('/api/v1/contract-generate/templates', {
+      params: contractType ? { contract_type: contractType } : {}
+    })
+  },
+
   // 签署合同
   sign: (id: string, signature: ContractSignature) => {
     return request.post<Contract>(`/api/v1/contracts/${id}/sign`, signature)
@@ -455,9 +474,72 @@ export const contractApi = {
     })
   },
 
+  // 检查报价是否已生成合同
+  checkContractByQuote: (baojiaId: string) => {
+    return request.get<any>(`/api/v1/contracts/check-by-quote/${baojiaId}`)
+  },
+
   // 批量删除
   batchDelete: (ids: string[]) => {
     return Promise.all(ids.map(id => request.delete(`/api/v1/contracts/${id}`)))
+  }
+}
+
+// 合同签署相关API
+export const contractSignApi = {
+  // 根据签署令牌获取合同信息
+  getByToken: (token: string) => {
+    return request.get<any>(`/api/v1/contract-signing/token/${token}`)
+  },
+
+  // 创建签署链接
+  createLink: (contractId: string) => {
+    return request.post<any>(`/api/v1/contract-signing/${contractId}/create-link`)
+  },
+
+  // 电子签名
+  sign: (token: string, signatureData: any) => {
+    return request.post<any>(`/api/v1/contract-signing/sign/${token}`, signatureData)
+  },
+
+  // 获取签署状态
+  getSigningStatus: (contractId: string) => {
+    return request.get<any>(`/api/v1/contract-signing/${contractId}/status`)
+  }
+}
+
+// 合同支付相关API
+export const contractPaymentApi = {
+  // 获取合同支付信息
+  getContractInfo: (contractId: string) => {
+    return request.get<any>(`/api/v1/contract-payment/${contractId}/info`)
+  },
+
+  // 创建支付记录
+  createPayment: (paymentData: any) => {
+    return request.post<any>('/api/v1/contract-payment/create', paymentData)
+  },
+
+  // 发起支付宝支付
+  initiateAlipay: (paymentId: string, params: any) => {
+    return request.post<any>(`/api/v1/contract-payment/${paymentId}/alipay`, params)
+  },
+
+  // 发起微信支付
+  initiateWechat: (paymentId: string, params: any) => {
+    return request.post<any>(`/api/v1/contract-payment/${paymentId}/wechat`, params)
+  },
+
+  // 选择银行转账
+  selectBankTransfer: (paymentId: string) => {
+    return request.post<any>(`/api/v1/contract-payment/${paymentId}/bank-transfer`)
+  },
+
+  // 下载合同
+  downloadContract: (contractId: string) => {
+    return request.get(`/api/v1/contract-payment/${contractId}/download`, {
+      responseType: 'blob'
+    })
   }
 }
 
@@ -553,8 +635,9 @@ export const partyTypeOptions = [
 
 // 支付方式选项
 export const paymentTypeOptions = [
-  { label: '银行转账', value: 'bank_transfer' },
-  { label: '微信支付', value: 'wechat_pay' },
-  { label: '支付宝', value: 'alipay' },
-  { label: '现金', value: 'cash' }
+  { label: '银行转账', value: 'yinhangzhuanzhang' },
+  { label: '微信支付', value: 'weixin' },
+  { label: '支付宝', value: 'zhifubao' },
+  { label: '现金', value: 'xianjin' },
+  { label: '其他', value: 'qita' }
 ]

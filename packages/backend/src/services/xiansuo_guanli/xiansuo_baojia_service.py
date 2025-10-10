@@ -8,9 +8,9 @@ from fastapi import HTTPException, status
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from ...models.xiansuo_guanli import XiansuoBaojia, XiansuoBaojiaXiangmu, Xiansuo
-from ...models.chanpin_guanli import ChanpinFenlei, ChanpinXiangmu
-from ...schemas.xiansuo_guanli.xiansuo_baojia_schemas import (
+from models.xiansuo_guanli import XiansuoBaojia, XiansuoBaojiaXiangmu, Xiansuo
+from models.chanpin_guanli import ChanpinFenlei, ChanpinXiangmu
+from schemas.xiansuo_guanli.xiansuo_baojia_schemas import (
     XiansuoBaojiaCreate,
     XiansuoBaojiaUpdate,
     XiansuoBaojiaResponse,
@@ -22,7 +22,7 @@ from ...schemas.xiansuo_guanli.xiansuo_baojia_schemas import (
     ChanpinFenleiOption,
     ChanpinXiangmuOption
 )
-from ...core.cache_decorator import invalidate_xiansuo_cache
+from core.cache_decorator import invalidate_xiansuo_cache
 
 
 class XiansuoBaojiaService:
@@ -144,8 +144,8 @@ class XiansuoBaojiaService:
 
     async def get_baojia_detail_with_xiansuo(self, baojia_id: str) -> "XiansuoBaojiaDetailResponse":
         """获取包含线索信息的报价详情"""
-        from ...models.xiansuo_guanli.xiansuo import Xiansuo
-        from ...schemas.xiansuo_guanli.xiansuo_baojia_schemas import XiansuoBaojiaDetailResponse, XiansuoInfoForBaojia
+        from models.xiansuo_guanli.xiansuo import Xiansuo
+        from schemas.xiansuo_guanli.xiansuo_baojia_schemas import XiansuoBaojiaDetailResponse, XiansuoInfoForBaojia
 
         baojia = self.db.query(XiansuoBaojia).options(
             joinedload(XiansuoBaojia.xiangmu_list)
@@ -536,7 +536,7 @@ class XiansuoBaojiaService:
     async def _handle_baojia_accepted(self, baojia: XiansuoBaojia, updated_by: str):
         """处理报价被接受的业务联动"""
         from .xiansuo_service import XiansuoService
-        from ...schemas.xiansuo_guanli import XiansuoStatusUpdate
+        from schemas.xiansuo_guanli import XiansuoStatusUpdate
 
         xiansuo_service = XiansuoService(self.db)
 
@@ -639,7 +639,7 @@ class XiansuoBaojiaService:
             self.db.commit()
 
             # 发布报价确认事件
-            from src.core.events import publish, EventNames
+            from core.events import publish, EventNames
             publish(EventNames.BAOJIA_CONFIRMED, {
                 "baojia_id": baojia_id,
                 "xiansuo_id": baojia.xiansuo_id,
@@ -700,7 +700,7 @@ class XiansuoBaojiaService:
             self.db.commit()
 
             # 发布报价拒绝事件
-            from src.core.events import publish, EventNames
+            from core.events import publish, EventNames
             publish(EventNames.BAOJIA_REJECTED, {
                 "baojia_id": baojia_id,
                 "xiansuo_id": baojia.xiansuo_id,

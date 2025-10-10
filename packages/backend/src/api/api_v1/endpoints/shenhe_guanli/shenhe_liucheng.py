@@ -5,11 +5,11 @@ from typing import Dict, Any, List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security import get_current_user
-from src.models.yonghu_guanli import Yonghu
-from src.services.shenhe_guanli import ShenheLiuchengService
-from src.schemas.shenhe_guanli import (
+from core.database import get_db
+from core.security import get_current_user
+from models.yonghu_guanli import Yonghu
+from services.shenhe_guanli import ShenheLiuchengService
+from schemas.shenhe_guanli import (
     ShenheLiuchengResponse,
     ShenheLiuchengListParams,
     ShenheActionRequest
@@ -148,7 +148,7 @@ async def get_audit_statistics_overview(
     service = ShenheLiuchengService(db)
     
     # 获取各种状态的审核流程数量
-    from src.models.shenhe_guanli import ShenheLiucheng
+    from models.shenhe_guanli import ShenheLiucheng
     
     total_count = db.query(ShenheLiucheng).filter(ShenheLiucheng.is_deleted == "N").count()
     pending_count = db.query(ShenheLiucheng).filter(

@@ -6,14 +6,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from fastapi import HTTPException
 
-from src.models.xiansuo_guanli import XiansuoLaiyuan
-from src.schemas.xiansuo_guanli import (
+from models.xiansuo_guanli import XiansuoLaiyuan
+from schemas.xiansuo_guanli import (
     XiansuoLaiyuanCreate,
     XiansuoLaiyuanUpdate,
     XiansuoLaiyuanResponse,
     XiansuoLaiyuanListResponse
 )
-from src.core.cache_decorator import (
+from core.cache_decorator import (
     cache_xiansuo_laiyuan,
     invalidate_xiansuo_laiyuan_cache
 )
@@ -67,10 +67,16 @@ class XiansuoLaiyuanService:
         size: int = 20,
         search: Optional[str] = None,
         laiyuan_leixing: Optional[str] = None,
-        zhuangtai: Optional[str] = None
+        zhuangtai: Optional[str] = None,
+        current_user_id: Optional[str] = None,
+        has_read_all_permission: bool = False
     ) -> XiansuoLaiyuanListResponse:
         """获取线索来源列表"""
         query = self.db.query(XiansuoLaiyuan).filter(XiansuoLaiyuan.is_deleted == "N")
+
+        # 数据隔离：如果没有全局查看权限，只能查看自己创建的线索来源
+        if current_user_id and not has_read_all_permission:
+            query = query.filter(XiansuoLaiyuan.created_by == current_user_id)
         
         # 搜索条件
         if search:
@@ -152,7 +158,7 @@ class XiansuoLaiyuanService:
             raise HTTPException(status_code=404, detail="线索来源不存在")
         
         # 检查是否有关联的线索
-        from src.models.xiansuo_guanli import Xiansuo
+        from models.xiansuo_guanli import Xiansuo
         xiansuo_count = self.db.query(Xiansuo).filter(
             Xiansuo.laiyuan_id == laiyuan_id,
             Xiansuo.is_deleted == "N"

@@ -191,13 +191,23 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     loading.value = true
     
-    // TODO: 调用API更新角色状态
-    console.log('更新角色状态:', {
-      roleId: props.role.id,
-      zhuangtai: formData.value.zhuangtai,
-      reason: formData.value.reason
+    // 调用API更新角色状态
+    const response = await fetch(`/api/v1/roles/${props.role.id}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        zhuangtai: formData.value.zhuangtai,
+        reason: formData.value.reason
+      })
     })
-    
+
+    if (!response.ok) {
+      throw new Error('更新角色状态失败')
+    }
+
     ElMessage.success('角色状态更新成功')
     emit('success')
     handleClose()

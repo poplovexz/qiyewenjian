@@ -191,6 +191,26 @@ class Hetong(BaseModel):
         back_populates="hetong",
         cascade="all, delete-orphan"
     )
+
+    # 开票申请关系
+    kaipiao_shenqing_list = relationship(
+        "KaipiaoShenqing",
+        back_populates="hetong",
+        cascade="all, delete-orphan"
+    )
+
+    # 成本记录关系
+    chengben_jilu_list = relationship(
+        "ChengbenJilu",
+        back_populates="hetong",
+        cascade="all, delete-orphan"
+    )
+
+    fuwu_gongdan_list = relationship(
+        "FuwuGongdan",
+        back_populates="hetong",
+        cascade="all, delete-orphan"
+    )
     
     def __repr__(self) -> str:
         return f"<Hetong(hetong_bianhao='{self.hetong_bianhao}', hetong_zhuangtai='{self.hetong_zhuangtai}')>"

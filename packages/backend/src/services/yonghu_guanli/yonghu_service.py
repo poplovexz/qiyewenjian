@@ -7,13 +7,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 from fastapi import HTTPException, status
 
-from ...models.yonghu_guanli import Yonghu, Jiaose, Quanxian, YonghuJiaose, JiaoseQuanxian
-from ...schemas.yonghu_guanli import (
+from models.yonghu_guanli import Yonghu, Jiaose, Quanxian, YonghuJiaose, JiaoseQuanxian
+from schemas.yonghu_guanli import (
     YonghuCreate, YonghuUpdate, YonghuResponse, YonghuList,
     JiaoseCreate, JiaoseUpdate, JiaoseResponse,
     QuanxianCreate, QuanxianUpdate, QuanxianResponse
 )
-from ...core.security import get_password_hash, verify_password
+from core.security import get_password_hash, verify_password
 
 
 class YonghuService:

@@ -76,6 +76,7 @@ export interface Product {
   xiangmu_bianma: string
   fenlei_id: string
   fenlei_mingcheng?: string
+  chanpin_leixing?: 'zengzhi' | 'daili_jizhang'
   yewu_baojia: number
   baojia_danwei: string
   banshi_tianshu: number
@@ -92,6 +93,7 @@ export interface ProductCreate {
   xiangmu_mingcheng: string
   xiangmu_bianma: string
   fenlei_id: string
+  chanpin_leixing?: 'zengzhi' | 'daili_jizhang'
   yewu_baojia: number
   baojia_danwei?: string
   banshi_tianshu?: number
@@ -105,6 +107,7 @@ export interface ProductUpdate {
   xiangmu_mingcheng?: string
   xiangmu_bianma?: string
   fenlei_id?: string
+  chanpin_leixing?: 'zengzhi' | 'daili_jizhang'
   yewu_baojia?: number
   baojia_danwei?: string
   banshi_tianshu?: number

@@ -28,20 +28,26 @@ def init_xiansuo_permissions():
             ("线索状态菜单", "xiansuo:status_menu", "访问线索状态菜单的权限", "menu", "/lead-statuses"),
             
             # 线索基础权限
-            ("查看线索", "xiansuo:read", "查看线索信息的权限", "api", "/api/v1/leads/*"),
+            ("查看线索", "xiansuo:read", "查看自己创建的线索信息的权限", "api", "/api/v1/leads/*"),
+            ("查看所有线索", "xiansuo:read_all", "查看所有用户创建的线索（管理员权限）", "api", "/api/v1/leads/*"),
             ("创建线索", "xiansuo:create", "创建新线索的权限", "api", "/api/v1/leads/"),
-            ("编辑线索", "xiansuo:update", "编辑线索信息的权限", "api", "/api/v1/leads/*"),
-            ("删除线索", "xiansuo:delete", "删除线索的权限", "api", "/api/v1/leads/*"),
+            ("编辑线索", "xiansuo:update", "编辑自己创建的线索信息的权限", "api", "/api/v1/leads/*"),
+            ("编辑所有线索", "xiansuo:update_all", "编辑所有用户的线索（管理员权限）", "api", "/api/v1/leads/*"),
+            ("删除线索", "xiansuo:delete", "删除自己创建的线索的权限", "api", "/api/v1/leads/*"),
+            ("删除所有线索", "xiansuo:delete_all", "删除所有用户的线索（管理员权限）", "api", "/api/v1/leads/*"),
             
             # 线索状态管理权限
             ("管理线索状态", "xiansuo:status_manage", "管理线索状态的权限", "api", "/api/v1/leads/*/status"),
             ("分配线索", "xiansuo:assign", "分配线索给销售人员的权限", "api", "/api/v1/leads/*/assign"),
             
             # 线索来源管理权限
-            ("查看线索来源", "xiansuo:source_read", "查看线索来源的权限", "api", "/api/v1/lead-sources/*"),
+            ("查看线索来源", "xiansuo:source_read", "查看自己创建的线索来源的权限", "api", "/api/v1/lead-sources/*"),
+            ("查看所有线索来源", "xiansuo:source_read_all", "查看所有用户创建的线索来源（管理员权限）", "api", "/api/v1/lead-sources/*"),
             ("创建线索来源", "xiansuo:source_create", "创建线索来源的权限", "api", "/api/v1/lead-sources/"),
-            ("编辑线索来源", "xiansuo:source_update", "编辑线索来源的权限", "api", "/api/v1/lead-sources/*"),
-            ("删除线索来源", "xiansuo:source_delete", "删除线索来源的权限", "api", "/api/v1/lead-sources/*"),
+            ("编辑线索来源", "xiansuo:source_update", "编辑自己创建的线索来源的权限", "api", "/api/v1/lead-sources/*"),
+            ("编辑所有线索来源", "xiansuo:source_update_all", "编辑所有用户的线索来源（管理员权限）", "api", "/api/v1/lead-sources/*"),
+            ("删除线索来源", "xiansuo:source_delete", "删除自己创建的线索来源的权限", "api", "/api/v1/lead-sources/*"),
+            ("删除所有线索来源", "xiansuo:source_delete_all", "删除所有用户的线索来源（管理员权限）", "api", "/api/v1/lead-sources/*"),
             
             # 线索状态管理权限
             ("查看线索状态", "xiansuo:status_read", "查看线索状态的权限", "api", "/api/v1/lead-statuses/*"),

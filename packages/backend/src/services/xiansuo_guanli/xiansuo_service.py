@@ -8,8 +8,8 @@ from sqlalchemy import or_, and_, func
 from fastapi import HTTPException
 from decimal import Decimal
 
-from src.models.xiansuo_guanli import Xiansuo, XiansuoLaiyuan, XiansuoGenjin
-from src.schemas.xiansuo_guanli import (
+from models.xiansuo_guanli import Xiansuo, XiansuoLaiyuan, XiansuoGenjin
+from schemas.xiansuo_guanli import (
     XiansuoCreate,
     XiansuoUpdate,
     XiansuoResponse,
@@ -71,12 +71,18 @@ class XiansuoService:
         
         return XiansuoResponse.model_validate(xiansuo)
     
-    def get_xiansuo_by_id(self, xiansuo_id: str) -> Optional[XiansuoResponse]:
+    def get_xiansuo_by_id(self, xiansuo_id: str, current_user_id: Optional[str] = None, has_read_all_permission: bool = False) -> Optional[XiansuoResponse]:
         """根据ID获取线索"""
-        xiansuo = self.db.query(Xiansuo).filter(
+        query = self.db.query(Xiansuo).filter(
             Xiansuo.id == xiansuo_id,
             Xiansuo.is_deleted == "N"
-        ).first()
+        )
+
+        # 数据隔离：如果没有全局查看权限，只能查看自己创建的线索
+        if current_user_id and not has_read_all_permission:
+            query = query.filter(Xiansuo.created_by == current_user_id)
+
+        xiansuo = query.first()
         
         if not xiansuo:
             return None
@@ -133,10 +139,16 @@ class XiansuoService:
         zhiliang_pinggu: Optional[str] = None,
         hangye_leixing: Optional[str] = None,
         start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None
+        end_date: Optional[datetime] = None,
+        current_user_id: Optional[str] = None,
+        has_read_all_permission: bool = False
     ) -> XiansuoListResponse:
         """获取线索列表"""
         query = self.db.query(Xiansuo).filter(Xiansuo.is_deleted == "N")
+
+        # 数据隔离：如果没有全局查看权限，只能查看自己创建的线索
+        if current_user_id and not has_read_all_permission:
+            query = query.filter(Xiansuo.created_by == current_user_id)
         
         # 搜索条件
         if search:
@@ -192,12 +204,18 @@ class XiansuoService:
             size=size
         )
     
-    def update_xiansuo(self, xiansuo_id: str, xiansuo_data: XiansuoUpdate, updated_by: str) -> XiansuoResponse:
+    def update_xiansuo(self, xiansuo_id: str, xiansuo_data: XiansuoUpdate, updated_by: str, has_update_all_permission: bool = False) -> XiansuoResponse:
         """更新线索"""
-        xiansuo = self.db.query(Xiansuo).filter(
+        query = self.db.query(Xiansuo).filter(
             Xiansuo.id == xiansuo_id,
             Xiansuo.is_deleted == "N"
-        ).first()
+        )
+
+        # 数据隔离：如果没有全局编辑权限，只能编辑自己创建的线索
+        if not has_update_all_permission:
+            query = query.filter(Xiansuo.created_by == updated_by)
+
+        xiansuo = query.first()
         
         if not xiansuo:
             raise HTTPException(status_code=404, detail="线索不存在")
@@ -269,7 +287,7 @@ class XiansuoService:
             raise HTTPException(status_code=404, detail="线索不存在")
 
         # 验证分配人是否存在
-        from src.models.yonghu_guanli import Yonghu
+        from models.yonghu_guanli import Yonghu
         fenpei_ren = self.db.query(Yonghu).filter(
             Yonghu.id == assign_data.fenpei_ren_id,
             Yonghu.is_deleted == "N"
@@ -291,12 +309,18 @@ class XiansuoService:
 
         return XiansuoResponse.model_validate(xiansuo)
 
-    def delete_xiansuo(self, xiansuo_id: str, deleted_by: str) -> bool:
+    def delete_xiansuo(self, xiansuo_id: str, deleted_by: str, has_delete_all_permission: bool = False) -> bool:
         """删除线索（软删除）"""
-        xiansuo = self.db.query(Xiansuo).filter(
+        query = self.db.query(Xiansuo).filter(
             Xiansuo.id == xiansuo_id,
             Xiansuo.is_deleted == "N"
-        ).first()
+        )
+
+        # 数据隔离：如果没有全局删除权限，只能删除自己创建的线索
+        if not has_delete_all_permission:
+            query = query.filter(Xiansuo.created_by == deleted_by)
+
+        xiansuo = query.first()
 
         if not xiansuo:
             raise HTTPException(status_code=404, detail="线索不存在")

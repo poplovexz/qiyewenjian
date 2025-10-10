@@ -7,9 +7,9 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import text, func
 
-from ...models.yonghu_guanli.quanxian import Quanxian
-from ...models.yonghu_guanli.jiaose_quanxian import JiaoseQuanxian
-from ...schemas.yonghu_guanli.quanxian_schemas import (
+from models.yonghu_guanli.quanxian import Quanxian
+from models.yonghu_guanli.jiaose_quanxian import JiaoseQuanxian
+from schemas.yonghu_guanli.quanxian_schemas import (
     QuanxianCreate,
     QuanxianUpdate,
     QuanxianResponse,

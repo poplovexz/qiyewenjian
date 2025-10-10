@@ -5,10 +5,10 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security import get_current_user
-from src.models.yonghu_guanli import Yonghu
-from src.schemas.hetong_guanli import (
+from core.database import get_db
+from core.security import get_current_user
+from models.yonghu_guanli import Yonghu
+from schemas.hetong_guanli import (
     HetongCreate,
     HetongUpdate,
     HetongResponse,
@@ -17,7 +17,7 @@ from src.schemas.hetong_guanli import (
     HetongPreviewResponse,
     HetongSignRequest
 )
-from src.services.hetong_guanli.hetong_service import HetongService
+from services.hetong_guanli.hetong_service import HetongService
 
 router = APIRouter()
 

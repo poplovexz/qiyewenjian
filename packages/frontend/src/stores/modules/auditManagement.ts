@@ -136,7 +136,8 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
   const fetchMyPendingAudits = async () => {
     try {
       const response = await auditWorkflowApi.getMyPendingAudits()
-      pendingAudits.value = response
+      // 修复：存储数组而不是整个分页响应
+      pendingAudits.value = response.items || []
       return response
     } catch (error) {
       console.error('获取待审核任务失败:', error)
@@ -145,16 +146,34 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
     }
   }
   
-  const processAuditAction = async (workflowId: string, stepId: string, data: any) => {
+  const processAuditAction = async (taskId: string, action: string, data: any) => {
     try {
       loading.value = true
-      const response = await auditWorkflowApi.processAction(workflowId, stepId, data)
-      
+      // 修复：使用正确的API路径，根据操作类型调用不同的接口
+      let response
+      if (action === 'approve') {
+        response = await fetch(`/api/v1/audit-records/${taskId}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+      } else if (action === 'reject') {
+        response = await fetch(`/api/v1/audit-records/${taskId}/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+      }
+
+      if (!response?.ok) {
+        throw new Error('审核操作失败')
+      }
+
       // 更新待审核任务列表
       await fetchMyPendingAudits()
-      
+
       ElMessage.success('审核操作处理成功')
-      return response
+      return await response.json()
     } catch (error) {
       console.error('处理审核操作失败:', error)
       ElMessage.error('处理审核操作失败')
@@ -202,7 +221,8 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
   
   const fetchAuditRecordsByWorkflow = async (workflowId: string) => {
     try {
-      const response = await auditRecordApi.getByWorkflow(workflowId)
+      // 修复：使用正确的API路径，通过workflow_id参数查询
+      const response = await auditRecordApi.getList({ workflow_id: workflowId })
       return response
     } catch (error) {
       console.error('获取审核记录失败:', error)
@@ -214,7 +234,7 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
   // 审核统计
   const fetchAuditStatistics = async () => {
     try {
-      const response = await auditWorkflowApi.getStatisticsOverview()
+      const response = await auditRecordApi.getMyStatistics()
       auditStatistics.value = response
       return response
     } catch (error) {

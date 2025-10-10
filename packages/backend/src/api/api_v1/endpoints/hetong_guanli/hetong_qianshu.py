@@ -5,11 +5,11 @@ from typing import Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security import get_current_user
-from src.models.yonghu_guanli import Yonghu
-from src.services.hetong_guanli.hetong_qianshu_service import HetongQianshuService
-from src.schemas.hetong_guanli import HetongQianshuCreate, HetongQianshuUpdate
+from core.database import get_db
+from core.security import get_current_user
+from models.yonghu_guanli import Yonghu
+from services.hetong_guanli.hetong_qianshu_service import HetongQianshuService
+from schemas.hetong_guanli import HetongQianshuCreate, HetongQianshuUpdate
 
 router = APIRouter()
 

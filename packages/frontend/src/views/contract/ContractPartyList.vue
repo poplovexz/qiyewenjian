@@ -71,6 +71,11 @@
           <el-table-column prop="faren_daibiao" label="法人代表" width="120" />
           <el-table-column prop="lianxi_dianhua" label="联系电话" width="130" />
           <el-table-column prop="lianxi_youxiang" label="联系邮箱" width="180" />
+          <el-table-column prop="payment_method_count" label="支付方式数" width="120">
+            <template #default="{ row }">
+              <el-tag type="info">{{ row.payment_method_count || 0 }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="created_at" label="创建时间" width="160">
             <template #default="{ row }">
               {{ formatDateTime(row.created_at) }}
@@ -191,6 +196,27 @@
             {{ currentParty.beizhu || '-' }}
           </el-descriptions-item>
         </el-descriptions>
+
+        <div class="payment-methods" v-if="currentParty.payment_methods?.length">
+          <el-divider content-position="left">关联支付方式</el-divider>
+          <el-table :data="currentParty.payment_methods" size="small" stripe>
+            <el-table-column prop="zhifu_mingcheng" label="支付方式" min-width="120" />
+            <el-table-column prop="zhifu_leixing" label="类型" width="120">
+              <template #default="{ row }">
+                <el-tag :type="row.zhifu_leixing === 'yinhangzhuanzhang' ? 'primary' : row.zhifu_leixing === 'weixin' ? 'success' : row.zhifu_leixing === 'zhifubao' ? 'warning' : 'info'">
+                  {{ getPaymentTypeText(row.zhifu_leixing) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="zhanghu_mingcheng" label="账户名称" min-width="150" />
+            <el-table-column prop="zhanghu_haoma" label="账户号" min-width="150" />
+            <el-table-column prop="shi_moren" label="默认" width="80" align="center">
+              <template #default="{ row }">
+                <el-tag :type="row.shi_moren ? 'success' : 'info'">{{ row.shi_moren ? '是' : '否' }}</el-tag>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
       
       <template #footer>
@@ -243,6 +269,17 @@ const partySize = computed({
   set: (value) => contractStore.setPartySize(value)
 })
 const currentParty = computed(() => contractStore.currentParty)
+
+const getPaymentTypeText = (type: string) => {
+  const map: Record<string, string> = {
+    yinhangzhuanzhang: '银行转账',
+    weixin: '微信支付',
+    zhifubao: '支付宝',
+    xianjin: '现金',
+    qita: '其他'
+  }
+  return map[type] || type
+}
 
 // 方法
 const fetchParties = async () => {

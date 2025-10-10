@@ -5,12 +5,12 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security import get_current_user
-from src.core.security.permissions import require_permission
-from src.models.yonghu_guanli import Yonghu
-from src.services.kehu_guanli import KehuService
-from src.schemas.kehu_guanli.kehu_schemas import (
+from core.database import get_db
+from core.security import get_current_user
+from core.security.permissions import require_permission
+from models.yonghu_guanli import Yonghu
+from services.kehu_guanli import KehuService
+from schemas.kehu_guanli.kehu_schemas import (
     KehuCreate,
     KehuUpdate,
     KehuResponse,

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认证测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <h1>认证机制测试页面</h1>
+    
+    <div class="test-section">
+        <h3>1. 登录测试</h3>
+        <button onclick="testLogin()">测试登录</button>
+        <button onclick="clearAuth()">清除认证信息</button>
+        <div id="login-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. API调用测试</h3>
+        <button onclick="testRoleAPI()">测试角色API</button>
+        <button onclick="testUserAPI()">测试用户API</button>
+        <button onclick="testPermissionAPI()">测试权限API</button>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Token状态</h3>
+        <button onclick="checkTokenStatus()">检查Token状态</button>
+        <button onclick="testTokenRefresh()">测试Token刷新</button>
+        <div id="token-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. 并发请求测试</h3>
+        <button onclick="testConcurrentRequests()">测试并发请求</button>
+        <div id="concurrent-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api/v1';
+        
+        // 显示结果
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+        }
+
+        // 测试登录
+        async function testLogin() {
+            try {
+                showResult('login-result', '正在登录...', 'info');
+                
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        yonghu_ming: 'admin',
+                        mima: 'admin123'
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('access_token', data.token.access_token);
+                    localStorage.setItem('refresh_token', data.token.refresh_token);
+                    localStorage.setItem('user_info', JSON.stringify(data.user));
+                    
+                    showResult('login-result', `登录成功！\n用户: ${data.user.xingming}\n权限数量: ${data.user.permissions.length}`, 'success');
+                } else {
+                    const error = await response.text();
+                    showResult('login-result', `登录失败: ${error}`, 'error');
+                }
+            } catch (error) {
+                showResult('login-result', `登录异常: ${error.message}`, 'error');
+            }
+        }
+
+        // 清除认证信息
+        function clearAuth() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user_info');
+            showResult('login-result', '认证信息已清除', 'info');
+        }
+
+        // 通用API调用函数
+        async function callAPI(url, description) {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                return { success: false, message: '未找到access token，请先登录' };
+            }
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    return { 
+                        success: true, 
+                        message: `${description}成功\n状态: ${response.status}\n数据: ${JSON.stringify(data, null, 2).substring(0, 200)}...` 
+                    };
+                } else {
+                    return { 
+                        success: false, 
+                        message: `${description}失败\n状态: ${response.status}\n错误: ${await response.text()}` 
+                    };
+                }
+            } catch (error) {
+                return { 
+                    success: false, 
+                    message: `${description}异常: ${error.message}` 
+                };
+            }
+        }
+
+        // 测试角色API
+        async function testRoleAPI() {
+            showResult('api-result', '正在测试角色API...', 'info');
+            const result = await callAPI(`${API_BASE}/user-management/roles/?page=1&size=5`, '角色API调用');
+            showResult('api-result', result.message, result.success ? 'success' : 'error');
+        }
+
+        // 测试用户API
+        async function testUserAPI() {
+            showResult('api-result', '正在测试用户API...', 'info');
+            const result = await callAPI(`${API_BASE}/users/?page=1&size=5`, '用户API调用');
+            showResult('api-result', result.message, result.success ? 'success' : 'error');
+        }
+
+        // 测试权限API
+        async function testPermissionAPI() {
+            showResult('api-result', '正在测试权限API...', 'info');
+            const result = await callAPI(`${API_BASE}/user-management/permissions/?page=1&size=5`, '权限API调用');
+            showResult('api-result', result.message, result.success ? 'success' : 'error');
+        }
+
+        // 检查Token状态
+        function checkTokenStatus() {
+            const accessToken = localStorage.getItem('access_token');
+            const refreshToken = localStorage.getItem('refresh_token');
+            const userInfo = localStorage.getItem('user_info');
+
+            let status = 'Token状态检查:\n';
+            status += `Access Token: ${accessToken ? '存在' : '不存在'}\n`;
+            status += `Refresh Token: ${refreshToken ? '存在' : '不存在'}\n`;
+            status += `User Info: ${userInfo ? '存在' : '不存在'}\n`;
+
+            if (accessToken) {
+                try {
+                    const payload = JSON.parse(atob(accessToken.split('.')[1]));
+                    const exp = new Date(payload.exp * 1000);
+                    const now = new Date();
+                    status += `Token过期时间: ${exp.toLocaleString()}\n`;
+                    status += `当前时间: ${now.toLocaleString()}\n`;
+                    status += `是否过期: ${now > exp ? '是' : '否'}\n`;
+                } catch (error) {
+                    status += `Token解析失败: ${error.message}\n`;
+                }
+            }
+
+            showResult('token-result', status, 'info');
+        }
+
+        // 测试Token刷新
+        async function testTokenRefresh() {
+            const refreshToken = localStorage.getItem('refresh_token');
+            if (!refreshToken) {
+                showResult('token-result', 'Token刷新失败: 未找到refresh token', 'error');
+                return;
+            }
+
+            try {
+                showResult('token-result', '正在刷新Token...', 'info');
+                
+                const response = await fetch(`${API_BASE}/auth/refresh`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        refresh_token: refreshToken
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    
+                    showResult('token-result', `Token刷新成功！\n新Token过期时间: ${new Date(JSON.parse(atob(data.access_token.split('.')[1])).exp * 1000).toLocaleString()}`, 'success');
+                } else {
+                    const error = await response.text();
+                    showResult('token-result', `Token刷新失败: ${error}`, 'error');
+                }
+            } catch (error) {
+                showResult('token-result', `Token刷新异常: ${error.message}`, 'error');
+            }
+        }
+
+        // 测试并发请求
+        async function testConcurrentRequests() {
+            showResult('concurrent-result', '正在测试并发请求...', 'info');
+            
+            const requests = [
+                callAPI(`${API_BASE}/user-management/roles/?page=1&size=5`, '并发角色API'),
+                callAPI(`${API_BASE}/users/?page=1&size=5`, '并发用户API'),
+                callAPI(`${API_BASE}/user-management/permissions/?page=1&size=5`, '并发权限API'),
+                callAPI(`${API_BASE}/user-management/roles/?page=2&size=5`, '并发角色API-2'),
+                callAPI(`${API_BASE}/users/?page=2&size=5`, '并发用户API-2')
+            ];
+
+            try {
+                const results = await Promise.all(requests);
+                const successCount = results.filter(r => r.success).length;
+                const failCount = results.filter(r => !r.success).length;
+                
+                let message = `并发请求测试完成:\n成功: ${successCount}\n失败: ${failCount}\n\n详细结果:\n`;
+                results.forEach((result, index) => {
+                    message += `${index + 1}. ${result.success ? '✅' : '❌'} ${result.message.split('\n')[0]}\n`;
+                });
+
+                showResult('concurrent-result', message, successCount === requests.length ? 'success' : 'error');
+            } catch (error) {
+                showResult('concurrent-result', `并发请求异常: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载时检查Token状态
+        window.onload = function() {
+            checkTokenStatus();
+        };
+    </script>
+</body>
+</html>

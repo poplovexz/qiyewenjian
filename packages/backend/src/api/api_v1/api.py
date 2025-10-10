@@ -11,10 +11,13 @@ from .endpoints import auth, yonghu
 from .endpoints.kehu_guanli import kehu, fuwu_jilu
 from .endpoints.yonghu_guanli import jiaose as role_api, quanxian
 from .endpoints.chanpin_guanli import chanpin_fenlei, chanpin_xiangmu, chanpin_buzou
-from .endpoints.hetong_guanli import hetong_moban, hetong, hetong_yifang_zhuti, hetong_zhifu_fangshi, hetong_qianshu
+from .endpoints.hetong_guanli import hetong_moban, hetong, hetong_yifang_zhuti, hetong_zhifu_fangshi, hetong_qianshu, hetong_generate, hetong_qianshu_public, hetong_zhifu_public
 from .endpoints.xiansuo_guanli import xiansuo, xiansuo_laiyuan, xiansuo_zhuangtai, xiansuo_genjin, xiansuo_baojia
 from .endpoints.zhifu_guanli import zhifu_dingdan, zhifu_liushui, zhifu_tongzhi, hetong_zhifu, yinhang_huikuan_danju
-from .endpoints.shenhe_guanli import shenhe_guize, shenhe_liucheng, shenhe_jilu
+from .endpoints.shenhe_guanli import shenhe_guize, shenhe_liucheng, shenhe_jilu, rule_test, approval_matrix, payment_audit
+from .endpoints.caiwu_guanli import kaipiao, chengben
+from .endpoints.fuwu_guanli import fuwu_gongdan
+from .endpoints.heguishixiang_guanli import heguishixiang_moban
 from .endpoints import audit_workflows, audit_records
 
 # 注册路由
@@ -40,6 +43,11 @@ api_router.include_router(hetong.router, prefix="/contracts", tags=["合同管�
 api_router.include_router(hetong_yifang_zhuti.router, prefix="/contract-parties", tags=["合同乙方主体管理"])
 api_router.include_router(hetong_zhifu_fangshi.router, prefix="/contract-payment-methods", tags=["合同支付方式管理"])
 api_router.include_router(hetong_qianshu.router, prefix="/contract-signing", tags=["合同签署管理"])
+api_router.include_router(hetong_generate.router, prefix="/contract-generate", tags=["合同生成"])
+
+# 公共API（无需登录）
+api_router.include_router(hetong_qianshu_public.router, prefix="/public/contract-signing", tags=["合同签署公共接口"])
+api_router.include_router(hetong_zhifu_public.router, prefix="/public/contract-payment", tags=["合同支付公共接口"])
 
 # 线索管理模块路由
 api_router.include_router(xiansuo.router, prefix="/leads", tags=["线索管理"])
@@ -55,14 +63,27 @@ api_router.include_router(zhifu_tongzhi.router, prefix="/notifications", tags=["
 api_router.include_router(hetong_zhifu.router, prefix="/contract-payments", tags=["合同支付管理"])
 api_router.include_router(yinhang_huikuan_danju.router, prefix="/bank-transfers", tags=["银行汇款单据管理"])
 
-# 审核管理模块路由 - 暂时禁用旧的API
-# api_router.include_router(shenhe_guize.router, prefix="/audit-rules", tags=["审核规则管理"])
+# 审核管理模块路由 - 重新启用审核规则API
+api_router.include_router(shenhe_guize.router, prefix="/audit-rules", tags=["审核规则管理"])
 # api_router.include_router(shenhe_liucheng.router, prefix="/audit-workflows-old", tags=["审核流程管理(旧)"])
 # api_router.include_router(shenhe_jilu.router, prefix="/audit-records-old", tags=["审核记录管理(旧)"])
 
 # 新的审核管理API
 api_router.include_router(audit_workflows.router, prefix="/audit-workflows", tags=["审核工作流"])
 api_router.include_router(audit_records.router, prefix="/audit-records", tags=["审核记录"])
+api_router.include_router(rule_test.router, prefix="/audit-rules/test", tags=["规则测试"])
+api_router.include_router(approval_matrix.router, prefix="/approval-matrix", tags=["审批权责矩阵"])
+api_router.include_router(payment_audit.router, prefix="/payment-audit", tags=["支付订单审核"])
+
+# 财务管理模块
+api_router.include_router(kaipiao.router, prefix="/invoices", tags=["开票申请"])
+api_router.include_router(chengben.router, prefix="/costs", tags=["成本记录"])
+
+# 服务管理模块
+api_router.include_router(fuwu_gongdan.router, prefix="/service-orders", tags=["服务工单管理"])
+
+# 合规事项管理
+api_router.include_router(heguishixiang_moban.router, prefix="/compliance/templates", tags=["合规事项模板管理"])
 
 
 @api_router.get("/")

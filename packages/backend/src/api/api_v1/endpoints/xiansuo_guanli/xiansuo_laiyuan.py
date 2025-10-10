@@ -5,11 +5,11 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.security.permissions import require_permission
-from src.models.yonghu_guanli import Yonghu
-from src.services.xiansuo_guanli import XiansuoLaiyuanService
-from src.schemas.xiansuo_guanli import (
+from core.database import get_db
+from core.security.permissions import require_permission, has_permission
+from models.yonghu_guanli import Yonghu
+from services.xiansuo_guanli import XiansuoLaiyuanService
+from schemas.xiansuo_guanli import (
     XiansuoLaiyuanCreate,
     XiansuoLaiyuanUpdate,
     XiansuoLaiyuanResponse,
@@ -49,16 +49,23 @@ async def get_laiyuan_list(
 ):
     """
     获取线索来源列表
-    
+
     支持分页、搜索和筛选
+    数据隔离：普通用户只能查看自己创建的来源，有source_read_all权限的用户可以查看所有来源
     """
     service = XiansuoLaiyuanService(db)
+
+    # 检查是否有全局查看权限
+    has_read_all = has_permission(db, current_user, "xiansuo:source_read_all")
+
     return service.get_laiyuan_list(
         page=page,
         size=size,
         search=search,
         laiyuan_leixing=laiyuan_leixing,
-        zhuangtai=zhuangtai
+        zhuangtai=zhuangtai,
+        current_user_id=current_user.id,
+        has_read_all_permission=has_read_all
     )
 
 

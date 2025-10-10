@@ -28,8 +28,13 @@ instance.interceptors.request.use(
     // 等待认证初始化完成
     await tokenManager.waitForAuthInit()
 
-    // 检查是否需要预防性刷新token
-    await tokenManager.preventiveRefresh()
+    // 🔧 优化：只在特定条件下执行预防性刷新，避免过度刷新
+    // 1. 不是登录请求
+    // 2. 不是已经在刷新中
+    // 3. 确实需要刷新
+    if (!config.url?.includes('/auth/login') && !tokenManager.isTokenRefreshing) {
+      await tokenManager.preventiveRefresh()
+    }
 
     const authStore = useAuthStore()
     const token = authStore.accessToken || localStorage.getItem('access_token')
@@ -81,12 +86,23 @@ instance.interceptors.response.use(
               }
               return instance(error.config)
             } else {
-              console.log('❌ Token刷新失败')
-              return Promise.reject(error)
+              console.log('❌ Token刷新失败，停止重试避免无限循环')
+              // 不要继续重试，避免无限循环
+              ElMessage.error('登录已过期，请重新登录')
+              // 跳转到登录页
+              if (window.location.pathname !== '/login') {
+                window.location.href = '/login'
+              }
+              return Promise.reject(new Error('Token刷新失败，请重新登录'))
             }
           } catch (refreshError) {
             console.error('❌ Token刷新过程出错:', refreshError)
-            return Promise.reject(refreshError)
+            ElMessage.error('认证失败，请重新登录')
+            // 跳转到登录页
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login'
+            }
+            return Promise.reject(new Error('认证失败，请重新登录'))
           }
           break
         case 403:

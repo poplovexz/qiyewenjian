@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store调试测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .log-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .log-item {
+            margin: 5px 0;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .log-info { background: #e3f2fd; }
+        .log-success { background: #e8f5e8; }
+        .log-warning { background: #fff3cd; }
+        .log-error { background: #f8d7da; }
+        .btn {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary { background: #409eff; color: white; }
+        .btn-success { background: #67c23a; color: white; }
+        .btn-warning { background: #e6a23c; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>前端Store调试测试</h1>
+        <div>
+            <button class="btn btn-primary" onclick="testStoreDirectly()">直接测试Store</button>
+            <button class="btn btn-success" onclick="testApiDirectly()">直接测试API</button>
+            <button class="btn btn-warning" onclick="clearLogs()">清除日志</button>
+        </div>
+        <div class="log-section">
+            <h3>调试日志</h3>
+            <div id="logs"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let authToken = '';
+        
+        // 日志记录
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('logs');
+            const logItem = document.createElement('div');
+            logItem.className = `log-item log-${type}`;
+            logItem.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logsDiv.appendChild(logItem);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        // 登录
+        async function login() {
+            try {
+                log('🔐 开始登录...', 'info');
+                const response = await fetch(`${API_BASE}/api/v1/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        yonghu_ming: 'admin',
+                        mima: 'admin123'
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.token?.access_token || data.token;
+                    log('✅ 登录成功', 'success');
+                    return true;
+                } else {
+                    log(`❌ 登录失败: ${response.status}`, 'error');
+                    return false;
+                }
+            } catch (error) {
+                log(`❌ 登录错误: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        // 直接测试API
+        async function testApiDirectly() {
+            log('🚀 开始直接测试API...', 'info');
+            
+            if (!await login()) {
+                return;
+            }
+
+            try {
+                // 获取线索列表
+                log('📋 获取线索列表...', 'info');
+                const leadsResponse = await fetch(`${API_BASE}/api/v1/leads/`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!leadsResponse.ok) {
+                    log(`❌ 获取线索失败: ${leadsResponse.status}`, 'error');
+                    return;
+                }
+
+                const leadsData = await leadsResponse.json();
+                const leads = leadsData.items || [];
+                log(`✅ 获取到 ${leads.length} 个线索`, 'success');
+
+                // 为每个线索获取报价
+                for (const lead of leads.slice(0, 3)) { // 只测试前3个
+                    log(`💰 获取线索 ${lead.gongsi_mingcheng} 的报价...`, 'info');
+                    
+                    const baojiaResponse = await fetch(`${API_BASE}/api/v1/lead-quotes/xiansuo/${lead.id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+
+                    if (baojiaResponse.ok) {
+                        const baojiaList = await baojiaResponse.json();
+                        log(`✅ 线索 ${lead.gongsi_mingcheng} 获取到 ${baojiaList.length} 个报价`, 'success');
+                        
+                        if (baojiaList.length > 0) {
+                            baojiaList.forEach((baojia, index) => {
+                                log(`   报价 ${index + 1}: 状态=${baojia.baojia_zhuangtai}, 过期=${baojia.is_expired}`, 'info');
+                            });
+                        }
+                    } else {
+                        log(`❌ 获取线索 ${lead.gongsi_mingcheng} 报价失败: ${baojiaResponse.status}`, 'error');
+                    }
+                }
+
+                log('🎉 API测试完成！', 'success');
+            } catch (error) {
+                log(`❌ API测试错误: ${error.message}`, 'error');
+            }
+        }
+
+        // 直接测试Store（模拟前端逻辑）
+        async function testStoreDirectly() {
+            log('🏪 开始测试Store逻辑...', 'info');
+            
+            if (!await login()) {
+                return;
+            }
+
+            try {
+                // 模拟fetchXiansuoList
+                log('📋 模拟fetchXiansuoList...', 'info');
+                const leadsResponse = await fetch(`${API_BASE}/api/v1/leads/?page=1&size=20`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!leadsResponse.ok) {
+                    log(`❌ 获取线索失败: ${leadsResponse.status}`, 'error');
+                    return;
+                }
+
+                const leadsData = await leadsResponse.json();
+                const leads = leadsData.items || [];
+                log(`✅ 获取到 ${leads.length} 个线索`, 'success');
+
+                // 模拟prefetchBaojiaForLeads
+                log('🔄 模拟prefetchBaojiaForLeads...', 'info');
+                const baojiaMap = {};
+                
+                // 过滤需要预取的线索
+                const leadsToFetch = leads
+                    .map(lead => lead.id)
+                    .filter(leadId => !baojiaMap[leadId]);
+                
+                log(`📝 需要预取报价的线索: ${leadsToFetch.length} 个`, 'info');
+
+                // 并发获取报价（这里简化为串行）
+                const promises = leadsToFetch.map(async (leadId) => {
+                    try {
+                        log(`🔍 正在获取线索 ${leadId} 的报价...`, 'info');
+                        const response = await fetch(`${API_BASE}/api/v1/lead-quotes/xiansuo/${leadId}`, {
+                            headers: {
+                                'Authorization': `Bearer ${authToken}`
+                            }
+                        });
+
+                        if (response.ok) {
+                            const baojiaList = await response.json();
+                            baojiaMap[leadId] = baojiaList;
+                            log(`✅ 线索 ${leadId} 获取到 ${baojiaList.length} 个报价`, 'success');
+                            return { leadId, baojiaList };
+                        } else {
+                            log(`❌ 获取线索 ${leadId} 报价失败: ${response.status}`, 'error');
+                            return { leadId, baojiaList: [] };
+                        }
+                    } catch (error) {
+                        log(`❌ 获取线索 ${leadId} 报价错误: ${error.message}`, 'error');
+                        return { leadId, baojiaList: [] };
+                    }
+                });
+
+                const results = await Promise.all(promises);
+                log('🎯 所有报价数据获取完成', 'success');
+
+                // 模拟按钮逻辑检查
+                log('🔍 检查按钮显示逻辑...', 'info');
+                leads.forEach(lead => {
+                    const leadId = lead.id;
+                    const baojiaList = baojiaMap[leadId] || [];
+                    const leadStatus = lead.dangqian_zhuangtai || lead.xiansuo_zhuangtai;
+                    
+                    // 检查是否有有效报价
+                    const validBaojia = baojiaList.filter(
+                        b => !b.is_expired && b.baojia_zhuangtai !== 'rejected'
+                    );
+                    
+                    const hasValidBaojia = validBaojia.length > 0 || ['quoted', 'won'].includes(leadStatus);
+                    const latestStatus = validBaojia.length > 0 ? validBaojia[0].baojia_zhuangtai : null;
+                    const canGenerateContract = hasValidBaojia && latestStatus === 'accepted';
+                    
+                    log(`📊 ${lead.gongsi_mingcheng}: 状态=${leadStatus}, 报价=${baojiaList.length}, 有效=${validBaojia.length}, 最新=${latestStatus}, 合同=${canGenerateContract}`, 'info');
+                });
+
+                log('🎉 Store测试完成！', 'success');
+            } catch (error) {
+                log(`❌ Store测试错误: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后的提示
+        document.addEventListener('DOMContentLoaded', () => {
+            log('📄 页面加载完成，可以开始测试', 'info');
+        });
+    </script>
+</body>
+</html>

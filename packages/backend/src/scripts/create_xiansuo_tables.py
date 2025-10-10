@@ -8,9 +8,9 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import create_engine
-from src.core.config import settings
-from src.models.base import Base
-from src.models.xiansuo_guanli import (
+from core.config import settings
+from models.base import Base
+from models.xiansuo_guanli import (
     Xiansuo,
     XiansuoLaiyuan,
     XiansuoZhuangtai,
