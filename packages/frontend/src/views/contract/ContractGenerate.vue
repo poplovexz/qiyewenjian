@@ -17,7 +17,7 @@
         <el-descriptions :column="2" border>
           <el-descriptions-item label="报价编号">{{ quoteInfo.baojia_bianma }}</el-descriptions-item>
           <el-descriptions-item label="报价名称">{{ quoteInfo.baojia_mingcheng }}</el-descriptions-item>
-          <el-descriptions-item label="客户名称">{{ quoteInfo.xiansuo?.kehu?.gongsi_mingcheng }}</el-descriptions-item>
+          <el-descriptions-item label="客户名称">{{ quoteInfo.xiansuo_info?.gongsi_mingcheng }}</el-descriptions-item>
           <el-descriptions-item label="报价金额">¥{{ quoteInfo.zongji_jine }}</el-descriptions-item>
           <el-descriptions-item label="报价状态">
             <el-tag :type="getQuoteStatusType(quoteInfo.baojia_zhuangtai)">
@@ -46,6 +46,23 @@
           <div v-if="generateForm.contractTypes.includes('daili_jizhang')" class="contract-type-config">
             <h4>代理记账合同配置</h4>
             
+            <el-form-item label="合同模板" prop="daliJizhangTemplate">
+              <el-select
+                v-model="generateForm.daliJizhangTemplate"
+                placeholder="请选择代理记账合同模板"
+                style="width: 400px"
+                filterable
+              >
+                <el-option
+                  v-for="template in getDaliJizhangTemplates()"
+                  :key="template.id"
+                  :label="template.moban_mingcheng"
+                  :value="template.id"
+                />
+              </el-select>
+              <div class="form-tip">选择用于生成代理记账合同的模板</div>
+            </el-form-item>
+            
             <el-form-item label="合同价格" prop="daliJizhangPrice">
               <el-input-number
                 v-model="generateForm.daliJizhangPrice"
@@ -54,9 +71,17 @@
                 placeholder="请输入合同价格"
                 style="width: 200px"
               />
-              <span class="price-diff" v-if="getDaliJizhangPriceDiff() !== 0">
-                (与报价差异: {{ getDaliJizhangPriceDiff() > 0 ? '+' : '' }}¥{{ getDaliJizhangPriceDiff() }})
-              </span>
+              <div v-if="getDaliJizhangPriceDiff() !== 0" class="price-info">
+                <span class="price-diff" v-if="getDaliJizhangPriceDiff() > 0">
+                  (价格上调: +¥{{ getDaliJizhangPriceDiff().toFixed(2) }})
+                </span>
+                <span class="price-discount" v-else>
+                  (优惠价格: -¥{{ Math.abs(getDaliJizhangPriceDiff()).toFixed(2) }})
+                </span>
+              </div>
+              <div v-if="getDaliJizhangOriginalPrice() > 0" class="original-price">
+                原报价: ¥{{ getDaliJizhangOriginalPrice().toFixed(2) }}
+              </div>
             </el-form-item>
 
             <el-form-item label="合同数量" prop="daliJizhangCount">
@@ -101,6 +126,23 @@
           <div v-if="generateForm.contractTypes.includes('zengzhi_fuwu')" class="contract-type-config">
             <h4>增值服务合同配置</h4>
             
+            <el-form-item label="合同模板" prop="zengzhiFuwuTemplate">
+              <el-select
+                v-model="generateForm.zengzhiFuwuTemplate"
+                placeholder="请选择增值服务合同模板"
+                style="width: 400px"
+                filterable
+              >
+                <el-option
+                  v-for="template in getZengzhiFuwuTemplates()"
+                  :key="template.id"
+                  :label="template.moban_mingcheng"
+                  :value="template.id"
+                />
+              </el-select>
+              <div class="form-tip">选择用于生成增值服务合同的模板</div>
+            </el-form-item>
+            
             <el-form-item label="合同价格" prop="zengzhiFuwuPrice">
               <el-input-number
                 v-model="generateForm.zengzhiFuwuPrice"
@@ -109,9 +151,17 @@
                 placeholder="请输入合同价格"
                 style="width: 200px"
               />
-              <span class="price-diff" v-if="getZengzhiFuwuPriceDiff() !== 0">
-                (与报价差异: {{ getZengzhiFuwuPriceDiff() > 0 ? '+' : '' }}¥{{ getZengzhiFuwuPriceDiff() }})
-              </span>
+              <div v-if="getZengzhiFuwuPriceDiff() !== 0" class="price-info">
+                <span class="price-diff" v-if="getZengzhiFuwuPriceDiff() > 0">
+                  (价格上调: +¥{{ getZengzhiFuwuPriceDiff().toFixed(2) }})
+                </span>
+                <span class="price-discount" v-else>
+                  (优惠价格: -¥{{ Math.abs(getZengzhiFuwuPriceDiff()).toFixed(2) }})
+                </span>
+              </div>
+              <div v-if="getZengzhiFuwuOriginalPrice() > 0" class="original-price">
+                原报价: ¥{{ getZengzhiFuwuOriginalPrice().toFixed(2) }}
+              </div>
             </el-form-item>
 
             <el-form-item label="合同数量" prop="zengzhiFuwuCount">
@@ -241,14 +291,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { ArrowLeft, Warning } from '@element-plus/icons-vue'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
 import { useContractManagementStore } from '@/stores/modules/contractManagement'
 import { useAuditStore } from '@/stores/modules/audit'
 import { contractApi } from '@/api/modules/contract'
+import type { XiansuoBaojiaDetail } from '@/types/xiansuo'
+import type { ContractParty } from '@/api/modules/contract'
 
 const route = useRoute()
 const router = useRouter()
@@ -257,8 +309,9 @@ const contractStore = useContractManagementStore()
 const auditStore = useAuditStore()
 
 // 响应式数据
-const quoteInfo = ref(null)
-const contractParties = ref([])
+const quoteInfo = ref<XiansuoBaojiaDetail | null>(null)
+const contractParties = ref<ContractParty[]>([])
+const contractTemplates = ref<any[]>([])
 const previewLoading = ref(false)
 const generateLoading = ref(false)
 const auditLoading = ref(false)
@@ -269,10 +322,12 @@ const activePreviewTab = ref('daili_jizhang')
 // 表单数据
 const generateForm = reactive({
   contractTypes: ['daili_jizhang'], // 默认选择代理记账
+  daliJizhangTemplate: '',
   daliJizhangPrice: 0,
   daliJizhangCount: 1,
   daliJizhangParty: '',
   daliJizhangReason: '',
+  zengzhiFuwuTemplate: '',
   zengzhiFuwuPrice: 0,
   zengzhiFuwuCount: 1,
   zengzhiFuwuParty: '',
@@ -296,11 +351,17 @@ const generateRules = {
   contractTypes: [
     { required: true, message: '请选择至少一种合同类型', trigger: 'change' }
   ],
+  daliJizhangTemplate: [
+    { required: true, message: '请选择代理记账合同模板', trigger: 'change' }
+  ],
   daliJizhangPrice: [
     { required: true, message: '请输入代理记账合同价格', trigger: 'blur' }
   ],
   daliJizhangParty: [
     { required: true, message: '请选择乙方主体', trigger: 'change' }
+  ],
+  zengzhiFuwuTemplate: [
+    { required: true, message: '请选择增值服务合同模板', trigger: 'change' }
   ],
   zengzhiFuwuPrice: [
     { required: true, message: '请输入增值服务合同价格', trigger: 'blur' }
@@ -313,14 +374,38 @@ const generateRules = {
 const generateFormRef = ref()
 
 // 计算属性
-const getDaliJizhangPriceDiff = () => {
+const getDaliJizhangOriginalPrice = () => {
   if (!quoteInfo.value) return 0
-  return generateForm.daliJizhangPrice - quoteInfo.value.zongji_jine
+  // 计算代理记账服务的原始报价金额
+  const daliJizhangItems = quoteInfo.value.xiangmu_list.filter((item: any) => 
+    item.xiangmu_mingcheng.includes('代理记账') || 
+    item.xiangmu_mingcheng.includes('记账') ||
+    item.xiangmu_mingcheng.includes('纳税人')
+  )
+  return daliJizhangItems.reduce((sum: number, item: any) => sum + parseFloat(item.xiaoji), 0)
+}
+
+const getZengzhiFuwuOriginalPrice = () => {
+  if (!quoteInfo.value) return 0
+  // 计算增值服务的原始报价金额
+  const zengzhiFuwuItems = quoteInfo.value.xiangmu_list.filter((item: any) => 
+    !item.xiangmu_mingcheng.includes('代理记账') && 
+    !item.xiangmu_mingcheng.includes('记账') &&
+    !item.xiangmu_mingcheng.includes('纳税人')
+  )
+  return zengzhiFuwuItems.reduce((sum: number, item: any) => sum + parseFloat(item.xiaoji), 0)
+}
+
+const getDaliJizhangPriceDiff = () => {
+  const originalPrice = getDaliJizhangOriginalPrice()
+  if (originalPrice === 0) return 0
+  return generateForm.daliJizhangPrice - originalPrice
 }
 
 const getZengzhiFuwuPriceDiff = () => {
-  if (!quoteInfo.value) return 0
-  return generateForm.zengzhiFuwuPrice - quoteInfo.value.zongji_jine
+  const originalPrice = getZengzhiFuwuOriginalPrice()
+  if (originalPrice === 0) return 0
+  return generateForm.zengzhiFuwuPrice - originalPrice
 }
 
 // 方法
@@ -336,14 +421,108 @@ const fetchQuoteInfo = async () => {
     const quote = await xiansuoStore.getBaojiaDetailWithXiansuo(baojiaId)
     quoteInfo.value = quote
     
-    // 初始化价格
-    generateForm.daliJizhangPrice = quote.zongji_jine
-    generateForm.zengzhiFuwuPrice = quote.zongji_jine
+    // 分析报价中的服务类型并自动分割合同
+    analyzeQuoteServices(quote)
+    
   } catch (error) {
     console.error('获取报价信息失败:', error)
     ElMessage.error('获取报价信息失败')
     handleBack()
   }
+}
+
+const fetchContractTemplates = async () => {
+  try {
+    const response = await contractApi.getTemplates()
+    contractTemplates.value = response.data || []
+    
+    // 自动选择默认模板
+    autoSelectDefaultTemplates()
+  } catch (error) {
+    console.error('获取合同模板失败:', error)
+    ElMessage.error('获取合同模板失败')
+  }
+}
+
+// 自动选择默认模板
+const autoSelectDefaultTemplates = () => {
+  // 如果包含代理记账合同类型且未选择模板，自动选择第一个代理记账模板
+  if (generateForm.contractTypes.includes('daili_jizhang') && !generateForm.daliJizhangTemplate) {
+    const daliJizhangTemplates = getDaliJizhangTemplates()
+    if (daliJizhangTemplates.length > 0) {
+      generateForm.daliJizhangTemplate = daliJizhangTemplates[0].id
+    }
+  }
+  
+  // 如果包含增值服务合同类型且未选择模板，自动选择第一个增值服务模板
+  if (generateForm.contractTypes.includes('zengzhi_fuwu') && !generateForm.zengzhiFuwuTemplate) {
+    const zengzhiFuwuTemplates = getZengzhiFuwuTemplates()
+    if (zengzhiFuwuTemplates.length > 0) {
+      generateForm.zengzhiFuwuTemplate = zengzhiFuwuTemplates[0].id
+    }
+  }
+}
+
+
+
+// 获取代理记账模板列表
+const getDaliJizhangTemplates = () => {
+  return contractTemplates.value.filter(template => 
+    template.hetong_leixing === 'daili_jizhang'
+  )
+}
+
+// 获取增值服务模板列表
+const getZengzhiFuwuTemplates = () => {
+  return contractTemplates.value.filter(template => 
+    template.hetong_leixing === 'zengzhi_fuwu'
+  )
+}
+
+const analyzeQuoteServices = (quote: XiansuoBaojiaDetail) => {
+  // 分析报价项目，按服务类型分类
+  const daliJizhangItems: any[] = []
+  const zengzhiFuwuItems: any[] = []
+  
+  quote.xiangmu_list.forEach((item: any) => {
+    // 根据产品项目的类型或名称判断服务类型
+    if (item.xiangmu_mingcheng.includes('代理记账') || 
+        item.xiangmu_mingcheng.includes('记账') ||
+        item.xiangmu_mingcheng.includes('纳税人')) {
+      daliJizhangItems.push(item)
+    } else {
+      zengzhiFuwuItems.push(item)
+    }
+  })
+  
+  // 计算各类服务的价格
+  const daliJizhangTotal = daliJizhangItems.reduce((sum: number, item: any) => sum + parseFloat(item.xiaoji), 0)
+  const zengzhiFuwuTotal = zengzhiFuwuItems.reduce((sum: number, item: any) => sum + parseFloat(item.xiaoji), 0)
+  
+  // 自动选择需要生成的合同类型
+  generateForm.contractTypes = []
+  if (daliJizhangItems.length > 0) {
+    generateForm.contractTypes.push('daili_jizhang')
+    generateForm.daliJizhangPrice = daliJizhangTotal
+  }
+  if (zengzhiFuwuItems.length > 0) {
+    generateForm.contractTypes.push('zengzhi_fuwu')
+    generateForm.zengzhiFuwuPrice = zengzhiFuwuTotal
+  }
+  
+  // 如果没有明确分类，默认为代理记账
+  if (generateForm.contractTypes.length === 0) {
+    generateForm.contractTypes = ['daili_jizhang']
+    generateForm.daliJizhangPrice = quote.zongji_jine
+  }
+  
+  console.log('服务分析结果:', {
+    daliJizhangItems,
+    zengzhiFuwuItems,
+    daliJizhangTotal,
+    zengzhiFuwuTotal,
+    contractTypes: generateForm.contractTypes
+  })
 }
 
 const fetchContractParties = async () => {
@@ -357,7 +536,7 @@ const fetchContractParties = async () => {
 }
 
 const getQuoteStatusType = (status: string) => {
-  const types = {
+  const types: Record<string, string> = {
     draft: '',
     sent: 'warning',
     accepted: 'success',
@@ -368,7 +547,7 @@ const getQuoteStatusType = (status: string) => {
 }
 
 const getQuoteStatusText = (status: string) => {
-  const texts = {
+  const texts: Record<string, string> = {
     draft: '草稿',
     sent: '已发送',
     accepted: '已接受',
@@ -388,52 +567,91 @@ const handleBack = () => {
 }
 
 const handlePreview = async () => {
-  if (!generateFormRef.value) return
+  // 检查报价信息是否存在
+  if (!quoteInfo.value) {
+    ElMessage.error('报价信息不存在，无法预览合同')
+    return
+  }
+
+  // 表单验证
+  const formRef = generateFormRef.value
+  if (!formRef) return
   
   try {
-    await generateFormRef.value.validate()
-    previewLoading.value = true
-    
-    // 预览代理记账合同
+    await formRef.validate()
+  } catch (error) {
+    ElMessage.error('请完善表单信息')
+    return
+  }
+
+  previewLoading.value = true
+
+  try {
+    // 代理记账合同预览
     if (generateForm.contractTypes.includes('daili_jizhang')) {
+      if (!generateForm.daliJizhangTemplate) {
+        throw new Error('请选择代理记账合同模板')
+      }
+
+      // 验证必要的客户信息
+      const kehuId = quoteInfo.value?.xiansuo_info?.kehu_id || quoteInfo.value?.xiansuo_info?.id
+      if (!kehuId) {
+        throw new Error('客户信息不完整，无法预览合同')
+      }
+
       const previewData = {
-        hetong_moban_id: 'daili_jizhang_template_id', // 需要从模板列表获取
-        kehu_id: quoteInfo.value.xiansuo.kehu.id,
+        hetong_moban_id: generateForm.daliJizhangTemplate,
+        kehu_id: kehuId,
         bianliang_zhis: {
           hetong_jine: generateForm.daliJizhangPrice,
-          kehu_mingcheng: quoteInfo.value.xiansuo.kehu.gongsi_mingcheng,
-          // 其他变量...
+          kehu_mingcheng: quoteInfo.value?.xiansuo_info?.gongsi_mingcheng || '测试公司'
         }
       }
-      
+
+      console.log('发送预览请求:', previewData)
       const response = await contractApi.previewContract(previewData)
-      previewContent.daili_jizhang = response.data.content
+      console.log('预览响应:', response)
+
+      // 处理响应数据结构
+      const content = response?.data?.content || response?.content || ''
+      previewContent.daili_jizhang = content
     }
-    
-    // 预览增值服务合同
+
+    // 增值服务合同预览
     if (generateForm.contractTypes.includes('zengzhi_fuwu')) {
+      if (!generateForm.zengzhiFuwuTemplate) {
+        throw new Error('请选择增值服务合同模板')
+      }
+
+      // 验证必要的客户信息
+      const kehuId = quoteInfo.value?.xiansuo_info?.kehu_id || quoteInfo.value?.xiansuo_info?.id
+      if (!kehuId) {
+        throw new Error('客户信息不完整，无法预览合同')
+      }
+
       const previewData = {
-        hetong_moban_id: 'zengzhi_fuwu_template_id', // 需要从模板列表获取
-        kehu_id: quoteInfo.value.xiansuo.kehu.id,
+        hetong_moban_id: generateForm.zengzhiFuwuTemplate,
+        kehu_id: kehuId,
         bianliang_zhis: {
           hetong_jine: generateForm.zengzhiFuwuPrice,
-          kehu_mingcheng: quoteInfo.value.xiansuo.kehu.gongsi_mingcheng,
-          // 其他变量...
+          kehu_mingcheng: quoteInfo.value?.xiansuo_info?.gongsi_mingcheng || '测试公司'
         }
       }
-      
+
+      console.log('发送增值服务预览请求:', previewData)
       const response = await contractApi.previewContract(previewData)
-      previewContent.zengzhi_fuwu = response.data.content
+      console.log('增值服务预览响应:', response)
+
+      // 处理响应数据结构
+      const content = response?.data?.content || response?.content || ''
+      previewContent.zengzhi_fuwu = content
     }
-    
+
     previewDialogVisible.value = true
-    activePreviewTab.value = generateForm.contractTypes[0]
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('预览合同失败:', error)
-    if (error !== false) { // 不是表单验证错误
-      ElMessage.error('预览合同失败')
-    }
+    ElMessage.error('预览合同失败: ' + (error?.response?.data?.detail || error?.message || '未知错误'))
   } finally {
     previewLoading.value = false
   }
@@ -487,6 +705,11 @@ const handleSubmitAudit = async () => {
   try {
     auditLoading.value = true
     
+    if (!quoteInfo.value) {
+      ElMessage.error('报价信息不存在')
+      return
+    }
+    
     // 提交审核申请
     const auditData = {
       audit_type: 'hetong_jine_xiuzheng',
@@ -514,6 +737,12 @@ const handleSubmitAudit = async () => {
 }
 
 const generateContracts = async () => {
+  // 检查报价信息是否存在
+  if (!quoteInfo.value) {
+    ElMessage.error('报价信息不存在，无法生成合同')
+    return
+  }
+
   generateLoading.value = true
 
   try {
@@ -522,12 +751,14 @@ const generateContracts = async () => {
       baojia_id: quoteInfo.value.id,
       contract_types: generateForm.contractTypes,
       daili_jizhang_config: generateForm.contractTypes.includes('daili_jizhang') ? {
+        template_id: generateForm.daliJizhangTemplate,
         price: generateForm.daliJizhangPrice,
         count: generateForm.daliJizhangCount,
         party_id: generateForm.daliJizhangParty,
         price_change_reason: generateForm.daliJizhangReason
       } : null,
       zengzhi_fuwu_config: generateForm.contractTypes.includes('zengzhi_fuwu') ? {
+        template_id: generateForm.zengzhiFuwuTemplate,
         price: generateForm.zengzhiFuwuPrice,
         count: generateForm.zengzhiFuwuCount,
         party_id: generateForm.zengzhiFuwuParty,
@@ -548,9 +779,9 @@ const generateContracts = async () => {
       router.push('/contracts') // 跳转到合同列表
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('生成合同失败:', error)
-    ElMessage.error('生成合同失败: ' + (error.response?.data?.detail || error.message))
+    ElMessage.error('生成合同失败: ' + (error?.response?.data?.detail || error?.message || '未知错误'))
   } finally {
     generateLoading.value = false
   }
@@ -560,6 +791,7 @@ const generateContracts = async () => {
 onMounted(() => {
   fetchQuoteInfo()
   fetchContractParties()
+  fetchContractTemplates()
 })
 </script>
 
@@ -606,10 +838,33 @@ onMounted(() => {
   margin-top: 5px;
 }
 
+.price-info {
+  margin-top: 5px;
+}
+
 .price-diff {
-  margin-left: 10px;
   font-size: 12px;
   color: #e6a23c;
+  font-weight: 500;
+}
+
+.price-discount {
+  font-size: 12px;
+  color: #67c23a;
+  font-weight: 500;
+}
+
+.original-price {
+  font-size: 11px;
+  color: #909399;
+  margin-top: 2px;
+}
+
+.form-tip {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 4px;
+  line-height: 1.4;
 }
 
 .form-actions {

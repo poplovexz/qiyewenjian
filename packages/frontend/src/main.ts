@@ -7,7 +7,6 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
 import { pinia } from './stores'
-import { useAuthStore } from './stores/modules/auth'
 import { tokenManager } from './utils/tokenManager'
 
 const app = createApp(App)
@@ -32,6 +31,8 @@ try {
     try {
       console.log('🔐 开始初始化认证...')
       await tokenManager.initializeAuth()
+      // 确保在Pinia完全初始化后再调用useAuthStore
+      const { useAuthStore } = await import('./stores/modules/auth')
       const authStore = useAuthStore()
       await authStore.restoreFromStorage()
       console.log('✅ 认证初始化完成')

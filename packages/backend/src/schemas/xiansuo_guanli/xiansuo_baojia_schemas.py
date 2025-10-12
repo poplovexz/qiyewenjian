@@ -183,6 +183,7 @@ class XiansuoInfoForBaojia(BaseModel):
     lianxi_ren: str = Field(..., description="联系人")
     lianxi_dianhua: Optional[str] = Field(None, description="联系电话")
     lianxi_youxiang: Optional[str] = Field(None, description="联系邮箱")
+    kehu_id: Optional[str] = Field(None, description="转化后的客户ID")
 
     class Config:
         from_attributes = True

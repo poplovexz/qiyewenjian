@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div class="dashboard-content">
     <!-- 欢迎区域 -->
     <div class="welcome-section animate-fade-in-down">
       <div class="welcome-content">
@@ -47,7 +47,7 @@
         :value="userRoles.length"
         variant="success"
         trend="0%"
-        trend-type="stable"
+        trend-type="neutral"
         description="当前分配角色数量"
         animated
         class="animate-fade-in-up animate-delay-200 hover-lift"
@@ -71,7 +71,7 @@
         :value="getStatusText(userInfo?.zhuangtai)"
         variant="info"
         trend="正常"
-        trend-type="stable"
+        trend-type="neutral"
         description="当前账户运行状态"
         animated
         class="animate-fade-in-up animate-delay-400 hover-lift"
@@ -79,7 +79,7 @@
     </div>
 
     <!-- 主要内容区域 -->
-      <div class="main-content grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="main-content grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="content-left">
         <!-- 快捷操作 -->
         <ModernCard
@@ -332,7 +332,6 @@ import {
 } from '@element-plus/icons-vue'
 import StatCard from '@/components/ui/StatCard.vue'
 import ModernCard from '@/components/ui/ModernCard.vue'
-import ModernButton from '@/components/ui/ModernButton.vue'
 
 // 组合式函数
 const { userInfo, userRoles, userPermissions, hasPermission } = useAuth()
@@ -349,7 +348,7 @@ const currentDate = computed(() => {
 })
 
 // 方法
-const formatDate = (dateString?: string) => {
+const formatDate = (dateString?: string | null) => {
   if (!dateString) return '未知'
   return new Date(dateString).toLocaleString('zh-CN')
 }
@@ -383,27 +382,7 @@ const getStatusText = (status?: string) => {
   --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.15);
 }
 
-.dashboard-container {
-  padding: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden;
-}
 
-.dashboard-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
-  pointer-events: none;
-}
 
 /* 欢迎区域 */
 .welcome-section {

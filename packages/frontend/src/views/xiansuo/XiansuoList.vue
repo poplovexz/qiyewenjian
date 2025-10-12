@@ -285,7 +285,7 @@
               生成合同
             </el-button>
 
-            <el-dropdown @command="(command) => handleAction(command, row)">
+            <el-dropdown @command="(command: string) => handleAction(command, row)">
               <el-button size="small">
                 更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
               </el-button>
@@ -377,9 +377,8 @@ import {
 } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
-import { useContractManagementStore } from '@/stores/modules/contractManagement'
-import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/modules/auth'
+import { storeToRefs } from 'pinia'
 import XiansuoForm from '@/components/xiansuo/XiansuoForm.vue'
 import XiansuoDetail from '@/components/xiansuo/XiansuoDetail.vue'
 import XiansuoBaojiaForm from '@/components/xiansuo/XiansuoBaojiaForm.vue'
@@ -389,8 +388,6 @@ import type { Xiansuo, XiansuoBaojia } from '@/types/xiansuo'
 
 // 使用store
 const xiansuoStore = useXiansuoStore()
-const contractStore = useContractManagementStore()
-const authStore = useAuthStore()
 const router = useRouter()
 
 // 响应式数据
@@ -576,6 +573,7 @@ const hasValidBaojia = (xiansuo: Xiansuo) => {
   return ['quoted', 'won'].includes(xiansuo.xiansuo_zhuangtai)
 }
 
+
 const handleCreateBaojia = async (xiansuo: Xiansuo) => {
   try {
     // 先加载该线索的报价列表
@@ -687,51 +685,15 @@ const handleGenerateContract = async (xiansuo: Xiansuo) => {
       return
     }
 
-    // 显示生成方式选择对话框
-    const action = await ElMessageBox.confirm(
-      `基于报价"${acceptedBaojia.baojia_mingcheng}"生成合同，请选择生成方式：`,
-      '生成合同',
-      {
-        confirmButtonText: '直接生成',
-        cancelButtonText: '自定义生成',
-        distinguishCancelAndClose: true,
-        type: 'info'
-      }
-    ).then(() => 'direct').catch((action) => {
-      if (action === 'cancel') {
-        return 'custom'
-      }
-      throw action
+    // 直接跳转到合同生成页面，预填报价信息
+    router.push({
+      path: '/contracts/generate',
+      query: { baojia_id: acceptedBaojia.id }
     })
 
-    if (action === 'direct') {
-      // 直接生成合同
-      await contractStore.createContractFromQuote(acceptedBaojia.id)
-      ElMessage.success('合同生成成功！')
-
-      // 刷新线索列表
-      await xiansuoStore.fetchXiansuoList()
-    } else if (action === 'custom') {
-      // 跳转到合同生成页面，预填报价信息
-      router.push({
-        path: '/contracts/generate',
-        query: { baojia_id: acceptedBaojia.id }
-      })
-    }
-
   } catch (error: any) {
-    if (error !== 'cancel' && error !== 'close') {
-      console.error('生成合同失败:', error)
-
-      // 检查是否是400错误（重复创建）
-      if (error.response?.status === 400) {
-        ElMessage.warning('该报价已经生成过合同，请在合同管理页面查看')
-        // 可以选择跳转到合同管理页面
-        // router.push('/contracts')
-      } else {
-        ElMessage.error('生成合同失败: ' + (error.message || '未知错误'))
-      }
-    }
+    console.error('跳转到合同生成页面失败:', error)
+    ElMessage.error('跳转失败: ' + (error?.message || '未知错误'))
   } finally {
     contractGenerating.value = false
   }
@@ -865,7 +827,7 @@ onMounted(async () => {
     console.error('线索列表页面初始化失败:', error)
 
     // 如果是401错误，提示重新登录
-    if (error?.response?.status === 401) {
+    if ((error as any)?.response?.status === 401) {
       ElMessage.error('登录已过期，请重新登录')
       authStore.logout()
     } else {

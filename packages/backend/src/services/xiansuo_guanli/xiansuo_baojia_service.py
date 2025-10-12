@@ -193,7 +193,8 @@ class XiansuoBaojiaService:
                 "gongsi_mingcheng": xiansuo.gongsi_mingcheng,
                 "lianxi_ren": xiansuo.lianxi_ren,
                 "lianxi_dianhua": xiansuo.lianxi_dianhua,
-                "lianxi_youxiang": xiansuo.lianxi_youxiang
+                "lianxi_youxiang": xiansuo.lianxi_youxiang,
+                "kehu_id": xiansuo.kehu_id
             },
             "created_at": baojia.created_at,
             "updated_at": baojia.updated_at,

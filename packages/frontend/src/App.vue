@@ -2,10 +2,9 @@
 import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/modules/auth'
 
-const authStore = useAuthStore()
-
 onMounted(() => {
   // 应用启动时恢复认证状态
+  const authStore = useAuthStore()
   authStore.restoreFromStorage()
 })
 </script>

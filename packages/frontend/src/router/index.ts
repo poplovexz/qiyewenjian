@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import { useAuthStore } from '@/stores/modules/auth'
 import { tokenManager } from '@/utils/tokenManager'
 import { ElMessage } from 'element-plus'
 
@@ -176,6 +175,11 @@ const routes: RouteRecordRaw[] = [
           title: '合同列表',
           permissions: ['contract_manage']
         }
+      },
+      // 合同模板管理重定向（兼容单数形式）
+      {
+        path: 'contract-template',
+        redirect: 'contract-templates'
       },
       // 合同模板管理
       {
@@ -655,6 +659,7 @@ router.beforeEach(async (to, _from, next) => {
 
   // 检查是否需要认证
   if (to.meta?.requiresAuth) {
+    const { useAuthStore } = await import('@/stores/modules/auth')
     const authStore = useAuthStore()
 
     if (!authStore.isAuthenticated) {
@@ -694,6 +699,7 @@ router.beforeEach(async (to, _from, next) => {
       }
     }
   } else if (to.path === '/login') {
+    const { useAuthStore } = await import('@/stores/modules/auth')
     const authStore = useAuthStore()
     if (authStore.isAuthenticated) {
       // 已登录用户访问登录页，跳转到首页

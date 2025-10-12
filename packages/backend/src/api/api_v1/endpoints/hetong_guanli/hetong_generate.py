@@ -1,7 +1,7 @@
 """
 合同生成API端点
 """
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
@@ -27,8 +27,8 @@ class ContractTypeConfig(BaseModel):
     """合同类型配置"""
     price: float = Field(..., description="合同价格")
     count: int = Field(1, description="合同数量")
-    party_id: str = Field(..., description="乙方主体ID")
-    price_change_reason: str = Field(None, description="价格调整原因")
+    party_id: Optional[str] = Field(None, description="乙方主体ID")
+    price_change_reason: Optional[str] = Field(None, description="价格调整原因")
 
 
 class ContractPreviewRequest(BaseModel):
@@ -100,7 +100,7 @@ async def generate_contracts(
                             "baojia_id": request.baojia_id,
                             "hetong_moban_id": service.get_template_by_type("daili_jizhang"),
                             "yifang_zhuti_id": config.party_id,
-                            "hetong_mingcheng": f"{quote.xiansuo.kehu.gongsi_mingcheng}代理记账服务合同{f'({i+1})' if i > 0 else ''}",
+                            "hetong_mingcheng": f"{quote.xiansuo.gongsi_mingcheng}代理记账服务合同{f'({i+1})' if i > 0 else ''}",
                             "hetong_jine": config.price,
                             "hetong_leixing": "daili_jizhang",
                             "price_change_reason": config.price_change_reason
@@ -146,7 +146,7 @@ async def generate_contracts(
                             "baojia_id": request.baojia_id,
                             "hetong_moban_id": service.get_template_by_type("zengzhi_fuwu"),
                             "yifang_zhuti_id": config.party_id,
-                            "hetong_mingcheng": f"{quote.xiansuo.kehu.gongsi_mingcheng}增值服务合同{f'({i+1})' if i > 0 else ''}",
+                            "hetong_mingcheng": f"{quote.xiansuo.gongsi_mingcheng}增值服务合同{f'({i+1})' if i > 0 else ''}",
                             "hetong_jine": config.price,
                             "hetong_leixing": "zengzhi_fuwu",
                             "price_change_reason": config.price_change_reason
@@ -177,25 +177,40 @@ async def preview_contract(
 ):
     """
     预览合同内容
-    
+
     根据模板和变量值生成合同预览内容
     """
     try:
+        import traceback
+        import logging
+        logger = logging.getLogger(__name__)
+
+        logger.info(f"预览合同请求: template_id={request.hetong_moban_id}, customer_id={request.kehu_id}")
+        logger.info(f"变量值: {request.bianliang_zhis}")
+
         service = HetongGenerateService(db)
         content = service.preview_contract(
             template_id=request.hetong_moban_id,
             customer_id=request.kehu_id,
             variables=request.bianliang_zhis
         )
-        
+
         return {
             "success": True,
             "data": {
                 "content": content
             }
         }
-        
+
+    except HTTPException as he:
+        # 重新抛出HTTP异常
+        raise he
     except Exception as e:
+        import traceback
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"预览合同失败: {str(e)}")
+        logger.error(f"错误堆栈: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"预览合同失败: {str(e)}")
 
 

@@ -56,11 +56,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch, type Component } from 'vue'
 import { ArrowUp, ArrowDown, Minus } from '@element-plus/icons-vue'
 
 interface Props {
-  icon: string
+  icon: Component
   label: string
   value: number | string
   unit?: string
@@ -80,7 +80,7 @@ const props = withDefaults(defineProps<Props>(), {
   animated: true
 })
 
-const displayValue = ref(0)
+const displayValue = ref<number | string>(0)
 
 // 计算属性
 const trendClass = computed(() => {
@@ -125,7 +125,8 @@ const animateValue = (start: number, end: number, duration: number = 1000) => {
 // 监听值变化
 watch(() => props.value, (newValue) => {
   if (typeof newValue === 'number') {
-    animateValue(displayValue.value, newValue)
+    const currentValue = typeof displayValue.value === 'number' ? displayValue.value : 0
+    animateValue(currentValue, newValue)
   } else {
     displayValue.value = newValue
   }

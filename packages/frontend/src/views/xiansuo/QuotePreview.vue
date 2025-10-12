@@ -116,7 +116,6 @@ import { useAuthStore } from '@/stores/modules/auth'
 import type { XiansuoBaojiaDetail } from '@/types/xiansuo'
 
 const route = useRoute()
-const router = useRouter()
 const xiansuoStore = useXiansuoStore()
 const authStore = useAuthStore()
 
@@ -250,7 +249,7 @@ const confirmQuote = async () => {
 
   try {
     await ElMessageBox.confirm(
-      '确认此报价后，将自动触发合同生成流程。确定要确认这个报价吗？',
+      '确定要确认这个报价吗？',
       '确认报价',
       {
         confirmButtonText: '确认',
@@ -266,27 +265,6 @@ const confirmQuote = async () => {
     await fetchDetail()
 
     ElMessage.success('报价确认成功！')
-
-    // 询问是否生成合同
-    try {
-      await ElMessageBox.confirm(
-        '报价已确认成功！是否立即基于此报价生成合同？',
-        '生成合同',
-        {
-          confirmButtonText: '生成合同',
-          cancelButtonText: '稍后处理',
-          type: 'info'
-        }
-      )
-
-      // 跳转到合同创建页面，并预填报价信息
-      router.push({
-        path: '/contracts/create',
-        query: { baojia_id: baojia.value.id }
-      })
-    } catch (error) {
-      // 用户选择稍后处理，不做任何操作
-    }
   } catch (error: any) {
     if (error !== 'cancel') {
       console.error('确认报价失败:', error)

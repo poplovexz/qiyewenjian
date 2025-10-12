@@ -295,6 +295,7 @@ export interface XiansuoInfoForBaojia {
   lianxi_ren: string
   lianxi_dianhua?: string
   lianxi_youxiang?: string
+  kehu_id?: string
 }
 
 export interface XiansuoBaojiaDetail {

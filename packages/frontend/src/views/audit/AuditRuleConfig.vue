@@ -401,22 +401,58 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh } from '@element-plus/icons-vue'
 import { formatDateTime } from '@/utils/date'
 import type { FormInstance, FormRules } from 'element-plus'
-import { auditRuleApi, auditWorkflowApi } from '@/api/modules/audit'
+import { auditRuleApi } from '@/api/modules/audit'
+
+// 类型定义
+interface AuditRule {
+  id: string
+  guize_mingcheng: string
+  guize_leixing: string
+  guize_miaoshu?: string
+  chufa_tiaojian: any
+  shenhe_liucheng_peizhi: any
+  shi_qiyong: string
+  paixu: number
+  liucheng_mingcheng?: string
+  created_at?: string
+  updated_at?: string
+}
+
+interface WorkflowOption {
+  value: string
+  label: string
+}
+
+interface TestResult {
+  triggered: boolean
+  trigger_reason: string
+  rule_name: string
+  workflow_preview?: {
+    steps: Array<{
+      step: number
+      name: string
+      role: string
+      applicable: boolean
+      estimated_time?: string
+      skip_reason?: string
+    }>
+  }
+}
 
 // 响应式数据
 const loading = ref(false)
 const submitting = ref(false)
 const dialogVisible = ref(false)
 const isEdit = ref(false)
-const ruleList = ref([])
-const workflowOptions = ref([])
+const ruleList = ref<AuditRule[]>([])
+const workflowOptions = ref<WorkflowOption[]>([])
 const formRef = ref<FormInstance>()
 const detailDrawerVisible = ref(false)
-const currentRule = ref(null)
+const currentRule = ref<AuditRule | null>(null)
 const testDialogVisible = ref(false)
-const testRule = ref(null)
+const testRule = ref<AuditRule | null>(null)
 const testing = ref(false)
-const testResult = ref(null)
+const testResult = ref<TestResult | null>(null)
 const testFormRef = ref<FormInstance>()
 
 // 分页数据
@@ -603,7 +639,7 @@ const loadTestTemplate = async () => {
     const templates = data.templates || []
 
     // 查找匹配的模板
-    const template = templates.find(t => t.type === testRule.value.guize_leixing)
+    const template = templates.find((t: any) => t.type === testRule.value?.guize_leixing)
 
     if (template) {
       Object.assign(testData, template.template)
@@ -617,25 +653,7 @@ const loadTestTemplate = async () => {
   }
 }
 
-// 获取优先级标签样式
-const getPriorityTagType = (priority: string) => {
-  const priorityMap: Record<string, string> = {
-    high: 'danger',
-    medium: 'warning',
-    low: 'info'
-  }
-  return priorityMap[priority] || 'info'
-}
 
-// 获取优先级标签文本
-const getPriorityLabel = (priority: string) => {
-  const priorityMap: Record<string, string> = {
-    high: '高',
-    medium: '中',
-    low: '低'
-  }
-  return priorityMap[priority] || priority
-}
 
 // 格式化触发条件
 const formatTriggerCondition = (condition: any) => {

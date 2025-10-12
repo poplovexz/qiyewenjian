@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>检查认证状态</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .info { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .warning { background: #fff3e0; color: #ef6c00; }
+    </style>
+</head>
+<body>
+    <h1>认证状态检查</h1>
+    <div id="results"></div>
+    
+    <script>
+        function checkAuth() {
+            const results = document.getElementById('results');
+            
+            // 检查本地存储
+            const accessToken = localStorage.getItem('access_token');
+            const refreshToken = localStorage.getItem('refresh_token');
+            const userInfo = localStorage.getItem('user_info');
+            
+            let html = '<h2>本地存储检查</h2>';
+            
+            if (accessToken) {
+                html += `<div class="info success">✅ Access Token: ${accessToken.substring(0, 50)}...</div>`;
+            } else {
+                html += '<div class="info error">❌ 没有 Access Token</div>';
+            }
+            
+            if (refreshToken) {
+                html += `<div class="info success">✅ Refresh Token: ${refreshToken.substring(0, 50)}...</div>`;
+            } else {
+                html += '<div class="info error">❌ 没有 Refresh Token</div>';
+            }
+            
+            if (userInfo) {
+                try {
+                    const user = JSON.parse(userInfo);
+                    html += `<div class="info success">✅ 用户信息: ${user.yonghu_ming || user.username || '未知用户'}</div>`;
+                } catch (e) {
+                    html += '<div class="info error">❌ 用户信息格式错误</div>';
+                }
+            } else {
+                html += '<div class="info error">❌ 没有用户信息</div>';
+            }
+            
+            // 测试 API 连接
+            html += '<h2>API 连接测试</h2>';
+            html += '<div id="api-test">正在测试...</div>';
+            
+            results.innerHTML = html;
+            
+            // 测试 API
+            testAPI();
+        }
+        
+        async function testAPI() {
+            const apiTest = document.getElementById('api-test');
+            const accessToken = localStorage.getItem('access_token');
+            
+            if (!accessToken) {
+                apiTest.innerHTML = '<div class="info error">❌ 无 Token，无法测试 API</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/v1/leads/?page=1&size=5', {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    apiTest.innerHTML = `<div class="info success">✅ API 连接成功，获取到 ${data.total || 0} 条线索数据</div>`;
+                } else {
+                    const errorData = await response.text();
+                    apiTest.innerHTML = `<div class="info error">❌ API 错误 (${response.status}): ${errorData}</div>`;
+                }
+            } catch (error) {
+                apiTest.innerHTML = `<div class="info error">❌ 网络错误: ${error.message}</div>`;
+            }
+        }
+        
+        // 页面加载时执行检查
+        window.onload = checkAuth;
+    </script>
+</body>
+</html>

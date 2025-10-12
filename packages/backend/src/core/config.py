@@ -60,7 +60,7 @@ class Settings(BaseSettings):
 
     class Config:
         """配置类"""
-        env_file = "../.env"
+        env_file = ".env"
         case_sensitive = True
 
 

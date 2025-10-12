@@ -127,4 +127,4 @@ class HetongMoban(BaseModel):
     )
     
     def __repr__(self) -> str:
-        return f"<HetongMoban(moban_mingcheng='{self.moban_mingcheng}', moban_leixing='{self.moban_leixing}')>"
+        return f"<HetongMoban(moban_mingcheng='{self.moban_mingcheng}', hetong_leixing='{self.hetong_leixing}')>"

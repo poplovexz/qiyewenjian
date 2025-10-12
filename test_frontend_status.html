@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端状态测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        pre { background-color: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>前端状态测试</h1>
+    
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+        
+        // 测试前端服务器连接
+        addResult('🔍 开始测试前端状态...', 'info');
+        
+        // 测试后端API连接
+        fetch('http://localhost:8000/health')
+            .then(response => response.json())
+            .then(data => {
+                addResult(`✅ 后端API连接正常: ${JSON.stringify(data)}`, 'success');
+            })
+            .catch(error => {
+                addResult(`❌ 后端API连接失败: ${error.message}`, 'error');
+            });
+        
+        // 测试前端页面加载
+        fetch('http://localhost:5174/')
+            .then(response => {
+                if (response.ok) {
+                    addResult('✅ 前端页面可以正常访问', 'success');
+                    return response.text();
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            })
+            .then(html => {
+                // 检查是否包含错误信息
+                if (html.includes('useAuthStore') || html.includes('ReferenceError')) {
+                    addResult('⚠️ 前端页面可能包含useAuthStore相关错误', 'error');
+                } else {
+                    addResult('✅ 前端页面没有明显的useAuthStore错误', 'success');
+                }
+            })
+            .catch(error => {
+                addResult(`❌ 前端页面访问失败: ${error.message}`, 'error');
+            });
+        
+        // 检查控制台错误
+        window.addEventListener('error', (event) => {
+            addResult(`❌ JavaScript错误: ${event.error.message}`, 'error');
+        });
+        
+        // 检查未处理的Promise拒绝
+        window.addEventListener('unhandledrejection', (event) => {
+            addResult(`❌ 未处理的Promise拒绝: ${event.reason}`, 'error');
+        });
+        
+        setTimeout(() => {
+            addResult('🔍 测试完成，请查看上述结果', 'info');
+        }, 3000);
+    </script>
+</body>
+</html>

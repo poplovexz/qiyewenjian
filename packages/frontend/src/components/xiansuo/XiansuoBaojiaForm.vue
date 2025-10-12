@@ -111,7 +111,7 @@
             </div>
 
             <el-row :gutter="20" class="xiangmu-content">
-              <el-col :span="6">
+              <el-col :span="5">
                 <el-form-item :label="`数量`" :prop="`xiangmu_list.${index}.shuliang`">
                   <el-input-number
                     v-model="item.shuliang"
@@ -135,14 +135,14 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
+              <el-col :span="5">
                 <el-form-item label="小计">
                   <div class="xiaoji-display">
                     ¥{{ calculateXiaoji(index).toFixed(2) }}
                   </div>
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
+              <el-col :span="8">
                 <el-form-item label="备注">
                   <el-input
                     v-model="item.beizhu"
@@ -530,7 +530,21 @@ watch(() => props.visible, (visible) => {
 }
 
 .number-input {
-  width: 140px;
+  width: 100%;
+  min-width: 160px;
+}
+
+.number-input :deep(.el-input__inner) {
+  text-align: center;
+}
+
+.xiangmu-content .el-form-item {
+  margin-bottom: 16px;
+}
+
+.xiangmu-content .el-form-item__label {
+  font-weight: 500;
+  color: #606266;
 }
 
 .dialog-footer {
