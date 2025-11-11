@@ -842,6 +842,49 @@ const routes: RouteRecordRaw[] = [
       }
     ]
   },
+  // 设置
+  {
+    path: '/settings',
+    component: Layout,
+    redirect: '/settings/profile',
+    meta: {
+      title: '设置'
+    },
+    children: [
+      {
+        path: '',
+        name: 'Settings',
+        component: () => import('@/views/settings/SettingsLayout.vue'),
+        redirect: '/settings/profile',
+        children: [
+          {
+            path: 'profile',
+            name: 'ProfileSettings',
+            component: () => import('@/views/settings/ProfileSettings.vue'),
+            meta: {
+              title: '个人信息'
+            }
+          },
+          {
+            path: 'password',
+            name: 'PasswordSettings',
+            component: () => import('@/views/settings/PasswordSettings.vue'),
+            meta: {
+              title: '修改密码'
+            }
+          },
+          {
+            path: 'notifications',
+            name: 'NotificationSettings',
+            component: () => import('@/views/settings/NotificationSettings.vue'),
+            meta: {
+              title: '通知偏好'
+            }
+          }
+        ]
+      }
+    ]
+  },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',

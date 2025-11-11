@@ -9,7 +9,7 @@ api_router = APIRouter()
 # 导入各个模块的路由
 from .endpoints import auth, yonghu, upload
 from .endpoints.kehu_guanli import kehu, fuwu_jilu
-from .endpoints.yonghu_guanli import jiaose as role_api, quanxian
+from .endpoints.yonghu_guanli import jiaose as role_api, quanxian, user_settings
 from .endpoints.chanpin_guanli import chanpin_fenlei, chanpin_xiangmu, chanpin_buzou
 from .endpoints.hetong_guanli import hetong_moban, hetong, hetong_yifang_zhuti, hetong_zhifu_fangshi, hetong_qianshu, hetong_generate, hetong_qianshu_public, hetong_zhifu_public, hetong_sign
 from .endpoints.xiansuo_guanli import xiansuo, xiansuo_laiyuan, xiansuo_zhuangtai, xiansuo_genjin, xiansuo_baojia
@@ -24,6 +24,7 @@ from .endpoints.bangong_guanli import baoxiao, qingjia, duiwai_fukuan, caigou, g
 # 注册路由
 api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
 api_router.include_router(yonghu.router, prefix="/users", tags=["用户管理"])
+api_router.include_router(user_settings.router, prefix="/users", tags=["个人设置"])
 api_router.include_router(upload.router, prefix="/upload", tags=["文件上传"])
 
 # 用户管理模块路由

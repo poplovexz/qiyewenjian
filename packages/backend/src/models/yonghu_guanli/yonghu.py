@@ -72,6 +72,12 @@ class Yonghu(BaseModel):
         back_populates="yonghu",
         cascade="all, delete-orphan"
     )
-    
+
+    preferences = relationship(
+        "UserPreferences",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
     def __repr__(self) -> str:
         return f"<Yonghu(yonghu_ming='{self.yonghu_ming}', xingming='{self.xingming}')>"

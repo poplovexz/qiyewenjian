@@ -6,11 +6,13 @@ from .jiaose import Jiaose
 from .quanxian import Quanxian
 from .yonghu_jiaose import YonghuJiaose
 from .jiaose_quanxian import JiaoseQuanxian
+from .user_preferences import UserPreferences
 
 __all__ = [
     "Yonghu",
-    "Jiaose", 
+    "Jiaose",
     "Quanxian",
     "YonghuJiaose",
-    "JiaoseQuanxian"
+    "JiaoseQuanxian",
+    "UserPreferences"
 ]
