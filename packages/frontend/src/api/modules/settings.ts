@@ -1,7 +1,7 @@
 /**
  * 设置相关API
  */
-import request from '../request'
+import { request } from '@/utils/request'
 
 // ==================== 类型定义 ====================
 
