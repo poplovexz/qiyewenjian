@@ -845,10 +845,11 @@ const routes: RouteRecordRaw[] = [
   // 设置
   {
     path: '/settings',
-    component: Layout,
+    component: () => import('@/layouts/MainLayout.vue'),
     redirect: '/settings/profile',
     meta: {
-      title: '设置'
+      title: '设置',
+      requiresAuth: true
     },
     children: [
       {
