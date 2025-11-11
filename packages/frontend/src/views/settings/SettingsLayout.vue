@@ -31,6 +31,10 @@
             <el-icon><Lock /></el-icon>
             <span>安全配置</span>
           </el-menu-item>
+          <el-menu-item index="/settings/system/cache">
+            <el-icon><Coin /></el-icon>
+            <span>缓存配置</span>
+          </el-menu-item>
           <el-menu-item index="/settings/system/business">
             <el-icon><Document /></el-icon>
             <span>业务参数</span>
@@ -48,7 +52,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { User, Lock, Bell, Setting, Document } from '@element-plus/icons-vue'
+import { User, Lock, Bell, Setting, Document, Coin } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()

@@ -880,6 +880,39 @@ const routes: RouteRecordRaw[] = [
             meta: {
               title: '通知偏好'
             }
+          },
+          // 系统设置
+          {
+            path: 'system/basic',
+            name: 'SystemBasicInfo',
+            component: () => import('@/views/settings/system/BasicInfo.vue'),
+            meta: {
+              title: '系统基础信息'
+            }
+          },
+          {
+            path: 'system/security',
+            name: 'SystemSecurityConfig',
+            component: () => import('@/views/settings/system/SecurityConfig.vue'),
+            meta: {
+              title: '安全配置'
+            }
+          },
+          {
+            path: 'system/cache',
+            name: 'SystemCacheConfig',
+            component: () => import('@/views/settings/system/CacheConfig.vue'),
+            meta: {
+              title: '缓存配置'
+            }
+          },
+          {
+            path: 'system/business',
+            name: 'SystemBusinessParams',
+            component: () => import('@/views/settings/system/BusinessParams.vue'),
+            meta: {
+              title: '业务参数'
+            }
           }
         ]
       }
