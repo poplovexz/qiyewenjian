@@ -913,6 +913,15 @@ const routes: RouteRecordRaw[] = [
             meta: {
               title: '业务参数'
             }
+          },
+          // 基础数据管理
+          {
+            path: 'data',
+            name: 'DataManagement',
+            component: () => import('@/views/settings/data/DataManagement.vue'),
+            meta: {
+              title: '基础数据管理'
+            }
           }
         ]
       }

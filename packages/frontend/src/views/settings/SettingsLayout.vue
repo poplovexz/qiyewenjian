@@ -40,6 +40,14 @@
             <span>业务参数</span>
           </el-menu-item>
         </el-menu-item-group>
+
+        <!-- 基础数据（仅管理员可见） -->
+        <el-menu-item-group v-if="isAdmin" title="基础数据">
+          <el-menu-item index="/settings/data">
+            <el-icon><Files /></el-icon>
+            <span>数据管理</span>
+          </el-menu-item>
+        </el-menu-item-group>
       </el-menu>
     </div>
 
@@ -52,7 +60,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { User, Lock, Bell, Setting, Document, Coin } from '@element-plus/icons-vue'
+import { User, Lock, Bell, Setting, Document, Coin, Files } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
