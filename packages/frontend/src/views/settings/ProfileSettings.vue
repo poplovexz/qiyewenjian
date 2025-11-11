@@ -55,7 +55,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { getUserProfile, updateUserProfile, type UserProfile, type UserProfileUpdate } from '@/api/modules/settings'
-import { formatDateTime } from '@/utils/format'
+import { formatDateTime, formatDate } from '@/utils/format'
 
 const formRef = ref<FormInstance>()
 const loading = ref(false)
