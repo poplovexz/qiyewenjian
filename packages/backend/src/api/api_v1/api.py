@@ -10,6 +10,7 @@ api_router = APIRouter()
 from .endpoints import auth, yonghu, upload
 from .endpoints.kehu_guanli import kehu, fuwu_jilu
 from .endpoints.yonghu_guanli import jiaose as role_api, quanxian, user_settings
+from .endpoints.xitong_guanli import system_config
 from .endpoints.chanpin_guanli import chanpin_fenlei, chanpin_xiangmu, chanpin_buzou
 from .endpoints.hetong_guanli import hetong_moban, hetong, hetong_yifang_zhuti, hetong_zhifu_fangshi, hetong_qianshu, hetong_generate, hetong_qianshu_public, hetong_zhifu_public, hetong_sign
 from .endpoints.xiansuo_guanli import xiansuo, xiansuo_laiyuan, xiansuo_zhuangtai, xiansuo_genjin, xiansuo_baojia
@@ -96,6 +97,9 @@ api_router.include_router(qingjia.router, prefix="/office/leave", tags=["请假�
 api_router.include_router(duiwai_fukuan.router, prefix="/office/payment", tags=["对外付款申请管理"])
 api_router.include_router(caigou.router, prefix="/office/procurement", tags=["采购申请管理"])
 api_router.include_router(gongzuo_jiaojie.router, prefix="/office/handover", tags=["工作交接单管理"])
+
+# 系统管理模块
+api_router.include_router(system_config.router, prefix="/system", tags=["系统配置管理"])
 
 
 @api_router.get("/")
