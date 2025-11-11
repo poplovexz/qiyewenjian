@@ -44,8 +44,9 @@
             <el-input-number
               v-if="row.editing"
               v-model="row.yugu_shichang"
-              :min="0"
+              :min="0.1"
               :precision="1"
+              :step="0.5"
               size="small"
               style="width: 100%"
             />
@@ -177,25 +178,31 @@
       <!-- 统计信息 -->
       <div class="steps-summary">
         <el-row :gutter="20">
-          <el-col :span="6">
+          <el-col :span="5">
             <div class="summary-item">
               <span class="label">总步骤数：</span>
               <span class="value">{{ stepsList.length }}</span>
             </div>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5">
             <div class="summary-item">
               <span class="label">必须步骤：</span>
               <span class="value required">{{ requiredStepsCount }}</span>
             </div>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5">
+            <div class="summary-item">
+              <span class="label">总办事天数：</span>
+              <span class="value highlight">{{ totalDays }} 天</span>
+            </div>
+          </el-col>
+          <el-col :span="4">
             <div class="summary-item">
               <span class="label">预估总时长：</span>
               <span class="value">{{ totalTime }} 小时</span>
             </div>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5">
             <div class="summary-item">
               <span class="label">总费用：</span>
               <span class="value price">{{ formatPrice(totalCost) }}</span>
@@ -263,8 +270,19 @@ const totalTime = computed(() => {
   }, 0).toFixed(1)
 })
 
+// 总办事天数（将所有步骤时间转换为天数）
+const totalDays = computed(() => {
+  return stepsList.value.reduce((total, step) => {
+    const timeInDays = convertToDays(step.yugu_shichang, step.shichang_danwei)
+    return total + timeInDays
+  }, 0)
+})
+
 const totalCost = computed(() => {
-  return stepsList.value.reduce((total, step) => total + (step.buzou_feiyong || 0), 0)
+  return stepsList.value.reduce((total, step) => {
+    const cost = typeof step.buzou_feiyong === 'number' ? step.buzou_feiyong : parseFloat(String(step.buzou_feiyong || 0))
+    return total + (isNaN(cost) ? 0 : cost)
+  }, 0)
 })
 
 // 监听器
@@ -284,8 +302,9 @@ const getTimeUnitLabel = (unit: string) => {
   return option?.label || unit
 }
 
-const formatPrice = (price: number) => {
-  return `¥${price.toFixed(2)}`
+const formatPrice = (price: number | string | null | undefined) => {
+  const numPrice = typeof price === 'number' ? price : parseFloat(String(price || 0))
+  return `¥${(isNaN(numPrice) ? 0 : numPrice).toFixed(2)}`
 }
 
 const convertToHours = (time: number, unit: string) => {
@@ -293,6 +312,15 @@ const convertToHours = (time: number, unit: string) => {
     xiaoshi: 1,
     tian: 8,
     fenzhong: 1/60
+  }
+  return time * (unitMap[unit] || 1)
+}
+
+const convertToDays = (time: number, unit: string) => {
+  const unitMap: Record<string, number> = {
+    tian: 1,           // 天 -> 天
+    xiaoshi: 1/8,      // 小时 -> 天（按8小时工作日）
+    fenzhong: 1/480    // 分钟 -> 天（480分钟 = 8小时 = 1天）
   }
   return time * (unitMap[unit] || 1)
 }
@@ -342,8 +370,21 @@ const handleEditStep = (step: any, index: number) => {
 }
 
 const handleSaveStep = async (step: any, index: number) => {
-  if (!step.buzou_mingcheng.trim()) {
+  // 验证步骤名称
+  if (!step.buzou_mingcheng || !step.buzou_mingcheng.trim()) {
     ElMessage.error('请输入步骤名称')
+    return
+  }
+
+  // 验证预估时长
+  if (!step.yugu_shichang || step.yugu_shichang <= 0) {
+    ElMessage.error('预估时长必须大于0')
+    return
+  }
+
+  // 验证步骤费用
+  if (step.buzou_feiyong < 0) {
+    ElMessage.error('步骤费用不能为负数')
     return
   }
 
@@ -351,42 +392,55 @@ const handleSaveStep = async (step: any, index: number) => {
     if (step.isNew) {
       // 创建新步骤
       const createData = {
-        buzou_mingcheng: step.buzou_mingcheng,
+        buzou_mingcheng: step.buzou_mingcheng.trim(),
         xiangmu_id: props.product!.id,
-        yugu_shichang: step.yugu_shichang,
+        yugu_shichang: Number(step.yugu_shichang),
         shichang_danwei: step.shichang_danwei,
-        buzou_feiyong: step.buzou_feiyong,
-        buzou_miaoshu: step.buzou_miaoshu,
-        paixu: step.paixu,
+        buzou_feiyong: Number(step.buzou_feiyong || 0),
+        buzou_miaoshu: step.buzou_miaoshu || '',
+        paixu: Number(step.paixu || 0),
         shi_bixu: step.shi_bixu,
         zhuangtai: step.zhuangtai
       }
-      
+
+      console.log('创建步骤数据:', createData)
       const result = await productStepApi.create(createData)
+      console.log('创建步骤成功:', result)
       Object.assign(step, result, { editing: false, isNew: false })
       ElMessage.success('步骤创建成功')
     } else {
       // 更新现有步骤
       const updateData = {
-        buzou_mingcheng: step.buzou_mingcheng,
-        yugu_shichang: step.yugu_shichang,
+        buzou_mingcheng: step.buzou_mingcheng.trim(),
+        yugu_shichang: Number(step.yugu_shichang),
         shichang_danwei: step.shichang_danwei,
-        buzou_feiyong: step.buzou_feiyong,
-        buzou_miaoshu: step.buzou_miaoshu,
-        paixu: step.paixu,
+        buzou_feiyong: Number(step.buzou_feiyong || 0),
+        buzou_miaoshu: step.buzou_miaoshu || '',
+        paixu: Number(step.paixu || 0),
         shi_bixu: step.shi_bixu,
         zhuangtai: step.zhuangtai
       }
-      
+
+      console.log('更新步骤数据:', updateData)
       const result = await productStepApi.update(step.id, updateData)
+      console.log('更新步骤成功:', result)
       Object.assign(step, result, { editing: false })
       ElMessage.success('步骤更新成功')
     }
-    
+
     delete step.originalData
-  } catch (error) {
+  } catch (error: any) {
     console.error('保存步骤失败:', error)
-    ElMessage.error('保存步骤失败')
+
+    // 提取详细的错误信息
+    let errorMessage = '保存步骤失败'
+    if (error.response?.data?.detail) {
+      errorMessage = error.response.data.detail
+    } else if (error.message) {
+      errorMessage = error.message
+    }
+
+    ElMessage.error(errorMessage)
   }
 }
 
@@ -428,15 +482,130 @@ const handleDeleteStep = async (step: any, index: number) => {
 const handleBatchSave = async () => {
   try {
     saving.value = true
-    
-    // 这里可以实现批量保存逻辑
-    // 目前单个保存已经实现，批量保存可以后续优化
-    
-    ElMessage.success('批量保存成功')
-    hasChanges.value = false
-    originalSteps.value = JSON.parse(JSON.stringify(stepsList.value))
+
+    // 收集所有需要保存的步骤（新建或编辑中的步骤）
+    const stepsToSave = stepsList.value.filter(step => step.editing || step.isNew)
+
+    if (stepsToSave.length === 0) {
+      ElMessage.warning('没有需要保存的步骤')
+      return
+    }
+
+    console.log(`批量保存 ${stepsToSave.length} 个步骤`)
+
+    let successCount = 0
+    let failCount = 0
+    const errors: string[] = []
+
+    // 逐个保存步骤
+    for (let i = 0; i < stepsToSave.length; i++) {
+      const step = stepsToSave[i]
+      const index = stepsList.value.indexOf(step)
+
+      try {
+        // 验证步骤名称
+        if (!step.buzou_mingcheng || !step.buzou_mingcheng.trim()) {
+          errors.push(`步骤 ${i + 1}: 请输入步骤名称`)
+          failCount++
+          continue
+        }
+
+        // 验证预估时长
+        if (!step.yugu_shichang || step.yugu_shichang <= 0) {
+          errors.push(`步骤 ${i + 1} (${step.buzou_mingcheng}): 预估时长必须大于0`)
+          failCount++
+          continue
+        }
+
+        // 验证步骤费用
+        if (step.buzou_feiyong < 0) {
+          errors.push(`步骤 ${i + 1} (${step.buzou_mingcheng}): 步骤费用不能为负数`)
+          failCount++
+          continue
+        }
+
+        if (step.isNew) {
+          // 创建新步骤
+          const createData = {
+            buzou_mingcheng: step.buzou_mingcheng.trim(),
+            xiangmu_id: props.product!.id,
+            yugu_shichang: Number(step.yugu_shichang),
+            shichang_danwei: step.shichang_danwei,
+            buzou_feiyong: Number(step.buzou_feiyong || 0),
+            buzou_miaoshu: step.buzou_miaoshu || '',
+            paixu: Number(step.paixu || 0),
+            shi_bixu: step.shi_bixu,
+            zhuangtai: step.zhuangtai
+          }
+
+          console.log(`创建步骤 ${i + 1}:`, createData)
+          const result = await productStepApi.create(createData)
+          Object.assign(step, result, { editing: false, isNew: false })
+          successCount++
+        } else {
+          // 更新现有步骤
+          const updateData = {
+            buzou_mingcheng: step.buzou_mingcheng.trim(),
+            yugu_shichang: Number(step.yugu_shichang),
+            shichang_danwei: step.shichang_danwei,
+            buzou_feiyong: Number(step.buzou_feiyong || 0),
+            buzou_miaoshu: step.buzou_miaoshu || '',
+            paixu: Number(step.paixu || 0),
+            shi_bixu: step.shi_bixu,
+            zhuangtai: step.zhuangtai
+          }
+
+          console.log(`更新步骤 ${i + 1}:`, updateData)
+          const result = await productStepApi.update(step.id, updateData)
+          Object.assign(step, result, { editing: false })
+          successCount++
+        }
+
+        delete step.originalData
+      } catch (error: any) {
+        console.error(`保存步骤 ${i + 1} 失败:`, error)
+
+        let errorMessage = `步骤 ${i + 1}`
+        if (step.buzou_mingcheng) {
+          errorMessage += ` (${step.buzou_mingcheng})`
+        }
+
+        if (error.response?.data?.detail) {
+          errorMessage += `: ${error.response.data.detail}`
+        } else if (error.message) {
+          errorMessage += `: ${error.message}`
+        } else {
+          errorMessage += ': 保存失败'
+        }
+
+        errors.push(errorMessage)
+        failCount++
+      }
+    }
+
+    // 显示保存结果
+    if (successCount > 0 && failCount === 0) {
+      ElMessage.success(`批量保存成功！共保存 ${successCount} 个步骤`)
+      hasChanges.value = false
+      originalSteps.value = JSON.parse(JSON.stringify(stepsList.value))
+    } else if (successCount > 0 && failCount > 0) {
+      ElMessage.warning(`部分保存成功：${successCount} 个成功，${failCount} 个失败`)
+      console.error('失败的步骤:', errors)
+      // 显示第一个错误
+      if (errors.length > 0) {
+        ElMessage.error(errors[0])
+      }
+    } else {
+      ElMessage.error(`批量保存失败：${failCount} 个步骤保存失败`)
+      console.error('失败的步骤:', errors)
+      // 显示第一个错误
+      if (errors.length > 0) {
+        ElMessage.error(errors[0])
+      }
+    }
+
   } catch (error) {
-    console.error('批量保存失败:', error)
+    console.error('批量保存过程出错:', error)
     ElMessage.error('批量保存失败')
   } finally {
     saving.value = false

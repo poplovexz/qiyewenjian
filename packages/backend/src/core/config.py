@@ -60,7 +60,12 @@ class Settings(BaseSettings):
 
     class Config:
         """配置类"""
-        env_file = ".env"
+        import os
+        from pathlib import Path
+
+        # 获取项目根目录（backend目录）
+        backend_dir = Path(__file__).parent.parent.parent
+        env_file = str(backend_dir / ".env")
         case_sensitive = True
 
 

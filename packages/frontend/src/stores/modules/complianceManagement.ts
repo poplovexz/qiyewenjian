@@ -142,7 +142,7 @@ export const useComplianceStore = defineStore('compliance', () => {
   const fetchTemplates = async (params: ComplianceTemplateListParams): Promise<ComplianceTemplateListResponse> => {
     try {
       loading.value = true
-      const response = await request.get('/api/v1/compliance/templates', { params })
+      const response = await request.get('/compliance/templates', { params })
       templates.value = response.data.items
       return response.data
     } catch (error) {
@@ -156,7 +156,7 @@ export const useComplianceStore = defineStore('compliance', () => {
   const fetchTemplateDetail = async (templateId: string): Promise<ComplianceTemplate> => {
     try {
       loading.value = true
-      const response = await request.get(`/api/v1/compliance/templates/${templateId}`)
+      const response = await request.get(`/compliance/templates/${templateId}`)
       currentTemplate.value = response.data
       return response.data
     } catch (error) {
@@ -170,7 +170,7 @@ export const useComplianceStore = defineStore('compliance', () => {
   const createTemplate = async (data: ComplianceTemplateCreateData): Promise<ComplianceTemplate> => {
     try {
       loading.value = true
-      const response = await request.post('/api/v1/compliance/templates', data)
+      const response = await request.post('/compliance/templates', data)
       ElMessage.success('创建合规事项模板成功')
       return response.data
     } catch (error) {
@@ -184,7 +184,7 @@ export const useComplianceStore = defineStore('compliance', () => {
   const updateTemplate = async (templateId: string, data: Partial<ComplianceTemplateCreateData>): Promise<ComplianceTemplate> => {
     try {
       loading.value = true
-      const response = await request.put(`/api/v1/compliance/templates/${templateId}`, data)
+      const response = await request.put(`/compliance/templates/${templateId}`, data)
       ElMessage.success('更新合规事项模板成功')
       return response.data
     } catch (error) {
@@ -198,7 +198,7 @@ export const useComplianceStore = defineStore('compliance', () => {
   const deleteTemplate = async (templateId: string): Promise<void> => {
     try {
       loading.value = true
-      await request.delete(`/api/v1/compliance/templates/${templateId}`)
+      await request.delete(`/compliance/templates/${templateId}`)
       ElMessage.success('删除合规事项模板成功')
     } catch (error) {
       ElMessage.error('删除合规事项模板失败')
@@ -210,7 +210,7 @@ export const useComplianceStore = defineStore('compliance', () => {
 
   const fetchTemplateOptions = async (): Promise<ComplianceOptions> => {
     try {
-      const response = await request.get('/api/v1/compliance/templates/options')
+      const response = await request.get('/compliance/templates/options')
       options.value = response.data
       return response.data
     } catch (error) {
@@ -221,7 +221,7 @@ export const useComplianceStore = defineStore('compliance', () => {
 
   const fetchActiveTemplates = async (): Promise<ComplianceTemplate[]> => {
     try {
-      const response = await request.get('/api/v1/compliance/templates/active')
+      const response = await request.get('/compliance/templates/active')
       return response.data
     } catch (error) {
       ElMessage.error('获取启用模板失败')
@@ -237,7 +237,7 @@ export const useComplianceStore = defineStore('compliance', () => {
       if (kehu_id) params.kehu_id = kehu_id
       if (shixiang_leixing) params.shixiang_leixing = shixiang_leixing
 
-      const response = await request.get('/api/v1/compliance/calendar', { params })
+      const response = await request.get('/compliance/calendar', { params })
       calendarData.value = response.data
       return response.data
     } catch (error) {
@@ -253,7 +253,7 @@ export const useComplianceStore = defineStore('compliance', () => {
       const params: any = { days }
       if (kehu_id) params.kehu_id = kehu_id
 
-      const response = await request.get('/api/v1/compliance/upcoming', { params })
+      const response = await request.get('/compliance/upcoming', { params })
       return response.data
     } catch (error) {
       ElMessage.error('获取即将到期事项失败')
@@ -266,7 +266,7 @@ export const useComplianceStore = defineStore('compliance', () => {
       const params: any = {}
       if (kehu_id) params.kehu_id = kehu_id
 
-      const response = await request.get('/api/v1/compliance/overdue', { params })
+      const response = await request.get('/compliance/overdue', { params })
       return response.data
     } catch (error) {
       ElMessage.error('获取逾期事项失败')
@@ -280,7 +280,7 @@ export const useComplianceStore = defineStore('compliance', () => {
       if (month) params.month = month
       if (kehu_id) params.kehu_id = kehu_id
 
-      const response = await request.get('/api/v1/compliance/statistics', { params })
+      const response = await request.get('/compliance/statistics', { params })
       statistics.value = response.data
       return response.data
     } catch (error) {

@@ -303,7 +303,7 @@ const calculateTotal = () => {
 
 const fetchCustomers = async () => {
   try {
-    const response = await fetch('/api/v1/customers')
+    const response = await fetch('/customers')
     const data = await response.json()
     
     if (response.ok) {
@@ -319,7 +319,7 @@ const fetchInvoiceDetail = async () => {
 
   loading.value = true
   try {
-    const response = await fetch(`/api/v1/invoices/${invoiceId.value}`)
+    const response = await fetch(`/invoices/${invoiceId.value}`)
     const data = await response.json()
     
     if (response.ok) {
@@ -343,8 +343,8 @@ const handleSubmit = async () => {
     submitLoading.value = true
     
     const url = isEdit.value 
-      ? `/api/v1/invoices/${invoiceId.value}`
-      : '/api/v1/invoices'
+      ? `/invoices/${invoiceId.value}`
+      : '/invoices'
     
     const method = isEdit.value ? 'PUT' : 'POST'
     
@@ -384,8 +384,8 @@ const handleSaveAsDraft = async () => {
     draftLoading.value = true
     
     const url = isEdit.value 
-      ? `/api/v1/invoices/${invoiceId.value}`
-      : '/api/v1/invoices'
+      ? `/invoices/${invoiceId.value}`
+      : '/invoices'
     
     const method = isEdit.value ? 'PUT' : 'POST'
     

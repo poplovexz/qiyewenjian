@@ -80,32 +80,32 @@ export interface CustomerListResponse {
 export const customerApi = {
   // 创建客户
   create: (data: CustomerCreate) => {
-    return request.post<Customer>('/api/v1/customers/', data)
+    return request.post<Customer>('/customers/', data)
   },
 
   // 获取客户列表
   getList: (params: CustomerListParams = {}) => {
-    return request.get<CustomerListResponse>('/api/v1/customers/', { params })
+    return request.get<CustomerListResponse>('/customers/', { params })
   },
 
   // 获取客户详情
   getDetail: (id: string) => {
-    return request.get<Customer>(`/api/v1/customers/${id}`)
+    return request.get<Customer>(`/customers/${id}`)
   },
 
   // 更新客户信息
   update: (id: string, data: CustomerUpdate) => {
-    return request.put<Customer>(`/api/v1/customers/${id}`, data)
+    return request.put<Customer>(`/customers/${id}`, data)
   },
 
   // 删除客户
   delete: (id: string) => {
-    return request.delete(`/api/v1/customers/${id}`)
+    return request.delete(`/customers/${id}`)
   },
 
   // 更新客户状态
   updateStatus: (id: string, status: string) => {
-    return request.patch<Customer>(`/api/v1/customers/${id}/status`, null, {
+    return request.patch<Customer>(`/customers/${id}/status`, null, {
       params: { new_status: status }
     })
   },
@@ -119,7 +119,7 @@ export const customerApi = {
       terminated_customers: number
       monthly_new_customers: number
       status_distribution: Record<string, number>
-    }>('/api/v1/customers/statistics/overview')
+    }>('/customers/statistics/overview')
   },
 
   // 批量更新客户状态
@@ -128,7 +128,7 @@ export const customerApi = {
       updated_count: number
       total_requested: number
       new_status: string
-    }>('/api/v1/customers/batch/status', customerIds, {
+    }>('/customers/batch/status', customerIds, {
       params: { new_status: status }
     })
   },
@@ -138,7 +138,7 @@ export const customerApi = {
     return request.post<{
       deleted_count: number
       total_requested: number
-    }>('/api/v1/customers/batch/delete', customerIds)
+    }>('/customers/batch/delete', customerIds)
   },
 
   // 高级搜索客户
@@ -154,7 +154,7 @@ export const customerApi = {
     page?: number
     size?: number
   }) => {
-    return request.post<CustomerListResponse>('/api/v1/customers/search/advanced', searchParams)
+    return request.post<CustomerListResponse>('/customers/search/advanced', searchParams)
   }
 }
 
@@ -219,37 +219,37 @@ export interface ServiceRecordListResponse {
 export const serviceRecordApi = {
   // 创建服务记录
   create: (data: ServiceRecordCreate) => {
-    return request.post<ServiceRecord>('/api/v1/service-records/', data)
+    return request.post<ServiceRecord>('/service-records/', data)
   },
 
   // 获取服务记录列表
   getList: (params: ServiceRecordListParams = {}) => {
-    return request.get<ServiceRecordListResponse>('/api/v1/service-records/', { params })
+    return request.get<ServiceRecordListResponse>('/service-records/', { params })
   },
 
   // 获取服务记录详情
   getDetail: (id: string) => {
-    return request.get<ServiceRecord>(`/api/v1/service-records/${id}`)
+    return request.get<ServiceRecord>(`/service-records/${id}`)
   },
 
   // 更新服务记录
   update: (id: string, data: ServiceRecordUpdate) => {
-    return request.put<ServiceRecord>(`/api/v1/service-records/${id}`, data)
+    return request.put<ServiceRecord>(`/service-records/${id}`, data)
   },
 
   // 删除服务记录
   delete: (id: string) => {
-    return request.delete(`/api/v1/service-records/${id}`)
+    return request.delete(`/service-records/${id}`)
   },
 
   // 获取客户的服务记录
   getCustomerRecords: (customerId: string, params: { page?: number; size?: number } = {}) => {
-    return request.get<ServiceRecordListResponse>(`/api/v1/service-records/kehu/${customerId}/records`, { params })
+    return request.get<ServiceRecordListResponse>(`/service-records/kehu/${customerId}/records`, { params })
   },
 
   // 更新处理状态
   updateStatus: (id: string, status: string, result?: string) => {
-    return request.patch<ServiceRecord>(`/api/v1/service-records/${id}/status`, null, {
+    return request.patch<ServiceRecord>(`/service-records/${id}/status`, null, {
       params: { new_status: status, chuli_jieguo: result }
     })
   },
@@ -265,7 +265,7 @@ export const serviceRecordApi = {
       pending_count: number
       processing_count: number
       completed_count: number
-    }>('/api/v1/service-records/statistics/overview', {
+    }>('/service-records/statistics/overview', {
       params: customerId ? { kehu_id: customerId } : {}
     })
   },
@@ -276,7 +276,7 @@ export const serviceRecordApi = {
       updated_count: number
       total_requested: number
       new_status: string
-    }>('/api/v1/service-records/batch/status', recordIds, {
+    }>('/service-records/batch/status', recordIds, {
       params: { new_status: status, chuli_jieguo: result }
     })
   },
@@ -286,7 +286,7 @@ export const serviceRecordApi = {
     return request.post<{
       deleted_count: number
       total_requested: number
-    }>('/api/v1/service-records/batch/delete', recordIds)
+    }>('/service-records/batch/delete', recordIds)
   },
 
   // 获取客户服务记录摘要
@@ -300,6 +300,6 @@ export const serviceRecordApi = {
       service_statistics: any
       recent_records: ServiceRecord[]
       pending_issues: number
-    }>(`/api/v1/service-records/kehu/${customerId}/summary`)
+    }>(`/service-records/kehu/${customerId}/summary`)
   }
 }

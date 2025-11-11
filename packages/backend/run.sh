@@ -6,5 +6,5 @@ source venv/bin/activate
 # 设置Python路径
 export PYTHONPATH="$PWD/src:$PYTHONPATH"
 
-# 启动应用
+# 启动应用（python-dotenv会自动加载.env文件）
 cd src && python main.py

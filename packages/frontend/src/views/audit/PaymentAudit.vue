@@ -319,7 +319,7 @@ const auditHistory = ref([])
 const refreshPendingList = async () => {
   pendingLoading.value = true
   try {
-    const response = await fetch(`/api/v1/payment-audit/pending/my?page=${pendingPage.value}&size=${pendingSize.value}`)
+    const response = await fetch(`/payment-audit/pending/my?page=${pendingPage.value}&size=${pendingSize.value}`)
     const data = await response.json()
     
     if (response.ok) {
@@ -353,7 +353,7 @@ const searchPaymentStatus = async () => {
   }
 
   try {
-    const response = await fetch(`/api/v1/payment-audit/status/${searchForm.payment_order_id}`)
+    const response = await fetch(`/payment-audit/status/${searchForm.payment_order_id}`)
     const data = await response.json()
     
     if (response.ok) {
@@ -388,7 +388,7 @@ const handleReject = (record: any) => {
 const confirmApproval = async () => {
   approvalLoading.value = true
   try {
-    const response = await fetch('/api/v1/payment-audit/approve', {
+    const response = await fetch('/payment-audit/approve', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -423,7 +423,7 @@ const confirmRejection = async () => {
 
   rejectionLoading.value = true
   try {
-    const response = await fetch('/api/v1/payment-audit/reject', {
+    const response = await fetch('/payment-audit/reject', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -457,7 +457,7 @@ const viewDetails = (record: any) => {
 
 const viewAuditHistory = async (paymentOrderId: string) => {
   try {
-    const response = await fetch(`/api/v1/payment-audit/history/${paymentOrderId}`)
+    const response = await fetch(`/payment-audit/history/${paymentOrderId}`)
     const data = await response.json()
     
     if (response.ok) {
@@ -477,7 +477,7 @@ const triggerAudit = async (paymentOrderId: string) => {
       type: 'warning'
     })
 
-    const response = await fetch('/api/v1/payment-audit/trigger', {
+    const response = await fetch('/payment-audit/trigger', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

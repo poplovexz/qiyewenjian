@@ -83,47 +83,47 @@ import { request } from '@/utils/request'
 export const roleAPI = {
   // 获取角色列表
   async getRoleList(params: RoleListRequest): Promise<RoleListResponse> {
-    const response = await request.get('/api/v1/user-management/roles/', { params })
+    const response = await request.get('/user-management/roles/', { params })
     return response
   },
 
   // 获取角色详情
   async getRoleById(id: string): Promise<Role> {
-    const response = await request.get(`/api/v1/user-management/roles/${id}`)
+    const response = await request.get(`/user-management/roles/${id}`)
     return response
   },
 
   // 创建角色
   async createRole(data: RoleCreateRequest): Promise<Role> {
-    const response = await request.post('/api/v1/user-management/roles/', data)
+    const response = await request.post('/user-management/roles/', data)
     return response
   },
 
   // 更新角色
   async updateRole(id: string, data: RoleUpdateRequest): Promise<Role> {
-    const response = await request.put(`/api/v1/user-management/roles/${id}`, data)
+    const response = await request.put(`/user-management/roles/${id}`, data)
     return response
   },
 
   // 删除角色
   async deleteRole(id: string): Promise<void> {
-    await request.delete(`/api/v1/user-management/roles/${id}`)
+    await request.delete(`/user-management/roles/${id}`)
   },
 
   // 更新角色状态
   async updateRoleStatus(id: string, data: RoleStatusRequest): Promise<Role> {
-    const response = await request.patch(`/api/v1/user-management/roles/${id}/status`, data)
+    const response = await request.patch(`/user-management/roles/${id}/status`, data)
     return response
   },
 
   // 获取角色权限
   async getRolePermissions(id: string): Promise<{ permissions: Permission[] }> {
-    const response = await request.get(`/api/v1/user-management/roles/${id}/permissions`)
+    const response = await request.get(`/user-management/roles/${id}/permissions`)
     return response
   },
 
   // 更新角色权限
   async updateRolePermissions(id: string, data: RolePermissionRequest): Promise<void> {
-    await request.put(`/api/v1/user-management/roles/${id}/permissions`, data)
+    await request.put(`/user-management/roles/${id}/permissions`, data)
   }
 }

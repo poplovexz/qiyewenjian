@@ -287,7 +287,7 @@ const fetchData = async () => {
       ...Object.fromEntries(Object.entries(searchForm).filter(([_, v]) => v))
     })
 
-    const response = await fetch(`/api/v1/invoices?${params}`)
+    const response = await fetch(`/invoices?${params}`)
     const data = await response.json()
     
     if (response.ok) {
@@ -349,7 +349,7 @@ const handleSubmit = async (row: any) => {
       type: 'warning'
     })
 
-    const response = await fetch(`/api/v1/invoices/${row.id}/submit`, {
+    const response = await fetch(`/invoices/${row.id}/submit`, {
       method: 'POST'
     })
     
@@ -382,7 +382,7 @@ const confirmAudit = async () => {
 
   auditLoading.value = true
   try {
-    const response = await fetch('/api/v1/invoices/audit', {
+    const response = await fetch('/invoices/audit', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -425,7 +425,7 @@ const confirmProcess = async () => {
 
   processLoading.value = true
   try {
-    const response = await fetch('/api/v1/invoices/process', {
+    const response = await fetch('/invoices/process', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -457,7 +457,7 @@ const handleDelete = async (row: any) => {
       type: 'warning'
     })
 
-    const response = await fetch(`/api/v1/invoices/${row.id}`, {
+    const response = await fetch(`/invoices/${row.id}`, {
       method: 'DELETE'
     })
     

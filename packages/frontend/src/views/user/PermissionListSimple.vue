@@ -132,7 +132,7 @@ const permissions = ref([
     quanxian_bianma: 'user:read',
     miaoshu: '查看用户信息的权限',
     ziyuan_leixing: 'api',
-    ziyuan_lujing: '/api/v1/users/*',
+    ziyuan_lujing: '/users/*',
     zhuangtai: 'active'
   },
   {

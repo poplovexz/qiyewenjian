@@ -345,6 +345,9 @@ export interface ChanpinXiangmuOption {
   baojia_danwei: string
   banshi_tianshu: number
   fenlei_id: string
+  xiangmu_beizhu?: string  // 项目备注/描述
+  paixu?: number           // 排序
+  zhuangtai?: string       // 状态
 }
 
 export interface ChanpinDataForBaojia {

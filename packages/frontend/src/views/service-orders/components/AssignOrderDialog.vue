@@ -1,8 +1,9 @@
 <template>
   <el-dialog
-    v-model="visible"
+    :model-value="visible"
     title="分配工单"
     width="500px"
+    @update:model-value="emit('update:visible', $event)"
     @close="handleClose"
   >
     <div v-if="order" class="order-info">
@@ -78,6 +79,7 @@
 import { ref, reactive, watch, onMounted } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { useServiceOrderStore, type ServiceOrder } from '@/stores/modules/serviceOrderManagement'
+import { request } from '@/utils/request'
 
 // Props
 interface Props {
@@ -116,17 +118,12 @@ const formRules: FormRules = {
 // 方法
 const loadUsers = async () => {
   try {
-    // 加载用户列表
-    // users.value = await userStore.fetchUsers({ role: 'accountant' })
-    
-    // 模拟数据
-    users.value = [
-      { id: '1', xingming: '张会计', yonghu_ming: 'zhang_kuaiji' },
-      { id: '2', xingming: '李会计', yonghu_ming: 'li_kuaiji' },
-      { id: '3', xingming: '王会计', yonghu_ming: 'wang_kuaiji' }
-    ]
+    // 加载用户列表 - 从真实API获取
+    const response = await request.get('/users/')
+    users.value = response.items || []
   } catch (error) {
     console.error('加载用户列表失败:', error)
+    ElMessage.error('加载用户列表失败')
   }
 }
 

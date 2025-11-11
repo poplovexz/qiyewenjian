@@ -24,8 +24,8 @@ class ChanpinXiangmuService:
         self.db = db
     
     async def create_xiangmu(
-        self, 
-        xiangmu_data: ChanpinXiangmuCreate, 
+        self,
+        xiangmu_data: ChanpinXiangmuCreate,
         created_by: str
     ) -> ChanpinXiangmuResponse:
         """创建产品项目"""
@@ -36,13 +36,26 @@ class ChanpinXiangmuService:
                 ChanpinFenlei.is_deleted == "N"
             )
         ).first()
-        
+
         if not fenlei:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="所属分类不存在"
             )
-        
+
+        # 如果没有提供编码，自动生成
+        if not xiangmu_data.xiangmu_bianma:
+            # 获取该分类下的产品数量
+            count = self.db.query(ChanpinXiangmu).filter(
+                and_(
+                    ChanpinXiangmu.fenlei_id == xiangmu_data.fenlei_id,
+                    ChanpinXiangmu.is_deleted == "N"
+                )
+            ).count()
+
+            # 生成编码：分类编码_序号
+            xiangmu_data.xiangmu_bianma = f"{fenlei.fenlei_bianma}_{count + 1}"
+
         # 检查项目编码是否已存在
         existing_xiangmu = self.db.query(ChanpinXiangmu).filter(
             and_(
@@ -50,28 +63,28 @@ class ChanpinXiangmuService:
                 ChanpinXiangmu.is_deleted == "N"
             )
         ).first()
-        
+
         if existing_xiangmu:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="项目编码已存在"
             )
-        
+
         # 创建项目
         xiangmu = ChanpinXiangmu(
             **xiangmu_data.model_dump(),
             created_by=created_by
         )
-        
+
         self.db.add(xiangmu)
         self.db.commit()
         self.db.refresh(xiangmu)
-        
+
         # 构建响应数据
         response_data = ChanpinXiangmuResponse.model_validate(xiangmu)
         response_data.fenlei_mingcheng = fenlei.fenlei_mingcheng
         response_data.buzou_count = 0
-        
+
         return response_data
     
     async def get_xiangmu_list(
@@ -87,6 +100,8 @@ class ChanpinXiangmuService:
         query = self.db.query(
             ChanpinXiangmu,
             ChanpinFenlei.fenlei_mingcheng,
+            ChanpinFenlei.fenlei_bianma,
+            ChanpinFenlei.chanpin_leixing,
             func.count(ChanpinBuzou.id).label("buzou_count")
         ).join(
             ChanpinFenlei,
@@ -125,27 +140,34 @@ class ChanpinXiangmuService:
             query = query.filter(ChanpinXiangmu.zhuangtai == zhuangtai)
         
         # 分组和排序
-        query = query.group_by(ChanpinXiangmu.id, ChanpinFenlei.fenlei_mingcheng).order_by(
+        query = query.group_by(
+            ChanpinXiangmu.id,
+            ChanpinFenlei.fenlei_mingcheng,
+            ChanpinFenlei.fenlei_bianma,
+            ChanpinFenlei.chanpin_leixing
+        ).order_by(
             ChanpinXiangmu.paixu.asc(),
             ChanpinXiangmu.created_at.desc()
         )
-        
+
         # 获取总数
         total = query.count()
-        
+
         # 分页
         skip = (page - 1) * size
         results = query.offset(skip).limit(size).all()
-        
+
         # 构建响应数据
         items = []
-        for xiangmu, fenlei_mingcheng, buzou_count in results:
+        for xiangmu, fenlei_mingcheng, fenlei_bianma, chanpin_leixing_val, buzou_count in results:
             item_dict = {
                 "id": xiangmu.id,
                 "xiangmu_mingcheng": xiangmu.xiangmu_mingcheng,
                 "xiangmu_bianma": xiangmu.xiangmu_bianma,
                 "fenlei_id": xiangmu.fenlei_id,
                 "fenlei_mingcheng": fenlei_mingcheng,
+                "fenlei_bianma": fenlei_bianma,
+                "chanpin_leixing": chanpin_leixing_val,
                 "yewu_baojia": xiangmu.yewu_baojia,
                 "baojia_danwei": xiangmu.baojia_danwei,
                 "banshi_tianshu": xiangmu.banshi_tianshu,

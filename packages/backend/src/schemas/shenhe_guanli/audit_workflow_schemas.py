@@ -4,17 +4,25 @@
 """
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class WorkflowStepBase(BaseModel):
     """工作流步骤基础模型"""
     step_name: str = Field(..., description="步骤名称")
     step_order: int = Field(..., ge=1, description="步骤顺序")
-    approver_role: str = Field(..., description="审批人角色")
+    approver_user_id: Optional[str] = Field(None, description="审批人用户ID")
+    approver_role: Optional[str] = Field(None, description="审批人角色（兼容旧数据）")
     description: Optional[str] = Field(None, description="步骤描述")
     expected_time: int = Field(default=24, description="预期处理时间(小时)")
     is_required: bool = Field(default=True, description="是否必需")
+
+    @model_validator(mode='after')
+    def check_approver(self):
+        """验证至少有一个审核人字段"""
+        if not self.approver_user_id and not self.approver_role:
+            raise ValueError('必须指定审核人（approver_user_id 或 approver_role）')
+        return self
 
 
 class AuditWorkflowBase(BaseModel):
@@ -43,7 +51,8 @@ class AuditWorkflowUpdate(BaseModel):
 class AuditWorkflowResponse(BaseModel):
     """审核工作流响应模型"""
     id: str
-    name: str  # 对应workflow_name
+    workflow_name: str  # 工作流名称
+    audit_type: str  # 审核类型
     description: Optional[str]
     status: str
     steps: List[Dict[str, Any]]

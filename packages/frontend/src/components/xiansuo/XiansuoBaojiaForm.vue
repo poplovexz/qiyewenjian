@@ -178,6 +178,7 @@
     <!-- 产品选择器 -->
     <ProductSelector
       v-model:visible="showProductSelector"
+      :selected-services="selectedServicesList"
       @select="handleProductSelect"
     />
   </el-dialog>
@@ -276,6 +277,21 @@ const totalAmount = computed(() => {
   return formData.value.xiangmu_list.reduce((sum, item) =>
     sum + item.shuliang * item.danjia
   , 0)
+})
+
+// 将已选服务转换为产品选择器需要的格式
+const selectedServicesList = computed<ChanpinXiangmuOption[]>(() => {
+  const productData = xiansuoStore.product_data
+  if (!productData) return []
+
+  const allProducts = [
+    ...(productData.daili_jizhang_xiangmu || []),
+    ...(productData.zengzhi_xiangmu || [])
+  ]
+
+  return formData.value.xiangmu_list
+    .map(item => allProducts.find(p => p.id === item.chanpin_xiangmu_id))
+    .filter((p): p is ChanpinXiangmuOption => p !== undefined)
 })
 
 const validityEndDate = computed(() => {

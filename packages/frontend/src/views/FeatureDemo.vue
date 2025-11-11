@@ -181,7 +181,7 @@
         </el-button>
         <el-button type="warning" @click="goToWorkflowConfig">
           <el-icon><Setting /></el-icon>
-          配置审核流程
+          审核配置管理
         </el-button>
         <el-button type="info" @click="goToContracts">
           <el-icon><Document /></el-icon>

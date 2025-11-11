@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from core.security.permissions import require_permission, has_permission
+from core.security.jwt_handler import get_current_user
 from models.yonghu_guanli import Yonghu
 from services.xiansuo_guanli import XiansuoService
 from schemas.xiansuo_guanli import (
@@ -196,8 +197,134 @@ async def delete_xiansuo(
     has_delete_all = has_permission(db, current_user, "xiansuo:delete_all")
 
     success = service.delete_xiansuo(xiansuo_id, current_user.id, has_delete_all)
-    
+
     if success:
         return {"message": "线索删除成功"}
     else:
         raise HTTPException(status_code=500, detail="删除失败")
+
+
+@router.get("/{xiansuo_id}/contract-status", summary="获取线索的合同状态")
+async def get_xiansuo_contract_status(
+    xiansuo_id: str,
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(get_current_user)
+):
+    """
+    获取线索的合同状态和审核信息
+
+    返回:
+    - contract_status: 合同状态 (null/pending/active/signed等)
+    - contract_id: 合同ID
+    - audit_status: 审核状态 (null/pending/approved/rejected)
+    - audit_workflow_id: 审核流程ID
+    - audit_details: 审核详情（包括审核步骤、审核人等）
+    """
+    from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
+    from models.hetong_guanli.hetong import Hetong
+    from models.shenhe_guanli.shenhe_liucheng import ShenheLiucheng
+    from models.shenhe_guanli.shenhe_jilu import ShenheJilu
+    from models.yonghu_guanli.yonghu import Yonghu as YonghuModel
+
+    # 1. 查询已确认的报价
+    baojia = db.query(XiansuoBaojia).filter(
+        XiansuoBaojia.xiansuo_id == xiansuo_id,
+        XiansuoBaojia.baojia_zhuangtai == 'accepted',
+        XiansuoBaojia.is_deleted == 'N'
+    ).order_by(XiansuoBaojia.created_at.desc()).first()
+
+    if not baojia:
+        return {
+            "contract_status": None,
+            "contract_id": None,
+            "audit_status": None,
+            "audit_workflow_id": None,
+            "audit_details": None
+        }
+
+    # 2. 查询合同
+    hetong = db.query(Hetong).filter(
+        Hetong.baojia_id == baojia.id,
+        Hetong.is_deleted == 'N'
+    ).order_by(Hetong.created_at.desc()).first()
+
+    if not hetong:
+        return {
+            "contract_status": None,
+            "contract_id": None,
+            "audit_status": None,
+            "audit_workflow_id": None,
+            "audit_details": None
+        }
+
+    # 3. 查询审核流程
+    workflow = db.query(ShenheLiucheng).filter(
+        ShenheLiucheng.guanlian_id == hetong.id,
+        ShenheLiucheng.shenhe_leixing == 'hetong_jine_xiuzheng',
+        ShenheLiucheng.is_deleted == 'N'
+    ).order_by(ShenheLiucheng.created_at.desc()).first()
+
+    audit_details = None
+    audit_status = None
+
+    if workflow:
+        # 映射审核状态
+        status_map = {
+            'daishehe': 'pending',
+            'shenhezhong': 'pending',
+            'yitongguo': 'approved',
+            'tongguo': 'approved',
+            'jujue': 'rejected',
+            'yibohui': 'rejected',
+            'chexiao': 'cancelled'
+        }
+        audit_status = status_map.get(workflow.shenhe_zhuangtai, 'pending')
+
+        # 4. 查询审核记录
+        records = db.query(ShenheJilu).filter(
+            ShenheJilu.liucheng_id == workflow.id,
+            ShenheJilu.is_deleted == 'N'
+        ).order_by(ShenheJilu.buzhou_bianhao).all()
+
+        # 构建审核详情
+        steps = []
+        for record in records:
+            # 查询审核人信息
+            auditor = db.query(YonghuModel).filter(
+                YonghuModel.id == record.shenhe_ren_id
+            ).first()
+
+            step_status = 'pending'
+            if record.jilu_zhuangtai == 'yichuli':
+                if record.shenhe_jieguo == 'tongguo':
+                    step_status = 'approved'
+                elif record.shenhe_jieguo == 'jujue' or record.shenhe_jieguo == 'bohui':
+                    step_status = 'rejected'
+
+            steps.append({
+                'step_number': record.buzhou_bianhao,
+                'step_name': record.buzhou_mingcheng or f'审核步骤{record.buzhou_bianhao}',
+                'auditor_name': auditor.xingming if auditor else '未知',
+                'auditor_id': record.shenhe_ren_id,
+                'status': step_status,
+                'comment': record.shenhe_yijian,
+                'audit_time': record.shenhe_shijian.isoformat() if record.shenhe_shijian else None
+            })
+
+        audit_details = {
+            'workflow_id': workflow.id,
+            'workflow_number': workflow.liucheng_bianhao,
+            'current_step': workflow.dangqian_buzhou,
+            'total_steps': workflow.zonggong_buzhou,
+            'steps': steps,
+            'created_at': workflow.created_at.isoformat() if workflow.created_at else None,
+            'completed_at': workflow.wancheng_shijian.isoformat() if workflow.wancheng_shijian else None
+        }
+
+    return {
+        "contract_status": hetong.hetong_zhuangtai,
+        "contract_id": hetong.id,
+        "audit_status": audit_status,
+        "audit_workflow_id": workflow.id if workflow else None,
+        "audit_details": audit_details
+    }

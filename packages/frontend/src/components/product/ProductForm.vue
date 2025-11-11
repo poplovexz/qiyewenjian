@@ -29,11 +29,14 @@
           <el-form-item label="项目编码" prop="xiangmu_bianma">
             <el-input
               v-model="formData.xiangmu_bianma"
-              placeholder="请输入项目编码"
-              :disabled="mode === 'view'"
+              placeholder="系统自动生成"
+              disabled
               maxlength="50"
-              show-word-limit
-            />
+            >
+              <template #append>
+                <el-tag type="info" size="small">自动生成</el-tag>
+              </template>
+            </el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -202,14 +205,15 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, nextTick, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { useProductStore } from '@/stores/modules/product'
 import { formatDateTime } from '@/utils/date'
 import { productTypeOptions, productStatusOptions, priceUnitOptions } from '@/api/modules/product'
-import type { 
-  Product, 
-  ProductCreate, 
-  ProductUpdate 
+import type {
+  Product,
+  ProductCreate,
+  ProductUpdate
 } from '@/types/product'
 
 // Props
@@ -256,9 +260,7 @@ const formRules: FormRules = {
     { min: 1, max: 100, message: '项目名称长度在 1 到 100 个字符', trigger: 'blur' }
   ],
   xiangmu_bianma: [
-    { required: true, message: '请输入项目编码', trigger: 'blur' },
-    { min: 1, max: 50, message: '项目编码长度在 1 到 50 个字符', trigger: 'blur' },
-    { pattern: /^[a-zA-Z0-9_-]+$/, message: '项目编码只能包含字母、数字、下划线和横线', trigger: 'blur' }
+    // 编码由系统自动生成，不需要验证
   ],
   fenlei_id: [
     { required: true, message: '请选择产品分类', trigger: 'change' }
@@ -292,11 +294,15 @@ const dialogTitle = computed(() => {
   return titles[props.mode]
 })
 
-const { categoryOptions } = productStore
+// 使用 storeToRefs 保持响应式
+const { categoryOptions } = storeToRefs(productStore)
 
 // 监听器
-watch(() => props.visible, (newVal) => {
+watch(() => props.visible, async (newVal) => {
   if (newVal) {
+    // 加载分类选项
+    await productStore.fetchCategoryOptions()
+
     resetForm()
     if (props.product && (props.mode === 'edit' || props.mode === 'view')) {
       loadProductData()
@@ -350,14 +356,25 @@ const handleClose = () => {
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     submitting.value = true
-    
+
     if (props.mode === 'create') {
-      // 创建产品
-      await productStore.createProduct(formData)
+      // 创建产品 - 不发送编码字段，让后端自动生成
+      const createData: ProductCreate = {
+        xiangmu_mingcheng: formData.xiangmu_mingcheng,
+        // xiangmu_bianma 由后端自动生成，不发送
+        fenlei_id: formData.fenlei_id,
+        yewu_baojia: formData.yewu_baojia,
+        baojia_danwei: formData.baojia_danwei,
+        banshi_tianshu: formData.banshi_tianshu,
+        xiangmu_beizhu: formData.xiangmu_beizhu,
+        paixu: formData.paixu,
+        zhuangtai: formData.zhuangtai
+      }
+      await productStore.createProduct(createData)
       ElMessage.success('产品项目创建成功')
     } else {
       // 更新产品
@@ -372,11 +389,11 @@ const handleSubmit = async () => {
         paixu: formData.paixu,
         zhuangtai: formData.zhuangtai
       }
-      
+
       await productStore.updateProduct(props.product!.id, updateData)
       ElMessage.success('产品项目更新成功')
     }
-    
+
     emit('success')
   } catch (error) {
     console.error('提交表单失败:', error)

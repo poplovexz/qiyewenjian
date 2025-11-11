@@ -2,20 +2,21 @@
 认证相关的 Pydantic 模式
 """
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 
 
 class LoginRequest(BaseModel):
     """登录请求模式"""
-    yonghu_ming: str
-    mima: str
-    
+    yonghu_ming: str = Field(..., alias="username", description="用户名")
+    mima: str = Field(..., alias="password", description="密码")
+
     class Config:
+        populate_by_name = True  # 允许使用字段名或别名
         json_schema_extra = {
             "example": {
-                "yonghu_ming": "admin",
-                "mima": "password123"
+                "username": "admin",
+                "password": "admin123"
             }
         }
 

@@ -52,7 +52,7 @@
     <el-card class="task-list-card">
       <template #header>
         <div class="card-header">
-          <span>待审核任务</span>
+          <span>审核任务</span>
           <div class="header-actions">
             <el-button @click="handleRefresh">
               <el-icon><Refresh /></el-icon>
@@ -62,14 +62,17 @@
         </div>
       </template>
 
-      <div v-loading="auditStore.loading">
-        <div v-if="pendingAudits.length === 0" class="empty-state">
-          <el-empty description="暂无待审核任务">
-            <el-button type="primary" @click="handleRefresh">刷新任务</el-button>
-          </el-empty>
-        </div>
+      <!-- 标签页 -->
+      <el-tabs v-model="activeTab" @tab-change="handleTabChange">
+        <el-tab-pane label="待审核" name="pending">
+          <div v-loading="auditStore.loading">
+            <div v-if="pendingAudits.length === 0" class="empty-state">
+              <el-empty description="暂无待审核任务">
+                <el-button type="primary" @click="handleRefresh">刷新任务</el-button>
+              </el-empty>
+            </div>
 
-        <div v-else class="task-list">
+            <div v-else class="task-list">
           <div
             v-for="task in pendingAudits"
             :key="task.step_id"
@@ -119,7 +122,70 @@
             </div>
           </div>
         </div>
-      </div>
+          </div>
+        </el-tab-pane>
+
+        <el-tab-pane label="已处理" name="processed">
+          <div v-loading="loadingProcessed">
+            <div v-if="processedAudits.length === 0" class="empty-state">
+              <el-empty description="暂无已处理任务" />
+            </div>
+
+            <div v-else class="task-list">
+              <div
+                v-for="task in processedAudits"
+                :key="task.step_id"
+                class="task-item processed"
+              >
+                <div class="task-header">
+                  <div class="task-title">
+                    <el-tag :type="getAuditTypeTagType(task.audit_type)">
+                      {{ getAuditTypeText(task.audit_type) }}
+                    </el-tag>
+                    <span class="workflow-number">{{ task.workflow_number }}</span>
+                    <el-tag
+                      :type="task.shenhe_jieguo === 'tongguo' ? 'success' : 'danger'"
+                      size="small"
+                    >
+                      {{ task.shenhe_jieguo === 'tongguo' ? '已通过' : '已拒绝' }}
+                    </el-tag>
+                  </div>
+                  <div class="task-actions">
+                    <el-button size="small" @click="handleViewDetail(task)">
+                      查看详情
+                    </el-button>
+                  </div>
+                </div>
+
+                <div class="task-content">
+                  <div class="task-info">
+                    <div class="info-item">
+                      <span class="label">审核步骤：</span>
+                      <span class="value">{{ task.step_name }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">关联对象：</span>
+                      <span class="value">{{ task.related_info?.name || '未知' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">申请原因：</span>
+                      <span class="value">{{ task.applicant_reason || '无' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">处理时间：</span>
+                      <span class="value">{{ formatDate(task.shenhe_shijian) }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">审核意见：</span>
+                      <span class="value">{{ task.shenhe_yijian || '无' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
     </el-card>
 
     <!-- 审核对话框 -->
@@ -157,12 +223,15 @@ const auditStore = useAuditManagementStore()
 const { pendingAudits, pendingAuditsCount } = storeToRefs(auditStore)
 
 // 响应式数据
+const activeTab = ref('pending')
 const auditDialogVisible = ref(false)
 const detailDialogVisible = ref(false)
 const currentTask = ref<any>(null)
 const currentWorkflowId = ref('')
 const myStatistics = ref<any>({})
 const overdueCount = ref(0)
+const processedAudits = ref<any[]>([])
+const loadingProcessed = ref(false)
 
 // 计算属性
 const isOverdue = (expectedTime: string) => {
@@ -170,12 +239,50 @@ const isOverdue = (expectedTime: string) => {
 }
 
 // 方法
+const handleTabChange = async (tabName: string) => {
+  if (tabName === 'processed') {
+    await fetchProcessedAudits()
+  }
+}
+
+const fetchProcessedAudits = async () => {
+  try {
+    loadingProcessed.value = true
+    // 使用auditRecordApi获取已处理的审核任务
+    const { auditRecordApi } = await import('@/api/modules/audit')
+    const response = await auditRecordApi.getMyProcessed()
+
+    console.log('已处理任务响应:', response)
+
+    // 处理响应数据
+    if (response && response.data) {
+      processedAudits.value = response.data.items || response.data || []
+    } else if (response) {
+      processedAudits.value = response.items || response || []
+    } else {
+      processedAudits.value = []
+    }
+
+    console.log('已处理任务列表:', processedAudits.value)
+  } catch (error) {
+    console.error('获取已处理任务失败:', error)
+    ElMessage.error('获取已处理任务失败')
+  } finally {
+    loadingProcessed.value = false
+  }
+}
+
 const handleRefresh = async () => {
-  await Promise.all([
-    auditStore.fetchMyPendingAudits(),
-    fetchMyStatistics(),
-    fetchOverdueCount()
-  ])
+  if (activeTab.value === 'pending') {
+    await Promise.all([
+      auditStore.fetchMyPendingAudits(),
+      fetchMyStatistics(),
+      fetchOverdueCount()
+    ])
+  } else {
+    await fetchProcessedAudits()
+  }
+  ElMessage.success('刷新成功')
 }
 
 const handleAudit = (task: any) => {
@@ -212,22 +319,39 @@ const fetchOverdueCount = async () => {
 
 const getAuditTypeTagType = (type: string) => {
   const types: Record<string, string> = {
+    yinhang_huikuan: 'danger',
     hetong: 'primary',
-    baojia: 'success'
+    hetong_jine_xiuzheng: 'warning',
+    baojia: 'success',
+    baojia_shenhe: 'success'
   }
   return types[type] || 'info'
 }
 
 const getAuditTypeText = (type: string) => {
   const texts: Record<string, string> = {
+    yinhang_huikuan: '银行汇款审核',
     hetong: '合同审核',
-    baojia: '报价审核'
+    hetong_jine_xiuzheng: '合同金额修正',
+    baojia: '报价审核',
+    baojia_shenhe: '报价审核'
   }
   return texts[type] || type
 }
 
 const formatDateTime = (dateStr: string) => {
   return new Date(dateStr).toLocaleString()
+}
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return '-'
+  return new Date(dateStr).toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 // 生命周期

@@ -22,15 +22,13 @@
       
       <div class="header-right">
         <div class="header-actions">
-          <button class="action-btn" title="通知">
-            <el-icon><Bell /></el-icon>
-            <div class="notification-badge"></div>
-          </button>
-          
-          <button class="action-btn" title="全屏">
+          <!-- 通知中心 -->
+          <NotificationCenter />
+
+          <button class="action-btn" title="全屏" @click="toggleFullscreen">
             <el-icon><FullScreen /></el-icon>
           </button>
-          
+
           <button class="action-btn" title="设置">
             <el-icon><Setting /></el-icon>
           </button>
@@ -91,16 +89,6 @@
             <template #title>功能演示</template>
           </el-menu-item>
 
-          <el-menu-item index="/permission-manager">
-            <el-icon><setting /></el-icon>
-            <template #title>权限管理工具</template>
-          </el-menu-item>
-
-          <el-menu-item index="/permission-test">
-            <el-icon><check /></el-icon>
-            <template #title>权限测试</template>
-          </el-menu-item>
-          
           <el-sub-menu index="user">
             <template #title>
               <el-icon><user /></el-icon>
@@ -186,8 +174,21 @@
             <el-menu-item index="/finance/dashboard">财务概览</el-menu-item>
             <el-menu-item index="/finance/payment-orders">支付订单</el-menu-item>
             <el-menu-item index="/finance/payment-records">支付流水</el-menu-item>
+            <el-menu-item index="/finance/bank-transfers">银行汇款管理</el-menu-item>
             <el-menu-item index="/finance/contract-parties">乙方主体</el-menu-item>
             <el-menu-item index="/finance/payment-methods">支付方式</el-menu-item>
+          </el-sub-menu>
+
+          <el-sub-menu index="office">
+            <template #title>
+              <el-icon><office-building /></el-icon>
+              <span>办公管理</span>
+            </template>
+            <el-menu-item index="/office/reimbursement">申请报销</el-menu-item>
+            <el-menu-item index="/office/leave">请假</el-menu-item>
+            <el-menu-item index="/office/payment">申请对外付款</el-menu-item>
+            <el-menu-item index="/office/procurement">申请采购</el-menu-item>
+            <el-menu-item index="/office/handover">交接单</el-menu-item>
           </el-sub-menu>
         </el-menu>
         </div>
@@ -212,6 +213,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/modules/auth'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import AuthFix from '@/components/AuthFix.vue'
+import NotificationCenter from '@/components/notification/NotificationCenter.vue'
 import {
   ArrowDown,
   Expand,
@@ -230,7 +232,8 @@ import {
   Setting,
   Bell,
   FullScreen,
-  SwitchButton
+  SwitchButton,
+  OfficeBuilding
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
@@ -247,6 +250,17 @@ const activeMenu = computed(() => route.path)
 // 方法
 const toggleSidebar = () => {
   sidebarCollapsed.value = !sidebarCollapsed.value
+}
+
+// 全屏切换
+const toggleFullscreen = () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen()
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen()
+    }
+  }
 }
 
 const handleCommand = async (command: string) => {
@@ -586,10 +600,14 @@ const handleCommand = async (command: string) => {
 }
 
 .content-wrapper {
-  padding: var(--spacing-xl);
+  padding: 16px;  /* 减少 padding，从 24px 减少到 16px */
   min-height: calc(100vh - 70px);
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
+  height: calc(100vh - 70px);
+  overflow: auto;
+  /* 移除 max-width 限制，让内容占满整个可用空间 */
+  /* max-width: 1400px; */
+  /* margin: 0 auto; */
 }
 
 /* 响应式设计 */

@@ -407,9 +407,10 @@ onMounted(async () => {
 
 <style scoped>
 .contract-sign-page {
-  min-height: 100vh;
+  /* 🔧 修复：移除 min-height，让页面自然滚动 */
   background-color: #f5f5f5;
   padding: 20px;
+  overflow-y: auto; /* 确保可以滚动 */
 }
 
 .loading-container,
@@ -444,13 +445,14 @@ onMounted(async () => {
 }
 
 .contract-content {
-  max-height: 400px;
-  overflow-y: auto;
+  /* 🔧 修复：移除最大高度限制，让内容完整显示 */
   padding: 16px;
   border: 1px solid #EBEEF5;
   border-radius: 4px;
   background-color: #FAFAFA;
   line-height: 1.6;
+  white-space: pre-wrap; /* 保留换行符 */
+  word-wrap: break-word; /* 自动换行 */
 }
 
 .signature-container {

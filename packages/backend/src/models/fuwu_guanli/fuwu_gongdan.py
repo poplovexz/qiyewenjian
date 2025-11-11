@@ -270,9 +270,17 @@ class FuwuGongdanXiangmu(BaseModel):
         nullable=True,
         comment="备注"
     )
-    
+
+    zhixing_ren_id = Column(
+        String(36),
+        ForeignKey("yonghu.id"),
+        nullable=True,
+        comment="执行人ID"
+    )
+
     # 关联关系
     gongdan = relationship("FuwuGongdan", back_populates="xiangmu_list")
+    zhixing_ren = relationship("Yonghu", foreign_keys=[zhixing_ren_id])
     
     def __repr__(self) -> str:
         return f"<FuwuGongdanXiangmu(xiangmu_mingcheng='{self.xiangmu_mingcheng}', xiangmu_zhuangtai='{self.xiangmu_zhuangtai}')>"

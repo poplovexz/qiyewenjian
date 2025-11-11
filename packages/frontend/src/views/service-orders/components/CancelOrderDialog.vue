@@ -1,8 +1,9 @@
 <template>
   <el-dialog
-    v-model="visible"
+    :model-value="visible"
     title="取消工单"
     width="500px"
+    @update:model-value="emit('update:visible', $event)"
     @close="handleClose"
   >
     <div v-if="order" class="order-info">

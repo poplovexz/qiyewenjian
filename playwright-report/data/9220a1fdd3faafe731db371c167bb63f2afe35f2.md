@@ -1,0 +1,72 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e5]:
+  - banner [ref=e6]:
+    - generic [ref=e7]:
+      - heading "测试公司_1762408752512报价单" [level=1] [ref=e8]
+      - paragraph [ref=e9]: 报价编号：BJ202511061359219442P
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - button "确认报价" [disabled] [ref=e12]:
+          - generic [ref=e13]: 确认报价
+        - button "拒绝报价" [disabled] [ref=e14]:
+          - generic [ref=e15]: 拒绝报价
+      - button "打印/导出PDF" [ref=e16] [cursor=pointer]:
+        - img [ref=e18]
+        - generic [ref=e20]: 打印/导出PDF
+  - table [ref=e24]:
+    - rowgroup [ref=e25]:
+      - row "客户公司 测试公司_1762408752512 测试联系人_1762408752512" [ref=e26]:
+        - cell "客户公司" [ref=e27]
+        - cell "测试公司_1762408752512 测试联系人_1762408752512" [ref=e28]:
+          - generic [ref=e29]:
+            - generic [ref=e30]: 测试公司_1762408752512
+            - generic [ref=e31]: 测试联系人_1762408752512
+      - row "报价总额 ¥3000.00 有效期至 2025/11/21" [ref=e32]:
+        - cell "报价总额" [ref=e33]
+        - cell "¥3000.00" [ref=e34]
+        - cell "有效期至" [ref=e35]
+        - cell "2025/11/21" [ref=e36]
+      - row "状态 已接受" [ref=e37]:
+        - cell "状态" [ref=e38]
+        - cell "已接受" [ref=e39]:
+          - generic [ref=e41]: 已接受
+  - generic [ref=e42]:
+    - heading "服务项目明细" [level=2] [ref=e43]
+    - generic [ref=e45]:
+      - table [ref=e47]:
+        - rowgroup [ref=e54]:
+          - row "服务名称 数量 单价 小计 备注" [ref=e55]:
+            - cell "服务名称" [ref=e56]:
+              - generic [ref=e57]: 服务名称
+            - cell "数量" [ref=e58]:
+              - generic [ref=e59]: 数量
+            - cell "单价" [ref=e60]:
+              - generic [ref=e61]: 单价
+            - cell "小计" [ref=e62]:
+              - generic [ref=e63]: 小计
+            - cell "备注" [ref=e64]:
+              - generic [ref=e65]: 备注
+      - table [ref=e70]:
+        - rowgroup [ref=e77]:
+          - row "股权变更（内资） 单位：个 1 ¥3000.00 ¥3000.00 -" [ref=e78]:
+            - cell "股权变更（内资） 单位：个" [ref=e79]:
+              - generic [ref=e81]:
+                - generic [ref=e82]: 股权变更（内资）
+                - generic [ref=e83]: 单位：个
+            - cell "1" [ref=e84]:
+              - generic [ref=e85]: "1"
+            - cell "¥3000.00" [ref=e86]:
+              - generic [ref=e87]: ¥3000.00
+            - cell "¥3000.00" [ref=e88]:
+              - generic [ref=e89]: ¥3000.00
+            - cell "-" [ref=e90]:
+              - generic [ref=e91]: "-"
+    - generic [ref=e93]:
+      - generic [ref=e94]: 合计：
+      - generic [ref=e95]: ¥3000.00
+  - contentinfo [ref=e96]:
+    - paragraph [ref=e97]: 如需确认此报价，请联系您的专属顾问或回复此邮件。
+    - paragraph [ref=e98]: 生成时间：2025/11/6 05:59:21
+```

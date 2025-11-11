@@ -281,6 +281,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { hasPermission } from '@/utils/permissions'
+import { productApi } from '@/api/modules/product'
 
 // 接口类型定义
 interface BookkeepingPackage {
@@ -431,175 +432,31 @@ const loadPackageList = async () => {
 const loadProductItemList = async () => {
   productItemsLoading.value = true
   try {
-    // TODO: 调用API获取所有产品项目列表
-    // 模拟数据 - 产品项目独立存在，不直接归属套餐
-    allProductItemList.value = [
-      {
-        id: '1',
-        chanpin_mingcheng: '内账凭证/账簿',
-        chanpin_miaoshu: '代客户制作内账凭证和账簿管理',
-        chanpin_jiage: 300,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: true,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 1
-      },
-      {
-        id: '2',
-        chanpin_mingcheng: '财务报表编制',
-        chanpin_miaoshu: '每月编制标准财务报表',
-        chanpin_jiage: 500,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: true,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 2
-      },
-      {
-        id: '3',
-        chanpin_mingcheng: '年度申报工商公示',
-        chanpin_miaoshu: '代理企业年度申报和工商公示',
-        chanpin_jiage: 200,
-        jiage_danwei: '元/年',
-        shi_jiben_chanpin: false,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 3
-      },
-      {
-        id: '4',
-        chanpin_mingcheng: '网上申报纳税',
-        chanpin_miaoshu: '协助客户进行网上税务申报',
-        chanpin_jiage: 300,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: true,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 4
-      },
-      {
-        id: '5',
-        chanpin_mingcheng: '基础记账服务',
-        chanpin_miaoshu: '小微企业日常基础记账服务',
-        chanpin_jiage: 200,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: true,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 5
-      },
-      {
-        id: '6',
-        chanpin_mingcheng: '月度财务报表',
-        chanpin_miaoshu: '每月编制简化版财务报表',
-        chanpin_jiage: 150,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: true,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 6
-      },
-      {
-        id: '7',
-        chanpin_mingcheng: '税务申报服务',
-        chanpin_miaoshu: '小微企业税务申报专项服务',
-        chanpin_jiage: 100,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: true,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 7
-      },
-      {
-        id: '8',
-        chanpin_mingcheng: '一般纳税人记账',
-        chanpin_miaoshu: '一般纳税人企业专业记账服务',
-        chanpin_jiage: 600,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: true,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 8
-      },
-      {
-        id: '9',
-        chanpin_mingcheng: '增值税专用发票管理',
-        chanpin_miaoshu: '增值税专用发票开具和管理服务',
-        chanpin_jiage: 400,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: true,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 9
-      },
-      {
-        id: '10',
-        chanpin_mingcheng: '进项税额认证',
-        chanpin_miaoshu: '进项税额认证和抵扣管理服务',
-        chanpin_jiage: 300,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: true,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 10
-      },
-      {
-        id: '11',
-        chanpin_mingcheng: '全套财务管理',
-        chanpin_miaoshu: '大中型企业全套财务管理服务',
-        chanpin_jiage: 800,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: true,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 11
-      },
-      {
-        id: '12',
-        chanpin_mingcheng: '税务筹划咨询',
-        chanpin_miaoshu: '专业税务筹划和咨询服务',
-        chanpin_jiage: 1000,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: false,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 12
-      },
-      {
-        id: '13',
-        chanpin_mingcheng: '财务分析报告',
-        chanpin_miaoshu: '定期财务分析和经营建议报告',
-        chanpin_jiage: 600,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: false,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: true,
-        paixu: 13
-      },
-      {
-        id: '14',
-        chanpin_mingcheng: '开票税控设备维护',
-        chanpin_miaoshu: '开票税控设备维护服务',
-        chanpin_jiage: 1200,
-        jiage_danwei: '元/年',
-        shi_jiben_chanpin: false,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: false,
-        paixu: 14
-      },
-      {
-        id: '15',
-        chanpin_mingcheng: '财务咨询及风险控制',
-        chanpin_miaoshu: '财务咨询及风险控制服务',
-        chanpin_jiage: 1000,
-        jiage_danwei: '元/月',
-        shi_jiben_chanpin: false,
-        shi_keyi_goumai: true,
-        shi_baohan_taocan: false,
-        paixu: 15
-      }
-    ]
+    // 调用API获取代理记账产品项目列表
+    const response = await productApi.getList({
+      chanpin_leixing: 'daili_jizhang',
+      page: 1,
+      size: 100
+    })
+
+    // 将API返回的数据转换为页面需要的格式
+    allProductItemList.value = response.items.map((item: any) => ({
+      id: item.id,
+      chanpin_mingcheng: item.xiangmu_mingcheng,
+      chanpin_miaoshu: item.xiangmu_beizhu || '',
+      chanpin_jiage: Number(item.yewu_baojia),
+      jiage_danwei: `元/${item.baojia_danwei}`,
+      shi_jiben_chanpin: true,
+      shi_keyi_goumai: item.zhuangtai === 'active',
+      shi_baohan_taocan: true,
+      paixu: item.paixu || 0
+    }))
+
+    console.log('加载代理记账产品列表成功:', allProductItemList.value.length, '个产品')
+  } catch (error) {
+    console.error('加载产品列表失败:', error)
+    ElMessage.error('加载产品列表失败')
+    allProductItemList.value = []
   } finally {
     productItemsLoading.value = false
   }
@@ -827,11 +684,20 @@ onMounted(() => {
 
 <style scoped>
 .bookkeeping-packages {
-  padding: 20px;
+  /* 移除额外的 padding，让内容占满空间 */
+  padding: 0;
+  height: 100%;
 }
 
 .page-card {
   min-height: calc(100vh - 120px);
+  height: 100%;
+}
+
+/* 覆盖 el-card 的默认 padding */
+.page-card :deep(.el-card__body) {
+  padding: 16px;
+  height: 100%;
 }
 
 .card-header {
@@ -855,14 +721,17 @@ onMounted(() => {
 
 .packages-container {
   display: flex;
-  gap: 20px;
-  margin-top: 20px;
+  gap: 16px; /* 减少间距 */
+  margin-top: 0; /* 移除顶部间距 */
+  height: calc(100vh - 200px); /* 设置固定高度 */
+  overflow: auto; /* 允许滚动 */
 }
 
 /* 左侧套餐列表 */
 .packages-sidebar {
-  width: 300px;
+  width: 280px; /* 稍微减少宽度 */
   flex-shrink: 0;
+  overflow-y: auto;
 }
 
 .sidebar-header {
@@ -943,6 +812,10 @@ onMounted(() => {
 /* 右侧服务内容 */
 .services-content {
   flex: 1;
+  min-width: 0; /* 允许 flex 子元素缩小 */
+  overflow-y: auto; /* 允许垂直滚动 */
+  display: flex;
+  flex-direction: column;
 }
 
 .content-header {
@@ -968,7 +841,8 @@ onMounted(() => {
 
 .services-table {
   border-radius: 8px;
-  overflow: hidden;
+  overflow: auto; /* 允许表格横向滚动 */
+  width: 100%;
 }
 
 .service-name strong {

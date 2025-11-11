@@ -72,9 +72,13 @@ class ShenheGuizeService:
         return self._to_response(guize)
     
     def get_shenhe_guize_list(self, params: ShenheGuizeListParams) -> Dict[str, Any]:
-        """获取审核规则列表"""
-        query = self.db.query(ShenheGuize).filter(ShenheGuize.is_deleted == "N")
-        
+        """获取审核规则列表（不包含工作流模板）"""
+        # 🔧 修复：排除工作流模板类型，工作流模板应该只在工作流配置页面显示
+        query = self.db.query(ShenheGuize).filter(
+            ShenheGuize.is_deleted == "N",
+            ShenheGuize.guize_leixing != "workflow_template"  # 排除工作流模板
+        )
+
         # 搜索条件
         if params.search:
             search_filter = or_(
@@ -82,11 +86,11 @@ class ShenheGuizeService:
                 ShenheGuize.guize_miaoshu.contains(params.search)
             )
             query = query.filter(search_filter)
-        
+
         # 筛选条件
         if params.guize_leixing:
             query = query.filter(ShenheGuize.guize_leixing == params.guize_leixing)
-        
+
         if params.shi_qiyong:
             query = query.filter(ShenheGuize.shi_qiyong == params.shi_qiyong)
         
@@ -118,10 +122,13 @@ class ShenheGuizeService:
             ShenheGuize.id == guize_id,
             ShenheGuize.is_deleted == "N"
         ).first()
-        
+
         if not guize:
             raise HTTPException(status_code=404, detail="审核规则不存在")
-        
+
+        # 注意：允许读取工作流模板（用于显示），但不允许修改/删除
+        # 工作流模板的修改/删除应该通过工作流API进行
+
         return self._to_response(guize)
     
     def update_shenhe_guize(self, guize_id: str, guize_data: ShenheGuizeUpdate, updated_by: str) -> ShenheGuizeResponse:
@@ -130,10 +137,14 @@ class ShenheGuizeService:
             ShenheGuize.id == guize_id,
             ShenheGuize.is_deleted == "N"
         ).first()
-        
+
         if not guize:
             raise HTTPException(status_code=404, detail="审核规则不存在")
-        
+
+        # 🔧 修复：防止通过审核规则API修改工作流模板
+        if guize.guize_leixing == "workflow_template":
+            raise HTTPException(status_code=403, detail="工作流模板请在工作流配置页面管理")
+
         # 检查规则名称是否重复
         if guize_data.guize_mingcheng and guize_data.guize_mingcheng != guize.guize_mingcheng:
             existing_rule = self.db.query(ShenheGuize).filter(
@@ -165,10 +176,14 @@ class ShenheGuizeService:
             ShenheGuize.id == guize_id,
             ShenheGuize.is_deleted == "N"
         ).first()
-        
+
         if not guize:
             raise HTTPException(status_code=404, detail="审核规则不存在")
-        
+
+        # 🔧 修复：防止通过审核规则API删除工作流模板
+        if guize.guize_leixing == "workflow_template":
+            raise HTTPException(status_code=403, detail="工作流模板请在工作流配置页面管理")
+
         # 检查是否有关联的审核流程
         from models.shenhe_guanli import ShenheLiucheng
         related_workflows = self.db.query(ShenheLiucheng).filter(

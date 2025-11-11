@@ -3,7 +3,8 @@
 """
 from typing import Optional, List
 from datetime import datetime
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, computed_field
+from decimal import Decimal
 
 
 class HetongBase(BaseModel):
@@ -23,7 +24,7 @@ class HetongBase(BaseModel):
 
     @validator('hetong_zhuangtai')
     def validate_hetong_zhuangtai(cls, v):
-        allowed_states = ['draft', 'pending', 'approved', 'signed', 'expired', 'cancelled']
+        allowed_states = ['draft', 'pending', 'approved', 'active', 'signed', 'expired', 'cancelled']
         if v not in allowed_states:
             raise ValueError(f'合同状态必须是以下之一: {", ".join(allowed_states)}')
         return v
@@ -65,7 +66,7 @@ class HetongUpdate(BaseModel):
     @validator('hetong_zhuangtai')
     def validate_hetong_zhuangtai(cls, v):
         if v is not None:
-            allowed_states = ['draft', 'pending', 'approved', 'signed', 'expired', 'cancelled']
+            allowed_states = ['draft', 'pending', 'approved', 'active', 'signed', 'expired', 'cancelled']
             if v not in allowed_states:
                 raise ValueError(f'合同状态必须是以下之一: {", ".join(allowed_states)}')
         return v
@@ -88,6 +89,25 @@ class HetongUpdate(BaseModel):
 class HetongSignRequest(BaseModel):
     """合同签署请求模型"""
     qianming_beizhu: Optional[str] = Field(None, description="签名备注")
+
+
+class KehuBrief(BaseModel):
+    """客户简要信息模型（用于合同列表）"""
+    id: str
+    gongsi_mingcheng: str
+
+    class Config:
+        from_attributes = True
+
+
+class HetongMobanBrief(BaseModel):
+    """合同模板简要信息模型（用于合同列表）"""
+    id: str
+    moban_mingcheng: str
+    hetong_leixing: str
+
+    class Config:
+        from_attributes = True
 
 
 class HetongResponse(BaseModel):
@@ -116,9 +136,37 @@ class HetongResponse(BaseModel):
     qianming_beizhu: Optional[str]
     hetong_laiyuan: str
     zidong_shengcheng: str
+    # 新增字段
+    sign_token: Optional[str]
+    sign_token_expires_at: Optional[datetime]
+    customer_signature: Optional[str]
+    signed_at: Optional[datetime]
+    payment_status: str
+    paid_at: Optional[datetime]
+    payment_amount: Optional[str]
+    payment_method: Optional[str]
+    payment_transaction_id: Optional[str]
     created_at: datetime
     updated_at: datetime
     created_by: Optional[str]
+
+    # 关联对象
+    kehu: Optional[KehuBrief] = None
+    hetong_moban: Optional[HetongMobanBrief] = None
+
+    # 扩展字段（非数据库字段，由service层动态设置）
+    has_service_order: bool = False
+
+    @computed_field
+    @property
+    def hetong_jine(self) -> Optional[float]:
+        """合同金额（从payment_amount转换）"""
+        if self.payment_amount:
+            try:
+                return float(self.payment_amount)
+            except (ValueError, TypeError):
+                return None
+        return None
 
     class Config:
         from_attributes = True
@@ -143,3 +191,71 @@ class HetongPreviewResponse(BaseModel):
     """合同预览响应模型"""
     hetong_neirong: str = Field(..., description="预览的合同内容")
     bianliang_list: List[str] = Field(..., description="模板中的变量列表")
+
+
+class GenerateSignLinkResponse(BaseModel):
+    """生成签署链接响应模型"""
+    sign_link: str = Field(..., description="签署链接")
+    sign_token: str = Field(..., description="签署令牌")
+    expires_at: datetime = Field(..., description="过期时间")
+
+
+class ContractSignInfoResponse(BaseModel):
+    """合同签署信息响应模型（无需认证）"""
+    id: str
+    hetong_bianhao: str
+    hetong_mingcheng: str
+    hetong_neirong: str
+    daoqi_riqi: datetime
+    payment_amount: Optional[str]
+    payment_status: str
+    signed_at: Optional[datetime]
+    customer_signature: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+
+class CustomerSignRequest(BaseModel):
+    """客户签署请求模型"""
+    signature_data: str = Field(..., description="签名数据（base64）")
+    signer_name: str = Field(..., min_length=1, max_length=50, description="签署人姓名")
+    signer_phone: Optional[str] = Field(None, max_length=20, description="签署人电话")
+    signer_email: Optional[str] = Field(None, max_length=100, description="签署人邮箱")
+
+
+class CustomerPaymentRequest(BaseModel):
+    """客户支付请求模型"""
+    payment_method: str = Field(..., description="支付方式：wechat/alipay/bank")
+    payment_amount: str = Field(..., description="支付金额")
+    return_url: Optional[str] = Field(None, description="支付成功后的返回URL")
+
+    @validator('payment_method')
+    def validate_payment_method(cls, v):
+        allowed_methods = ['wechat', 'alipay', 'bank']
+        if v not in allowed_methods:
+            raise ValueError(f'支付方式必须是以下之一: {", ".join(allowed_methods)}')
+        return v
+
+
+class PaymentCallbackRequest(BaseModel):
+    """支付回调请求模型"""
+    transaction_id: str = Field(..., description="交易号")
+    payment_status: str = Field(..., description="支付状态")
+    paid_amount: str = Field(..., description="实际支付金额")
+    paid_at: datetime = Field(..., description="支付时间")
+
+
+class BankPaymentInfoRequest(BaseModel):
+    """客户确认使用银行转账请求模型"""
+    # 客户只需要确认使用银行转账，不需要填写汇款信息
+    # 汇款信息由业务员后续跟踪获取
+    pass
+
+
+class BankPaymentInfoResponse(BaseModel):
+    """客户提交银行汇款信息响应模型"""
+    success: bool = Field(..., description="是否成功")
+    message: str = Field(..., description="提示信息")
+    danju_id: str = Field(..., description="单据ID")
+    danju_bianhao: str = Field(..., description="单据编号")

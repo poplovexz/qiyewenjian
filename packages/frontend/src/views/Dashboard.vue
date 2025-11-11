@@ -15,7 +15,7 @@
           <div class="avatar-circle">
             {{ (userInfo?.xingming || userInfo?.yonghu_ming || 'U').charAt(0) }}
           </div>
-          <div class="status-indicator"></div>
+          <div class="avatar-status-indicator"></div>
         </div>
       </div>
       <div class="weather-widget animate-fade-in-right animate-delay-300 hover-scale">
@@ -437,7 +437,7 @@ const getStatusText = (status?: string) => {
   box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
 }
 
-.status-indicator {
+.avatar-status-indicator {
   position: absolute;
   bottom: 8px;
   right: 8px;

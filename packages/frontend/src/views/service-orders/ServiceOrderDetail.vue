@@ -130,6 +130,11 @@
                   </el-tag>
                 </template>
               </el-table-column>
+              <el-table-column prop="zhixing_ren" label="执行人" width="120">
+                <template #default="{ row }">
+                  {{ row.zhixing_ren?.xingming || '未分配' }}
+                </template>
+              </el-table-column>
               <el-table-column prop="jihua_gongshi" label="计划工时" width="100">
                 <template #default="{ row }">
                   {{ row.jihua_gongshi || '-' }}h
@@ -138,6 +143,18 @@
               <el-table-column prop="shiji_gongshi" label="实际工时" width="100">
                 <template #default="{ row }">
                   {{ row.shiji_gongshi || '-' }}h
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="100" fixed="right">
+                <template #default="{ row }">
+                  <el-button
+                    type="primary"
+                    size="small"
+                    link
+                    @click="handleAssignTaskItem(row)"
+                  >
+                    {{ row.zhixing_ren ? '重新分配' : '分配' }}
+                  </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -219,6 +236,14 @@
       :order="serviceOrder"
       @success="handleCancelSuccess"
     />
+
+    <!-- 分配任务项对话框 -->
+    <AssignTaskItemDialog
+      v-model="showAssignTaskItemDialog"
+      :task-item="currentTaskItem"
+      :gongdan-id="serviceOrder?.id || ''"
+      @success="handleAssignTaskItemSuccess"
+    />
   </div>
 </template>
 
@@ -227,10 +252,11 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowLeft, Warning, Paperclip } from '@element-plus/icons-vue'
-import { useServiceOrderStore } from '@/stores/modules/serviceOrderManagement'
+import { useServiceOrderStore, type ServiceOrderItem } from '@/stores/modules/serviceOrderManagement'
 import AssignOrderDialog from './components/AssignOrderDialog.vue'
 import CompleteOrderDialog from './components/CompleteOrderDialog.vue'
 import CancelOrderDialog from './components/CancelOrderDialog.vue'
+import AssignTaskItemDialog from './components/AssignTaskItemDialog.vue'
 import { formatDateTime } from '@/utils/date'
 
 const route = useRoute()
@@ -241,6 +267,8 @@ const serviceOrderStore = useServiceOrderStore()
 const showAssignDialog = ref(false)
 const showCompleteDialog = ref(false)
 const showCancelDialog = ref(false)
+const showAssignTaskItemDialog = ref(false)
+const currentTaskItem = ref<ServiceOrderItem | null>(null)
 const commentLoading = ref(false)
 
 const commentForm = reactive({
@@ -384,9 +412,22 @@ const getLogTypeText = (type: string) => {
     completed: '完成',
     cancelled: '取消',
     commented: '评论',
-    status_changed: '状态变更'
+    status_changed: '状态变更',
+    task_assign: '任务分配'
   }
   return textMap[type] || type
+}
+
+// 分配任务项
+const handleAssignTaskItem = (taskItem: ServiceOrderItem) => {
+  currentTaskItem.value = taskItem
+  showAssignTaskItemDialog.value = true
+}
+
+// 分配任务项成功
+const handleAssignTaskItemSuccess = async () => {
+  await loadData()
+  ElMessage.success('任务项分配成功')
 }
 
 // 生命周期

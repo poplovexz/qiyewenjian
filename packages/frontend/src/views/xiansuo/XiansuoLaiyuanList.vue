@@ -172,6 +172,7 @@ import {
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
 import XiansuoLaiyuanForm from '@/components/xiansuo/XiansuoLaiyuanForm.vue'
 import type { XiansuoLaiyuan } from '@/types/xiansuo'
+import { storeToRefs } from 'pinia'
 
 // 使用store
 const xiansuoStore = useXiansuoStore()
@@ -194,11 +195,15 @@ const {
   total, 
   currentPage, 
   pageSize
-} = xiansuoStore
+} = storeToRefs(xiansuoStore)
 
 // 方法
 const handleSearch = async () => {
-  await xiansuoStore.fetchLaiyuanList(searchForm.value)
+  await xiansuoStore.fetchLaiyuanList({
+    ...searchForm.value,
+    page: xiansuoStore.currentPage,
+    size: xiansuoStore.pageSize
+  })
 }
 
 const handleReset = async () => {
@@ -207,7 +212,11 @@ const handleReset = async () => {
     laiyuan_leixing: '',
     zhuangtai: ''
   }
-  await xiansuoStore.fetchLaiyuanList()
+  xiansuoStore.currentPage = 1
+  await xiansuoStore.fetchLaiyuanList({
+    page: 1,
+    size: xiansuoStore.pageSize
+  })
 }
 
 const handleRefresh = async () => {
@@ -286,7 +295,10 @@ const formatDate = (dateStr: string) => {
 
 // 生命周期
 onMounted(async () => {
-  await xiansuoStore.fetchLaiyuanList()
+  await xiansuoStore.fetchLaiyuanList({
+    page: xiansuoStore.currentPage,
+    size: xiansuoStore.pageSize
+  })
 })
 </script>
 

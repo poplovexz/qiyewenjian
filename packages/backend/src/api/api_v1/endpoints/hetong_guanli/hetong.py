@@ -118,6 +118,21 @@ def delete_hetong(
     return {"message": "合同删除成功"}
 
 
+@router.post("/{hetong_id}/void", response_model=HetongResponse)
+def void_hetong(
+    hetong_id: str,
+    void_data: dict,
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(get_current_user)
+):
+    """作废合同"""
+    service = HetongService(db)
+    void_reason = void_data.get("void_reason", "")
+    if not void_reason:
+        raise HTTPException(status_code=400, detail="作废原因不能为空")
+    return service.void_hetong(hetong_id, void_reason, current_user.id)
+
+
 @router.post("/preview", response_model=HetongPreviewResponse)
 def preview_hetong(
     preview_request: HetongPreviewRequest,

@@ -2,6 +2,7 @@
 服务工单管理服务
 """
 from typing import Optional, List, Dict, Any
+from decimal import Decimal
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, or_, func, desc
 from fastapi import HTTPException, status
@@ -9,9 +10,11 @@ from datetime import datetime, timedelta
 import json
 
 from models.fuwu_guanli import FuwuGongdan, FuwuGongdanXiangmu, FuwuGongdanRizhi
-from models.hetong_guanli import Hetong
+from models.hetong_guanli import Hetong, HetongMoban
 from models.kehu_guanli import Kehu
 from models.yonghu_guanli import Yonghu
+from models.xiansuo_guanli import XiansuoBaojia, XiansuoBaojiaXiangmu
+from models.chanpin_guanli import ChanpinXiangmu, ChanpinBuzou
 from schemas.fuwu_guanli.fuwu_gongdan_schemas import (
     FuwuGongdanCreate,
     FuwuGongdanUpdate,
@@ -276,8 +279,11 @@ class FuwuGongdanService:
 
     def create_gongdan_from_hetong(self, hetong_id: str, created_by: str) -> FuwuGongdanDetailResponse:
         """基于合同创建服务工单"""
-        # 获取合同信息
-        hetong = self.db.query(Hetong).filter(
+        # 获取合同信息（包含关联的模板和报价）
+        hetong = self.db.query(Hetong).options(
+            joinedload(Hetong.hetong_moban),
+            joinedload(Hetong.baojia)
+        ).filter(
             Hetong.id == hetong_id,
             Hetong.is_deleted == "N"
         ).first()
@@ -297,9 +303,12 @@ class FuwuGongdanService:
         if existing_gongdan:
             raise HTTPException(status_code=400, detail="该合同已经创建过服务工单")
 
-        # 根据合同类型确定服务类型和默认项目
-        fuwu_leixing = "daili_jizhang"  # 默认代理记账
-        default_xiangmu_list = self._get_default_xiangmu_by_service_type(fuwu_leixing)
+        # 根据合同模板类型确定服务类型
+        hetong_leixing = hetong.hetong_moban.hetong_leixing if hetong.hetong_moban else "daili_jizhang"
+        fuwu_leixing = self._map_hetong_leixing_to_fuwu_leixing(hetong_leixing)
+
+        # 获取工单任务项列表（从产品步骤或默认模板）
+        xiangmu_list = self._get_xiangmu_list_from_hetong(hetong, fuwu_leixing)
 
         # 计算计划结束时间（默认30天后）
         jihua_jieshu_shijian = datetime.now() + timedelta(days=30)
@@ -313,10 +322,88 @@ class FuwuGongdanService:
             fuwu_leixing=fuwu_leixing,
             youxian_ji="medium",
             jihua_jieshu_shijian=jihua_jieshu_shijian,
-            xiangmu_list=default_xiangmu_list
+            xiangmu_list=xiangmu_list
         )
 
         return self.create_gongdan(gongdan_data, created_by)
+
+    def _map_hetong_leixing_to_fuwu_leixing(self, hetong_leixing: str) -> str:
+        """将合同类型映射到服务类型"""
+        mapping = {
+            "daili_jizhang": "daili_jizhang",
+            "zengzhi_fuwu": "zengzhi_fuwu",
+            "zixun_fuwu": "caiwu_zixun"
+        }
+        return mapping.get(hetong_leixing, "daili_jizhang")
+
+    def _get_xiangmu_list_from_hetong(self, hetong: Hetong, fuwu_leixing: str) -> List[FuwuGongdanXiangmuCreate]:
+        """从合同获取工单任务项列表
+
+        优先从合同关联的报价中获取产品步骤，如果没有则使用默认模板
+        """
+        xiangmu_list = []
+
+        # 如果合同有关联报价，尝试从报价项目中获取产品步骤
+        if hetong.baojia_id:
+            baojia = self.db.query(XiansuoBaojia).options(
+                joinedload(XiansuoBaojia.xiangmu_list)
+            ).filter(
+                XiansuoBaojia.id == hetong.baojia_id,
+                XiansuoBaojia.is_deleted == "N"
+            ).first()
+
+            if baojia and baojia.xiangmu_list:
+                # 遍历报价项目，获取每个产品的步骤
+                for baojia_xiangmu in baojia.xiangmu_list:
+                    if baojia_xiangmu.chanpin_xiangmu_id:
+                        # 获取产品项目及其步骤
+                        chanpin_xiangmu = self.db.query(ChanpinXiangmu).options(
+                            joinedload(ChanpinXiangmu.buzou_list)
+                        ).filter(
+                            ChanpinXiangmu.id == baojia_xiangmu.chanpin_xiangmu_id,
+                            ChanpinXiangmu.is_deleted == "N"
+                        ).first()
+
+                        if chanpin_xiangmu and chanpin_xiangmu.buzou_list:
+                            # 将产品步骤转换为工单任务项
+                            for buzou in chanpin_xiangmu.buzou_list:
+                                if buzou.is_deleted == "N" and buzou.zhuangtai == "active":
+                                    # 转换时长单位为工时
+                                    jihua_gongshi = self._convert_to_gongshi(
+                                        buzou.yugu_shichang,
+                                        buzou.shichang_danwei
+                                    )
+
+                                    xiangmu_list.append(FuwuGongdanXiangmuCreate(
+                                        xiangmu_mingcheng=buzou.buzou_mingcheng,
+                                        xiangmu_miaoshu=buzou.buzou_miaoshu or f"{chanpin_xiangmu.xiangmu_mingcheng} - {buzou.buzou_mingcheng}",
+                                        paixu=buzou.paixu,
+                                        jihua_gongshi=jihua_gongshi
+                                    ))
+
+        # 如果没有从报价中获取到任务项，使用默认模板
+        if not xiangmu_list:
+            xiangmu_list = self._get_default_xiangmu_by_service_type(fuwu_leixing)
+
+        return xiangmu_list
+
+    def _convert_to_gongshi(self, shichang: float, danwei: str) -> float:
+        """将时长转换为工时（小时）
+
+        Args:
+            shichang: 时长数值
+            danwei: 时长单位 (tian/xiaoshi/fenzhong)
+
+        Returns:
+            工时（小时）
+        """
+        danwei_map = {
+            'tian': 8.0,        # 1天 = 8小时
+            'xiaoshi': 1.0,     # 1小时 = 1小时
+            'fenzhong': 1.0/60.0  # 1分钟 = 1/60小时
+        }
+        multiplier = danwei_map.get(danwei, 1.0)
+        return float(shichang) * multiplier
 
     def _get_default_xiangmu_by_service_type(self, fuwu_leixing: str) -> List[FuwuGongdanXiangmuCreate]:
         """根据服务类型获取默认项目列表"""
@@ -374,8 +461,78 @@ class FuwuGongdanService:
                     jihua_gongshi=1.0
                 )
             ]
+        elif fuwu_leixing == "zengzhi_fuwu":
+            # 增值服务默认模板
+            return [
+                FuwuGongdanXiangmuCreate(
+                    xiangmu_mingcheng="需求确认",
+                    xiangmu_miaoshu="与客户确认服务需求和具体要求",
+                    paixu=1,
+                    jihua_gongshi=1.0
+                ),
+                FuwuGongdanXiangmuCreate(
+                    xiangmu_mingcheng="资料准备",
+                    xiangmu_miaoshu="准备服务所需的各类资料和文件",
+                    paixu=2,
+                    jihua_gongshi=2.0
+                ),
+                FuwuGongdanXiangmuCreate(
+                    xiangmu_mingcheng="服务执行",
+                    xiangmu_miaoshu="执行具体的增值服务内容",
+                    paixu=3,
+                    jihua_gongshi=8.0
+                ),
+                FuwuGongdanXiangmuCreate(
+                    xiangmu_mingcheng="成果交付",
+                    xiangmu_miaoshu="整理并交付服务成果",
+                    paixu=4,
+                    jihua_gongshi=2.0
+                )
+            ]
+        elif fuwu_leixing == "caiwu_zixun":
+            # 财务咨询默认模板
+            return [
+                FuwuGongdanXiangmuCreate(
+                    xiangmu_mingcheng="问题诊断",
+                    xiangmu_miaoshu="分析客户财务问题",
+                    paixu=1,
+                    jihua_gongshi=2.0
+                ),
+                FuwuGongdanXiangmuCreate(
+                    xiangmu_mingcheng="方案制定",
+                    xiangmu_miaoshu="制定解决方案",
+                    paixu=2,
+                    jihua_gongshi=4.0
+                ),
+                FuwuGongdanXiangmuCreate(
+                    xiangmu_mingcheng="方案实施",
+                    xiangmu_miaoshu="协助客户实施方案",
+                    paixu=3,
+                    jihua_gongshi=6.0
+                )
+            ]
         else:
-            return []
+            # 其他服务类型的通用模板
+            return [
+                FuwuGongdanXiangmuCreate(
+                    xiangmu_mingcheng="服务准备",
+                    xiangmu_miaoshu="准备服务所需资料",
+                    paixu=1,
+                    jihua_gongshi=2.0
+                ),
+                FuwuGongdanXiangmuCreate(
+                    xiangmu_mingcheng="服务执行",
+                    xiangmu_miaoshu="执行服务内容",
+                    paixu=2,
+                    jihua_gongshi=8.0
+                ),
+                FuwuGongdanXiangmuCreate(
+                    xiangmu_mingcheng="服务交付",
+                    xiangmu_miaoshu="交付服务成果",
+                    paixu=3,
+                    jihua_gongshi=2.0
+                )
+            ]
 
     def assign_gongdan(self, gongdan_id: str, zhixing_ren_id: str, fenpei_beizhu: Optional[str], assigned_by: str) -> FuwuGongdanDetailResponse:
         """分配工单"""
@@ -512,3 +669,436 @@ class FuwuGongdanService:
             avg_completion_days=avg_completion_days,
             completion_rate=completion_rate
         )
+
+    def assign_task_item(
+        self,
+        gongdan_id: str,
+        item_id: str,
+        zhixing_ren_id: str,
+        operator_id: str
+    ) -> FuwuGongdanXiangmuResponse:
+        """分配工单任务项给执行人
+
+        Args:
+            gongdan_id: 工单ID
+            item_id: 任务项ID
+            zhixing_ren_id: 执行人ID
+            operator_id: 操作人ID
+
+        Returns:
+            更新后的任务项信息
+        """
+        # 1. 验证工单是否存在
+        gongdan = self.db.query(FuwuGongdan).filter(
+            FuwuGongdan.id == gongdan_id,
+            FuwuGongdan.is_deleted == "N"
+        ).first()
+
+        if not gongdan:
+            raise HTTPException(status_code=404, detail="工单不存在")
+
+        # 2. 验证任务项是否存在且属于该工单
+        xiangmu = self.db.query(FuwuGongdanXiangmu).filter(
+            FuwuGongdanXiangmu.id == item_id,
+            FuwuGongdanXiangmu.gongdan_id == gongdan_id,
+            FuwuGongdanXiangmu.is_deleted == "N"
+        ).first()
+
+        if not xiangmu:
+            raise HTTPException(status_code=404, detail="任务项不存在")
+
+        # 3. 验证执行人是否存在
+        zhixing_ren = self.db.query(Yonghu).filter(
+            Yonghu.id == zhixing_ren_id,
+            Yonghu.is_deleted == "N"
+        ).first()
+
+        if not zhixing_ren:
+            raise HTTPException(status_code=404, detail="执行人不存在")
+
+        # 4. 记录旧的执行人（用于日志）
+        old_zhixing_ren_id = xiangmu.zhixing_ren_id
+        old_zhixing_ren_name = None
+        if old_zhixing_ren_id:
+            old_zhixing_ren = self.db.query(Yonghu).filter(
+                Yonghu.id == old_zhixing_ren_id
+            ).first()
+            if old_zhixing_ren:
+                old_zhixing_ren_name = old_zhixing_ren.xingming
+
+        # 5. 更新任务项的执行人
+        xiangmu.zhixing_ren_id = zhixing_ren_id
+        xiangmu.updated_at = datetime.now()
+
+        # 6. 创建操作日志
+        log_content = f"任务项「{xiangmu.xiangmu_mingcheng}」"
+        if old_zhixing_ren_name:
+            log_content += f"从「{old_zhixing_ren_name}」重新分配给「{zhixing_ren.xingming}」"
+        else:
+            log_content += f"分配给「{zhixing_ren.xingming}」"
+
+        rizhi = FuwuGongdanRizhi(
+            gongdan_id=gongdan_id,
+            caozuo_leixing="task_assign",
+            caozuo_neirong=log_content,
+            caozuo_ren_id=operator_id,
+            created_by=operator_id
+        )
+        self.db.add(rizhi)
+
+        # 7. 提交事务
+        self.db.commit()
+        self.db.refresh(xiangmu)
+
+        # 8. 加载执行人信息
+        xiangmu_with_zhixing_ren = self.db.query(FuwuGongdanXiangmu).options(
+            joinedload(FuwuGongdanXiangmu.zhixing_ren)
+        ).filter(
+            FuwuGongdanXiangmu.id == item_id
+        ).first()
+
+        return FuwuGongdanXiangmuResponse.model_validate(xiangmu_with_zhixing_ren)
+
+    # ==================== 任务项相关方法 ====================
+
+    def get_my_task_items(
+        self,
+        zhixing_ren_id: str,
+        page: int = 1,
+        size: int = 20,
+        xiangmu_zhuangtai: Optional[str] = None,
+        gongdan_zhuangtai: Optional[str] = None,
+        fuwu_leixing: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """获取我的任务项列表"""
+        from schemas.fuwu_guanli.fuwu_gongdan_schemas import TaskItemWithGongdanResponse
+
+        # 构建查询
+        query = self.db.query(FuwuGongdanXiangmu).join(
+            FuwuGongdan,
+            FuwuGongdanXiangmu.gongdan_id == FuwuGongdan.id
+        ).filter(
+            FuwuGongdanXiangmu.zhixing_ren_id == zhixing_ren_id,
+            FuwuGongdanXiangmu.is_deleted == "N",
+            FuwuGongdan.is_deleted == "N"
+        )
+
+        # 任务项状态筛选
+        if xiangmu_zhuangtai:
+            query = query.filter(FuwuGongdanXiangmu.xiangmu_zhuangtai == xiangmu_zhuangtai)
+
+        # 工单状态筛选
+        if gongdan_zhuangtai:
+            query = query.filter(FuwuGongdan.gongdan_zhuangtai == gongdan_zhuangtai)
+
+        # 服务类型筛选
+        if fuwu_leixing:
+            query = query.filter(FuwuGongdan.fuwu_leixing == fuwu_leixing)
+
+        # 按排序和创建时间排序
+        query = query.order_by(
+            FuwuGongdanXiangmu.paixu.asc(),
+            FuwuGongdanXiangmu.created_at.desc()
+        )
+
+        # 获取总数
+        total = query.count()
+
+        # 分页
+        offset = (page - 1) * size
+        items = query.offset(offset).limit(size).all()
+
+        # 加载关联数据
+        result_items = []
+        for item in items:
+            # 加载工单信息
+            gongdan = self.db.query(FuwuGongdan).options(
+                joinedload(FuwuGongdan.kehu)
+            ).filter(
+                FuwuGongdan.id == item.gongdan_id
+            ).first()
+
+            # 加载执行人信息
+            item_with_relations = self.db.query(FuwuGongdanXiangmu).options(
+                joinedload(FuwuGongdanXiangmu.zhixing_ren)
+            ).filter(
+                FuwuGongdanXiangmu.id == item.id
+            ).first()
+
+            # 构建响应数据
+            item_dict = {
+                "id": item_with_relations.id,
+                "gongdan_id": item_with_relations.gongdan_id,
+                "xiangmu_mingcheng": item_with_relations.xiangmu_mingcheng,
+                "xiangmu_miaoshu": item_with_relations.xiangmu_miaoshu,
+                "xiangmu_zhuangtai": item_with_relations.xiangmu_zhuangtai,
+                "paixu": item_with_relations.paixu,
+                "jihua_gongshi": item_with_relations.jihua_gongshi,
+                "shiji_gongshi": item_with_relations.shiji_gongshi,
+                "kaishi_shijian": item_with_relations.kaishi_shijian,
+                "jieshu_shijian": item_with_relations.jieshu_shijian,
+                "beizhu": item_with_relations.beizhu,
+                "zhixing_ren_id": item_with_relations.zhixing_ren_id,
+                "zhixing_ren": item_with_relations.zhixing_ren,
+                "created_at": item_with_relations.created_at,
+                "updated_at": item_with_relations.updated_at,
+                "gongdan": {
+                    "id": gongdan.id,
+                    "gongdan_bianhao": gongdan.gongdan_bianhao,
+                    "gongdan_biaoti": gongdan.gongdan_biaoti,
+                    "fuwu_leixing": gongdan.fuwu_leixing,
+                    "gongdan_zhuangtai": gongdan.gongdan_zhuangtai
+                },
+                "kehu": {
+                    "id": gongdan.kehu.id,
+                    "kehu_mingcheng": gongdan.kehu.gongsi_mingcheng
+                } if gongdan.kehu else None
+            }
+
+            result_items.append(TaskItemWithGongdanResponse.model_validate(item_dict))
+
+        # 计算总页数
+        pages = (total + size - 1) // size
+
+        return {
+            "total": total,
+            "items": result_items,
+            "page": page,
+            "size": size,
+            "pages": pages
+        }
+
+    def start_task_item(
+        self,
+        item_id: str,
+        zhixing_ren_id: str
+    ) -> FuwuGongdanXiangmuResponse:
+        """开始任务项"""
+        # 1. 验证任务项是否存在
+        xiangmu = self.db.query(FuwuGongdanXiangmu).filter(
+            FuwuGongdanXiangmu.id == item_id,
+            FuwuGongdanXiangmu.is_deleted == "N"
+        ).first()
+
+        if not xiangmu:
+            raise HTTPException(status_code=404, detail="任务项不存在")
+
+        # 2. 验证是否是分配给当前用户的任务
+        if xiangmu.zhixing_ren_id != zhixing_ren_id:
+            raise HTTPException(status_code=403, detail="无权操作此任务项")
+
+        # 3. 验证任务项状态
+        if xiangmu.xiangmu_zhuangtai != "pending":
+            raise HTTPException(
+                status_code=400,
+                detail=f"任务项当前状态为{xiangmu.xiangmu_zhuangtai}，无法开始"
+            )
+
+        # 4. 更新任务项状态
+        xiangmu.xiangmu_zhuangtai = "in_progress"
+        xiangmu.kaishi_shijian = datetime.now()
+        xiangmu.updated_at = datetime.now()
+
+        # 5. 创建操作日志
+        rizhi = FuwuGongdanRizhi(
+            gongdan_id=xiangmu.gongdan_id,
+            caozuo_leixing="task_start",
+            caozuo_neirong=f"开始执行任务项「{xiangmu.xiangmu_mingcheng}」",
+            caozuo_ren_id=zhixing_ren_id,
+            created_by=zhixing_ren_id
+        )
+        self.db.add(rizhi)
+
+        # 6. 提交事务
+        self.db.commit()
+        self.db.refresh(xiangmu)
+
+        # 7. 加载执行人信息
+        xiangmu_with_zhixing_ren = self.db.query(FuwuGongdanXiangmu).options(
+            joinedload(FuwuGongdanXiangmu.zhixing_ren)
+        ).filter(
+            FuwuGongdanXiangmu.id == item_id
+        ).first()
+
+        return FuwuGongdanXiangmuResponse.model_validate(xiangmu_with_zhixing_ren)
+
+    def complete_task_item(
+        self,
+        item_id: str,
+        zhixing_ren_id: str,
+        shiji_gongshi: Decimal,
+        beizhu: Optional[str] = None
+    ) -> FuwuGongdanXiangmuResponse:
+        """完成任务项"""
+        # 1. 验证任务项是否存在
+        xiangmu = self.db.query(FuwuGongdanXiangmu).filter(
+            FuwuGongdanXiangmu.id == item_id,
+            FuwuGongdanXiangmu.is_deleted == "N"
+        ).first()
+
+        if not xiangmu:
+            raise HTTPException(status_code=404, detail="任务项不存在")
+
+        # 2. 验证是否是分配给当前用户的任务
+        if xiangmu.zhixing_ren_id != zhixing_ren_id:
+            raise HTTPException(status_code=403, detail="无权操作此任务项")
+
+        # 3. 验证任务项状态
+        if xiangmu.xiangmu_zhuangtai not in ["pending", "in_progress"]:
+            raise HTTPException(
+                status_code=400,
+                detail=f"任务项当前状态为{xiangmu.xiangmu_zhuangtai}，无法完成"
+            )
+
+        # 4. 更新任务项状态
+        xiangmu.xiangmu_zhuangtai = "completed"
+        xiangmu.shiji_gongshi = shiji_gongshi
+        xiangmu.jieshu_shijian = datetime.now()
+        xiangmu.updated_at = datetime.now()
+
+        # 如果任务还未开始，设置开始时间
+        if not xiangmu.kaishi_shijian:
+            xiangmu.kaishi_shijian = datetime.now()
+
+        # 更新备注
+        if beizhu:
+            xiangmu.beizhu = beizhu
+
+        # 5. 创建操作日志
+        log_content = f"完成任务项「{xiangmu.xiangmu_mingcheng}」，实际工时：{shiji_gongshi}小时"
+        if beizhu:
+            log_content += f"，备注：{beizhu}"
+
+        rizhi = FuwuGongdanRizhi(
+            gongdan_id=xiangmu.gongdan_id,
+            caozuo_leixing="task_complete",
+            caozuo_neirong=log_content,
+            caozuo_ren_id=zhixing_ren_id,
+            created_by=zhixing_ren_id
+        )
+        self.db.add(rizhi)
+
+        # 6. 提交事务
+        self.db.commit()
+        self.db.refresh(xiangmu)
+
+        # 7. 加载执行人信息
+        xiangmu_with_zhixing_ren = self.db.query(FuwuGongdanXiangmu).options(
+            joinedload(FuwuGongdanXiangmu.zhixing_ren)
+        ).filter(
+            FuwuGongdanXiangmu.id == item_id
+        ).first()
+
+        return FuwuGongdanXiangmuResponse.model_validate(xiangmu_with_zhixing_ren)
+
+    def pause_task_item(
+        self,
+        item_id: str,
+        zhixing_ren_id: str,
+        beizhu: Optional[str] = None
+    ) -> FuwuGongdanXiangmuResponse:
+        """暂停任务项（将状态改回pending）"""
+        # 1. 验证任务项是否存在
+        xiangmu = self.db.query(FuwuGongdanXiangmu).filter(
+            FuwuGongdanXiangmu.id == item_id,
+            FuwuGongdanXiangmu.is_deleted == "N"
+        ).first()
+
+        if not xiangmu:
+            raise HTTPException(status_code=404, detail="任务项不存在")
+
+        # 2. 验证是否是分配给当前用户的任务
+        if xiangmu.zhixing_ren_id != zhixing_ren_id:
+            raise HTTPException(status_code=403, detail="无权操作此任务项")
+
+        # 3. 验证任务项状态
+        if xiangmu.xiangmu_zhuangtai != "in_progress":
+            raise HTTPException(
+                status_code=400,
+                detail=f"任务项当前状态为{xiangmu.xiangmu_zhuangtai}，无法暂停"
+            )
+
+        # 4. 更新任务项状态
+        xiangmu.xiangmu_zhuangtai = "pending"
+        xiangmu.updated_at = datetime.now()
+
+        # 更新备注
+        if beizhu:
+            xiangmu.beizhu = beizhu
+
+        # 5. 创建操作日志
+        log_content = f"暂停任务项「{xiangmu.xiangmu_mingcheng}」"
+        if beizhu:
+            log_content += f"，原因：{beizhu}"
+
+        rizhi = FuwuGongdanRizhi(
+            gongdan_id=xiangmu.gongdan_id,
+            caozuo_leixing="task_pause",
+            caozuo_neirong=log_content,
+            caozuo_ren_id=zhixing_ren_id,
+            created_by=zhixing_ren_id
+        )
+        self.db.add(rizhi)
+
+        # 6. 提交事务
+        self.db.commit()
+        self.db.refresh(xiangmu)
+
+        # 7. 加载执行人信息
+        xiangmu_with_zhixing_ren = self.db.query(FuwuGongdanXiangmu).options(
+            joinedload(FuwuGongdanXiangmu.zhixing_ren)
+        ).filter(
+            FuwuGongdanXiangmu.id == item_id
+        ).first()
+
+        return FuwuGongdanXiangmuResponse.model_validate(xiangmu_with_zhixing_ren)
+
+    def get_task_item_statistics(
+        self,
+        zhixing_ren_id: str
+    ) -> Dict[str, Any]:
+        """获取任务项统计信息"""
+        # 查询所有分配给该用户的任务项
+        query = self.db.query(FuwuGongdanXiangmu).filter(
+            FuwuGongdanXiangmu.zhixing_ren_id == zhixing_ren_id,
+            FuwuGongdanXiangmu.is_deleted == "N"
+        )
+
+        # 总任务数
+        total_count = query.count()
+
+        # 各状态数量
+        pending_count = query.filter(FuwuGongdanXiangmu.xiangmu_zhuangtai == "pending").count()
+        in_progress_count = query.filter(FuwuGongdanXiangmu.xiangmu_zhuangtai == "in_progress").count()
+        completed_count = query.filter(FuwuGongdanXiangmu.xiangmu_zhuangtai == "completed").count()
+        skipped_count = query.filter(FuwuGongdanXiangmu.xiangmu_zhuangtai == "skipped").count()
+
+        # 总计划工时
+        total_jihua_gongshi = self.db.query(
+            func.sum(FuwuGongdanXiangmu.jihua_gongshi)
+        ).filter(
+            FuwuGongdanXiangmu.zhixing_ren_id == zhixing_ren_id,
+            FuwuGongdanXiangmu.is_deleted == "N"
+        ).scalar() or 0
+
+        # 总实际工时
+        total_shiji_gongshi = self.db.query(
+            func.sum(FuwuGongdanXiangmu.shiji_gongshi)
+        ).filter(
+            FuwuGongdanXiangmu.zhixing_ren_id == zhixing_ren_id,
+            FuwuGongdanXiangmu.is_deleted == "N"
+        ).scalar() or 0
+
+        # 平均完成率
+        avg_completion_rate = (completed_count / total_count * 100) if total_count > 0 else 0
+
+        return {
+            "total_count": total_count,
+            "pending_count": pending_count,
+            "in_progress_count": in_progress_count,
+            "completed_count": completed_count,
+            "skipped_count": skipped_count,
+            "total_jihua_gongshi": float(total_jihua_gongshi),
+            "total_shiji_gongshi": float(total_shiji_gongshi),
+            "avg_completion_rate": round(avg_completion_rate, 2)
+        }

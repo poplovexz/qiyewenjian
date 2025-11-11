@@ -39,6 +39,38 @@
           </el-descriptions>
         </div>
 
+        <!-- 银行汇款审核特殊信息 -->
+        <div v-if="workflowDetail.audit_type === 'yinhang_huikuan' && workflowDetail.trigger_data" class="bank-transfer-section">
+          <h4>汇款信息</h4>
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="单据编号">
+              {{ workflowDetail.trigger_data.danju_bianhao || '-' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="汇款金额">
+              <span style="color: #f56c6c; font-weight: bold;">
+                ¥{{ workflowDetail.trigger_data.huikuan_jine?.toFixed(2) || '0.00' }}
+              </span>
+            </el-descriptions-item>
+          </el-descriptions>
+
+          <div v-if="workflowDetail.trigger_data.voucher_url" class="voucher-preview" style="margin-top: 15px;">
+            <h5>汇款凭证</h5>
+            <el-image
+              :src="getImageUrl(workflowDetail.trigger_data.voucher_url)"
+              :preview-src-list="[getImageUrl(workflowDetail.trigger_data.voucher_url)]"
+              fit="contain"
+              style="width: 100%; max-width: 500px; border: 1px solid #dcdfe6; border-radius: 4px;"
+            >
+              <template #error>
+                <div class="image-error">
+                  <el-icon><Picture /></el-icon>
+                  <span>图片加载失败</span>
+                </div>
+              </template>
+            </el-image>
+          </div>
+        </div>
+
         <!-- 审核步骤 -->
         <div class="steps-section">
           <h4>审核步骤</h4>
@@ -131,7 +163,8 @@ import {
   Clock,
   Check,
   Close,
-  Warning
+  Warning,
+  Picture
 } from '@element-plus/icons-vue'
 import { useAuditManagementStore } from '@/stores/modules/auditManagement'
 
@@ -180,13 +213,14 @@ const fetchWorkflowDetail = async () => {
 
   try {
     loading.value = true
-    
-    // 获取流程详情
-    workflowDetail.value = await auditStore.fetchAuditWorkflowById(props.workflowId)
-    
-    // 获取审核记录
-    auditRecords.value = await auditStore.fetchAuditRecordsByWorkflow(props.workflowId)
-    
+
+    // 获取流程详情（包含审核记录）
+    const detail = await auditStore.fetchAuditWorkflowById(props.workflowId)
+    workflowDetail.value = detail
+
+    // 使用流程详情中的审核记录
+    auditRecords.value = detail.shenhe_jilu || []
+
   } catch (error) {
     console.error('获取审核流程详情失败:', error)
     ElMessage.error('获取审核流程详情失败')
@@ -230,16 +264,22 @@ const handleCancel = async () => {
 
 const getAuditTypeTagType = (type: string) => {
   const types: Record<string, string> = {
+    yinhang_huikuan: 'danger',
     hetong: 'primary',
-    baojia: 'success'
+    hetong_jine_xiuzheng: 'warning',
+    baojia: 'success',
+    baojia_shenhe: 'success'
   }
   return types[type] || 'info'
 }
 
 const getAuditTypeText = (type: string) => {
   const texts: Record<string, string> = {
+    yinhang_huikuan: '银行汇款审核',
     hetong: '合同审核',
-    baojia: '报价审核'
+    hetong_jine_xiuzheng: '合同金额修正',
+    baojia: '报价审核',
+    baojia_shenhe: '报价审核'
   }
   return texts[type] || type
 }
@@ -309,7 +349,15 @@ const formatDateTime = (dateStr: string) => {
 }
 
 const getFileUrl = (filePath: string) => {
-  return `${import.meta.env.VITE_API_BASE_URL}/api/v1/files/${filePath}`
+  return `${import.meta.env.VITE_API_BASE_URL}/files/${filePath}`
+}
+
+const getImageUrl = (path: string) => {
+  if (!path) return ''
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path
+  }
+  return `http://localhost:8000${path}`
 }
 
 // 监听对话框显示状态
@@ -328,13 +376,15 @@ watch(() => props.visible, (newVal) => {
 
 .basic-info-section,
 .steps-section,
-.related-info-section {
+.related-info-section,
+.bank-transfer-section {
   margin-bottom: 24px;
 }
 
 .basic-info-section h4,
 .steps-section h4,
-.related-info-section h4 {
+.related-info-section h4,
+.bank-transfer-section h4 {
   margin: 0 0 16px 0;
   color: #303133;
   font-size: 16px;
@@ -397,5 +447,27 @@ watch(() => props.visible, (newVal) => {
 :deep(.el-timeline-item__timestamp) {
   color: #909399;
   font-size: 12px;
+}
+
+.voucher-preview h5 {
+  margin: 0 0 10px 0;
+  color: #606266;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.image-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #909399;
+  background-color: #f5f7fa;
+}
+
+.image-error .el-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
 }
 </style>

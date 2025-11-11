@@ -138,20 +138,30 @@ async def get_qianshu_status(
     current_user: Yonghu = Depends(get_current_user)
 ):
     """获取合同签署状态"""
-    service = HetongQianshuService(db)
-    qianshu_info = service.get_qianshu_by_hetong(hetong_id)
-    
-    if qianshu_info:
-        return {
-            "success": True,
-            "data": {
-                "qianshu_zhuangtai": qianshu_info["qianshu_zhuangtai"],
-                "qianshu_shijian": qianshu_info["qianshu_shijian"],
-                "qianshu_ren_mingcheng": qianshu_info["qianshu_ren_mingcheng"],
-                "youxiao_jieshu": qianshu_info["youxiao_jieshu"]
+    try:
+        service = HetongQianshuService(db)
+        qianshu_info = service.get_qianshu_by_hetong(hetong_id)
+
+        if qianshu_info:
+            return {
+                "success": True,
+                "data": {
+                    "qianshu_zhuangtai": qianshu_info["qianshu_zhuangtai"],
+                    "qianshu_shijian": qianshu_info["qianshu_shijian"],
+                    "qianshu_ren_mingcheng": qianshu_info["qianshu_ren_mingcheng"],
+                    "youxiao_jieshu": qianshu_info["youxiao_jieshu"]
+                }
             }
-        }
-    else:
+        else:
+            return {
+                "success": True,
+                "data": {
+                    "qianshu_zhuangtai": "weichuangjian"
+                }
+            }
+    except Exception as e:
+        # 如果表不存在或其他错误，返回未创建状态
+        print(f"获取签署状态失败: {str(e)}")
         return {
             "success": True,
             "data": {

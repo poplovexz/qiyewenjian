@@ -99,6 +99,15 @@ from .heguishixiang_guanli import (
     TixingJilu
 )
 
+# 办公管理模块
+from .bangong_guanli import (
+    BaoxiaoShenqing,
+    QingjiaShenqing,
+    DuiwaiFukuanShenqing,
+    CaigouShenqing,
+    GongzuoJiaojie
+)
+
 __all__ = [
     # 基础类
     "Base",
@@ -172,5 +181,12 @@ __all__ = [
     "KehuHeguishixiang",
     "HeguishixiangShili",
     "HeguishixiangTixing",
-    "TixingJilu"
+    "TixingJilu",
+
+    # 办公管理
+    "BaoxiaoShenqing",
+    "QingjiaShenqing",
+    "DuiwaiFukuanShenqing",
+    "CaigouShenqing",
+    "GongzuoJiaojie"
 ]

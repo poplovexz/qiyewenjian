@@ -245,6 +245,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
+import { storeToRefs } from 'pinia'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
 import type { Xiansuo, XiansuoCreate, XiansuoUpdate } from '@/types/xiansuo'
@@ -325,7 +326,8 @@ const dialogTitle = computed(() => {
   return titles[props.mode]
 })
 
-const { active_laiyuan_list } = xiansuoStore
+// 使用 storeToRefs 保持响应式
+const { active_laiyuan_list } = storeToRefs(xiansuoStore)
 
 // 监听props变化
 watch(
@@ -356,9 +358,16 @@ watch(
 
 watch(
   () => props.visible,
-  (visible) => {
-    if (visible && props.mode === 'create') {
-      resetForm()
+  async (visible) => {
+    if (visible) {
+      // 确保线索来源列表已加载
+      if (active_laiyuan_list.value.length === 0) {
+        await xiansuoStore.fetchActiveLaiyuanList()
+      }
+
+      if (props.mode === 'create') {
+        resetForm()
+      }
     }
   }
 )

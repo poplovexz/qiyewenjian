@@ -31,6 +31,41 @@ class XiansuoBaojiaService:
     def __init__(self, db: Session):
         self.db = db
     
+    def _validate_daili_jizhang_limit(self, xiangmu_list: list) -> None:
+        """
+        验证代理记账服务数量限制
+
+        Args:
+            xiangmu_list: 报价项目列表
+
+        Raises:
+            HTTPException: 如果包含多个代理记账服务
+        """
+        # 获取所有项目ID
+        xiangmu_ids = [item.chanpin_xiangmu_id for item in xiangmu_list]
+
+        # 查询这些项目的分类信息
+        xiangmu_with_fenlei = self.db.query(ChanpinXiangmu).options(
+            joinedload(ChanpinXiangmu.fenlei)
+        ).filter(
+            and_(
+                ChanpinXiangmu.id.in_(xiangmu_ids),
+                ChanpinXiangmu.is_deleted == "N"
+            )
+        ).all()
+
+        # 统计代理记账服务数量
+        daili_jizhang_count = sum(
+            1 for xiangmu in xiangmu_with_fenlei
+            if xiangmu.fenlei and xiangmu.fenlei.chanpin_leixing == "daili_jizhang"
+        )
+
+        if daili_jizhang_count > 1:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="代理记账服务只能选择一个，请检查报价项目"
+            )
+
     @invalidate_xiansuo_cache()
     async def create_baojia(
         self,
@@ -38,6 +73,10 @@ class XiansuoBaojiaService:
         created_by: str
     ) -> XiansuoBaojiaResponse:
         """创建报价"""
+        # 验证代理记账服务数量限制
+        if baojia_data.xiangmu_list:
+            self._validate_daili_jizhang_limit(baojia_data.xiangmu_list)
+
         # 检查线索是否存在
         xiansuo = self.db.query(Xiansuo).filter(
             and_(
@@ -45,7 +84,7 @@ class XiansuoBaojiaService:
                 Xiansuo.is_deleted == "N"
             )
         ).first()
-        
+
         if not xiansuo:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -211,19 +250,23 @@ class XiansuoBaojiaService:
         updated_by: str
     ) -> XiansuoBaojiaResponse:
         """更新报价"""
+        # 验证代理记账服务数量限制
+        if baojia_data.xiangmu_list:
+            self._validate_daili_jizhang_limit(baojia_data.xiangmu_list)
+
         baojia = self.db.query(XiansuoBaojia).filter(
             and_(
                 XiansuoBaojia.id == baojia_id,
                 XiansuoBaojia.is_deleted == "N"
             )
         ).first()
-        
+
         if not baojia:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="报价不存在"
             )
-        
+
         # 检查是否可以编辑
         if baojia.baojia_zhuangtai in ['accepted', 'rejected']:
             raise HTTPException(
@@ -471,12 +514,33 @@ class XiansuoBaojiaService:
         zengzhi_xiangmu = []
         daili_jizhang_xiangmu = []
 
+        import logging
+        logger = logging.getLogger(__name__)
+
+        logger.error(f"=== 处理产品项目 ===")
+        logger.error(f"总项目数: {len(xiangmu_list)}")
+
         for xiangmu in xiangmu_list:
-            xiangmu_option = ChanpinXiangmuOption.model_validate(xiangmu)
-            if xiangmu.fenlei.chanpin_leixing == "zengzhi":
-                zengzhi_xiangmu.append(xiangmu_option)
-            elif xiangmu.fenlei.chanpin_leixing == "daili_jizhang":
-                daili_jizhang_xiangmu.append(xiangmu_option)
+            logger.error(f"\n处理项目: {xiangmu.xiangmu_mingcheng}")
+            logger.error(f"  分类: {xiangmu.fenlei.fenlei_mingcheng if xiangmu.fenlei else 'None'}")
+            logger.error(f"  分类类型: {xiangmu.fenlei.chanpin_leixing if xiangmu.fenlei else 'None'}")
+
+            try:
+                xiangmu_option = ChanpinXiangmuOption.model_validate(xiangmu)
+                logger.error(f"  ✅ 序列化成功")
+
+                if xiangmu.fenlei.chanpin_leixing == "zengzhi":
+                    zengzhi_xiangmu.append(xiangmu_option)
+                    logger.error(f"  ➡️ 添加到增值服务")
+                elif xiangmu.fenlei.chanpin_leixing == "daili_jizhang":
+                    daili_jizhang_xiangmu.append(xiangmu_option)
+                    logger.error(f"  ➡️ 添加到代理记账")
+            except Exception as e:
+                logger.error(f"  ❌ 序列化失败: {e}")
+
+        logger.error(f"\n=== 最终统计 ===")
+        logger.error(f"增值服务项目数: {len(zengzhi_xiangmu)}")
+        logger.error(f"代理记账项目数: {len(daili_jizhang_xiangmu)}")
 
         return ChanpinDataForBaojia(
             zengzhi_fenlei=zengzhi_fenlei,

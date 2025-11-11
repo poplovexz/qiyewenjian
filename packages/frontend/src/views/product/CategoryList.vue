@@ -299,7 +299,7 @@ onMounted(() => {
 
 <style scoped>
 .category-list-container {
-  padding: 20px;
+  padding: 0; /* 移除额外 padding */
 }
 
 .page-header {

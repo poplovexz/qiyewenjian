@@ -42,7 +42,8 @@ class AuditWorkflowService:
                 {
                     "step": step.step_order,
                     "name": step.step_name,
-                    "role": step.approver_role,
+                    "approver_user_id": getattr(step, 'approver_user_id', None),  # 新增：用户ID
+                    "approver_role": getattr(step, 'approver_role', None),  # 保留：角色（兼容）
                     "description": step.description,
                     "expected_time": step.expected_time,
                     "is_required": step.is_required
@@ -159,7 +160,8 @@ class AuditWorkflowService:
                     {
                         "step": step.step_order,
                         "name": step.step_name,
-                        "role": step.approver_role,
+                        "approver_user_id": getattr(step, 'approver_user_id', None),  # 新增：用户ID
+                        "approver_role": getattr(step, 'approver_role', None),  # 保留：角色（兼容）
                         "description": step.description,
                         "expected_time": step.expected_time,
                         "is_required": step.is_required
@@ -206,14 +208,22 @@ class AuditWorkflowService:
             steps = steps_config.get("steps", [])
         except:
             steps = []
-        
+
+        # 解析触发条件获取审核类型
+        try:
+            trigger_config = json.loads(workflow.chufa_tiaojian) if isinstance(workflow.chufa_tiaojian, str) else workflow.chufa_tiaojian
+            audit_type = trigger_config.get("audit_type", "")
+        except:
+            audit_type = ""
+
         # 提取工作流名称
         if not workflow_name:
             workflow_name = workflow.guize_mingcheng.replace("工作流模板-", "") if workflow.guize_mingcheng.startswith("工作流模板-") else workflow.guize_mingcheng
-        
+
         return AuditWorkflowResponse(
             id=workflow.id,
-            name=workflow_name,
+            workflow_name=workflow_name,
+            audit_type=audit_type,
             description=workflow.guize_miaoshu,
             status="active" if workflow.shi_qiyong == "Y" else "inactive",
             steps=steps,

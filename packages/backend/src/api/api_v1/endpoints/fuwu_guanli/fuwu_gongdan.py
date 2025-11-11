@@ -18,7 +18,8 @@ from schemas.fuwu_guanli.fuwu_gongdan_schemas import (
     FuwuGongdanListParams,
     FuwuGongdanStatistics,
     FuwuGongdanRizhiCreate,
-    FuwuGongdanRizhiResponse
+    FuwuGongdanRizhiResponse,
+    FuwuGongdanXiangmuResponse
 )
 
 router = APIRouter()
@@ -180,3 +181,30 @@ def get_gongdan_statistics(
     """获取工单统计信息"""
     service = FuwuGongdanService(db)
     return service.get_gongdan_statistics(kehu_id, zhixing_ren_id)
+
+
+@router.post("/{gongdan_id}/items/{item_id}/assign", response_model=FuwuGongdanXiangmuResponse, summary="分配工单任务项")
+def assign_task_item(
+    gongdan_id: str,
+    item_id: str,
+    zhixing_ren_id: str = Query(..., description="执行人ID"),
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(get_current_user)
+):
+    """分配工单任务项给执行人
+
+    Args:
+        gongdan_id: 工单ID
+        item_id: 任务项ID
+        zhixing_ren_id: 执行人ID
+
+    Returns:
+        更新后的任务项信息
+    """
+    service = FuwuGongdanService(db)
+    return service.assign_task_item(
+        gongdan_id=gongdan_id,
+        item_id=item_id,
+        zhixing_ren_id=zhixing_ren_id,
+        operator_id=current_user.id
+    )

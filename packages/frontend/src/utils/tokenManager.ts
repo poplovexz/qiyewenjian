@@ -202,8 +202,8 @@ class TokenManager {
    * 使用原生fetch刷新token，避免axios拦截器的循环依赖
    */
   private async _refreshTokenWithFetch(refreshToken: string): Promise<any> {
-    const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-    const url = `${baseURL}/api/v1/auth/refresh`
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
+    const url = `${baseURL}/auth/refresh`
 
     const response = await fetch(url, {
       method: 'POST',

@@ -18,13 +18,12 @@ if __name__ == "__main__":
     # 切换到src目录
     os.chdir(src_dir)
 
-    # 导入并运行应用
-    from main import app
+    # 导入uvicorn
     import uvicorn
 
-    # 启动应用
+    # 启动应用（使用导入字符串以支持reload）
     uvicorn.run(
-        app,
+        "main:app",
         host="0.0.0.0",
         port=8000,
         reload=True,

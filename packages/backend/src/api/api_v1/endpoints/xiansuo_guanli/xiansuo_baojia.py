@@ -74,8 +74,29 @@ async def get_product_data_for_baojia(
     current_user: Yonghu = Depends(require_permission("xiansuo:baojia_create"))
 ):
     """获取报价用产品数据"""
+    import logging
+    logger = logging.getLogger(__name__)
+
     service = XiansuoBaojiaService(db)
-    return await service.get_chanpin_data_for_baojia()
+    result = await service.get_chanpin_data_for_baojia()
+
+    # 添加日志
+    logger.error(f"=== API 返回数据 ===")
+    logger.error(f"代理记账分类数量: {len(result.daili_jizhang_fenlei)}")
+    logger.error(f"代理记账项目数量: {len(result.daili_jizhang_xiangmu)}")
+    logger.error(f"增值服务分类数量: {len(result.zengzhi_fenlei)}")
+    logger.error(f"增值服务项目数量: {len(result.zengzhi_xiangmu)}")
+
+    # 打印第一个代理记账项目的详细信息
+    if result.daili_jizhang_xiangmu:
+        first = result.daili_jizhang_xiangmu[0]
+        logger.error(f"第一个代理记账项目: {first.xiangmu_mingcheng}")
+        logger.error(f"  ID: {first.id}")
+        logger.error(f"  分类ID: {first.fenlei_id}")
+    else:
+        logger.error("❌ daili_jizhang_xiangmu 为空！")
+
+    return result
 
 
 @router.get("/xiansuo/{xiansuo_id}", response_model=List[XiansuoBaojiaResponse])

@@ -20,11 +20,11 @@ class RuleTestService:
     def test_rule_trigger(self, rule_id: str, test_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         测试规则触发条件
-        
+
         Args:
             rule_id: 规则ID
             test_data: 测试数据
-            
+
         Returns:
             测试结果
         """
@@ -33,24 +33,34 @@ class RuleTestService:
             ShenheGuize.id == rule_id,
             ShenheGuize.is_deleted == "N"
         ).first()
-        
+
         if not rule:
             raise HTTPException(status_code=404, detail="规则不存在")
-        
+
         # 解析触发条件
         try:
             trigger_conditions = json.loads(rule.chufa_tiaojian) if isinstance(rule.chufa_tiaojian, str) else rule.chufa_tiaojian
         except:
             trigger_conditions = {}
-        
+
+        # 🔍 调试日志
+        print(f"\n=== 规则测试调试 ===")
+        print(f"规则名称: {rule.guize_mingcheng}")
+        print(f"规则类型: {rule.guize_leixing}")
+        print(f"触发条件: {json.dumps(trigger_conditions, ensure_ascii=False)}")
+        print(f"测试数据: {json.dumps(test_data, ensure_ascii=False)}")
+
         # 执行规则测试
         test_result = self._evaluate_trigger_conditions(trigger_conditions, test_data)
-        
+
+        print(f"测试结果: {json.dumps(test_result, ensure_ascii=False)}")
+        print(f"===================\n")
+
         # 如果触发，模拟流程创建
         workflow_preview = None
         if test_result["triggered"]:
             workflow_preview = self._generate_workflow_preview(rule, test_data)
-        
+
         return {
             "rule_id": rule_id,
             "rule_name": rule.guize_mingcheng,
@@ -119,20 +129,155 @@ class RuleTestService:
                 "reason": "无触发条件配置",
                 "conditions_met": []
             }
-        
+
         conditions_met = []
         triggered = False
         reason = ""
-        
-        # 处理不同类型的条件
-        condition_type = conditions.get("type", "")
-        
-        if condition_type == "amount_threshold":
+
+        # 获取条件类型
+        condition_type = conditions.get("condition_type", "")  # 前端格式
+        type_field = conditions.get("type", "")  # 后端格式
+
+        # 🔧 修复：支持前端配置的条件类型（condition_type字段）
+        if condition_type in ["amount_decrease_value", "amount_decrease_percent"]:
+            # 前端配置的合同金额修正规则
+            original_amount = test_data.get("original_amount", 0)
+            new_amount = test_data.get("new_amount", 0)
+            threshold_value = conditions.get("threshold_value", 0)
+            operator = conditions.get("operator", "gte")
+
+            if original_amount <= 0:
+                return {
+                    "triggered": False,
+                    "reason": "原始金额为0或负数，无法计算变更",
+                    "conditions_met": []
+                }
+
+            # 计算金额变化
+            amount_change = original_amount - new_amount
+            decrease_percentage = (amount_change / original_amount) * 100
+
+            # 根据条件类型判断
+            if condition_type == "amount_decrease_value":
+                # 金额减少数值
+                actual_value = amount_change
+                threshold_desc = f"{threshold_value} 元"
+
+                # 判断操作符
+                if operator == "gte" or operator == ">=":
+                    triggered = actual_value >= threshold_value
+                elif operator == "gt" or operator == ">":
+                    triggered = actual_value > threshold_value
+                elif operator == "lte" or operator == "<=":
+                    triggered = actual_value <= threshold_value
+                elif operator == "lt" or operator == "<":
+                    triggered = actual_value < threshold_value
+
+                if triggered:
+                    reason = f"金额从 {original_amount} 降至 {new_amount}，降低 {amount_change:.2f} 元，满足条件（{operator} {threshold_value}）"
+                else:
+                    reason = f"金额从 {original_amount} 降至 {new_amount}，降低 {amount_change:.2f} 元，不满足条件（{operator} {threshold_value}）"
+
+                conditions_met.append({
+                    "type": "amount_decrease_value",
+                    "original_amount": original_amount,
+                    "new_amount": new_amount,
+                    "decrease_amount": amount_change,
+                    "operator": operator,
+                    "threshold": threshold_value,
+                    "met": triggered
+                })
+
+            elif condition_type == "amount_decrease_percent":
+                # 金额减少百分比
+                actual_value = decrease_percentage
+                threshold_desc = f"{threshold_value}%"
+
+                # 判断操作符
+                if operator == "gte" or operator == ">=":
+                    triggered = actual_value >= threshold_value
+                elif operator == "gt" or operator == ">":
+                    triggered = actual_value > threshold_value
+                elif operator == "lte" or operator == "<=":
+                    triggered = actual_value <= threshold_value
+                elif operator == "lt" or operator == "<":
+                    triggered = actual_value < threshold_value
+
+                if triggered:
+                    reason = f"金额从 {original_amount} 降至 {new_amount}，降低 {decrease_percentage:.2f}%，满足条件（{operator} {threshold_value}%）"
+                else:
+                    reason = f"金额从 {original_amount} 降至 {new_amount}，降低 {decrease_percentage:.2f}%，不满足条件（{operator} {threshold_value}%）"
+
+                conditions_met.append({
+                    "type": "amount_decrease_percent",
+                    "original_amount": original_amount,
+                    "new_amount": new_amount,
+                    "decrease_percentage": f"{decrease_percentage:.2f}%",
+                    "operator": operator,
+                    "threshold": f"{threshold_value}%",
+                    "met": triggered
+                })
+
+        # 🔧 支持后端格式的 thresholds 数组（用于兼容旧数据）
+        elif "thresholds" in conditions and not type_field:
+            # 合同金额修正规则格式
+            original_amount = test_data.get("original_amount", 0)
+            new_amount = test_data.get("new_amount", 0)
+
+            if original_amount <= 0:
+                return {
+                    "triggered": False,
+                    "reason": "原始金额为0或负数，无法计算变更",
+                    "conditions_met": []
+                }
+
+            # 计算金额变化
+            amount_change = original_amount - new_amount
+            decrease_percentage = (amount_change / original_amount) * 100
+            decrease_amount = amount_change
+
+            # 检查阈值条件
+            thresholds = conditions.get("thresholds", [])
+            for threshold in thresholds:
+                threshold_percentage = threshold.get("percentage", 0)
+                threshold_amount = threshold.get("amount", 0)
+
+                # 检查是否满足百分比或金额阈值
+                percentage_met = decrease_percentage >= threshold_percentage if threshold_percentage > 0 else True
+                amount_met = decrease_amount >= threshold_amount if threshold_amount > 0 else True
+
+                if percentage_met and amount_met:
+                    triggered = True
+                    reason = f"金额从 {original_amount} 降至 {new_amount}，降低 {decrease_amount:.2f} 元（{decrease_percentage:.2f}%），触发审核"
+                    conditions_met.append({
+                        "type": "contract_amount_change",
+                        "original_amount": original_amount,
+                        "new_amount": new_amount,
+                        "decrease_amount": decrease_amount,
+                        "decrease_percentage": f"{decrease_percentage:.2f}%",
+                        "threshold_percentage": f"{threshold_percentage}%",
+                        "threshold_amount": threshold_amount,
+                        "met": True
+                    })
+                    break
+
+            if not triggered:
+                reason = f"金额从 {original_amount} 降至 {new_amount}，降低 {decrease_amount:.2f} 元（{decrease_percentage:.2f}%），未达到触发阈值"
+                conditions_met.append({
+                    "type": "contract_amount_change",
+                    "original_amount": original_amount,
+                    "new_amount": new_amount,
+                    "decrease_amount": decrease_amount,
+                    "decrease_percentage": f"{decrease_percentage:.2f}%",
+                    "met": False
+                })
+
+        elif condition_type == "amount_threshold":
             # 金额阈值条件
             threshold = conditions.get("threshold", 0)
             amount = test_data.get("amount", 0)
             operator = conditions.get("operator", ">=")
-            
+
             if operator == ">=" and amount >= threshold:
                 triggered = True
                 reason = f"金额 {amount} 大于等于阈值 {threshold}"
@@ -147,20 +292,20 @@ class RuleTestService:
                 reason = f"金额 {amount} 小于阈值 {threshold}"
             else:
                 reason = f"金额 {amount} 不满足条件 {operator} {threshold}"
-            
+
             conditions_met.append({
                 "type": "amount_threshold",
                 "expected": f"{operator} {threshold}",
                 "actual": amount,
                 "met": triggered
             })
-        
+
         elif condition_type == "percentage_change":
             # 百分比变更条件
             threshold = conditions.get("threshold", 0)
             original_amount = test_data.get("original_amount", 0)
             new_amount = test_data.get("new_amount", 0)
-            
+
             if original_amount > 0:
                 change_percentage = abs((new_amount - original_amount) / original_amount) * 100
                 if change_percentage >= threshold:
@@ -168,7 +313,7 @@ class RuleTestService:
                     reason = f"变更百分比 {change_percentage:.2f}% 大于等于阈值 {threshold}%"
                 else:
                     reason = f"变更百分比 {change_percentage:.2f}% 小于阈值 {threshold}%"
-                
+
                 conditions_met.append({
                     "type": "percentage_change",
                     "expected": f">= {threshold}%",
@@ -177,12 +322,12 @@ class RuleTestService:
                 })
             else:
                 reason = "原始金额为0，无法计算变更百分比"
-        
+
         elif condition_type == "quote_approval":
             # 报价审核条件
             thresholds = conditions.get("thresholds", [])
             amount = test_data.get("amount", 0)
-            
+
             for threshold_config in thresholds:
                 threshold_amount = threshold_config.get("amount", 0)
                 if amount >= threshold_amount:
@@ -194,7 +339,7 @@ class RuleTestService:
                         "threshold": threshold_amount,
                         "met": True
                     })
-        
+
         return {
             "triggered": triggered,
             "reason": reason,

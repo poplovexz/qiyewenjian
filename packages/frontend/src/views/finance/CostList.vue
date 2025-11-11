@@ -376,7 +376,7 @@ const fetchData = async () => {
       ...Object.fromEntries(Object.entries(searchForm).filter(([_, v]) => v))
     })
 
-    const response = await fetch(`/api/v1/costs?${params}`)
+    const response = await fetch(`/costs?${params}`)
     const data = await response.json()
     
     if (response.ok) {
@@ -395,7 +395,7 @@ const fetchData = async () => {
 const fetchStatistics = async () => {
   statisticsLoading.value = true
   try {
-    const response = await fetch('/api/v1/costs/statistics/overview')
+    const response = await fetch('/costs/statistics/overview')
     const data = await response.json()
     
     if (response.ok) {
@@ -456,7 +456,7 @@ const handleSubmit = async (row: any) => {
       type: 'warning'
     })
 
-    const response = await fetch(`/api/v1/costs/${row.id}/submit`, {
+    const response = await fetch(`/costs/${row.id}/submit`, {
       method: 'POST'
     })
     
@@ -489,7 +489,7 @@ const confirmAudit = async () => {
 
   auditLoading.value = true
   try {
-    const response = await fetch('/api/v1/costs/audit', {
+    const response = await fetch('/costs/audit', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -532,7 +532,7 @@ const confirmRecord = async () => {
 
   recordLoading.value = true
   try {
-    const response = await fetch('/api/v1/costs/record', {
+    const response = await fetch('/costs/record', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -564,7 +564,7 @@ const handleDelete = async (row: any) => {
       type: 'warning'
     })
 
-    const response = await fetch(`/api/v1/costs/${row.id}`, {
+    const response = await fetch(`/costs/${row.id}`, {
       method: 'DELETE'
     })
     

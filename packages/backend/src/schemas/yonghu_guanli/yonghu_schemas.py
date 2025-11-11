@@ -32,24 +32,7 @@ class YonghuUpdate(BaseModel):
     remark: Optional[str] = Field(None, max_length=500, description="备注")
 
 
-class YonghuResponse(YonghuBase):
-    """用户响应模式"""
-    id: str
-    denglu_cishu: int = Field(description="登录次数")
-    zuihou_denglu: Optional[datetime] = Field(None, description="最后登录时间")
-    created_at: datetime
-    updated_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
-
-
-class YonghuList(BaseModel):
-    """用户列表响应模式"""
-    items: List[YonghuResponse]
-    total: int
-    page: int
-    size: int
 
 
 # 角色相关模式
@@ -145,11 +128,11 @@ class YonghuResponse(YonghuBase):
     id: str
     zhuangtai: str
     zuihou_denglu: Optional[datetime] = None
-    denglu_cishu: str
+    denglu_cishu: Optional[str] = "0"  # 允许为None，默认值为"0"
     created_at: datetime
     updated_at: datetime
     roles: List[dict] = []
-    
+
     class Config:
         from_attributes = True
 

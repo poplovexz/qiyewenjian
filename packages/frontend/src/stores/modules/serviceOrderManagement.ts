@@ -39,6 +39,12 @@ export interface ServiceOrder {
   rizhi_list?: ServiceOrderLog[]
 }
 
+export interface ZhixingRenInfo {
+  id: string
+  yonghu_ming: string
+  xingming: string
+}
+
 export interface ServiceOrderItem {
   id: string
   gongdan_id: string
@@ -48,6 +54,8 @@ export interface ServiceOrderItem {
   paixu: number
   jihua_gongshi?: number
   shiji_gongshi?: number
+  zhixing_ren_id?: string
+  zhixing_ren?: ZhixingRenInfo
   kaishi_shijian?: string
   jieshu_shijian?: string
   beizhu?: string
@@ -156,7 +164,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const fetchServiceOrders = async (params: ServiceOrderListParams) => {
     loading.value = true
     try {
-      const response = await request.get('/api/v1/service-orders/', { params })
+      const response = await request.get('/service-orders/', { params })
       serviceOrders.value = response.data.items
       total.value = response.data.total
       currentPage.value = response.data.page
@@ -174,9 +182,10 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const fetchServiceOrderDetail = async (id: string) => {
     loading.value = true
     try {
-      const response = await request.get(`/api/v1/service-orders/${id}`)
-      currentServiceOrder.value = response.data
-      return response.data
+      const response = await request.get(`/service-orders/${id}`)
+      // 响应拦截器已经返回了 response.data，所以这里直接使用 response
+      currentServiceOrder.value = response
+      return response
     } catch (error) {
       console.error('获取服务工单详情失败:', error)
       ElMessage.error('获取服务工单详情失败')
@@ -190,7 +199,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const createServiceOrder = async (data: ServiceOrderCreateData) => {
     loading.value = true
     try {
-      const response = await request.post('/api/v1/service-orders/', data)
+      const response = await request.post('/service-orders/', data)
       ElMessage.success('创建服务工单成功')
       return response.data
     } catch (error) {
@@ -206,7 +215,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const createServiceOrderFromContract = async (hetongId: string) => {
     loading.value = true
     try {
-      const response = await request.post(`/api/v1/service-orders/from-contract/${hetongId}`)
+      const response = await request.post(`/service-orders/from-contract/${hetongId}`)
       ElMessage.success('基于合同创建服务工单成功')
       return response.data
     } catch (error) {
@@ -222,7 +231,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const updateServiceOrder = async (id: string, data: Partial<ServiceOrderCreateData>) => {
     loading.value = true
     try {
-      const response = await request.put(`/api/v1/service-orders/${id}`, data)
+      const response = await request.put(`/service-orders/${id}`, data)
       ElMessage.success('更新服务工单成功')
       return response.data
     } catch (error) {
@@ -238,12 +247,18 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const assignServiceOrder = async (id: string, zhixingRenId: string, fenpeiBeizhu?: string) => {
     loading.value = true
     try {
-      const response = await request.post(`/api/v1/service-orders/${id}/assign`, {
-        zhixing_ren_id: zhixingRenId,
-        fenpei_beizhu: fenpeiBeizhu
-      })
+      // 后端API使用查询参数，不是请求体
+      const params: any = {
+        zhixing_ren_id: zhixingRenId
+      }
+      if (fenpeiBeizhu) {
+        params.fenpei_beizhu = fenpeiBeizhu
+      }
+
+      const response = await request.post(`/service-orders/${id}/assign`, null, { params })
       ElMessage.success('分配工单成功')
-      return response.data
+      // 响应拦截器已经返回了 response.data，所以这里直接使用 response
+      return response
     } catch (error) {
       console.error('分配工单失败:', error)
       ElMessage.error('分配工单失败')
@@ -257,7 +272,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const startServiceOrder = async (id: string) => {
     loading.value = true
     try {
-      const response = await request.post(`/api/v1/service-orders/${id}/start`)
+      const response = await request.post(`/service-orders/${id}/start`)
       ElMessage.success('开始工单成功')
       return response.data
     } catch (error) {
@@ -273,12 +288,18 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const completeServiceOrder = async (id: string, wanchengQingkuang: string, jiaofeiWenjian?: string) => {
     loading.value = true
     try {
-      const response = await request.post(`/api/v1/service-orders/${id}/complete`, {
-        wancheng_qingkuang: wanchengQingkuang,
-        jiaofei_wenjian: jiaofeiWenjian
-      })
+      // 后端API使用查询参数，不是请求体
+      const params: any = {
+        wancheng_qingkuang: wanchengQingkuang
+      }
+      if (jiaofeiWenjian) {
+        params.jiaofei_wenjian = jiaofeiWenjian
+      }
+
+      const response = await request.post(`/service-orders/${id}/complete`, null, { params })
       ElMessage.success('完成工单成功')
-      return response.data
+      // 响应拦截器已经返回了 response.data，所以这里直接使用 response
+      return response
     } catch (error) {
       console.error('完成工单失败:', error)
       ElMessage.error('完成工单失败')
@@ -292,7 +313,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const cancelServiceOrder = async (id: string, cancelReason: string) => {
     loading.value = true
     try {
-      const response = await request.post(`/api/v1/service-orders/${id}/cancel`, {
+      const response = await request.post(`/service-orders/${id}/cancel`, {
         cancel_reason: cancelReason
       })
       ElMessage.success('取消工单成功')
@@ -310,7 +331,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const addServiceOrderComment = async (id: string, comment: string, fujianLujing?: string) => {
     loading.value = true
     try {
-      const response = await request.post(`/api/v1/service-orders/${id}/comments`, {
+      const response = await request.post(`/service-orders/${id}/comments`, {
         caozuo_neirong: comment,
         fujian_lujing: fujianLujing
       })
@@ -325,6 +346,30 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
     }
   }
 
+  // 分配任务项
+  const assignTaskItem = async (gongdanId: string, itemId: string, zhixingRenId: string) => {
+    loading.value = true
+    try {
+      const response = await request.post(
+        `/service-orders/${gongdanId}/items/${itemId}/assign`,
+        null,
+        {
+          params: {
+            zhixing_ren_id: zhixingRenId
+          }
+        }
+      )
+      ElMessage.success('分配任务项成功')
+      return response
+    } catch (error) {
+      console.error('分配任务项失败:', error)
+      ElMessage.error('分配任务项失败')
+      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+
   // 获取统计信息
   const fetchStatistics = async (kehuId?: string, zhixingRenId?: string) => {
     loading.value = true
@@ -333,7 +378,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       if (kehuId) params.kehu_id = kehuId
       if (zhixingRenId) params.zhixing_ren_id = zhixingRenId
       
-      const response = await request.get('/api/v1/service-orders/statistics/overview', { params })
+      const response = await request.get('/service-orders/statistics/overview', { params })
       statistics.value = response.data
       return response.data
     } catch (error) {
@@ -382,6 +427,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
     completeServiceOrder,
     cancelServiceOrder,
     addServiceOrderComment,
+    assignTaskItem,
     fetchStatistics,
     resetState
   }

@@ -121,7 +121,8 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
   const fetchAuditWorkflowById = async (id: string) => {
     try {
       loading.value = true
-      const response = await auditWorkflowApi.getById(id)
+      // 修复：使用 getInstanceById 获取审核流程实例详情，而不是工作流模板详情
+      const response = await auditWorkflowApi.getInstanceById(id)
       currentAuditWorkflow.value = response
       return response
     } catch (error) {
@@ -136,8 +137,9 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
   const fetchMyPendingAudits = async () => {
     try {
       const response = await auditWorkflowApi.getMyPendingAudits()
-      // 修复：存储数组而不是整个分页响应
-      pendingAudits.value = response.items || []
+      // 修复：后端返回的是纯数组，不是分页对象
+      // 兼容两种格式：纯数组或分页对象 { items, total }
+      pendingAudits.value = Array.isArray(response) ? response : (response.items || [])
       return response
     } catch (error) {
       console.error('获取待审核任务失败:', error)
@@ -149,34 +151,30 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
   const processAuditAction = async (taskId: string, action: string, data: any) => {
     try {
       loading.value = true
-      // 修复：使用正确的API路径，根据操作类型调用不同的接口
-      let response
+
+      console.log('审核操作参数:', { taskId, action, data })
+
+      // 使用axios实例（包含认证token）
+      let result
       if (action === 'approve') {
-        response = await fetch(`/api/v1/audit-records/${taskId}/approve`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        })
+        console.log('发送审核通过请求:', `/audit-records/${taskId}/approve`)
+        result = await auditRecordApi.approve(taskId, data)
       } else if (action === 'reject') {
-        response = await fetch(`/api/v1/audit-records/${taskId}/reject`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        })
+        console.log('发送审核拒绝请求:', `/audit-records/${taskId}/reject`)
+        result = await auditRecordApi.reject(taskId, data)
       }
 
-      if (!response?.ok) {
-        throw new Error('审核操作失败')
-      }
+      console.log('审核操作响应:', result)
 
       // 更新待审核任务列表
       await fetchMyPendingAudits()
 
       ElMessage.success('审核操作处理成功')
-      return await response.json()
-    } catch (error) {
+      return result
+    } catch (error: any) {
       console.error('处理审核操作失败:', error)
-      ElMessage.error('处理审核操作失败')
+      console.error('错误详情:', error.response?.data)
+      ElMessage.error(error.response?.data?.detail || '处理审核操作失败')
       throw error
     } finally {
       loading.value = false

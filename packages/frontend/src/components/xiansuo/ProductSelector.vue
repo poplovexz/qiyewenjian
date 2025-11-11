@@ -40,19 +40,54 @@
             v-for="product in filteredProducts"
             :key="product.id"
             class="product-card"
-            :class="{ selected: selectedProducts.has(product.id) }"
+            :class="{
+              selected: selectedProducts.has(product.id),
+              'already-in-quote': isProductInQuote(product.id),
+              'daili-jizhang': isDailiJizhangProduct(product.id)
+            }"
             @click="toggleProduct(product)"
           >
             <div class="product-header">
-              <div class="product-name">{{ product.xiangmu_mingcheng }}</div>
+              <div class="product-name">
+                {{ product.xiangmu_mingcheng }}
+                <el-tag
+                  v-if="isDailiJizhangPackage(product.id)"
+                  type="warning"
+                  size="small"
+                  style="margin-left: 8px"
+                >
+                  代理记账套餐
+                </el-tag>
+                <el-tag
+                  v-else-if="isDailiJizhangProduct(product.id)"
+                  type="warning"
+                  size="small"
+                  style="margin-left: 8px"
+                >
+                  代理记账
+                </el-tag>
+                <el-tag
+                  v-if="isProductInQuote(product.id)"
+                  type="info"
+                  size="small"
+                  style="margin-left: 8px"
+                >
+                  已在报价单中
+                </el-tag>
+              </div>
               <el-checkbox
                 :model-value="selectedProducts.has(product.id)"
+                :disabled="isProductInQuote(product.id)"
                 @change="toggleProduct(product)"
                 @click.stop
               />
             </div>
-            
-            <div v-if="product.xiangmu_bianma" class="product-desc">
+
+            <div v-if="product.xiangmu_beizhu" class="product-desc">
+              {{ product.xiangmu_beizhu }}
+            </div>
+
+            <div v-else-if="product.xiangmu_bianma" class="product-desc">
               编码：{{ product.xiangmu_bianma }}
             </div>
 
@@ -97,12 +132,17 @@ import { Search } from '@element-plus/icons-vue'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
 import type { ChanpinXiangmuOption } from '@/types/xiansuo'
 
+console.log('🎨 ProductSelector 组件脚本已加载')
+
 // Props
 interface Props {
   visible: boolean
+  selectedServices?: ChanpinXiangmuOption[]  // 已选择的服务列表
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  selectedServices: () => []
+})
 
 // Emits
 const emit = defineEmits<{
@@ -135,16 +175,79 @@ const allProducts = computed<ChanpinXiangmuOption[]>(() => {
   ]
 })
 
+// 代理记账套餐数据（临时方案，后续需要从后端API获取）
+const dailiJizhangPackages = ref<ChanpinXiangmuOption[]>([
+  {
+    id: 'package_1',
+    xiangmu_mingcheng: '财税服务套餐',
+    xiangmu_bianma: 'taocan_1',
+    fenlei_id: '',
+    yewu_baojia: 2000,
+    baojia_danwei: '月',
+    banshi_tianshu: 0,
+    xiangmu_beizhu: '为小微企业提供全方位财税服务的完整套餐',
+    paixu: 1,
+    zhuangtai: 'active'
+  },
+  {
+    id: 'package_2',
+    xiangmu_mingcheng: '小微企业记账套餐',
+    xiangmu_bianma: 'taocan_2',
+    fenlei_id: '',
+    yewu_baojia: 800,
+    baojia_danwei: '月',
+    banshi_tianshu: 0,
+    xiangmu_beizhu: '专为小微企业设计的基础记账服务套餐',
+    paixu: 2,
+    zhuangtai: 'active'
+  },
+  {
+    id: 'package_3',
+    xiangmu_mingcheng: '一般纳税人记账套餐',
+    xiangmu_bianma: 'taocan_3',
+    fenlei_id: '',
+    yewu_baojia: 1500,
+    baojia_danwei: '月',
+    banshi_tianshu: 0,
+    xiangmu_beizhu: '一般纳税人企业专业记账服务套餐',
+    paixu: 3,
+    zhuangtai: 'active'
+  },
+  {
+    id: 'package_4',
+    xiangmu_mingcheng: '高端财务管理套餐',
+    xiangmu_bianma: 'taocan_4',
+    fenlei_id: '',
+    yewu_baojia: 3000,
+    baojia_danwei: '月',
+    banshi_tianshu: 0,
+    xiangmu_beizhu: '大中型企业全套财务管理服务套餐',
+    paixu: 4,
+    zhuangtai: 'active'
+  }
+])
+
 const filteredProducts = computed(() => {
+  console.log('🔍 filteredProducts 计算中...')
+  console.log('  activeCategory:', activeCategory.value)
+  console.log('  productData 是否存在:', !!productData.value)
+
   let products: ChanpinXiangmuOption[]
   if (!productData.value) {
+    console.log('  ❌ productData 为 null/undefined')
     products = []
   } else if (activeCategory.value === 'daizang') {
-    products = productData.value.daili_jizhang_xiangmu || []
+    // 代理记账分类：只显示套餐，不显示单独的产品项目
+    products = dailiJizhangPackages.value
+    console.log('  📦 代理记账分类，显示套餐数量:', products.length)
+    console.log('  📦 代理记账套餐列表:', products)
   } else if (activeCategory.value === 'zengzhi') {
     products = productData.value.zengzhi_xiangmu || []
+    console.log('  📦 增值服务分类，产品数量:', products.length)
   } else {
-    products = allProducts.value
+    // 全部服务：显示套餐 + 增值服务
+    products = [...dailiJizhangPackages.value, ...(productData.value.zengzhi_xiangmu || [])]
+    console.log('  📦 全部服务分类，产品数量:', products.length)
   }
 
   if (searchKeyword.value) {
@@ -153,17 +256,30 @@ const filteredProducts = computed(() => {
       product.xiangmu_mingcheng.toLowerCase().includes(keyword) ||
       product.xiangmu_bianma.toLowerCase().includes(keyword)
     )
+    console.log('  🔍 搜索后产品数量:', products.length)
   }
 
+  console.log('  ✅ 最终返回产品数量:', products.length)
   return products
 })
 
 // 方法
 const loadProductData = async () => {
-  if (productData.value) return
+  // 强制重新加载，不使用缓存
   try {
     loading.value = true
     await xiansuoStore.fetchProductData()
+
+    // 验证数据是否加载成功
+    if (!productData.value) {
+      console.error('产品数据加载后仍为空')
+      ElMessage.error('产品数据加载失败，请刷新页面重试')
+    } else {
+      console.log('产品数据加载成功:', {
+        代理记账项目: productData.value.daili_jizhang_xiangmu?.length || 0,
+        增值服务项目: productData.value.zengzhi_xiangmu?.length || 0
+      })
+    }
   } catch (error) {
     console.error('加载产品数据失败:', error)
     ElMessage.error('加载服务项目失败')
@@ -180,10 +296,57 @@ const handleSearch = () => {
   // 搜索逻辑在计算属性中处理
 }
 
+const isDailiJizhangPackage = (productId: string): boolean => {
+  // 检查是否是代理记账套餐
+  return dailiJizhangPackages.value.some(p => p.id === productId)
+}
+
+const isDailiJizhangProduct = (productId: string): boolean => {
+  // 检查是否是代理记账套餐
+  const isPackage = dailiJizhangPackages.value.some(p => p.id === productId)
+  if (isPackage) return true
+
+  // 检查是否是代理记账产品项目
+  return productData.value?.daili_jizhang_xiangmu?.some(p => p.id === productId) || false
+}
+
+const isProductInQuote = (productId: string): boolean => {
+  return props.selectedServices?.some(service => service.id === productId) || false
+}
+
 const toggleProduct = (product: ChanpinXiangmuOption) => {
   if (selectedProducts.value.has(product.id)) {
     selectedProducts.value.delete(product.id)
   } else {
+    // 检查是否是代理记账服务（包括套餐和单项）
+    const isDailiJizhangPackage = dailiJizhangPackages.value.some(p => p.id === product.id)
+    const isDailiJizhangItem = productData.value?.daili_jizhang_xiangmu?.some(p => p.id === product.id)
+    const isDailiJizhang = isDailiJizhangPackage || isDailiJizhangItem
+
+    if (isDailiJizhang) {
+      // 检查已选择的服务中是否已经有代理记账服务（套餐或单项）
+      const hasExistingDailiJizhang = Array.from(selectedProducts.value).some(selectedId => {
+        const isPackage = dailiJizhangPackages.value.some(p => p.id === selectedId)
+        const isItem = productData.value?.daili_jizhang_xiangmu?.some(p => p.id === selectedId)
+        return isPackage || isItem
+      })
+
+      // 检查已经在报价单中的服务是否包含代理记账
+      const hasExistingDailiJizhangInQuote = props.selectedServices?.some(service => {
+        const isPackage = dailiJizhangPackages.value.some(p => p.id === service.id)
+        const isItem = productData.value?.daili_jizhang_xiangmu?.some(p => p.id === service.id)
+        return isPackage || isItem
+      })
+
+      if (hasExistingDailiJizhang || hasExistingDailiJizhangInQuote) {
+        ElMessage.warning({
+          message: '代理记账套餐只能选择一个，请先取消已选择的代理记账套餐',
+          duration: 3000
+        })
+        return
+      }
+    }
+
     selectedProducts.value.add(product.id)
   }
 }
@@ -205,15 +368,19 @@ const handleClose = () => {
 }
 
 // 监听器
-watch(() => props.visible, (visible) => {
+watch(() => props.visible, (visible, oldVisible) => {
+  console.log('👁️ ProductSelector visible 变化:', { 新值: visible, 旧值: oldVisible })
   if (visible) {
+    console.log('📂 对话框打开，开始加载产品数据')
     void loadProductData()
   }
-})
+}, { immediate: true })
 
 // 生命周期
 onMounted(() => {
+  console.log('🎬 ProductSelector 组件已挂载, visible:', props.visible)
   if (props.visible) {
+    console.log('📂 组件挂载时对话框已打开，加载产品数据')
     void loadProductData()
   }
 })
@@ -264,6 +431,21 @@ onMounted(() => {
 .product-card.selected {
   border-color: #409EFF;
   background-color: #F0F9FF;
+}
+
+.product-card.already-in-quote {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #F5F7FA;
+}
+
+.product-card.already-in-quote:hover {
+  border-color: #DCDFE6;
+  box-shadow: none;
+}
+
+.product-card.daili-jizhang {
+  border-left: 3px solid #E6A23C;
 }
 
 .product-header {

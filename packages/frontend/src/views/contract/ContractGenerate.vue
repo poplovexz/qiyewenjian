@@ -297,7 +297,6 @@ import { ElMessage } from 'element-plus'
 import { ArrowLeft, Warning } from '@element-plus/icons-vue'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
 import { useContractManagementStore } from '@/stores/modules/contractManagement'
-import { useAuditStore } from '@/stores/modules/audit'
 import { contractApi } from '@/api/modules/contract'
 import type { XiansuoBaojiaDetail } from '@/types/xiansuo'
 import type { ContractParty } from '@/api/modules/contract'
@@ -306,7 +305,6 @@ const route = useRoute()
 const router = useRouter()
 const xiansuoStore = useXiansuoStore()
 const contractStore = useContractManagementStore()
-const auditStore = useAuditStore()
 
 // 响应式数据
 const quoteInfo = ref<XiansuoBaojiaDetail | null>(null)
@@ -594,9 +592,10 @@ const handlePreview = async () => {
       }
 
       // 验证必要的客户信息
-      const kehuId = quoteInfo.value?.xiansuo_info?.kehu_id || quoteInfo.value?.xiansuo_info?.id
+      // 优先使用kehu_id，如果没有则使用线索ID（但会在后端报错）
+      const kehuId = quoteInfo.value?.xiansuo_info?.kehu_id
       if (!kehuId) {
-        throw new Error('客户信息不完整，无法预览合同')
+        throw new Error('该线索尚未关联客户，无法预览合同。请先完善客户信息。')
       }
 
       const previewData = {
@@ -624,9 +623,9 @@ const handlePreview = async () => {
       }
 
       // 验证必要的客户信息
-      const kehuId = quoteInfo.value?.xiansuo_info?.kehu_id || quoteInfo.value?.xiansuo_info?.id
+      const kehuId = quoteInfo.value?.xiansuo_info?.kehu_id
       if (!kehuId) {
-        throw new Error('客户信息不完整，无法预览合同')
+        throw new Error('该线索尚未关联客户，无法预览合同。请先完善客户信息。')
       }
 
       const previewData = {
@@ -704,33 +703,22 @@ const showAuditDialog = () => {
 const handleSubmitAudit = async () => {
   try {
     auditLoading.value = true
-    
+
     if (!quoteInfo.value) {
       ElMessage.error('报价信息不存在')
       return
     }
-    
-    // 提交审核申请
-    const auditData = {
-      audit_type: 'hetong_jine_xiuzheng',
-      related_id: quoteInfo.value.id,
-      trigger_data: {
-        original_amount: quoteInfo.value.zongji_jine,
-        new_amount: generateForm.daliJizhangPrice || generateForm.zengzhiFuwuPrice,
-        change_reason: generateForm.daliJizhangReason || generateForm.zengzhiFuwuReason,
-        contract_types: generateForm.contractTypes
-      }
-    }
-    
-    await auditStore.submitAudit(auditData)
-    
-    ElMessage.success('审核申请已提交，请等待审核结果')
+
+    // 关闭审核对话框
     auditDialogVisible.value = false
-    handleBack()
-    
-  } catch (error) {
+
+    // 直接调用合同生成API，后端会自动触发审核流程
+    await generateContracts()
+
+  } catch (error: any) {
     console.error('提交审核失败:', error)
-    ElMessage.error('提交审核失败')
+    const errorMsg = error?.response?.data?.detail || error?.message || '提交审核失败'
+    ElMessage.error(String(errorMsg))
   } finally {
     auditLoading.value = false
   }
@@ -765,6 +753,10 @@ const generateContracts = async () => {
         price_change_reason: generateForm.zengzhiFuwuReason
       } : null
     }
+
+    // 调试：打印发送的数据
+    console.log('发送的合同生成数据:', generateData)
+    console.log('代理记账配置:', generateData.daili_jizhang_config)
 
     // 调用新的合同生成API
     const response = await contractApi.generateContracts(generateData)

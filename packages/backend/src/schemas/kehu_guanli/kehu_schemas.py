@@ -37,6 +37,10 @@ class KehuBase(BaseModel):
     @classmethod
     def validate_credit_code(cls, v: str) -> str:
         """验证统一社会信用代码格式"""
+        # 允许临时信用代码（TEMP开头）
+        if v.startswith('TEMP'):
+            return v
+        # 验证正式的统一社会信用代码格式
         if not re.match(r'^[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}$', v):
             raise ValueError('统一社会信用代码格式不正确')
         return v

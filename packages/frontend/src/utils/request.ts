@@ -9,44 +9,66 @@ import router from '@/router'
 
 // 创建 axios 实例
 const instance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1',
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache'
   }
 })
 
 // 请求拦截器
 instance.interceptors.request.use(
   async (config) => {
-    // 🔧 修复死锁：检查是否是刷新token请求，避免循环依赖
-    if (config.url?.includes('/auth/refresh')) {
-      // 刷新token请求不需要等待初始化，直接放行
+    const timestamp = new Date().toISOString()
+    console.log(`🌐 [${timestamp}] 请求拦截器:`, config.url)
+
+    // 🔧 修复死锁：检查是否是刷新token或登录请求，避免循环依赖和超时
+    const isAuthRequest = config.url?.includes('/auth/refresh') || config.url?.includes('/auth/login')
+    console.log(`  🔍 URL检查: ${config.url}`)
+    console.log(`  🔍 是否认证请求: ${isAuthRequest}`)
+
+    if (isAuthRequest) {
+      console.log('  ✅ 认证相关请求，直接放行（跳过waitForAuthInit）')
+      // 认证相关请求不需要等待初始化，直接放行
       return config
     }
 
     // 等待认证初始化完成
+    console.log('  ⏳ 等待认证初始化...')
+    const initStart = Date.now()
     await tokenManager.waitForAuthInit()
+    const initDuration = Date.now() - initStart
+    console.log(`  ✅ 认证初始化完成 (耗时: ${initDuration}ms)`)
 
     // 🔧 优化：只在特定条件下执行预防性刷新，避免过度刷新
     // 1. 不是登录请求
     // 2. 不是已经在刷新中
     // 3. 确实需要刷新
-    if (!config.url?.includes('/auth/login') && !tokenManager.isTokenRefreshing) {
+    if (!tokenManager.isTokenRefreshing) {
+      console.log('  🔄 执行预防性刷新检查...')
+      const refreshStart = Date.now()
       await tokenManager.preventiveRefresh()
+      const refreshDuration = Date.now() - refreshStart
+      console.log(`  ✅ 预防性刷新检查完成 (耗时: ${refreshDuration}ms)`)
     }
 
     const authStore = useAuthStore()
     const token = authStore.accessToken || localStorage.getItem('access_token')
 
     if (token) {
+      console.log('  🔑 添加 Authorization header')
       config.headers.Authorization = `Bearer ${token}`
+    } else {
+      console.log('  ⚠️ 没有 Token')
     }
 
+    console.log('  ✅ 请求拦截器完成，发送请求')
     return config
   },
   (error) => {
-    console.error('请求错误:', error)
+    console.error('❌ 请求拦截器错误:', error)
     return Promise.reject(error)
   }
 )
@@ -58,13 +80,22 @@ instance.interceptors.response.use(
   },
   async (error) => {
     const authStore = useAuthStore()
-    
+
     if (error.response) {
-      const { status, data } = error.response
-      
+      const { status, data, config } = error.response
+
       switch (status) {
         case 401:
-          // 未授权，使用Token管理器处理
+          // 🔧 修复：登录和刷新token请求返回401是正常的，不应该尝试刷新token
+          const isAuthRequest = config.url?.includes('/auth/login') || config.url?.includes('/auth/refresh')
+
+          if (isAuthRequest) {
+            console.log('⚠️ 认证请求返回401（用户名密码错误或token无效），直接返回错误')
+            // 登录失败或刷新token失败，直接返回错误，不尝试刷新
+            return Promise.reject(error)
+          }
+
+          // 其他请求返回401，尝试刷新token
           console.log('🔄 收到401错误，使用Token管理器处理')
 
           try {

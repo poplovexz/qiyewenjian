@@ -192,7 +192,7 @@ const handleSubmit = async () => {
     loading.value = true
     
     // 调用API更新角色状态
-    const response = await fetch(`/api/v1/roles/${props.role.id}/status`, {
+    const response = await fetch(`/roles/${props.role.id}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

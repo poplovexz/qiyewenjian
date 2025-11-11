@@ -19,12 +19,13 @@ class ContractGenerateRequest(BaseModel):
     """合同生成请求模型"""
     baojia_id: str = Field(..., description="报价ID")
     contract_types: List[str] = Field(..., description="合同类型列表")
-    daili_jizhang_config: Dict[str, Any] = Field(None, description="代理记账合同配置")
-    zengzhi_fuwu_config: Dict[str, Any] = Field(None, description="增值服务合同配置")
+    daili_jizhang_config: Optional[Dict[str, Any]] = Field(None, description="代理记账合同配置")
+    zengzhi_fuwu_config: Optional[Dict[str, Any]] = Field(None, description="增值服务合同配置")
 
 
 class ContractTypeConfig(BaseModel):
     """合同类型配置"""
+    template_id: Optional[str] = Field(None, description="合同模板ID")
     price: float = Field(..., description="合同价格")
     count: int = Field(1, description="合同数量")
     party_id: Optional[str] = Field(None, description="乙方主体ID")
@@ -46,14 +47,18 @@ async def generate_contracts(
 ):
     """
     基于报价生成合同
-    
+
     支持生成多种类型的合同：
     - 代理记账合同
     - 增值服务合同
-    
+
     如果价格调整超过阈值，会自动触发审核流程
     """
     try:
+        # 调试：打印接收到的数据
+        print(f"接收到的合同生成请求: {request.model_dump()}")
+        print(f"代理记账配置: {request.daili_jizhang_config}")
+        print(f"增值服务配置: {request.zengzhi_fuwu_config}")
         service = HetongGenerateService(db)
         workflow_engine = ShenheWorkflowEngine(db)
         
@@ -69,91 +74,105 @@ async def generate_contracts(
             
             # 检查是否需要审核
             price_diff = abs(config.price - float(quote.zongji_jine))
-            if price_diff > 0:
-                # 触发审核流程
+            needs_audit = price_diff > 0
+
+            # 生成合同（根据是否需要审核设置不同的初始状态）
+            initial_status = "pending" if needs_audit else "active"
+
+            for i in range(config.count):
+                contract_data = {
+                    "kehu_id": quote.xiansuo.kehu_id,
+                    "baojia_id": request.baojia_id,
+                    "hetong_moban_id": service.get_template_by_type("daili_jizhang"),
+                    "yifang_zhuti_id": config.party_id,
+                    "hetong_mingcheng": f"{quote.xiansuo.gongsi_mingcheng}代理记账服务合同{f'({i+1})' if i > 0 else ''}",
+                    "hetong_jine": config.price,
+                    "hetong_leixing": "daili_jizhang",
+                    "price_change_reason": config.price_change_reason
+                }
+
+                contract = service.create_contract(contract_data, current_user.id, initial_status)
+                generated_contracts.append(contract)
+
+            # 如果需要审核，创建审核流程
+            if needs_audit:
+                # 触发审核流程（关联到生成的合同）
                 audit_data = {
                     "original_amount": float(quote.zongji_jine),
                     "new_amount": config.price,
                     "price_difference": price_diff,
                     "change_reason": config.price_change_reason,
-                    "contract_type": "daili_jizhang"
+                    "contract_type": "daili_jizhang",
+                    "hetong_id": contract.id  # 关联合同ID
                 }
-                
+
                 workflow_id = workflow_engine.trigger_audit(
                     audit_type="hetong_jine_xiuzheng",
-                    related_id=request.baojia_id,
+                    related_id=contract.id,  # 使用合同ID而不是报价ID
                     trigger_data=audit_data,
                     applicant_id=current_user.id
                 )
-                
+
                 if workflow_id:
                     audit_workflows.append({
                         "workflow_id": workflow_id,
+                        "contract_id": contract.id,
                         "contract_type": "daili_jizhang",
                         "reason": "价格调整需要审核"
                     })
-                else:
-                    # 直接生成合同
-                    for i in range(config.count):
-                        contract_data = {
-                            "kehu_id": quote.xiansuo.kehu_id,
-                            "baojia_id": request.baojia_id,
-                            "hetong_moban_id": service.get_template_by_type("daili_jizhang"),
-                            "yifang_zhuti_id": config.party_id,
-                            "hetong_mingcheng": f"{quote.xiansuo.gongsi_mingcheng}代理记账服务合同{f'({i+1})' if i > 0 else ''}",
-                            "hetong_jine": config.price,
-                            "hetong_leixing": "daili_jizhang",
-                            "price_change_reason": config.price_change_reason
-                        }
-                        
-                        contract = service.create_contract(contract_data, current_user.id)
-                        generated_contracts.append(contract)
         
         # 生成增值服务合同
         if "zengzhi_fuwu" in request.contract_types and request.zengzhi_fuwu_config:
             config = ContractTypeConfig(**request.zengzhi_fuwu_config)
-            
+
             # 检查是否需要审核
             price_diff = abs(config.price - float(quote.zongji_jine))
-            if price_diff > 0:
-                # 触发审核流程
+            needs_audit = price_diff > 0
+
+            # 生成合同（根据是否需要审核设置不同的初始状态）
+            initial_status = "pending" if needs_audit else "active"
+
+            for i in range(config.count):
+                contract_data = {
+                    "kehu_id": quote.xiansuo.kehu_id,
+                    "baojia_id": request.baojia_id,
+                    "hetong_moban_id": service.get_template_by_type("zengzhi_fuwu"),
+                    "yifang_zhuti_id": config.party_id,
+                    "hetong_mingcheng": f"{quote.xiansuo.gongsi_mingcheng}增值服务合同{f'({i+1})' if i > 0 else ''}",
+                    "hetong_jine": config.price,
+                    "hetong_leixing": "zengzhi_fuwu",
+                    "price_change_reason": config.price_change_reason
+                }
+
+                contract = service.create_contract(contract_data, current_user.id, initial_status)
+                generated_contracts.append(contract)
+
+            # 如果需要审核，创建审核流程
+            if needs_audit:
+                # 触发审核流程（关联到生成的合同）
                 audit_data = {
                     "original_amount": float(quote.zongji_jine),
                     "new_amount": config.price,
                     "price_difference": price_diff,
                     "change_reason": config.price_change_reason,
-                    "contract_type": "zengzhi_fuwu"
+                    "contract_type": "zengzhi_fuwu",
+                    "hetong_id": contract.id  # 关联合同ID
                 }
-                
+
                 workflow_id = workflow_engine.trigger_audit(
                     audit_type="hetong_jine_xiuzheng",
-                    related_id=request.baojia_id,
+                    related_id=contract.id,  # 使用合同ID而不是报价ID
                     trigger_data=audit_data,
                     applicant_id=current_user.id
                 )
-                
+
                 if workflow_id:
                     audit_workflows.append({
                         "workflow_id": workflow_id,
+                        "contract_id": contract.id,
                         "contract_type": "zengzhi_fuwu",
                         "reason": "价格调整需要审核"
                     })
-                else:
-                    # 直接生成合同
-                    for i in range(config.count):
-                        contract_data = {
-                            "kehu_id": quote.xiansuo.kehu_id,
-                            "baojia_id": request.baojia_id,
-                            "hetong_moban_id": service.get_template_by_type("zengzhi_fuwu"),
-                            "yifang_zhuti_id": config.party_id,
-                            "hetong_mingcheng": f"{quote.xiansuo.gongsi_mingcheng}增值服务合同{f'({i+1})' if i > 0 else ''}",
-                            "hetong_jine": config.price,
-                            "hetong_leixing": "zengzhi_fuwu",
-                            "price_change_reason": config.price_change_reason
-                        }
-                        
-                        contract = service.create_contract(contract_data, current_user.id)
-                        generated_contracts.append(contract)
         
         return {
             "success": True,

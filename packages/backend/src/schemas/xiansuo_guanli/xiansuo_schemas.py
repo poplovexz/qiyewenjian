@@ -93,10 +93,18 @@ class XiansuoListItem(BaseModel):
     gongsi_mingcheng: str
     lianxi_ren: str
     lianxi_dianhua: Optional[str]
+    lianxi_youxiang: Optional[str]
     hangye_leixing: Optional[str]
     gongsi_guimo: Optional[str]
+    zhuce_dizhi: Optional[str]
+    fuwu_leixing: Optional[str]
+    yusuan_fanwei: Optional[str]
+    shijian_yaoqiu: Optional[str]
+    xiangxi_xuqiu: Optional[str]
     zhiliang_pinggu: str
     zhiliang_fenshu: int
+    laiyuan_id: str
+    laiyuan_xiangxi: Optional[str]
     xiansuo_zhuangtai: str
     fenpei_ren_id: Optional[str]
     zuijin_genjin_shijian: Optional[datetime]
@@ -105,7 +113,7 @@ class XiansuoListItem(BaseModel):
     shi_zhuanhua: str
     zhuanhua_jine: Decimal
     created_at: datetime
-    
+
     class Config:
         from_attributes = True
 

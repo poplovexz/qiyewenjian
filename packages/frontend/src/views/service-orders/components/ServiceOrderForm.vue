@@ -1,8 +1,9 @@
 <template>
   <el-dialog
-    v-model="visible"
+    :model-value="visible"
     :title="isEdit ? '编辑服务工单' : '创建服务工单'"
     width="800px"
+    @update:model-value="emit('update:visible', $event)"
     @close="handleClose"
   >
     <el-form

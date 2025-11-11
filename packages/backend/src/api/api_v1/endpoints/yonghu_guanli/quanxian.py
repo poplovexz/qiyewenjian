@@ -31,86 +31,21 @@ async def get_quanxian_list(
     current_user: Yonghu = Depends(require_permission("permission:read"))
 ):
     """获取权限列表"""
-    # 返回模拟数据，避免数据库查询错误
-    from schemas.yonghu_guanli.quanxian_schemas import QuanxianListItem
-
-    mock_items = [
-        QuanxianListItem(
-            id="1",
-            quanxian_ming="用户查看",
-            quanxian_bianma="user:read",
-            miaoshu="查看用户信息的权限",
-            ziyuan_leixing="用户管理",
-            ziyuan_lujing="/users",
-            zhuangtai="active",
-            role_count=3,
-            created_at="2024-01-01T00:00:00",
-            updated_at="2024-01-01T00:00:00"
-        ),
-        QuanxianListItem(
-            id="2",
-            quanxian_ming="用户编辑",
-            quanxian_bianma="user:write",
-            miaoshu="编辑用户信息的权限",
-            ziyuan_leixing="用户管理",
-            ziyuan_lujing="/users",
-            zhuangtai="active",
-            role_count=2,
-            created_at="2024-01-01T00:00:00",
-            updated_at="2024-01-01T00:00:00"
-        ),
-        QuanxianListItem(
-            id="3",
-            quanxian_ming="审核查看",
-            quanxian_bianma="audit:read",
-            miaoshu="查看审核信息的权限",
-            ziyuan_leixing="审核管理",
-            ziyuan_lujing="/audit",
-            zhuangtai="active",
-            role_count=2,
-            created_at="2024-01-01T00:00:00",
-            updated_at="2024-01-01T00:00:00"
-        ),
-        QuanxianListItem(
-            id="4",
-            quanxian_ming="审核处理",
-            quanxian_bianma="audit:process",
-            miaoshu="处理审核任务的权限",
-            ziyuan_leixing="审核管理",
-            ziyuan_lujing="/audit",
-            zhuangtai="active",
-            role_count=1,
-            created_at="2024-01-01T00:00:00",
-            updated_at="2024-01-01T00:00:00"
+    try:
+        result = await QuanxianService.get_quanxian_list(
+            db=db,
+            page=page,
+            size=size,
+            search=search,
+            ziyuan_leixing=ziyuan_leixing,
+            zhuangtai=zhuangtai
         )
-    ]
-
-    # 应用搜索过滤
-    if search:
-        mock_items = [item for item in mock_items if search.lower() in item.quanxian_ming.lower() or search.lower() in item.quanxian_bianma.lower()]
-
-    # 应用资源类型过滤
-    if ziyuan_leixing:
-        mock_items = [item for item in mock_items if item.ziyuan_leixing == ziyuan_leixing]
-
-    # 应用状态过滤
-    if zhuangtai:
-        mock_items = [item for item in mock_items if item.zhuangtai == zhuangtai]
-
-    total = len(mock_items)
-
-    # 应用分页
-    start = (page - 1) * size
-    end = start + size
-    paginated_items = mock_items[start:end]
-
-    return QuanxianListResponse(
-        items=paginated_items,
-        total=total,
-        page=page,
-        size=size,
-        pages=(total + size - 1) // size
-    )
+        return result
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"获取权限列表失败: {str(e)}"
+        )
 
 
 @router.get("/tree", response_model=List[QuanxianTreeResponse], summary="获取权限树形结构")

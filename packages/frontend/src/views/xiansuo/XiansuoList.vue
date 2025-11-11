@@ -238,72 +238,115 @@
           </template>
         </el-table-column>
         
-        <el-table-column label="操作" width="280" fixed="right">
+        <el-table-column label="操作" width="320" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleView(row)">
-              查看
-            </el-button>
-            <el-button type="success" size="small" @click="handleEdit(row)">
-              编辑
-            </el-button>
+            <div class="action-buttons">
+              <!-- 第一行：主要操作按钮 -->
+              <div class="action-row primary-actions">
+                <el-button
+                  type="primary"
+                  size="small"
+                  link
+                  @click="handleView(row)"
+                >
+                  查看
+                </el-button>
+                <el-button
+                  type="success"
+                  size="small"
+                  @click="handleEdit(row)"
+                >
+                  编辑
+                </el-button>
 
-            <!-- 动态报价按钮 -->
-            <el-button
-              v-if="!hasValidBaojia(row)"
-              type="warning"
-              size="small"
-              @click="handleCreateBaojia(row)"
-            >
-              报价
-            </el-button>
-            <el-button
-              v-else
-              type="info"
-              size="small"
-              @click="handleViewBaojia(row)"
-            >
-              查看报价
-            </el-button>
-            <el-button
-              v-if="hasValidBaojia(row)"
-              type="success"
-              size="small"
-              plain
-              @click="handleCopyQuoteLink(row)"
-            >
-              分享报价
-            </el-button>
+                <!-- 动态报价按钮 -->
+                <el-button
+                  v-if="!hasValidBaojia(row)"
+                  type="warning"
+                  size="small"
+                  @click="handleCreateBaojia(row)"
+                >
+                  报价
+                </el-button>
+                <el-button
+                  v-else
+                  type="info"
+                  size="small"
+                  @click="handleViewBaojia(row)"
+                >
+                  查看报价
+                </el-button>
 
-            <!-- 生成合同按钮 -->
-            <el-button
-              v-if="canGenerateContract(row)"
-              type="primary"
-              size="small"
-              @click="handleGenerateContract(row)"
-              :loading="contractGenerating"
-            >
-              生成合同
-            </el-button>
+                <el-dropdown @command="(command: string) => handleAction(command, row)">
+                  <el-button size="small">
+                    更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
+                  </el-button>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item command="assign">分配</el-dropdown-item>
+                      <el-dropdown-item command="status">状态</el-dropdown-item>
+                      <el-dropdown-item command="followup">跟进</el-dropdown-item>
+                      <el-dropdown-item
+                        v-if="hasValidBaojia(row)"
+                        command="edit_baojia"
+                      >
+                        编辑报价
+                      </el-dropdown-item>
+                      <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </div>
 
-            <el-dropdown @command="(command: string) => handleAction(command, row)">
-              <el-button size="small">
-                更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="assign">分配</el-dropdown-item>
-                  <el-dropdown-item command="status">状态</el-dropdown-item>
-                  <el-dropdown-item command="followup">跟进</el-dropdown-item>
-                  <el-dropdown-item
-                    v-if="hasValidBaojia(row)"
-                    command="edit_baojia"
-                  >
-                    编辑报价
-                  </el-dropdown-item>
-                  <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+              <!-- 第二行：次要操作按钮（仅在有报价或合同时显示） -->
+              <div
+                v-if="hasValidBaojia(row) || getLeadActionType(row)"
+                class="action-row secondary-actions"
+              >
+                <!-- 分享报价按钮 -->
+                <el-button
+                  v-if="hasValidBaojia(row)"
+                  type="success"
+                  size="small"
+                  plain
+                  @click="handleCopyQuoteLink(row)"
+                >
+                  分享报价
+                </el-button>
+
+                <!-- 动态按钮：根据状态显示不同的操作 -->
+                <!-- 查看审核按钮 -->
+                <el-button
+                  v-if="getLeadActionType(row) === 'view_audit'"
+                  type="warning"
+                  size="small"
+                  @click="handleViewAudit(row)"
+                >
+                  查看审核
+                </el-button>
+
+                <!-- 查看合同按钮 -->
+                <el-button
+                  v-else-if="getLeadActionType(row) === 'view_contract'"
+                  type="success"
+                  size="small"
+                  @click="handleViewContract(row)"
+                >
+                  查看合同
+                </el-button>
+
+                <!-- 生成合同按钮 -->
+                <el-button
+                  v-else-if="getLeadActionType(row) === 'generate_contract'"
+                  type="primary"
+                  size="small"
+                  @click="handleGenerateContract(row)"
+                  :loading="contractGenerating"
+                >
+                  生成合同
+                </el-button>
+              </div>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -357,6 +400,69 @@
       v-model:visible="followupDialogVisible"
       :xiansuo="currentFollowupXiansuo"
     />
+
+    <!-- 审核详情弹框 -->
+    <el-dialog
+      v-model="auditDialogVisible"
+      title="合同审核进度"
+      width="700px"
+      :close-on-click-modal="false"
+    >
+      <div v-if="currentAuditDetails" class="audit-details">
+        <div class="audit-header">
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="流程编号">
+              {{ currentAuditDetails.workflow_number }}
+            </el-descriptions-item>
+            <el-descriptions-item label="当前步骤">
+              {{ currentAuditDetails.current_step }} / {{ currentAuditDetails.total_steps }}
+            </el-descriptions-item>
+            <el-descriptions-item label="创建时间">
+              {{ currentAuditDetails.created_at ? new Date(currentAuditDetails.created_at).toLocaleString() : '-' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="完成时间">
+              {{ currentAuditDetails.completed_at ? new Date(currentAuditDetails.completed_at).toLocaleString() : '审核中' }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
+
+        <div class="audit-steps" style="margin-top: 20px;">
+          <el-timeline>
+            <el-timeline-item
+              v-for="step in currentAuditDetails.steps"
+              :key="step.step_number"
+              :type="step.status === 'approved' ? 'success' : step.status === 'rejected' ? 'danger' : 'primary'"
+              :hollow="step.status === 'pending'"
+            >
+              <div class="step-content">
+                <div class="step-header">
+                  <span class="step-name">{{ step.step_name }}</span>
+                  <el-tag
+                    :type="step.status === 'approved' ? 'success' : step.status === 'rejected' ? 'danger' : 'info'"
+                    size="small"
+                  >
+                    {{ step.status === 'approved' ? '已通过' : step.status === 'rejected' ? '已拒绝' : '待审核' }}
+                  </el-tag>
+                </div>
+                <div class="step-info">
+                  <div>审核人：{{ step.auditor_name }}</div>
+                  <div v-if="step.audit_time">
+                    审核时间：{{ new Date(step.audit_time).toLocaleString() }}
+                  </div>
+                  <div v-if="step.comment" class="step-comment">
+                    审核意见：{{ step.comment }}
+                  </div>
+                </div>
+              </div>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+      </div>
+
+      <template #footer>
+        <el-button @click="auditDialogVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -385,6 +491,7 @@ import XiansuoBaojiaForm from '@/components/xiansuo/XiansuoBaojiaForm.vue'
 import XiansuoAssignDialog from './components/XiansuoAssignDialog.vue'
 import XiansuoFollowupDialog from './components/XiansuoFollowupDialog.vue'
 import type { Xiansuo, XiansuoBaojia } from '@/types/xiansuo'
+import { xiansuoApi } from '@/api/modules/xiansuo'
 
 // 使用store
 const xiansuoStore = useXiansuoStore()
@@ -421,6 +528,11 @@ const currentFollowupXiansuo = ref<Xiansuo | null>(null)
 
 // 合同生成相关
 const contractGenerating = ref(false)
+const contractStatusMap = ref<Map<string, any>>(new Map()) // 存储线索ID -> 合同状态信息的映射
+
+// 审核弹框相关
+const auditDialogVisible = ref(false)
+const currentAuditDetails = ref<any>(null)
 
 // 计算属性
 const {
@@ -461,6 +573,37 @@ const cacheStatus = computed(() => {
 // 方法
 const handleSearch = async () => {
   await xiansuoStore.fetchXiansuoList(searchForm.value)
+  // 加载合同状态
+  await loadContractStatuses()
+}
+
+// 加载所有线索的合同状态
+const loadContractStatuses = async () => {
+  try {
+    const leads = xiansuo_list.value
+
+    // 批量加载合同状态（只加载有已确认报价的线索）
+    const promises = leads
+      .filter(lead => {
+        const baojiaStatus = getBaojiaStatus(lead.id)
+        return baojiaStatus === 'accepted' && hasValidBaojia(lead)
+      })
+      .map(async (lead) => {
+        try {
+          const response = await xiansuoApi.getContractStatus(lead.id)
+          // response本身就是数据对象，不需要.data
+          if (response && response.contract_status) {
+            contractStatusMap.value.set(lead.id, response)
+          }
+        } catch (error) {
+          console.error(`加载线索 ${lead.id} 的合同状态失败:`, error)
+        }
+      })
+
+    await Promise.all(promises)
+  } catch (error) {
+    console.error('加载合同状态失败:', error)
+  }
 }
 
 const handleReset = async () => {
@@ -507,8 +650,8 @@ const handleAction = async (command: string, xiansuo: Xiansuo) => {
       assignDialogVisible.value = true
       break
     case 'status':
-      // TODO: 实现状态更新功能
-      ElMessage.info('状态更新功能开发中')
+      // 状态已改为自动流转，不再支持手动修改
+      ElMessage.info('线索状态会根据业务流程自动更新：分配→跟进中，报价→已报价，签约→已成交')
       break
     case 'followup':
       currentFollowupXiansuo.value = xiansuo
@@ -665,10 +808,80 @@ const handleAssignSuccess = async () => {
   await handleSearch()
 }
 
-// 判断是否可以生成合同
-const canGenerateContract = (xiansuo: Xiansuo) => {
+// 获取合同状态信息
+const getContractStatusInfo = (xiansuoId: string) => {
+  return contractStatusMap.value.get(xiansuoId) || null
+}
+
+// 判断线索的操作类型
+const getLeadActionType = (xiansuo: Xiansuo) => {
   const baojiaStatus = getBaojiaStatus(xiansuo.id)
-  return baojiaStatus === 'accepted' && hasValidBaojia(xiansuo)
+
+  // 如果没有已确认的报价，不显示任何按钮
+  if (baojiaStatus !== 'accepted' || !hasValidBaojia(xiansuo)) {
+    return null
+  }
+
+  // 检查是否有合同
+  const contractInfo = getContractStatusInfo(xiansuo.id)
+
+  if (!contractInfo || !contractInfo.contract_status) {
+    // 没有合同，可以生成
+    return 'generate_contract'
+  }
+
+  // 如果有审核流程且审核状态为pending
+  if (contractInfo.audit_status === 'pending') {
+    // 合同待审核或审核中
+    return 'view_audit'
+  } else if (contractInfo.contract_status === 'active' ||
+             contractInfo.contract_status === 'signed' ||
+             contractInfo.contract_status === 'approved') {
+    // 合同已生效或已签署
+    return 'view_contract'
+  } else if (contractInfo.contract_status === 'pending') {
+    // 合同待审核（没有审核流程的情况）
+    return 'view_audit'
+  } else {
+    // 其他状态，显示查看合同
+    return 'view_contract'
+  }
+}
+
+// 判断是否可以生成合同（保留向后兼容）
+const canGenerateContract = (xiansuo: Xiansuo) => {
+  return getLeadActionType(xiansuo) === 'generate_contract'
+}
+
+// 查看审核
+const handleViewAudit = async (xiansuo: Xiansuo) => {
+  try {
+    const contractInfo = getContractStatusInfo(xiansuo.id)
+
+    if (contractInfo && contractInfo.audit_details) {
+      // 显示审核详情弹框
+      currentAuditDetails.value = contractInfo.audit_details
+      auditDialogVisible.value = true
+    } else {
+      // 如果没有审核详情，跳转到审核任务页面
+      router.push('/audit/tasks')
+      ElMessage.info('请在审核任务列表中查看相关审核')
+    }
+  } catch (error: any) {
+    console.error('查看审核失败:', error)
+    ElMessage.error('查看审核失败')
+  }
+}
+
+// 查看合同
+const handleViewContract = async (xiansuo: Xiansuo) => {
+  try {
+    // 直接跳转到合同列表页面
+    router.push('/contracts')
+  } catch (error: any) {
+    console.error('跳转到合同页面失败:', error)
+    ElMessage.error('跳转失败')
+  }
 }
 
 // 生成合同
@@ -822,6 +1035,9 @@ onMounted(async () => {
       size: 20
     })
 
+    // 加载合同状态
+    await loadContractStatuses()
+
     console.log('线索列表页面初始化完成')
   } catch (error) {
     console.error('线索列表页面初始化失败:', error)
@@ -835,6 +1051,8 @@ onMounted(async () => {
     }
   }
 })
+
+
 </script>
 
 <style scoped>
@@ -965,5 +1183,83 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+}
+
+/* 审核详情样式 */
+.audit-details {
+  .audit-header {
+    margin-bottom: 20px;
+  }
+
+  .step-content {
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+
+      .step-name {
+        font-weight: 500;
+        font-size: 15px;
+        color: #303133;
+      }
+    }
+
+    .step-info {
+      font-size: 13px;
+      color: #606266;
+      line-height: 1.8;
+
+      .step-comment {
+        margin-top: 8px;
+        padding: 8px 12px;
+        background-color: #f5f7fa;
+        border-radius: 4px;
+        color: #606266;
+      }
+    }
+  }
+}
+
+/* 操作按钮布局优化 */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.action-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.action-row.secondary-actions {
+  /* 次要操作行 */
+  padding-top: 2px;
+}
+
+/* 确保按钮不换行 */
+.action-buttons .el-button {
+  white-space: nowrap;
+  margin: 0 !important;
+}
+
+/* 优化按钮间距 */
+.action-buttons .el-button + .el-button {
+  margin-left: 0 !important;
+}
+
+/* 优化下拉菜单按钮 */
+.action-buttons .el-dropdown {
+  margin-left: 0 !important;
+}
+
+.action-buttons .el-dropdown .el-button {
+  margin-left: 0 !important;
 }
 </style>

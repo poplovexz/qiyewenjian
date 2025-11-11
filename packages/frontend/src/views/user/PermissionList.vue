@@ -56,8 +56,18 @@
       <div class="search-right">
         <el-button
           v-if="hasPermission('permission:create')"
+          type="success"
+          @click="handleAutoImport"
+        >
+          <el-icon><MagicStick /></el-icon>
+          自动识别导入
+        </el-button>
+
+        <el-button
+          v-if="hasPermission('permission:create')"
           type="primary"
           @click="handleCreate"
+          style="margin-left: 10px"
         >
           <el-icon><Plus /></el-icon>
           新增权限
@@ -275,7 +285,8 @@ import {
   Mouse,
   Connection,
   DataAnalysis,
-  ArrowDown
+  ArrowDown,
+  MagicStick
 } from '@element-plus/icons-vue'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { hasPermission } from '@/utils/permissions'
@@ -394,6 +405,11 @@ const handleCreate = () => {
   currentPermission.value = null
   formMode.value = 'create'
   formVisible.value = true
+}
+
+const handleAutoImport = () => {
+  // 打开自动导入页面
+  window.open('/permission-auto-import', '_blank')
 }
 
 const handleView = (perm: Permission) => {

@@ -6,13 +6,14 @@ import json
 import uuid
 from typing import Optional, Dict, Any, List
 from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import or_
 from fastapi import HTTPException
 
 from models.hetong_guanli import Hetong, HetongMoban, HetongJineBiangeng
 from models.xiansuo_guanli import XiansuoBaojia
 from models.kehu_guanli import Kehu
+from models.fuwu_guanli import FuwuGongdan
 from schemas.hetong_guanli import (
     HetongCreate,
     HetongUpdate,
@@ -163,8 +164,20 @@ class HetongService:
             hetong_laiyuan="auto_from_quote",
             zidong_shengcheng="Y"
         )
-        
-        return self.create_hetong(hetong_data, created_by)
+
+        # 创建合同
+        hetong_response = self.create_hetong(hetong_data, created_by)
+
+        # 设置支付金额（从报价中获取）
+        hetong = self.db.query(Hetong).filter(Hetong.id == hetong_response.id).first()
+        if hetong and baojia.baojia_jine:
+            hetong.payment_amount = str(baojia.baojia_jine)
+            hetong.updated_at = datetime.now()
+            self.db.commit()
+            self.db.refresh(hetong)
+            hetong_response = HetongResponse.model_validate(hetong)
+
+        return hetong_response
     
     def _generate_hetong_bianhao(self) -> str:
         """生成合同编号"""
@@ -226,6 +239,12 @@ class HetongService:
         """获取合同列表"""
         query = self.db.query(Hetong).filter(Hetong.is_deleted == "N")
 
+        # 预加载关联对象以避免N+1查询问题
+        query = query.options(
+            joinedload(Hetong.kehu),
+            joinedload(Hetong.hetong_moban)
+        )
+
         # 搜索条件
         if search:
             search_filter = or_(
@@ -252,16 +271,36 @@ class HetongService:
         offset = (page - 1) * size
         items = query.offset(offset).limit(size).all()
 
+        # 批量查询工单状态
+        hetong_ids = [item.id for item in items]
+        gongdan_hetong_ids = set()
+        if hetong_ids:
+            gongdan_query = self.db.query(FuwuGongdan.hetong_id).filter(
+                FuwuGongdan.hetong_id.in_(hetong_ids),
+                FuwuGongdan.is_deleted == "N"
+            ).distinct()
+            gongdan_hetong_ids = {row[0] for row in gongdan_query.all()}
+
+        # 转换为响应模型并设置has_service_order
+        response_items = []
+        for item in items:
+            response_item = HetongResponse.model_validate(item)
+            response_item.has_service_order = item.id in gongdan_hetong_ids
+            response_items.append(response_item)
+
         return HetongListResponse(
             total=total,
-            items=[HetongResponse.model_validate(item) for item in items],
+            items=response_items,
             page=page,
             size=size
         )
 
     def get_hetong_by_id(self, hetong_id: str) -> HetongResponse:
         """根据ID获取合同"""
-        hetong = self.db.query(Hetong).filter(
+        hetong = self.db.query(Hetong).options(
+            joinedload(Hetong.kehu),
+            joinedload(Hetong.hetong_moban)
+        ).filter(
             Hetong.id == hetong_id,
             Hetong.is_deleted == "N"
         ).first()
@@ -352,11 +391,50 @@ class HetongService:
         if hetong.hetong_zhuangtai == "signed":
             raise HTTPException(status_code=400, detail="已签署的合同不能删除")
 
+        # 检查合同状态，已作废的合同不能删除
+        if hetong.hetong_zhuangtai == "voided":
+            raise HTTPException(status_code=400, detail="已作废的合同不能删除，只能保留用于历史记录")
+
         hetong.is_deleted = "Y"
         hetong.updated_at = datetime.now()
         self.db.commit()
 
         return True
+
+    def void_hetong(self, hetong_id: str, void_reason: str, voided_by: str) -> HetongResponse:
+        """作废合同"""
+        from sqlalchemy.orm import joinedload
+
+        hetong = self.db.query(Hetong).options(
+            joinedload(Hetong.kehu),
+            joinedload(Hetong.hetong_moban)
+        ).filter(
+            Hetong.id == hetong_id,
+            Hetong.is_deleted == "N"
+        ).first()
+
+        if not hetong:
+            raise HTTPException(status_code=404, detail="合同不存在")
+
+        # 检查合同状态，已作废的合同不能再次作废
+        if hetong.hetong_zhuangtai == "voided":
+            raise HTTPException(status_code=400, detail="合同已经是作废状态")
+
+        # 更新合同状态为作废
+        hetong.hetong_zhuangtai = "voided"
+        # 将作废信息记录在签名备注中
+        void_info = f"作废原因: {void_reason}\n作废时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n作废人: {voided_by}"
+        if hetong.qianming_beizhu:
+            hetong.qianming_beizhu = f"{void_info}\n\n{hetong.qianming_beizhu}"
+        else:
+            hetong.qianming_beizhu = void_info
+        hetong.updated_at = datetime.now()
+        hetong.updated_by = voided_by
+
+        self.db.commit()
+        self.db.refresh(hetong)
+
+        return HetongResponse.model_validate(hetong)
 
     def preview_hetong(self, preview_request: HetongPreviewRequest) -> HetongPreviewResponse:
         """预览合同内容"""

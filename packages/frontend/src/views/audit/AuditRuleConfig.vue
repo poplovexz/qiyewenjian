@@ -8,14 +8,45 @@
 
     <!-- 操作栏 -->
     <div class="action-bar">
-      <el-button type="primary" @click="handleCreate">
-        <el-icon><Plus /></el-icon>
-        新建规则
-      </el-button>
-      <el-button @click="refreshData">
-        <el-icon><Refresh /></el-icon>
-        刷新
-      </el-button>
+      <div class="left-actions">
+        <el-button type="primary" @click="handleCreate">
+          <el-icon><Plus /></el-icon>
+          新建规则
+        </el-button>
+        <el-button @click="refreshData">
+          <el-icon><Refresh /></el-icon>
+          刷新
+        </el-button>
+      </div>
+      <div class="right-filters">
+        <el-select
+          v-model="filterType"
+          placeholder="筛选类型"
+          clearable
+          style="width: 200px; margin-right: 10px"
+          @change="fetchRuleList"
+        >
+          <el-option label="全部" value="" />
+          <el-option label="工作流模板" value="workflow_template" />
+          <el-option label="合同金额修正" value="hetong_jine_xiuzheng" />
+          <el-option label="报价审核" value="baojia_shenhe" />
+          <el-option label="金额变更" value="amount_change" />
+          <el-option label="折扣率" value="discount_rate" />
+          <el-option label="合同金额" value="contract_amount" />
+          <el-option label="报价金额" value="quote_amount" />
+        </el-select>
+        <el-select
+          v-model="filterStatus"
+          placeholder="筛选状态"
+          clearable
+          style="width: 150px"
+          @change="fetchRuleList"
+        >
+          <el-option label="全部" value="" />
+          <el-option label="启用" value="Y" />
+          <el-option label="禁用" value="N" />
+        </el-select>
+      </div>
     </div>
 
     <!-- 规则列表 -->
@@ -61,14 +92,19 @@
             <el-button size="small" @click="handleView(row)">查看</el-button>
             <el-button size="small" type="primary" @click="handleEdit(row)">编辑</el-button>
             <el-button size="small" type="warning" @click="handleTest(row)">测试</el-button>
-            <el-button
-              size="small"
-              type="danger"
-              @click="handleDelete(row)"
-              :disabled="row.shi_qiyong === 'Y'"
+            <el-tooltip
+              :content="row.shi_qiyong === 'Y' ? '启用中的规则无法删除，请先禁用' : '删除规则'"
+              placement="top"
             >
-              删除
-            </el-button>
+              <el-button
+                size="small"
+                type="danger"
+                @click="handleDelete(row)"
+                :disabled="row.shi_qiyong === 'Y'"
+              >
+                删除
+              </el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -106,6 +142,9 @@
         
         <el-form-item label="规则类型" prop="guize_leixing">
           <el-select v-model="formData.guize_leixing" placeholder="请选择规则类型">
+            <!-- 🔧 修复：移除"工作流模板"选项，工作流模板应该在"审核流程配置"页面管理 -->
+            <el-option label="合同金额修正" value="hetong_jine_xiuzheng" />
+            <el-option label="报价审核" value="baojia_shenhe" />
             <el-option label="金额变更" value="amount_change" />
             <el-option label="折扣率" value="discount_rate" />
             <el-option label="合同金额" value="contract_amount" />
@@ -137,7 +176,7 @@
           </el-radio-group>
         </el-form-item>
 
-        <!-- 触发条件配置 -->
+        <!-- 🔧 修复：触发条件配置 - 所有审核规则都需要配置触发条件 -->
         <el-form-item label="触发条件">
           <el-card class="condition-config">
             <div class="condition-item">
@@ -187,8 +226,8 @@
           </el-card>
         </el-form-item>
 
-        <!-- 审核动作配置 -->
-        <el-form-item label="审核动作">
+        <!-- 🔧 修复：审核动作配置 - 所有审核规则都需要选择审核流程模板 -->
+        <el-form-item label="审核流程">
           <el-card class="action-config">
             <el-row :gutter="30">
               <el-col :span="12">
@@ -401,7 +440,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh } from '@element-plus/icons-vue'
 import { formatDateTime } from '@/utils/date'
 import type { FormInstance, FormRules } from 'element-plus'
-import { auditRuleApi } from '@/api/modules/audit'
+import { auditRuleApi, auditWorkflowApi } from '@/api/modules/audit'
+import request from '@/utils/request'
 
 // 类型定义
 interface AuditRule {
@@ -454,6 +494,8 @@ const testRule = ref<AuditRule | null>(null)
 const testing = ref(false)
 const testResult = ref<TestResult | null>(null)
 const testFormRef = ref<FormInstance>()
+const filterType = ref('')
+const filterStatus = ref('')
 
 // 分页数据
 const pagination = reactive({
@@ -515,6 +557,9 @@ const dialogTitle = computed(() => {
 // 获取类型标签样式
 const getTypeTagType = (type: string) => {
   const typeMap: Record<string, string> = {
+    workflow_template: 'primary',
+    hetong_jine_xiuzheng: 'danger',
+    baojia_shenhe: 'warning',
     amount_change: 'warning',
     discount_rate: 'success',
     contract_amount: 'primary',
@@ -526,6 +571,9 @@ const getTypeTagType = (type: string) => {
 // 获取类型标签文本
 const getTypeLabel = (type: string) => {
   const typeMap: Record<string, string> = {
+    workflow_template: '工作流模板',
+    hetong_jine_xiuzheng: '合同金额修正',
+    baojia_shenhe: '报价审核',
     amount_change: '金额变更',
     discount_rate: '折扣率',
     contract_amount: '合同金额',
@@ -594,27 +642,15 @@ const runTest = async () => {
       test_data: { ...testData }
     }
 
-    // 调用测试API
-    const response = await fetch('/api/v1/audit-rules/test/single', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify(requestData)
-    })
-
-    if (!response.ok) {
-      throw new Error('测试请求失败')
-    }
-
-    const result = await response.json()
+    // 调用测试API - 使用 request 工具自动处理认证
+    const result: any = await request.post('/audit-rules/test/single', requestData)
     testResult.value = result
 
     ElMessage.success('测试完成')
-  } catch (error) {
+  } catch (error: any) {
     console.error('规则测试失败:', error)
-    ElMessage.error('规则测试失败')
+    const errorMsg = error.response?.data?.detail || error.message || '规则测试失败'
+    ElMessage.error(errorMsg)
   } finally {
     testing.value = false
   }
@@ -624,18 +660,8 @@ const loadTestTemplate = async () => {
   if (!testRule.value) return
 
   try {
-    // 获取测试模板
-    const response = await fetch('/api/v1/audit-rules/test/templates', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('获取模板失败')
-    }
-
-    const data = await response.json()
+    // 获取测试模板 - 使用 request 工具自动处理认证
+    const data: any = await request.get('/audit-rules/test/templates')
     const templates = data.templates || []
 
     // 查找匹配的模板
@@ -647,9 +673,10 @@ const loadTestTemplate = async () => {
     } else {
       ElMessage.warning('未找到匹配的测试模板')
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('加载测试模板失败:', error)
-    ElMessage.error('加载测试模板失败')
+    const errorMsg = error.response?.data?.detail || error.message || '加载测试模板失败'
+    ElMessage.error(errorMsg)
   }
 }
 
@@ -670,13 +697,31 @@ const formatTriggerCondition = (condition: any) => {
 const fetchRuleList = async () => {
   loading.value = true
   try {
-    // 修复：调用真实API获取审核规则列表
-    const response = await auditRuleApi.getList({
+    // 修复：调用真实API获取审核规则列表，支持筛选
+    const params: any = {
       page: pagination.page,
       size: pagination.size
-    })
-    ruleList.value = response.items || []
-    pagination.total = response.total || 0
+    }
+
+    // 添加筛选条件
+    if (filterType.value) {
+      params.guize_leixing = filterType.value
+    }
+    if (filterStatus.value) {
+      params.shi_qiyong = filterStatus.value
+    }
+
+    const response = await auditRuleApi.getList(params)
+
+    // 🔧 修复：过滤掉工作流模板类型的规则（这些应该只在工作流配置页面显示）
+    const filteredItems = (response.items || []).filter(
+      (item: any) => item.guize_leixing !== 'workflow_template'
+    )
+
+    ruleList.value = filteredItems
+    // 注意：total也需要相应调整，但由于后端返回的total包含了workflow_template，
+    // 这里我们使用过滤后的数量。如果需要精确分页，应该在后端过滤
+    pagination.total = filteredItems.length
   } catch (error) {
     console.error('获取审核规则列表失败:', error)
     ElMessage.error('获取审核规则列表失败')
@@ -687,12 +732,22 @@ const fetchRuleList = async () => {
 
 const fetchWorkflowOptions = async () => {
   try {
-    // 修复：调用真实API获取审核流程选项
-    const optionsResponse = await fetch('/api/v1/audit-rules/workflows/options')
-    const optionsData = await optionsResponse.json()
-    workflowOptions.value = optionsData.options || []
+    // 修复：调用真实API获取审核流程列表
+    const { auditWorkflowApi } = await import('@/api/modules/audit')
+    const response = await auditWorkflowApi.getList({
+      page: 1,
+      size: 100,
+      status: 'active'
+    })
+
+    // 转换为下拉框选项格式
+    workflowOptions.value = (response.items || []).map((workflow: any) => ({
+      label: workflow.workflow_name,
+      value: workflow.id
+    }))
   } catch (error) {
     console.error('获取审核流程选项失败:', error)
+    workflowOptions.value = []
   }
 }
 
@@ -728,14 +783,14 @@ const handleEdit = (row: any) => {
     }
   }
 
-  // 修复：解析审核流程配置而不是shenhe_dongzuo
+  // 🔧 修复：解析审核流程配置
   if (row.shenhe_liucheng_peizhi) {
     try {
       const workflow = typeof row.shenhe_liucheng_peizhi === 'string'
         ? JSON.parse(row.shenhe_liucheng_peizhi)
         : row.shenhe_liucheng_peizhi
       actionData.workflow_id = workflow.workflow_id || ''
-      actionData.auto_assign = workflow.auto_assign || true
+      actionData.auto_assign = workflow.auto_assign !== undefined ? workflow.auto_assign : true
       actionData.notification_methods = workflow.notification_methods || ['system']
     } catch (error) {
       console.error('解析审核流程配置失败:', error)
@@ -775,37 +830,78 @@ const handleDelete = async (row: any) => {
         type: 'warning'
       }
     )
-    
+
     // 修复：调用真实删除API
     await auditRuleApi.delete(row.id)
     ElMessage.success('删除成功')
     fetchRuleList()
-  } catch (error) {
+  } catch (error: any) {
     if (error !== 'cancel') {
       console.error('删除失败:', error)
-      ElMessage.error('删除失败')
+      // 提取详细错误信息
+      let errorMsg = '删除失败'
+      if (error?.response?.data?.detail) {
+        errorMsg = error.response.data.detail
+      }
+      ElMessage.error(errorMsg)
     }
   }
 }
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
+
+    // 🔧 修复：验证必须选择审核流程模板
+    if (!actionData.workflow_id) {
+      ElMessage.warning('请选择审核流程模板')
+      return
+    }
+
     submitting.value = true
-    
-    // 修复：构建正确的提交数据，字段名与后端Schema匹配
+
+    // 🔧 修复：构建触发条件配置
+    const chufaTiaojian = conditionData
+
+    // 🔧 修复：构建工作流配置，引用选择的工作流模板
+    let workflowConfig: any = {
+      workflow_id: actionData.workflow_id,
+      auto_assign: actionData.auto_assign,
+      notification_methods: actionData.notification_methods
+    }
+
+    // 🔧 修复：获取工作流模板的步骤配置
+    if (actionData.workflow_id) {
+      try {
+        // 🔧 修复：使用工作流API获取工作流模板详情，而不是审核规则API
+        const workflowDetail = await auditWorkflowApi.getById(actionData.workflow_id)
+        const workflow = workflowDetail.data || workflowDetail
+
+        // 从工作流模板中提取步骤配置
+        if (workflow.shenhe_liucheng_peizhi) {
+          const templateConfig = typeof workflow.shenhe_liucheng_peizhi === 'string'
+            ? JSON.parse(workflow.shenhe_liucheng_peizhi)
+            : workflow.shenhe_liucheng_peizhi
+
+          // 同步步骤配置到当前规则
+          if (templateConfig.steps) {
+            workflowConfig.steps = templateConfig.steps
+          }
+        }
+      } catch (error) {
+        console.error('获取工作流模板步骤失败:', error)
+        ElMessage.warning('无法获取工作流模板步骤配置，请检查模板是否存在')
+      }
+    }
+
     const submitData = {
       guize_mingcheng: formData.guize_mingcheng,
       guize_leixing: formData.guize_leixing,
       guize_miaoshu: formData.guize_miaoshu,
-      chufa_tiaojian: conditionData,  // 触发条件配置对象
-      shenhe_liucheng_peizhi: {  // 修复：使用正确的字段名shenhe_liucheng_peizhi
-        workflow_id: actionData.workflow_id,
-        auto_assign: actionData.auto_assign,
-        notification_methods: actionData.notification_methods
-      },
+      chufa_tiaojian: chufaTiaojian,  // 触发条件配置对象
+      shenhe_liucheng_peizhi: workflowConfig,  // 包含步骤配置的完整工作流配置
       shi_qiyong: formData.guize_zhuangtai === 'active' ? 'Y' : 'N',  // 修复：状态字段映射
       paixu: 0  // 默认排序
     }
@@ -829,6 +925,8 @@ const handleSubmit = async () => {
   }
 }
 
+// 🔧 修复：移除步骤管理方法，这些应该在工作流模板管理页面使用
+
 const resetForm = () => {
   Object.assign(formData, {
     id: '',
@@ -844,13 +942,13 @@ const resetForm = () => {
     operator: '',
     threshold_value: 0
   })
-  
+
   Object.assign(actionData, {
     workflow_id: '',
     auto_assign: true,
     notification_methods: ['system']
   })
-  
+
   formRef.value?.clearValidate()
 }
 
@@ -1004,5 +1102,37 @@ onMounted(() => {
   margin: 2px 0;
   color: #606266;
   font-size: 14px;
+}
+
+/* 操作栏样式 */
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.action-bar .left-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-bar .right-filters {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 步骤配置样式 */
+.steps-config {
+  background: #f5f7fa;
+}
+
+.step-item {
+  margin-bottom: 15px;
+}
+
+.step-item:last-child {
+  margin-bottom: 0;
 }
 </style>

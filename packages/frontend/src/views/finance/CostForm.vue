@@ -352,21 +352,21 @@ const rules = {
 const fetchOptions = async () => {
   try {
     // 获取合同列表
-    const contractResponse = await fetch('/api/v1/contracts')
+    const contractResponse = await fetch('/contracts')
     if (contractResponse.ok) {
       const contractData = await contractResponse.json()
       contracts.value = contractData.items || []
     }
 
     // 获取项目列表
-    const projectResponse = await fetch('/api/v1/projects')
+    const projectResponse = await fetch('/projects')
     if (projectResponse.ok) {
       const projectData = await projectResponse.json()
       projects.value = projectData.items || []
     }
 
     // 获取部门列表
-    const deptResponse = await fetch('/api/v1/departments')
+    const deptResponse = await fetch('/departments')
     if (deptResponse.ok) {
       const deptData = await deptResponse.json()
       departments.value = deptData.items || []
@@ -381,7 +381,7 @@ const fetchCostDetail = async () => {
 
   loading.value = true
   try {
-    const response = await fetch(`/api/v1/costs/${costId.value}`)
+    const response = await fetch(`/costs/${costId.value}`)
     const data = await response.json()
     
     if (response.ok) {
@@ -405,8 +405,8 @@ const handleSubmit = async () => {
     submitLoading.value = true
     
     const url = isEdit.value 
-      ? `/api/v1/costs/${costId.value}`
-      : '/api/v1/costs'
+      ? `/costs/${costId.value}`
+      : '/costs'
     
     const method = isEdit.value ? 'PUT' : 'POST'
     
@@ -446,8 +446,8 @@ const handleSaveAsDraft = async () => {
     draftLoading.value = true
     
     const url = isEdit.value 
-      ? `/api/v1/costs/${costId.value}`
-      : '/api/v1/costs'
+      ? `/costs/${costId.value}`
+      : '/costs'
     
     const method = isEdit.value ? 'PUT' : 'POST'
     

@@ -24,9 +24,28 @@
         <p>分配和跟踪工作任务</p>
       </div>
     </div>
+
+    <div class="bookkeeping-intro">
+      <h2>代理记账服务</h2>
+      <p>提供基础记账、税务申报、财务报表编制等核心服务，支持小微企业与一般纳税人。内置套餐管理与增值服务组合，与合同、订单、任务、审核流程深度打通。</p>
+      <div class="intro-list">
+        <div class="intro-item">
+          <h4>基础记账</h4>
+          <p>凭证管理、账簿生成、月度结账</p>
+        </div>
+        <div class="intro-item">
+          <h4>税务申报</h4>
+          <p>增值税、所得税等周期性申报与合规管理</p>
+        </div>
+        <div class="intro-item">
+          <h4>财务报表</h4>
+          <p>月度/季度报表与经营分析</p>
+        </div>
+      </div>
+    </div>
     
     <div class="actions">
-      <router-link to="/login" class="btn btn-primary">登录系统</router-link>
+      <router-link to="/bookkeeping-packages" class="btn btn-primary">查看代理记账套餐</router-link>
       <router-link to="/dashboard" class="btn btn-secondary">进入控制台</router-link>
     </div>
   </div>
@@ -72,31 +91,28 @@ h1 {
   margin-top: 3rem;
 }
 
-.btn {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  margin: 0 0.5rem;
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: 500;
-  transition: background-color 0.3s;
+.bookkeeping-intro {
+  margin: 3rem 0;
+  text-align: left;
 }
-
-.btn-primary {
-  background-color: #007bff;
-  color: white;
+.bookkeeping-intro h2 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
 }
-
-.btn-primary:hover {
-  background-color: #0056b3;
+.intro-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
 }
-
-.btn-secondary {
-  background-color: #6c757d;
-  color: white;
+.intro-item {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
-
-.btn-secondary:hover {
-  background-color: #545b62;
+.intro-item h4 {
+  margin-bottom: 0.5rem;
+  color: #495057;
 }
 </style>

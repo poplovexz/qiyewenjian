@@ -69,7 +69,7 @@ class Hetong(BaseModel):
         String(20),
         default="draft",
         nullable=False,
-        comment="合同状态：draft-草稿，pending-待审批，approved-已审批，signed-已签署，expired-已过期，cancelled-已取消"
+        comment="合同状态：draft-草稿，pending-待审批，approved-已审批，active-已生效，signed-已签署，expired-已过期，cancelled-已取消"
     )
     
     # 时间信息
@@ -169,7 +169,66 @@ class Hetong(BaseModel):
         comment="是否自动生成：Y(是)、N(否)"
     )
 
+    # 客户签署链接相关字段
+    sign_token = Column(
+        String(100),
+        unique=True,
+        nullable=True,
+        comment="签署链接的唯一令牌"
+    )
+
+    sign_token_expires_at = Column(
+        DateTime,
+        nullable=True,
+        comment="签署链接过期时间"
+    )
+
+    customer_signature = Column(
+        Text,
+        nullable=True,
+        comment="客户签名图片（base64）"
+    )
+
+    signed_at = Column(
+        DateTime,
+        nullable=True,
+        comment="客户签署时间"
+    )
+
+    # 支付相关字段
+    payment_status = Column(
+        String(20),
+        default="pending",
+        nullable=False,
+        comment="支付状态：pending-待支付，paid-已支付，failed-支付失败，refunded-已退款"
+    )
+
+    paid_at = Column(
+        DateTime,
+        nullable=True,
+        comment="支付时间"
+    )
+
+    payment_amount = Column(
+        String(20),
+        nullable=True,
+        comment="支付金额"
+    )
+
+    payment_method = Column(
+        String(50),
+        nullable=True,
+        comment="支付方式：wechat-微信支付，alipay-支付宝，bank-银行转账"
+    )
+
+    payment_transaction_id = Column(
+        String(100),
+        nullable=True,
+        comment="支付交易号"
+    )
+
     # 关联关系
+    kehu = relationship("Kehu", foreign_keys=[kehu_id])
     hetong_moban = relationship("HetongMoban", back_populates="hetong_list")
     baojia = relationship("XiansuoBaojia", back_populates="hetong_list")
     yifang_zhuti = relationship("HetongYifangZhuti", back_populates="hetong_list")

@@ -1,9 +1,10 @@
 """
 银行汇款单据API
 """
-from typing import Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from typing import Dict, Any, Optional
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, Field
 
 from core.database import get_db
 from core.security import get_current_user
@@ -15,6 +16,17 @@ from schemas.zhifu_guanli import (
     YinhangHuikuanDanjuListParams,
     HuikuanDanjuAuditRequest
 )
+
+
+class UploadVoucherRequest(BaseModel):
+    """上传凭证请求"""
+    voucher_url: str = Field(..., description="凭证图片URL")
+    beizhu: Optional[str] = Field(None, description="备注")
+    # 汇款信息字段（业务员根据凭证填写）
+    huikuan_ren: str = Field(..., description="汇款人姓名")
+    huikuan_yinhang: str = Field(..., description="汇款银行")
+    huikuan_zhanghu: Optional[str] = Field(None, description="汇款账户")
+    huikuan_riqi: str = Field(..., description="汇款日期")
 
 router = APIRouter()
 
@@ -48,29 +60,21 @@ async def upload_huikuan_danju(
 async def get_huikuan_danju_list(
     page: int = 1,
     size: int = 20,
-    hetong_zhifu_id: str = None,
+    hetong_id: str = None,
     shenhe_zhuangtai: str = None,
-    shangchuan_ren_id: str = None,
-    shenhe_ren_id: str = None,
-    sort_by: str = "created_at",
-    sort_order: str = "desc",
+    huikuan_yinhang: str = None,
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """获取汇款单据列表"""
-    params = YinhangHuikuanDanjuListParams(
+    service = YinhangHuikuanDanjuService(db)
+    return service.get_yinhang_huikuan_danju_list(
         page=page,
         size=size,
-        hetong_zhifu_id=hetong_zhifu_id,
+        hetong_id=hetong_id,
         shenhe_zhuangtai=shenhe_zhuangtai,
-        shangchuan_ren_id=shangchuan_ren_id,
-        shenhe_ren_id=shenhe_ren_id,
-        sort_by=sort_by,
-        sort_order=sort_order
+        huikuan_yinhang=huikuan_yinhang
     )
-    
-    service = YinhangHuikuanDanjuService(db)
-    return service.get_huikuan_danju_list(params)
 
 
 @router.get("/{danju_id}", summary="获取汇款单据详情")
@@ -107,6 +111,77 @@ async def update_huikuan_danju(
     }
 
 
+@router.post("/{danju_id}/upload-voucher", summary="上传汇款凭证")
+async def upload_voucher(
+    danju_id: str,
+    request_data: UploadVoucherRequest,
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(get_current_user)
+):
+    """
+    业务员上传汇款凭证并填写汇款信息
+
+    - **voucher_url**: 凭证图片URL
+    - **huikuan_ren**: 汇款人姓名
+    - **huikuan_yinhang**: 汇款银行
+    - **huikuan_zhanghu**: 汇款账户（选填）
+    - **huikuan_riqi**: 汇款日期
+    - **beizhu**: 备注（选填）
+    """
+    service = YinhangHuikuanDanjuService(db)
+    result = service.upload_voucher(
+        danju_id=danju_id,
+        voucher_url=request_data.voucher_url,
+        uploader_id=current_user.id,
+        beizhu=request_data.beizhu,
+        huikuan_ren=request_data.huikuan_ren,
+        huikuan_yinhang=request_data.huikuan_yinhang,
+        huikuan_zhanghu=request_data.huikuan_zhanghu,
+        huikuan_riqi=request_data.huikuan_riqi
+    )
+
+    return result
+
+
+@router.post("/{danju_id}/audit-voucher", summary="审核汇款凭证")
+async def audit_voucher(
+    danju_id: str,
+    audit_result: str,
+    audit_opinion: str,
+    actual_amount: float = None,
+    arrival_time: str = None,
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(get_current_user)
+):
+    """
+    财务审核汇款凭证
+
+    - **audit_result**: 审核结果（approved/rejected）
+    - **audit_opinion**: 审核意见
+    - **actual_amount**: 实际到账金额
+    - **arrival_time**: 到账时间
+    """
+    from datetime import datetime
+
+    service = YinhangHuikuanDanjuService(db)
+
+    # 转换到账时间
+    arrival_datetime = None
+    if arrival_time:
+        arrival_datetime = datetime.fromisoformat(arrival_time.replace('Z', '+00:00'))
+
+    result = service.audit_voucher(
+        danju_id,
+        audit_result,
+        audit_opinion,
+        current_user.id,
+        actual_amount,
+        arrival_datetime
+    )
+
+    return result
+
+
 @router.post("/{danju_id}/audit", summary="审核汇款单据")
 async def audit_huikuan_danju(
     danju_id: str,
@@ -116,13 +191,13 @@ async def audit_huikuan_danju(
 ):
     """
     审核汇款单据
-    
+
     - **shenhe_jieguo**: 审核结果（tongguo、jujue）
     - **shenhe_yijian**: 审核意见
     """
     service = YinhangHuikuanDanjuService(db)
     result = service.audit_huikuan_danju(danju_id, audit_data, current_user.id)
-    
+
     return {
         "success": True,
         "message": "汇款单据审核完成",

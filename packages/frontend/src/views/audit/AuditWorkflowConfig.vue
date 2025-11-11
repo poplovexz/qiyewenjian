@@ -104,6 +104,7 @@
             <el-option label="合同审核" value="contract" />
             <el-option label="客户审核" value="customer" />
             <el-option label="财务审核" value="financial" />
+            <el-option label="银行汇款审核" value="yinhang_huikuan" />
           </el-select>
         </el-form-item>
 
@@ -210,7 +211,7 @@
       <div v-if="currentWorkflow" class="workflow-detail">
         <el-descriptions :column="1" border>
           <el-descriptions-item label="流程名称">
-            {{ currentWorkflow.name }}
+            {{ currentWorkflow.workflow_name || currentWorkflow.name }}
           </el-descriptions-item>
           <el-descriptions-item label="流程类型">
             <el-tag :type="getTypeTagType(currentWorkflow.audit_type || 'contract')">
@@ -350,7 +351,10 @@ const getTypeTagType = (type: string) => {
   const typeMap: Record<string, string> = {
     contract: 'primary',
     quote: 'success',
-    amount_change: 'warning'
+    amount_change: 'warning',
+    customer: 'info',
+    financial: 'warning',
+    yinhang_huikuan: 'danger'
   }
   return typeMap[type] || 'info'
 }
@@ -360,7 +364,10 @@ const getTypeLabel = (type: string) => {
   const typeMap: Record<string, string> = {
     contract: '合同审核',
     quote: '报价审核',
-    amount_change: '金额变更审核'
+    amount_change: '金额变更审核',
+    customer: '客户审核',
+    financial: '财务审核',
+    yinhang_huikuan: '银行汇款审核'
   }
   return typeMap[type] || type
 }
@@ -441,7 +448,7 @@ const handleEdit = async (row: any) => {
     liucheng_miaoshu: row.description,
     zhuangtai: row.status,
     buzhou_peizhi: row.steps?.map(step => ({
-      buzhou_mingcheng: step.step_name,
+      buzhou_mingcheng: step.step_name || step.name,  // 兼容两种字段名
       buzhou_miaoshu: step.description,
       shenhe_ren_jiaose: step.approver_role
     })) || []

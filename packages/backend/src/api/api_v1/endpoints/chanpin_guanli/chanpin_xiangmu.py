@@ -1,6 +1,7 @@
 """
 产品项目管理API端点
 """
+import logging
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
@@ -17,11 +18,13 @@ from schemas.chanpin_guanli import (
 )
 from services.chanpin_guanli import ChanpinXiangmuService
 
+logger = logging.getLogger(__name__)
+
 
 router = APIRouter()
 
 
-@router.get("/", response_model=ChanpinXiangmuListResponse, summary="获取产品项目列表")
+@router.get("/", response_model=ChanpinXiangmuListResponse, response_model_exclude_none=False, summary="获取产品项目列表")
 async def get_xiangmu_list(
     page: int = Query(1, ge=1, description="页码"),
     size: int = Query(20, ge=1, le=100, description="每页数量"),

@@ -89,39 +89,39 @@ export interface ContractTemplateStatistics {
 export const contractTemplateApi = {
   // 创建合同模板
   create: (data: ContractTemplateCreate) => {
-    return request.post<ContractTemplate>('/api/v1/contract-templates/', data)
+    return request.post<ContractTemplate>('/contract-templates/', data)
   },
 
   // 获取合同模板列表
   getList: (params: ContractTemplateListParams = {}) => {
-    return request.get<ContractTemplateListResponse>('/api/v1/contract-templates/', { params })
+    return request.get<ContractTemplateListResponse>('/contract-templates/', { params })
   },
 
   // 获取合同模板详情
   getDetail: (id: string) => {
-    return request.get<ContractTemplate>(`/api/v1/contract-templates/${id}`)
+    return request.get<ContractTemplate>(`/contract-templates/${id}`)
   },
 
   // 更新合同模板信息
   update: (id: string, data: ContractTemplateUpdate) => {
-    return request.put<ContractTemplate>(`/api/v1/contract-templates/${id}`, data)
+    return request.put<ContractTemplate>(`/contract-templates/${id}`, data)
   },
 
   // 删除合同模板
   delete: (id: string) => {
-    return request.delete(`/api/v1/contract-templates/${id}`)
+    return request.delete(`/contract-templates/${id}`)
   },
 
   // 更新模板状态
   updateStatus: (id: string, status: string) => {
-    return request.patch<ContractTemplate>(`/api/v1/contract-templates/${id}/status`, null, {
+    return request.patch<ContractTemplate>(`/contract-templates/${id}/status`, null, {
       params: { new_status: status }
     })
   },
 
   // 预览合同模板
   preview: (id: string, variables: Record<string, any>) => {
-    return request.post<{ content: string }>(`/api/v1/contract-templates/${id}/preview`, {
+    return request.post<{ content: string }>(`/contract-templates/${id}/preview`, {
       moban_id: id,
       bianliang_zhis: variables
     })
@@ -129,23 +129,23 @@ export const contractTemplateApi = {
 
   // 获取模板变量配置
   getVariables: (id: string) => {
-    return request.get<{ variables: Record<string, any> }>(`/api/v1/contract-templates/${id}/variables`)
+    return request.get<{ variables: Record<string, any> }>(`/contract-templates/${id}/variables`)
   },
 
   // 获取统计信息
   getStatistics: () => {
-    return request.get<ContractTemplateStatistics>('/api/v1/contract-templates/statistics/overview')
+    return request.get<ContractTemplateStatistics>('/contract-templates/statistics/overview')
   },
 
   // 批量删除
   batchDelete: (ids: string[]) => {
-    return Promise.all(ids.map(id => request.delete(`/api/v1/contract-templates/${id}`)))
+    return Promise.all(ids.map(id => request.delete(`/contract-templates/${id}`)))
   },
 
   // 批量更新状态
   batchUpdateStatus: (ids: string[], status: string) => {
     return Promise.all(ids.map(id => 
-      request.patch(`/api/v1/contract-templates/${id}/status`, null, {
+      request.patch(`/contract-templates/${id}/status`, null, {
         params: { new_status: status }
       })
     ))
@@ -401,32 +401,32 @@ export interface PaymentMethodListResponse {
 export const contractApi = {
   // 创建合同
   create: (data: ContractCreate) => {
-    return request.post<Contract>('/api/v1/contracts/', data)
+    return request.post<Contract>('/contracts/', data)
   },
 
   // 获取合同列表
   getList: (params: ContractListParams = {}) => {
-    return request.get<ContractListResponse>('/api/v1/contracts/', { params })
+    return request.get<ContractListResponse>('/contracts/', { params })
   },
 
   // 获取合同详情
   getDetail: (id: string) => {
-    return request.get<Contract>(`/api/v1/contracts/${id}`)
+    return request.get<Contract>(`/contracts/${id}`)
   },
 
   // 更新合同信息
   update: (id: string, data: ContractUpdate) => {
-    return request.put<Contract>(`/api/v1/contracts/${id}`, data)
+    return request.put<Contract>(`/contracts/${id}`, data)
   },
 
   // 删除合同
   delete: (id: string) => {
-    return request.delete(`/api/v1/contracts/${id}`)
+    return request.delete(`/contracts/${id}`)
   },
 
   // 基于报价自动生成合同
   createFromQuote: (baojiaId: string) => {
-    return request.post<Contract>(`/api/v1/contracts/from-quote/${baojiaId}`)
+    return request.post<Contract>(`/contracts/from-quote/${baojiaId}`)
   },
 
   // 基于报价生成合同并支持自定义金额
@@ -434,7 +434,7 @@ export const contractApi = {
     baojiaId: string,
     payload: { custom_amount?: number; change_reason?: string } = {}
   ) => {
-    return request.post<Contract>('/api/v1/contracts/from-quote-direct', {
+    return request.post<Contract>('/contracts/from-quote-direct', {
       baojia_id: baojiaId,
       ...payload
     })
@@ -442,46 +442,60 @@ export const contractApi = {
 
   // 预览合同内容
   preview: (data: ContractPreview) => {
-    return request.post<{ content: string }>('/api/v1/contracts/preview', data)
+    return request.post<{ content: string }>('/contracts/preview', data)
   },
 
   // 生成合同（新的合同生成API）
   generateContracts: (data: any) => {
-    return request.post<any>('/api/v1/contract-generate/generate', data)
+    return request.post<any>('/contract-generate/generate', data)
   },
 
   // 预览合同（新的预览API）
   previewContract: (data: any) => {
-    return request.post<any>('/api/v1/contract-generate/preview', data)
+    return request.post<any>('/contract-generate/preview', data)
   },
 
   // 获取合同模板列表
   getTemplates: (contractType?: string) => {
-    return request.get<any>('/api/v1/contract-generate/templates', {
+    return request.get<any>('/contract-generate/templates', {
       params: contractType ? { contract_type: contractType } : {}
     })
   },
 
   // 签署合同
   sign: (id: string, signature: ContractSignature) => {
-    return request.post<Contract>(`/api/v1/contracts/${id}/sign`, signature)
+    return request.post<Contract>(`/contracts/${id}/sign`, signature)
   },
 
   // 更新合同状态
   updateStatus: (id: string, status: string) => {
-    return request.put<Contract>(`/api/v1/contracts/${id}`, {
+    return request.put<Contract>(`/contracts/${id}`, {
       hetong_zhuangtai: status
     })
   },
 
   // 检查报价是否已生成合同
   checkContractByQuote: (baojiaId: string) => {
-    return request.get<any>(`/api/v1/contracts/check-by-quote/${baojiaId}`)
+    return request.get<any>(`/contracts/check-by-quote/${baojiaId}`)
   },
 
   // 批量删除
   batchDelete: (ids: string[]) => {
-    return Promise.all(ids.map(id => request.delete(`/api/v1/contracts/${id}`)))
+    return Promise.all(ids.map(id => request.delete(`/contracts/${id}`)))
+  },
+
+  // 生成客户签署链接
+  generateSignLink: (contractId: string) => {
+    return request.post<{
+      sign_link: string
+      sign_token: string
+      expires_at: string
+    }>(`/contract-sign/${contractId}/generate-sign-link`)
+  },
+
+  // 作废合同
+  voidContract: (id: string, data: { void_reason: string }) => {
+    return request.post<Contract>(`/contracts/${id}/void`, data)
   }
 }
 
@@ -489,22 +503,22 @@ export const contractApi = {
 export const contractSignApi = {
   // 根据签署令牌获取合同信息
   getByToken: (token: string) => {
-    return request.get<any>(`/api/v1/contract-signing/token/${token}`)
+    return request.get<any>(`/contract-signing/token/${token}`)
   },
 
   // 创建签署链接
   createLink: (contractId: string) => {
-    return request.post<any>(`/api/v1/contract-signing/${contractId}/create-link`)
+    return request.post<any>(`/contract-signing/${contractId}/create-link`)
   },
 
   // 电子签名
   sign: (token: string, signatureData: any) => {
-    return request.post<any>(`/api/v1/contract-signing/sign/${token}`, signatureData)
+    return request.post<any>(`/contract-signing/sign/${token}`, signatureData)
   },
 
   // 获取签署状态
   getSigningStatus: (contractId: string) => {
-    return request.get<any>(`/api/v1/contract-signing/${contractId}/status`)
+    return request.get<any>(`/contract-signing/${contractId}/status`)
   }
 }
 
@@ -512,32 +526,32 @@ export const contractSignApi = {
 export const contractPaymentApi = {
   // 获取合同支付信息
   getContractInfo: (contractId: string) => {
-    return request.get<any>(`/api/v1/contract-payment/${contractId}/info`)
+    return request.get<any>(`/contract-payment/${contractId}/info`)
   },
 
   // 创建支付记录
   createPayment: (paymentData: any) => {
-    return request.post<any>('/api/v1/contract-payment/create', paymentData)
+    return request.post<any>('/contract-payment/create', paymentData)
   },
 
   // 发起支付宝支付
   initiateAlipay: (paymentId: string, params: any) => {
-    return request.post<any>(`/api/v1/contract-payment/${paymentId}/alipay`, params)
+    return request.post<any>(`/contract-payment/${paymentId}/alipay`, params)
   },
 
   // 发起微信支付
   initiateWechat: (paymentId: string, params: any) => {
-    return request.post<any>(`/api/v1/contract-payment/${paymentId}/wechat`, params)
+    return request.post<any>(`/contract-payment/${paymentId}/wechat`, params)
   },
 
   // 选择银行转账
   selectBankTransfer: (paymentId: string) => {
-    return request.post<any>(`/api/v1/contract-payment/${paymentId}/bank-transfer`)
+    return request.post<any>(`/contract-payment/${paymentId}/bank-transfer`)
   },
 
   // 下载合同
   downloadContract: (contractId: string) => {
-    return request.get(`/api/v1/contract-payment/${contractId}/download`, {
+    return request.get(`/contract-payment/${contractId}/download`, {
       responseType: 'blob'
     })
   }
@@ -547,32 +561,32 @@ export const contractPaymentApi = {
 export const contractPartyApi = {
   // 创建乙方主体
   create: (data: ContractPartyCreate) => {
-    return request.post<ContractParty>('/api/v1/contract-parties/', data)
+    return request.post<ContractParty>('/contract-parties/', data)
   },
 
   // 获取乙方主体列表
   getList: (params: ContractPartyListParams = {}) => {
-    return request.get<ContractPartyListResponse>('/api/v1/contract-parties/', { params })
+    return request.get<ContractPartyListResponse>('/contract-parties/', { params })
   },
 
   // 获取乙方主体详情
   getDetail: (id: string) => {
-    return request.get<ContractParty>(`/api/v1/contract-parties/${id}`)
+    return request.get<ContractParty>(`/contract-parties/${id}`)
   },
 
   // 更新乙方主体信息
   update: (id: string, data: ContractPartyUpdate) => {
-    return request.put<ContractParty>(`/api/v1/contract-parties/${id}`, data)
+    return request.put<ContractParty>(`/contract-parties/${id}`, data)
   },
 
   // 删除乙方主体
   delete: (id: string) => {
-    return request.delete(`/api/v1/contract-parties/${id}`)
+    return request.delete(`/contract-parties/${id}`)
   },
 
   // 批量删除
   batchDelete: (ids: string[]) => {
-    return Promise.all(ids.map(id => request.delete(`/api/v1/contract-parties/${id}`)))
+    return Promise.all(ids.map(id => request.delete(`/contract-parties/${id}`)))
   }
 }
 
@@ -580,37 +594,37 @@ export const contractPartyApi = {
 export const paymentMethodApi = {
   // 创建支付方式
   create: (data: PaymentMethodCreate) => {
-    return request.post<PaymentMethod>('/api/v1/contract-payment-methods/', data)
+    return request.post<PaymentMethod>('/contract-payment-methods/', data)
   },
 
   // 获取支付方式列表
   getList: (params: PaymentMethodListParams = {}) => {
-    return request.get<PaymentMethodListResponse>('/api/v1/contract-payment-methods/', { params })
+    return request.get<PaymentMethodListResponse>('/contract-payment-methods/', { params })
   },
 
   // 获取支付方式详情
   getDetail: (id: string) => {
-    return request.get<PaymentMethod>(`/api/v1/contract-payment-methods/${id}`)
+    return request.get<PaymentMethod>(`/contract-payment-methods/${id}`)
   },
 
   // 更新支付方式信息
   update: (id: string, data: PaymentMethodUpdate) => {
-    return request.put<PaymentMethod>(`/api/v1/contract-payment-methods/${id}`, data)
+    return request.put<PaymentMethod>(`/contract-payment-methods/${id}`, data)
   },
 
   // 删除支付方式
   delete: (id: string) => {
-    return request.delete(`/api/v1/contract-payment-methods/${id}`)
+    return request.delete(`/contract-payment-methods/${id}`)
   },
 
   // 设置默认支付方式
   setDefault: (id: string) => {
-    return request.patch<PaymentMethod>(`/api/v1/contract-payment-methods/${id}/set-default`)
+    return request.patch<PaymentMethod>(`/contract-payment-methods/${id}/set-default`)
   },
 
   // 批量删除
   batchDelete: (ids: string[]) => {
-    return Promise.all(ids.map(id => request.delete(`/api/v1/contract-payment-methods/${id}`)))
+    return Promise.all(ids.map(id => request.delete(`/contract-payment-methods/${id}`)))
   }
 }
 

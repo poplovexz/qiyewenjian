@@ -30,51 +30,97 @@ async def get_my_pending_audits(
 ):
     """获取我的待审核任务"""
     try:
-        # 模拟数据，实际应该从数据库查询
-        mock_data = [
-            {
-                "id": "1",
-                "title": "合同金额修改审核",
-                "type": "contract_audit",
+        from models.shenhe_guanli.shenhe_liucheng import ShenheLiucheng
+        from models.shenhe_guanli.shenhe_jilu import ShenheJilu
+        from sqlalchemy.orm import joinedload
+
+        # 查询当前用户待审核的记录
+        # 1. 查找当前用户作为审核人的待处理审核记录
+        pending_records = db.query(ShenheJilu).join(
+            ShenheLiucheng, ShenheJilu.liucheng_id == ShenheLiucheng.id
+        ).filter(
+            ShenheJilu.shenhe_ren_id == current_user.id,
+            ShenheJilu.jilu_zhuangtai == "daichuli",
+            ShenheJilu.is_deleted == "N",
+            ShenheLiucheng.is_deleted == "N"
+        ).options(
+            joinedload(ShenheJilu.shenhe_liucheng)
+        ).order_by(
+            ShenheJilu.created_at.desc()
+        ).offset((page - 1) * size).limit(size).all()
+
+        # 转换为响应格式
+        result = []
+        for record in pending_records:
+            workflow = record.shenhe_liucheng
+
+            # 获取关联对象信息
+            related_info = None
+            if workflow.guanlian_id:
+                # 根据审核类型查询关联对象
+                if workflow.shenhe_leixing == "hetong_jine_xiuzheng":
+                    # 合同金额修正审核，关联的可能是合同ID或报价ID
+                    # 先尝试作为合同ID查询
+                    from models.hetong_guanli.hetong import Hetong
+                    hetong = db.query(Hetong).filter(
+                        Hetong.id == workflow.guanlian_id,
+                        Hetong.is_deleted == "N"
+                    ).first()
+
+                    if hetong:
+                        related_info = {
+                            "id": hetong.id,
+                            "name": hetong.hetong_bianhao or hetong.hetong_mingcheng or "未知合同",
+                            "type": "contract"
+                        }
+                    else:
+                        # 如果不是合同ID，尝试作为报价ID查询
+                        from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
+                        baojia = db.query(XiansuoBaojia).filter(
+                            XiansuoBaojia.id == workflow.guanlian_id,
+                            XiansuoBaojia.is_deleted == "N"
+                        ).first()
+
+                        if baojia:
+                            # 获取线索信息
+                            from models.xiansuo_guanli.xiansuo import Xiansuo
+                            xiansuo = db.query(Xiansuo).filter(
+                                Xiansuo.id == baojia.xiansuo_id,
+                                Xiansuo.is_deleted == "N"
+                            ).first()
+
+                            company_name = xiansuo.gongsi_mingcheng if xiansuo else "未知公司"
+                            related_info = {
+                                "id": baojia.id,
+                                "name": f"{company_name} - 报价 ¥{baojia.zongji_jine}",
+                                "type": "quote"
+                            }
+
+            result.append({
+                "id": record.id,
+                "step_id": record.id,  # 前端需要
+                "workflow_id": workflow.id,
+                "title": f"{workflow.shenhe_leixing} - 步骤{record.buzhou_bianhao}",
+                "type": workflow.shenhe_leixing,
+                "audit_type": workflow.shenhe_leixing,  # 前端需要
                 "status": "pending",
-                "created_at": "2024-01-15T10:30:00",
+                "created_at": workflow.shenqing_shijian.isoformat() if workflow.shenqing_shijian else workflow.created_at.isoformat(),
                 "priority": "high",
-                "description": "客户要求将合同金额从10000元调整为8000元",
-                "applicant": "张三",
-                "department": "销售部"
-            },
-            {
-                "id": "2", 
-                "title": "报价单审核",
-                "type": "quote_audit",
-                "status": "pending",
-                "created_at": "2024-01-15T09:15:00",
-                "priority": "medium",
-                "description": "新客户报价单需要审核确认",
-                "applicant": "李四",
-                "department": "商务部"
-            },
-            {
-                "id": "3",
-                "title": "特殊折扣申请",
-                "type": "discount_audit", 
-                "status": "pending",
-                "created_at": "2024-01-14T16:45:00",
-                "priority": "low",
-                "description": "客户申请15%特殊折扣",
-                "applicant": "王五",
-                "department": "销售部"
-            }
-        ]
-        
-        # 分页处理
-        start = (page - 1) * size
-        end = start + size
-        paginated_data = mock_data[start:end]
-        
-        return paginated_data
-        
+                "description": workflow.shenqing_yuanyin or "无描述",
+                "applicant": workflow.shenqing_ren_id,
+                "applicant_reason": workflow.shenqing_yuanyin or "无",  # 前端需要
+                "step_name": record.buzhou_mingcheng,
+                "step_number": record.buzhou_bianhao,
+                "workflow_number": workflow.liucheng_bianhao,
+                "expected_time": record.qiwang_chuli_shijian.isoformat() if record.qiwang_chuli_shijian else None,  # 前端需要
+                "related_info": related_info  # 前端需要
+            })
+
+        return result
+
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"获取待审核任务失败: {str(e)}")
 
 @router.get("/", response_model=Dict[str, Any])
@@ -119,6 +165,21 @@ async def create_workflow(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"创建工作流失败: {str(e)}")
 
+@router.get("/template/{workflow_id}", response_model=AuditWorkflowResponse)
+@check_permission("audit_config")
+async def get_workflow_template(
+    workflow_id: str,
+    current_user: Yonghu = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """获取工作流模板详情"""
+    try:
+        service = AuditWorkflowService(db)
+        return service.get_workflow_by_id(workflow_id)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"获取工作流模板失败: {str(e)}")
+
 @router.put("/{workflow_id}", response_model=AuditWorkflowResponse)
 @check_permission("audit_config")
 async def update_workflow(
@@ -151,17 +212,123 @@ async def delete_workflow(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"删除工作流失败: {str(e)}")
 
-@router.get("/{workflow_id}", response_model=AuditWorkflowResponse)
+@router.get("/{workflow_id}", response_model=Dict[str, Any])
 @check_permission("audit:read")
 async def get_workflow(
     workflow_id: str,
     current_user: Yonghu = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """获取单个审核工作流详情"""
+    """获取单个审核流程详情"""
     try:
-        service = AuditWorkflowService(db)
-        return service.get_workflow_by_id(workflow_id)
+        from models.shenhe_guanli.shenhe_liucheng import ShenheLiucheng
+        from models.shenhe_guanli.shenhe_jilu import ShenheJilu
+        from models.yonghu_guanli.yonghu import Yonghu as YonghuModel
+        from sqlalchemy.orm import joinedload
 
+        # 查询审核流程
+        workflow = db.query(ShenheLiucheng).filter(
+            ShenheLiucheng.id == workflow_id,
+            ShenheLiucheng.is_deleted == "N"
+        ).first()
+
+        if not workflow:
+            raise HTTPException(status_code=404, detail="审核流程不存在")
+
+        # 查询审核记录
+        records = db.query(ShenheJilu).filter(
+            ShenheJilu.liucheng_id == workflow_id,
+            ShenheJilu.is_deleted == "N"
+        ).order_by(ShenheJilu.buzhou_bianhao).all()
+
+        # 查询申请人信息
+        applicant = db.query(YonghuModel).filter(
+            YonghuModel.id == workflow.shenqing_ren_id
+        ).first()
+
+        # 构建审核步骤信息（使用前端期望的字段名）
+        steps = []
+        for record in records:
+            # 查询审核人信息
+            auditor = db.query(YonghuModel).filter(
+                YonghuModel.id == record.shenhe_ren_id
+            ).first()
+
+            steps.append({
+                "id": record.id,
+                "buzhou_bianhao": record.buzhou_bianhao,  # 前端期望
+                "buzhou_mingcheng": record.buzhou_mingcheng,  # 前端期望
+                "shenhe_ren_id": record.shenhe_ren_id,  # 前端期望
+                "shenhe_ren_mingcheng": auditor.xingming if auditor else "未知",  # 前端期望
+                "jilu_zhuangtai": record.jilu_zhuangtai,  # 前端期望
+                "shenhe_jieguo": record.shenhe_jieguo,  # 前端期望
+                "shenhe_yijian": record.shenhe_yijian,  # 前端期望
+                "shenhe_shijian": record.shenhe_shijian.isoformat() if record.shenhe_shijian else None,  # 前端期望
+                "qiwang_shijian": record.qiwang_chuli_shijian.isoformat() if record.qiwang_chuli_shijian else None,  # 前端期望（注意字段名）
+                "created_at": record.created_at.isoformat() if record.created_at else None,  # 前端期望
+                "fujian_lujing": getattr(record, 'fujian_lujing', None),  # 前端期望
+                "fujian_miaoshu": getattr(record, 'fujian_miaoshu', None)  # 前端期望
+            })
+
+        # 获取关联对象信息（复用之前的逻辑）
+        related_info = None
+        if workflow.guanlian_id:
+            if workflow.shenhe_leixing == "hetong_jine_xiuzheng":
+                from models.hetong_guanli.hetong import Hetong
+                hetong = db.query(Hetong).filter(
+                    Hetong.id == workflow.guanlian_id,
+                    Hetong.is_deleted == "N"
+                ).first()
+
+                if hetong:
+                    related_info = {
+                        "id": hetong.id,
+                        "name": hetong.hetong_bianhao or hetong.hetong_mingcheng or "未知合同",
+                        "type": "contract"
+                    }
+                else:
+                    from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
+                    baojia = db.query(XiansuoBaojia).filter(
+                        XiansuoBaojia.id == workflow.guanlian_id,
+                        XiansuoBaojia.is_deleted == "N"
+                    ).first()
+
+                    if baojia:
+                        from models.xiansuo_guanli.xiansuo import Xiansuo
+                        xiansuo = db.query(Xiansuo).filter(
+                            Xiansuo.id == baojia.xiansuo_id,
+                            Xiansuo.is_deleted == "N"
+                        ).first()
+
+                        company_name = xiansuo.gongsi_mingcheng if xiansuo else "未知公司"
+                        related_info = {
+                            "id": baojia.id,
+                            "name": f"{company_name} - 报价 ¥{baojia.zongji_jine}",
+                            "type": "quote"
+                        }
+
+        # 返回数据（使用前端期望的字段名）
+        return {
+            "id": workflow.id,
+            "workflow_number": workflow.liucheng_bianhao,
+            "audit_type": workflow.shenhe_leixing,
+            "status": workflow.shenhe_zhuangtai,
+            "shenhe_zhuangtai": workflow.shenhe_zhuangtai,  # 前端期望
+            "current_step": workflow.dangqian_buzhou,
+            "total_steps": workflow.zonggong_buzhou,
+            "applicant_id": workflow.shenqing_ren_id,
+            "submitter": applicant.xingming if applicant else "未知",  # 前端期望
+            "shenqing_yuanyin": workflow.shenqing_yuanyin or "无",  # 前端期望
+            "created_at": workflow.shenqing_shijian.isoformat() if workflow.shenqing_shijian else workflow.created_at.isoformat(),  # 前端期望
+            "wancheng_shijian": workflow.wancheng_shijian.isoformat() if workflow.wancheng_shijian else None,  # 前端期望
+            "related_info": related_info,
+            "shenhe_jilu": steps,  # 前端期望的字段名（审核记录）
+            "beizhu": workflow.beizhu
+        }
+
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取工作流详情失败: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"获取审核流程详情失败: {str(e)}")

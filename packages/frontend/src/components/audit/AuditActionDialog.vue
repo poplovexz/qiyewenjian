@@ -171,7 +171,7 @@ const dialogVisible = computed({
 })
 
 const uploadAction = computed(() => {
-  return `${import.meta.env.VITE_API_BASE_URL}/api/v1/upload/file`
+  return `${import.meta.env.VITE_API_BASE_URL}/upload/file`
 })
 
 const uploadHeaders = computed(() => {
@@ -228,13 +228,23 @@ const handleSubmit = async () => {
 
     submitting.value = true
 
-    // 修复：使用正确的参数调用审核操作
+    // 根据审核结果确定操作类型
+    const action = formData.value.shenhe_jieguo === 'tongguo' ? 'approve' : 'reject'
+
+    console.log('提交审核:', {
+      taskId: props.task.id,
+      action,
+      shenhe_jieguo: formData.value.shenhe_jieguo,
+      shenhe_yijian: formData.value.shenhe_yijian
+    })
+
+    // 调用审核操作
     await auditStore.processAuditAction(
       props.task.id,
-      formData.value.action,
+      action,
       {
-        comment: formData.value.comment,
-        approver: 'admin'  // 实际应该从用户信息获取
+        comment: formData.value.shenhe_yijian,
+        approver: authStore.userInfo?.yonghu_ming || 'admin'
       }
     )
 
@@ -289,16 +299,22 @@ const handleUploadError = () => {
 
 const getAuditTypeTagType = (type: string) => {
   const types: Record<string, string> = {
+    yinhang_huikuan: 'danger',
     hetong: 'primary',
-    baojia: 'success'
+    hetong_jine_xiuzheng: 'warning',
+    baojia: 'success',
+    baojia_shenhe: 'success'
   }
   return types[type] || 'info'
 }
 
 const getAuditTypeText = (type: string) => {
   const texts: Record<string, string> = {
+    yinhang_huikuan: '银行汇款审核',
     hetong: '合同审核',
-    baojia: '报价审核'
+    hetong_jine_xiuzheng: '合同金额修正',
+    baojia: '报价审核',
+    baojia_shenhe: '报价审核'
   }
   return texts[type] || type
 }

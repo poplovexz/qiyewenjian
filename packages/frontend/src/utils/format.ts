@@ -70,6 +70,16 @@ export function formatCurrency(amount: number | string | null | undefined, curre
 }
 
 /**
+ * 格式化金额（formatAmount 别名）
+ * @param amount 金额数字
+ * @param decimals 小数位数，默认为 2
+ * @returns 格式化后的金额字符串
+ */
+export function formatAmount(amount: number | string | null | undefined, decimals: number = 2): string {
+  return formatCurrency(amount, '¥', decimals)
+}
+
+/**
  * 格式化文件大小
  * @param bytes 字节数
  * @returns 格式化后的文件大小字符串

@@ -48,10 +48,11 @@
           <el-radio value="inactive">禁用</el-radio>
         </el-radio-group>
       </el-form-item>
-      
-      <el-form-item 
-        v-if="mode === 'create'" 
-        label="密码" 
+
+      <!-- 创建模式：必须输入密码 -->
+      <el-form-item
+        v-if="mode === 'create'"
+        label="密码"
         prop="mima"
       >
         <el-input
@@ -61,15 +62,46 @@
           show-password
         />
       </el-form-item>
-      
-      <el-form-item 
-        v-if="mode === 'create'" 
-        label="确认密码" 
+
+      <el-form-item
+        v-if="mode === 'create'"
+        label="确认密码"
         prop="confirm_password"
       >
         <el-input
           v-model="formData.confirm_password"
           placeholder="请再次输入密码"
+          type="password"
+          show-password
+        />
+      </el-form-item>
+
+      <!-- 编辑模式：可选修改密码 -->
+      <el-form-item v-if="mode === 'edit'" label="修改密码">
+        <el-checkbox v-model="changePassword">修改密码</el-checkbox>
+      </el-form-item>
+
+      <el-form-item
+        v-if="mode === 'edit' && changePassword"
+        label="新密码"
+        prop="mima"
+      >
+        <el-input
+          v-model="formData.mima"
+          placeholder="请输入新密码"
+          type="password"
+          show-password
+        />
+      </el-form-item>
+
+      <el-form-item
+        v-if="mode === 'edit' && changePassword"
+        label="确认密码"
+        prop="confirm_password"
+      >
+        <el-input
+          v-model="formData.confirm_password"
+          placeholder="请再次输入新密码"
           type="password"
           show-password
         />
@@ -111,6 +143,7 @@ const emit = defineEmits<Emits>()
 const formRef = ref<FormInstance>()
 const loading = ref(false)
 const submitting = ref(false)
+const changePassword = ref(false)
 
 // 表单数据
 const formData = reactive<UserCreate & { confirm_password?: string }>({
@@ -181,7 +214,10 @@ const resetForm = () => {
     mima: '',
     confirm_password: ''
   })
-  
+
+  // 重置修改密码选项
+  changePassword.value = false
+
   nextTick(() => {
     formRef.value?.clearValidate()
   })
@@ -239,7 +275,12 @@ const handleSubmit = async () => {
         shouji: formData.shouji,
         zhuangtai: formData.zhuangtai
       }
-      
+
+      // 如果勾选了修改密码，则包含密码字段
+      if (changePassword.value && formData.mima) {
+        updateData.mima = formData.mima
+      }
+
       await userApi.updateUser(props.userId!, updateData)
       ElMessage.success('用户更新成功')
     }

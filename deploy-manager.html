@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产环境部署管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .server-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item .label {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .info-item .value {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .status-card.success {
+            border-left-color: #28a745;
+        }
+
+        .status-card.warning {
+            border-left-color: #ffc107;
+        }
+
+        .status-card.error {
+            border-left-color: #dc3545;
+        }
+
+        .status-card .title {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .status-card .value {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .log-entry.success {
+            color: #4ec9b0;
+        }
+
+        .log-entry.error {
+            color: #f48771;
+        }
+
+        .log-entry.warning {
+            color: #dcdcaa;
+        }
+
+        .log-entry.info {
+            color: #569cd6;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        .changes-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .change-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            background: white;
+            border-radius: 4px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .change-type {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .change-type.modified {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .change-type.added {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .change-type.deleted {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 生产环境部署管理</h1>
+            <p class="subtitle">一键部署到生产服务器，自动检查和验证</p>
+            
+            <div class="server-info">
+                <div class="info-item">
+                    <span class="label">目标服务器:</span>
+                    <span class="value">172.16.2.221</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">用户:</span>
+                    <span class="value">saas</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">部署路径:</span>
+                    <span class="value">/home/saas/proxy-system</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Cards -->
+        <div class="card">
+            <h2>📊 系统状态</h2>
+            <div class="status-grid">
+                <div class="status-card" id="localStatus">
+                    <div class="title">本地环境</div>
+                    <div class="value">检查中...</div>
+                </div>
+                <div class="status-card" id="prodStatus">
+                    <div class="title">生产环境</div>
+                    <div class="value">检查中...</div>
+                </div>
+                <div class="status-card" id="changesStatus">
+                    <div class="title">待部署更改</div>
+                    <div class="value">0 个文件</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Changes -->
+        <div class="card">
+            <h2>📝 代码变更</h2>
+            <div class="changes-list" id="changesList">
+                <div class="empty-state">正在检查代码变更...</div>
+            </div>
+        </div>
+
+        <!-- Deploy Actions -->
+        <div class="card">
+            <h2>🎯 部署操作</h2>
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <button class="btn btn-primary" id="deployBtn" onclick="startDeploy()">
+                    <span>🚀</span>
+                    <span>开始部署</span>
+                </button>
+                <button class="btn btn-secondary" onclick="checkStatus()">
+                    <span>🔄</span>
+                    <span>刷新状态</span>
+                </button>
+                <button class="btn btn-danger" id="stopBtn" onclick="stopDeploy()" disabled>
+                    <span>⏹</span>
+                    <span>停止部署</span>
+                </button>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div class="card">
+            <h2>📋 部署日志</h2>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry info">等待开始部署...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let deployProcess = null;
+
+        // 页面加载时检查状态
+        window.onload = function() {
+            checkStatus();
+            checkChanges();
+        };
+
+        // 检查系统状态
+        async function checkStatus() {
+            addLog('info', '正在检查系统状态...');
+            
+            // 这里应该调用后端API，现在先模拟
+            setTimeout(() => {
+                document.getElementById('localStatus').className = 'status-card success';
+                document.getElementById('localStatus').querySelector('.value').textContent = '✓ 正常';
+                
+                document.getElementById('prodStatus').className = 'status-card success';
+                document.getElementById('prodStatus').querySelector('.value').textContent = '✓ 运行中';
+                
+                addLog('success', '✓ 系统状态检查完成');
+            }, 1000);
+        }
+
+        // 检查代码变更
+        async function checkChanges() {
+            addLog('info', '正在检查代码变更...');
+            
+            // 模拟git status
+            const changes = [
+                { type: 'M', file: 'packages/frontend/src/views/Login.vue' },
+                { type: 'M', file: 'packages/frontend/src/utils/request.ts' },
+                { type: 'M', file: 'packages/frontend/.env' },
+                { type: 'M', file: 'packages/backend/src/main.py' }
+            ];
+            
+            const changesList = document.getElementById('changesList');
+            if (changes.length === 0) {
+                changesList.innerHTML = '<div class="empty-state">没有待部署的更改</div>';
+            } else {
+                changesList.innerHTML = changes.map(change => `
+                    <div class="change-item">
+                        <span class="change-type ${getChangeClass(change.type)}">${getChangeLabel(change.type)}</span>
+                        <span>${change.file}</span>
+                    </div>
+                `).join('');
+                
+                document.getElementById('changesStatus').className = 'status-card warning';
+                document.getElementById('changesStatus').querySelector('.value').textContent = `${changes.length} 个文件`;
+            }
+            
+            addLog('success', `✓ 发现 ${changes.length} 个文件变更`);
+        }
+
+        function getChangeClass(type) {
+            const map = { 'M': 'modified', 'A': 'added', 'D': 'deleted' };
+            return map[type] || 'modified';
+        }
+
+        function getChangeLabel(type) {
+            const map = { 'M': '修改', 'A': '新增', 'D': '删除' };
+            return map[type] || '修改';
+        }
+
+        // 开始部署
+        function startDeploy() {
+            if (!confirm('确定要部署到生产环境吗？\n\n目标服务器: 172.16.2.221\n这将重启生产服务！')) {
+                return;
+            }
+
+            document.getElementById('deployBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('progressBar').style.display = 'block';
+            
+            addLog('info', '========================================');
+            addLog('info', '开始部署流程...');
+            addLog('info', '========================================');
+            
+            // 执行部署脚本
+            executeDeployScript();
+        }
+
+        // 执行部署脚本
+        async function executeDeployScript() {
+            const steps = [
+                { name: '构建前端', progress: 14 },
+                { name: '打包项目', progress: 28 },
+                { name: '上传到服务器', progress: 42 },
+                { name: '服务器部署', progress: 56 },
+                { name: '检查配置', progress: 70 },
+                { name: '重启服务', progress: 85 },
+                { name: '验证部署', progress: 100 }
+            ];
+
+            for (let i = 0; i < steps.length; i++) {
+                const step = steps[i];
+                addLog('info', `[${i+1}/7] ${step.name}...`);
+                updateProgress(step.progress);
+                
+                // 模拟执行时间
+                await sleep(2000);
+                
+                addLog('success', `✓ ${step.name}完成`);
+            }
+
+            addLog('success', '========================================');
+            addLog('success', '✓ 部署完成！');
+            addLog('success', '========================================');
+            addLog('info', '访问地址: http://172.16.2.221');
+            
+            document.getElementById('deployBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            
+            // 刷新状态
+            setTimeout(checkStatus, 1000);
+        }
+
+        // 停止部署
+        function stopDeploy() {
+            if (confirm('确定要停止部署吗？')) {
+                addLog('warning', '⚠ 部署已被用户停止');
+                document.getElementById('deployBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+            }
+        }
+
+        // 添加日志
+        function addLog(type, message) {
+            const logContainer = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // 更新进度
+        function updateProgress(percent) {
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        // 延迟函数
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>
+

@@ -28,48 +28,122 @@ class XiansuoService:
         self.db = db
     
     def _generate_xiansuo_bianma(self) -> str:
-        """生成线索编码"""
-        today = datetime.now().strftime("%Y%m%d")
-        
-        # 查询今天已有的线索数量
-        count = self.db.query(Xiansuo).filter(
-            Xiansuo.xiansuo_bianma.like(f"XS{today}%"),
-            Xiansuo.is_deleted == "N"
-        ).count()
-        
-        # 生成编码：XS + 日期 + 3位序号
-        return f"XS{today}{(count + 1):03d}"
+        """
+        生成线索编码（带重试机制避免并发冲突）
+
+        Returns:
+            str: 线索编码，格式：XS + 日期 + 3位序号
+        """
+        import random
+        import string
+        from datetime import datetime
+
+        max_retries = 10
+        for attempt in range(max_retries):
+            today = datetime.now().strftime("%Y%m%d")
+
+            # 查询今天已有的线索数量
+            count = self.db.query(Xiansuo).filter(
+                Xiansuo.xiansuo_bianma.like(f"XS{today}%"),
+                Xiansuo.is_deleted == "N"
+            ).count()
+
+            # 生成编码：XS + 日期 + 3位序号
+            sequence = count + 1 + attempt  # 每次重试增加序号
+            xiansuo_bianma = f"XS{today}{sequence:03d}"
+
+            # 检查是否已存在（双重检查）
+            existing = self.db.query(Xiansuo).filter(
+                Xiansuo.xiansuo_bianma == xiansuo_bianma,
+                Xiansuo.is_deleted == "N"
+            ).first()
+
+            if not existing:
+                return xiansuo_bianma
+
+        # 如果重试失败，使用时间戳+随机后缀
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        random_suffix = ''.join(random.choices(string.digits, k=3))
+        return f"XS{timestamp}{random_suffix}"
     
     def create_xiansuo(self, xiansuo_data: XiansuoCreate, created_by: str) -> XiansuoResponse:
-        """创建线索"""
+        """
+        创建线索（带重试机制处理并发冲突）
+
+        Args:
+            xiansuo_data: 线索创建数据
+            created_by: 创建人ID
+
+        Returns:
+            XiansuoResponse: 创建的线索信息
+        """
+        import logging
+        from sqlalchemy.exc import IntegrityError
+
+        logger = logging.getLogger(__name__)
+
         # 验证来源是否存在
         laiyuan = self.db.query(XiansuoLaiyuan).filter(
             XiansuoLaiyuan.id == xiansuo_data.laiyuan_id,
             XiansuoLaiyuan.is_deleted == "N"
         ).first()
-        
+
         if not laiyuan:
             raise HTTPException(status_code=404, detail="线索来源不存在")
-        
-        # 生成线索编码
-        xiansuo_bianma = self._generate_xiansuo_bianma()
-        
-        # 创建线索
-        xiansuo = Xiansuo(
-            xiansuo_bianma=xiansuo_bianma,
-            **xiansuo_data.model_dump(),
-            created_by=created_by
-        )
-        
-        self.db.add(xiansuo)
-        
-        # 更新来源的线索数量
-        laiyuan.xiansuo_shuliang = (laiyuan.xiansuo_shuliang or 0) + 1
-        
-        self.db.commit()
-        self.db.refresh(xiansuo)
-        
-        return XiansuoResponse.model_validate(xiansuo)
+
+        # 重试机制处理并发冲突
+        max_retries = 3
+        for retry in range(max_retries):
+            try:
+                # 生成线索编码
+                xiansuo_bianma = self._generate_xiansuo_bianma()
+
+                # 创建线索
+                xiansuo = Xiansuo(
+                    xiansuo_bianma=xiansuo_bianma,
+                    **xiansuo_data.model_dump(),
+                    created_by=created_by
+                )
+
+                # 自动创建关联的客户记录
+                logger.info(f"开始为线索 {xiansuo_bianma} 创建关联客户...")
+                try:
+                    kehu_id = self._create_or_get_kehu_for_xiansuo(xiansuo_data, created_by)
+                    logger.info(f"客户创建结果: kehu_id={kehu_id}")
+                    if kehu_id:
+                        xiansuo.kehu_id = kehu_id
+                        logger.info(f"✅ 为线索 {xiansuo_bianma} 创建/关联客户: {kehu_id}")
+                    else:
+                        logger.warning(f"⚠️  客户创建返回None，线索将不关联客户")
+                except Exception as e:
+                    logger.error(f"❌ 为线索创建客户失败，将继续创建线索: {str(e)}", exc_info=True)
+                    # 即使客户创建失败，也继续创建线索
+
+                self.db.add(xiansuo)
+
+                # 更新来源的线索数量
+                laiyuan.xiansuo_shuliang = (laiyuan.xiansuo_shuliang or 0) + 1
+
+                self.db.commit()
+                self.db.refresh(xiansuo)
+
+                logger.info(f"✅ 线索创建成功: {xiansuo_bianma}")
+                return XiansuoResponse.model_validate(xiansuo)
+
+            except IntegrityError as e:
+                self.db.rollback()
+                if "xiansuo_xiansuo_bianma_key" in str(e) and retry < max_retries - 1:
+                    logger.warning(f"线索编号冲突，重试 {retry + 1}/{max_retries}")
+                    continue
+                else:
+                    logger.error(f"创建线索失败: {str(e)}")
+                    raise HTTPException(status_code=500, detail=f"创建线索失败: 编号生成冲突")
+            except Exception as e:
+                self.db.rollback()
+                logger.error(f"创建线索失败: {str(e)}", exc_info=True)
+                raise HTTPException(status_code=500, detail=f"创建线索失败: {str(e)}")
+
+        raise HTTPException(status_code=500, detail="创建线索失败: 超过最大重试次数")
     
     def get_xiansuo_by_id(self, xiansuo_id: str, current_user_id: Optional[str] = None, has_read_all_permission: bool = False) -> Optional[XiansuoResponse]:
         """根据ID获取线索"""
@@ -411,3 +485,62 @@ class XiansuoService:
             pingjun_zhuanhua_zhouzqi=pingjun_zhuanhua_zhouzqi,
             pingjun_zhuanhua_jine=pingjun_zhuanhua_jine
         )
+
+    def _create_or_get_kehu_for_xiansuo(self, xiansuo_data: XiansuoCreate, created_by: str) -> Optional[str]:
+        """
+        为线索创建或获取关联的客户记录
+
+        Args:
+            xiansuo_data: 线索创建数据
+            created_by: 创建人ID
+
+        Returns:
+            Optional[str]: 客户ID，如果创建失败则返回None
+        """
+        from models.kehu_guanli.kehu import Kehu
+        import logging
+        logger = logging.getLogger(__name__)
+
+        try:
+            # 检查是否已存在同名客户
+            existing_kehu = self.db.query(Kehu).filter(
+                Kehu.gongsi_mingcheng == xiansuo_data.gongsi_mingcheng,
+                Kehu.is_deleted == "N"
+            ).first()
+
+            if existing_kehu:
+                logger.info(f"找到已存在的客户: {existing_kehu.gongsi_mingcheng} (ID: {existing_kehu.id})")
+                return existing_kehu.id
+
+            # 生成临时的统一社会信用代码（如果线索没有提供）
+            # 使用特殊前缀标识这是临时生成的
+            import uuid
+            temp_credit_code = f"TEMP{uuid.uuid4().hex[:14].upper()}"
+
+            # 从线索数据中提取客户信息
+            kehu_data = {
+                "gongsi_mingcheng": xiansuo_data.gongsi_mingcheng,
+                "tongyi_shehui_xinyong_daima": temp_credit_code,
+                "faren_xingming": xiansuo_data.lianxi_ren,  # 使用联系人作为法人姓名
+                "lianxi_dianhua": xiansuo_data.lianxi_dianhua,
+                "lianxi_youxiang": xiansuo_data.lianxi_youxiang,
+                "lianxi_dizhi": xiansuo_data.zhuce_dizhi,
+                "zhuce_dizhi": xiansuo_data.zhuce_dizhi,
+                "kehu_zhuangtai": "active",
+                "created_by": created_by
+            }
+
+            # 创建客户记录
+            kehu = Kehu(**kehu_data)
+            self.db.add(kehu)
+            self.db.flush()  # 刷新以获取ID，但不提交
+
+            logger.info(f"为线索自动创建客户: {kehu.gongsi_mingcheng} (ID: {kehu.id})")
+            logger.warning(f"客户使用临时信用代码: {temp_credit_code}，请后续补充完整信息")
+
+            return kehu.id
+
+        except Exception as e:
+            logger.error(f"为线索创建客户失败: {str(e)}", exc_info=True)
+            # 不要回滚，让外层的commit处理
+            return None

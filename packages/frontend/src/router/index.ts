@@ -47,24 +47,6 @@ const routes: RouteRecordRaw[] = [
           title: '组件测试'
         }
       },
-      // 权限管理工具
-      {
-        path: 'permission-manager',
-        name: 'PermissionManager',
-        component: () => import('@/views/PermissionManager.vue'),
-        meta: {
-          title: '权限管理工具'
-        }
-      },
-      // 权限测试页面
-      {
-        path: 'permission-test',
-        name: 'PermissionTest',
-        component: () => import('@/views/PermissionTest.vue'),
-        meta: {
-          title: '权限测试'
-        }
-      },
       {
         path: 'users',
         name: 'UserList',
@@ -90,6 +72,15 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: '权限管理',
           permissions: ['permission:read']
+        }
+      },
+      {
+        path: 'permission-auto-import',
+        name: 'PermissionAutoImport',
+        component: () => import('@/views/user/PermissionAutoImport.vue'),
+        meta: {
+          title: '权限自动导入',
+          permissions: ['permission:create']
         }
       },
       {
@@ -294,7 +285,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/audit/AuditTaskList.vue'),
         meta: {
           title: '审核任务',
-          permissions: ['audit_manage']
+          permissions: ['audit:read']  // 修复：与接口权限保持一致
         }
       },
       // 审核流程配置
@@ -307,6 +298,7 @@ const routes: RouteRecordRaw[] = [
           permissions: ['audit_config']
         }
       },
+
       // 审核规则配置
       {
         path: 'audit/rule-config',
@@ -378,6 +370,16 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/finance/PaymentRecordList.vue'),
         meta: {
           title: '支付流水',
+          permissions: ['finance_manage']
+        }
+      },
+      // 银行汇款管理
+      {
+        path: 'bank-transfers',
+        name: 'BankTransferManage',
+        component: () => import('@/views/payment/BankTransferManage.vue'),
+        meta: {
+          title: '银行汇款管理',
           permissions: ['finance_manage']
         }
       },
@@ -628,6 +630,214 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: '合同支付',
           requiresAuth: false
+        }
+      }
+    ]
+  },
+  // 客户签署页面（无需登录）
+  {
+    path: '/contract-sign/:token',
+    name: 'CustomerSign',
+    component: () => import('@/views/contract/CustomerSign.vue'),
+    meta: {
+      title: '合同签署',
+      requiresAuth: false
+    }
+  },
+  // 办公管理模块
+  {
+    path: '/office',
+    component: () => import('@/layouts/MainLayout.vue'),
+    redirect: '/office/reimbursement',
+    meta: {
+      title: '办公管理',
+      icon: 'OfficeBuilding',
+      requiresAuth: true
+    },
+    children: [
+      // 申请报销
+      {
+        path: 'reimbursement',
+        name: 'ReimbursementList',
+        component: () => import('@/views/office/ReimbursementList.vue'),
+        meta: {
+          title: '申请报销',
+          permissions: ['office:baoxiao:read']
+        }
+      },
+      {
+        path: 'reimbursement/create',
+        name: 'ReimbursementCreate',
+        component: () => import('@/views/office/ReimbursementForm.vue'),
+        meta: {
+          title: '新建报销申请',
+          permissions: ['office:baoxiao:create']
+        }
+      },
+      {
+        path: 'reimbursement/edit/:id',
+        name: 'ReimbursementEdit',
+        component: () => import('@/views/office/ReimbursementForm.vue'),
+        meta: {
+          title: '编辑报销申请',
+          permissions: ['office:baoxiao:update']
+        }
+      },
+      {
+        path: 'reimbursement/detail/:id',
+        name: 'ReimbursementDetail',
+        component: () => import('@/views/office/ReimbursementDetail.vue'),
+        meta: {
+          title: '报销申请详情',
+          permissions: ['office:baoxiao:read']
+        }
+      },
+      // 请假
+      {
+        path: 'leave',
+        name: 'LeaveList',
+        component: () => import('@/views/office/LeaveList.vue'),
+        meta: {
+          title: '请假',
+          permissions: ['office:qingjia:read']
+        }
+      },
+      {
+        path: 'leave/create',
+        name: 'LeaveCreate',
+        component: () => import('@/views/office/LeaveForm.vue'),
+        meta: {
+          title: '新建请假申请',
+          permissions: ['office:qingjia:create']
+        }
+      },
+      {
+        path: 'leave/edit/:id',
+        name: 'LeaveEdit',
+        component: () => import('@/views/office/LeaveForm.vue'),
+        meta: {
+          title: '编辑请假申请',
+          permissions: ['office:qingjia:update']
+        }
+      },
+      {
+        path: 'leave/detail/:id',
+        name: 'LeaveDetail',
+        component: () => import('@/views/office/LeaveDetail.vue'),
+        meta: {
+          title: '请假申请详情',
+          permissions: ['office:qingjia:read']
+        }
+      },
+      // 申请对外付款
+      {
+        path: 'payment',
+        name: 'PaymentApplicationList',
+        component: () => import('@/views/office/PaymentApplicationList.vue'),
+        meta: {
+          title: '申请对外付款',
+          permissions: ['office:fukuan:read']
+        }
+      },
+      {
+        path: 'payment/create',
+        name: 'PaymentApplicationCreate',
+        component: () => import('@/views/office/PaymentApplicationForm.vue'),
+        meta: {
+          title: '新建对外付款申请',
+          permissions: ['office:fukuan:create']
+        }
+      },
+      {
+        path: 'payment/edit/:id',
+        name: 'PaymentApplicationEdit',
+        component: () => import('@/views/office/PaymentApplicationForm.vue'),
+        meta: {
+          title: '编辑对外付款申请',
+          permissions: ['office:fukuan:update']
+        }
+      },
+      {
+        path: 'payment/detail/:id',
+        name: 'PaymentApplicationDetail',
+        component: () => import('@/views/office/PaymentApplicationDetail.vue'),
+        meta: {
+          title: '对外付款申请详情',
+          permissions: ['office:fukuan:read']
+        }
+      },
+      // 申请采购
+      {
+        path: 'procurement',
+        name: 'ProcurementList',
+        component: () => import('@/views/office/ProcurementList.vue'),
+        meta: {
+          title: '申请采购',
+          permissions: ['office:caigou:read']
+        }
+      },
+      {
+        path: 'procurement/create',
+        name: 'ProcurementCreate',
+        component: () => import('@/views/office/ProcurementForm.vue'),
+        meta: {
+          title: '新建采购申请',
+          permissions: ['office:caigou:create']
+        }
+      },
+      {
+        path: 'procurement/edit/:id',
+        name: 'ProcurementEdit',
+        component: () => import('@/views/office/ProcurementForm.vue'),
+        meta: {
+          title: '编辑采购申请',
+          permissions: ['office:caigou:update']
+        }
+      },
+      {
+        path: 'procurement/detail/:id',
+        name: 'ProcurementDetail',
+        component: () => import('@/views/office/ProcurementDetail.vue'),
+        meta: {
+          title: '采购申请详情',
+          permissions: ['office:caigou:read']
+        }
+      },
+      // 交接单
+      {
+        path: 'handover',
+        name: 'HandoverList',
+        component: () => import('@/views/office/HandoverList.vue'),
+        meta: {
+          title: '交接单',
+          permissions: ['office:jiaojie:read']
+        }
+      },
+      {
+        path: 'handover/create',
+        name: 'HandoverCreate',
+        component: () => import('@/views/office/HandoverForm.vue'),
+        meta: {
+          title: '新建工作交接单',
+          permissions: ['office:jiaojie:create']
+        }
+      },
+      {
+        path: 'handover/edit/:id',
+        name: 'HandoverEdit',
+        component: () => import('@/views/office/HandoverForm.vue'),
+        meta: {
+          title: '编辑工作交接单',
+          permissions: ['office:jiaojie:update']
+        }
+      },
+      {
+        path: 'handover/detail/:id',
+        name: 'HandoverDetail',
+        component: () => import('@/views/office/HandoverDetail.vue'),
+        meta: {
+          title: '工作交接单详情',
+          permissions: ['office:jiaojie:read']
         }
       }
     ]

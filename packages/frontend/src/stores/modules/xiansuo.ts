@@ -273,6 +273,9 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       loading.value = true
       const response = await xiansuoLaiyuanApi.getList(params)
       laiyuan_list.value = response.items
+      total.value = response.total
+      currentPage.value = response.page
+      pageSize.value = response.size
     } catch (error) {
       console.error('获取线索来源列表失败:', error)
       ElMessage.error('获取线索来源列表失败')
@@ -603,15 +606,14 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
   const fetchProductData = async () => {
     try {
-      if (product_data.value) {
-        return product_data.value
-      }
-
+      console.log('🔄 开始获取产品数据...')
       const response = await xiansuoBaojiaApi.getProductData()
+      console.log('✅ 产品数据获取成功:', response)
       product_data.value = response
+      console.log('✅ product_data 已更新:', product_data.value)
       return response
     } catch (error) {
-      console.error('获取产品数据失败:', error)
+      console.error('❌ 获取产品数据失败:', error)
       ElMessage.error('获取产品数据失败')
       throw error
     }

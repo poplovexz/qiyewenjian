@@ -56,6 +56,7 @@
               <el-option label="生效" value="active" />
               <el-option label="完成" value="completed" />
               <el-option label="终止" value="terminated" />
+              <el-option label="作废" value="voided" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -102,15 +103,64 @@
           </template>
         </el-table-column>
         <el-table-column prop="createdAt" label="创建时间" width="160" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="520" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleView(row)">
+              <el-icon><View /></el-icon>
               查看
             </el-button>
-            <el-button type="warning" size="small" @click="handleEdit(row)">
+            <el-button
+              v-if="row.status !== 'voided'"
+              type="warning"
+              size="small"
+              @click="handleEdit(row)"
+            >
+              <el-icon><Edit /></el-icon>
               编辑
             </el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">
+            <el-button
+              v-if="row.hetong_zhuangtai === 'signed' && !row.has_service_order"
+              type="success"
+              size="small"
+              @click="handleCreateServiceOrder(row)"
+            >
+              <el-icon><DocumentAdd /></el-icon>
+              创建工单
+            </el-button>
+            <el-button
+              v-if="row.hetong_zhuangtai === 'signed' && row.has_service_order"
+              type="info"
+              size="small"
+              @click="handleViewServiceOrder(row)"
+            >
+              <el-icon><Document /></el-icon>
+              查看工单
+            </el-button>
+            <el-button
+              v-if="row.status !== 'voided'"
+              type="success"
+              size="small"
+              @click="handleGenerateSignLink(row)"
+            >
+              <el-icon><Link /></el-icon>
+              签署链接
+            </el-button>
+            <el-button
+              v-if="row.status !== 'voided'"
+              type="info"
+              size="small"
+              @click="handleVoid(row)"
+            >
+              <el-icon><CircleClose /></el-icon>
+              作废
+            </el-button>
+            <el-button
+              v-if="row.status !== 'voided'"
+              type="danger"
+              size="small"
+              @click="handleDelete(row)"
+            >
+              <el-icon><Delete /></el-icon>
               删除
             </el-button>
           </template>
@@ -130,22 +180,247 @@
         />
       </div>
     </el-card>
+
+    <!-- 查看合同对话框 -->
+    <el-dialog
+      v-model="viewDialogVisible"
+      title="查看合同"
+      width="80%"
+      :close-on-click-modal="false"
+    >
+      <div v-if="currentContract" class="contract-detail">
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="合同编号">
+            {{ currentContract.hetong_bianhao }}
+          </el-descriptions-item>
+          <el-descriptions-item label="合同名称">
+            {{ currentContract.hetong_mingcheng }}
+          </el-descriptions-item>
+          <el-descriptions-item label="合同状态">
+            <el-tag :type="getStatusTag(currentContract.hetong_zhuangtai)">
+              {{ getStatusText(currentContract.hetong_zhuangtai) }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="签署日期">
+            {{ currentContract.qianshu_riqi || '未签署' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="生效日期">
+            {{ currentContract.shengxiao_riqi || '未生效' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="到期日期">
+            {{ currentContract.daoqi_riqi }}
+          </el-descriptions-item>
+          <el-descriptions-item label="支付状态">
+            <el-tag :type="getPaymentStatusTag(currentContract.payment_status)">
+              {{ getPaymentStatusText(currentContract.payment_status) }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="支付金额">
+            {{ currentContract.payment_amount || '未设置' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="创建时间" :span="2">
+            {{ currentContract.created_at }}
+          </el-descriptions-item>
+        </el-descriptions>
+
+        <el-divider content-position="left">合同内容</el-divider>
+        <div class="contract-content" v-html="currentContract.hetong_neirong"></div>
+      </div>
+      <template #footer>
+        <el-button @click="viewDialogVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 编辑合同对话框 -->
+    <el-dialog
+      v-model="editDialogVisible"
+      title="编辑合同"
+      width="60%"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        v-if="currentContract"
+        ref="editFormRef"
+        :model="editForm"
+        label-width="120px"
+      >
+        <el-form-item label="合同名称" prop="hetong_mingcheng">
+          <el-input v-model="editForm.hetong_mingcheng" />
+        </el-form-item>
+        <el-form-item label="合同状态" prop="hetong_zhuangtai">
+          <el-select v-model="editForm.hetong_zhuangtai" placeholder="请选择状态">
+            <el-option label="草稿" value="draft" />
+            <el-option label="待审批" value="pending" />
+            <el-option label="已审批" value="approved" />
+            <el-option label="已签署" value="signed" />
+            <el-option label="已过期" value="expired" />
+            <el-option label="已取消" value="cancelled" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="到期日期" prop="daoqi_riqi">
+          <el-date-picker
+            v-model="editForm.daoqi_riqi"
+            type="datetime"
+            placeholder="选择日期时间"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
+        </el-form-item>
+        <el-form-item label="支付金额" prop="payment_amount">
+          <el-input v-model="editForm.payment_amount" placeholder="请输入金额" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="editDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSaveEdit" :loading="saving">
+          保存
+        </el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 签署链接对话框 -->
+    <el-dialog
+      v-model="signLinkDialogVisible"
+      title="客户签署链接"
+      width="600px"
+      :close-on-click-modal="false"
+    >
+      <div v-if="signLinkInfo" class="sign-link-info">
+        <el-alert
+          title="签署链接已生成"
+          type="success"
+          :closable="false"
+          style="margin-bottom: 20px"
+        >
+          <template #default>
+            <p>请将以下链接发送给客户进行签署和支付</p>
+            <p>链接有效期：{{ formatExpireTime(signLinkInfo.expires_at) }}</p>
+          </template>
+        </el-alert>
+
+        <el-form label-width="100px">
+          <el-form-item label="签署链接">
+            <el-input
+              v-model="signLinkInfo.sign_link"
+              readonly
+            >
+              <template #append>
+                <el-button @click="copySignLink">复制</el-button>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="签署令牌">
+            <el-input v-model="signLinkInfo.sign_token" readonly />
+          </el-form-item>
+        </el-form>
+      </div>
+      <template #footer>
+        <el-button @click="signLinkDialogVisible = false">关闭</el-button>
+        <el-button type="primary" @click="openSignLink">
+          在新窗口打开
+        </el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 作废合同对话框 -->
+    <el-dialog
+      v-model="voidDialogVisible"
+      title="作废合同"
+      width="600px"
+      :close-on-click-modal="false"
+    >
+      <el-alert
+        title="作废提示"
+        type="warning"
+        :closable="false"
+        style="margin-bottom: 20px"
+      >
+        <template #default>
+          <p>作废后的合同将无法编辑、签署和删除</p>
+          <p>但会保留在系统中用于历史记录和审计追溯</p>
+          <p style="color: #E6A23C; font-weight: bold;">此操作不可撤销，请谨慎操作！</p>
+        </template>
+      </el-alert>
+
+      <el-form
+        ref="voidFormRef"
+        :model="voidForm"
+        :rules="voidFormRules"
+        label-width="100px"
+      >
+        <el-form-item label="合同编号">
+          <el-input :value="currentContract?.contractNumber" disabled />
+        </el-form-item>
+        <el-form-item label="客户名称">
+          <el-input :value="currentContract?.customerName" disabled />
+        </el-form-item>
+        <el-form-item label="作废原因" prop="voidReason">
+          <el-input
+            v-model="voidForm.voidReason"
+            type="textarea"
+            :rows="4"
+            placeholder="请输入作废原因（必填）"
+            maxlength="500"
+            show-word-limit
+          />
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <el-button @click="voidDialogVisible = false">取消</el-button>
+        <el-button
+          type="danger"
+          @click="handleConfirmVoid"
+          :loading="voiding"
+        >
+          确认作废
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, Refresh, User, ArrowDown } from '@element-plus/icons-vue'
+import { Plus, Search, Refresh, User, ArrowDown, View, Edit, Delete, Link, CircleClose, Document, DocumentAdd } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { useContractManagementStore } from '@/stores/modules/contractManagement'
+import { contractApi } from '@/api/modules/contract'
+import { serviceOrderApi } from '@/api/modules/serviceOrder'
 
 const router = useRouter()
 const contractStore = useContractManagementStore()
 
 // 响应式数据
 const loading = ref(false)
+const saving = ref(false)
+const voiding = ref(false)
 const contractList = ref([])
+const currentContract = ref<any>(null)
+const viewDialogVisible = ref(false)
+const editDialogVisible = ref(false)
+const signLinkDialogVisible = ref(false)
+const voidDialogVisible = ref(false)
+const signLinkInfo = ref<any>(null)
+const editFormRef = ref()
+const voidFormRef = ref()
+const editForm = reactive({
+  hetong_mingcheng: '',
+  hetong_zhuangtai: '',
+  daoqi_riqi: '',
+  payment_amount: ''
+})
+const voidForm = reactive({
+  voidReason: ''
+})
+
+// 作废表单验证规则
+const voidFormRules = {
+  voidReason: [
+    { required: true, message: '请输入作废原因', trigger: 'blur' },
+    { min: 10, message: '作废原因至少10个字符', trigger: 'blur' }
+  ]
+}
 
 // 搜索表单
 const searchForm = reactive({
@@ -186,6 +461,8 @@ const getContractList = async () => {
       startDate: contract.shengxiao_riqi ? contract.shengxiao_riqi.split('T')[0] : '',
       endDate: contract.daoqi_riqi ? contract.daoqi_riqi.split('T')[0] : '',
       status: contract.hetong_zhuangtai,
+      hetong_zhuangtai: contract.hetong_zhuangtai,
+      has_service_order: contract.has_service_order || false,
       createdAt: contract.created_at ? contract.created_at.replace('T', ' ').split('.')[0] : '',
       // 保留原始数据以便详细查看
       _original: contract
@@ -228,9 +505,14 @@ const getContractTypeText = (type: string) => {
 const getStatusTag = (status: string) => {
   const tags = {
     draft: 'info',
+    pending: 'warning',
+    approved: 'success',
+    rejected: 'danger',
+    signed: 'success',
     active: 'success',
     completed: 'primary',
-    terminated: 'danger'
+    terminated: 'danger',
+    voided: 'warning'
   }
   return tags[status] || 'info'
 }
@@ -239,9 +521,14 @@ const getStatusTag = (status: string) => {
 const getStatusText = (status: string) => {
   const texts = {
     draft: '草稿',
+    pending: '待审核',
+    approved: '已批准',
+    rejected: '已拒绝',
+    signed: '已签署',
     active: '生效',
     completed: '完成',
-    terminated: '终止'
+    terminated: '终止',
+    voided: '作废'
   }
   return texts[status] || '未知'
 }
@@ -279,20 +566,148 @@ const handleCreate = () => {
 }
 
 // 查看
-const handleView = (row: any) => {
-  ElMessage.info(`查看合同: ${row.contractNumber}`)
+const handleView = async (row: any) => {
+  try {
+    loading.value = true
+    const response = await contractApi.getDetail(row.id)
+    currentContract.value = response.data || response
+    viewDialogVisible.value = true
+  } catch (error) {
+    console.error('获取合同详情失败:', error)
+    ElMessage.error('获取合同详情失败')
+  } finally {
+    loading.value = false
+  }
 }
 
 // 编辑
-const handleEdit = (row: any) => {
-  ElMessage.info(`编辑合同: ${row.contractNumber}`)
+const handleEdit = async (row: any) => {
+  try {
+    loading.value = true
+    const response = await contractApi.getDetail(row.id)
+    currentContract.value = response.data || response
+
+    // 填充编辑表单
+    Object.assign(editForm, {
+      hetong_mingcheng: currentContract.value.hetong_mingcheng,
+      hetong_zhuangtai: currentContract.value.hetong_zhuangtai,
+      daoqi_riqi: currentContract.value.daoqi_riqi,
+      payment_amount: currentContract.value.payment_amount || ''
+    })
+
+    editDialogVisible.value = true
+  } catch (error) {
+    console.error('获取合同详情失败:', error)
+    ElMessage.error('获取合同详情失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 保存编辑
+const handleSaveEdit = async () => {
+  try {
+    saving.value = true
+    await contractApi.update(currentContract.value.id, editForm)
+    ElMessage.success('保存成功')
+    editDialogVisible.value = false
+    getContractList()
+  } catch (error) {
+    console.error('保存失败:', error)
+    ElMessage.error('保存失败')
+  } finally {
+    saving.value = false
+  }
+}
+
+// 生成签署链接
+const handleGenerateSignLink = async (row: any) => {
+  try {
+    loading.value = true
+    const response = await contractApi.generateSignLink(row.id)
+    signLinkInfo.value = response.data || response
+    signLinkDialogVisible.value = true
+
+    // 根据合同状态显示不同的提示
+    if (row.hetong_zhuangtai === 'signed') {
+      ElMessage.success('签署链接已生成（合同已签署，客户可查看或补充支付）')
+    } else {
+      ElMessage.success('签署链接生成成功')
+    }
+  } catch (error: any) {
+    console.error('生成签署链接失败:', error)
+    const errorMsg = error.response?.data?.detail || '生成签署链接失败'
+    ElMessage.error(errorMsg)
+
+    // 如果是状态问题，给出更详细的提示
+    if (errorMsg.includes('状态')) {
+      ElMessage.warning('提示：只有草稿、已审批、已生效或已签署状态的合同可以生成签署链接')
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+// 复制签署链接
+const copySignLink = async () => {
+  try {
+    await navigator.clipboard.writeText(signLinkInfo.value.sign_link)
+    ElMessage.success('链接已复制到剪贴板')
+  } catch (error) {
+    console.error('复制失败:', error)
+    ElMessage.error('复制失败，请手动复制')
+  }
+}
+
+// 在新窗口打开签署链接
+const openSignLink = () => {
+  window.open(signLinkInfo.value.sign_link, '_blank')
+}
+
+// 格式化过期时间
+const formatExpireTime = (expireTime: string) => {
+  const date = new Date(expireTime)
+  return date.toLocaleString('zh-CN')
+}
+
+// 作废合同
+const handleVoid = async (row: any) => {
+  currentContract.value = row
+  voidForm.voidReason = ''
+  voidDialogVisible.value = true
+}
+
+// 确认作废
+const handleConfirmVoid = async () => {
+  if (!voidFormRef.value) return
+
+  try {
+    await voidFormRef.value.validate()
+    voiding.value = true
+
+    // 调用作废API
+    await contractApi.voidContract(currentContract.value.id, {
+      void_reason: voidForm.voidReason
+    })
+
+    ElMessage.success('合同已作废')
+    voidDialogVisible.value = false
+    getContractList()
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      console.error('作废失败:', error)
+      ElMessage.error(error.response?.data?.detail || '作废失败')
+    }
+  } finally {
+    voiding.value = false
+  }
 }
 
 // 删除
 const handleDelete = async (row: any) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除合同 "${row.contractNumber}" 吗？`,
+      `确定要删除合同 "${row.hetong_bianhao}" 吗？`,
       '确认删除',
       {
         confirmButtonText: '确定',
@@ -300,12 +715,38 @@ const handleDelete = async (row: any) => {
         type: 'warning'
       }
     )
-    
+
+    await contractApi.delete(row.id)
     ElMessage.success('删除成功')
     getContractList()
-  } catch {
-    // 用户取消删除
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      console.error('删除失败:', error)
+      ElMessage.error('删除失败')
+    }
   }
+}
+
+// 支付状态标签
+const getPaymentStatusTag = (status: string) => {
+  const tags: Record<string, string> = {
+    pending: 'warning',
+    paid: 'success',
+    failed: 'danger',
+    refunded: 'info'
+  }
+  return tags[status] || 'info'
+}
+
+// 支付状态文本
+const getPaymentStatusText = (status: string) => {
+  const texts: Record<string, string> = {
+    pending: '待支付',
+    paid: '已支付',
+    failed: '支付失败',
+    refunded: '已退款'
+  }
+  return texts[status] || '未知'
 }
 
 // 分页大小改变
@@ -324,6 +765,71 @@ const handleCurrentChange = (page: number) => {
 // 乙方主体管理
 const handlePartyManage = () => {
   router.push('/contract-parties')
+}
+
+// 创建服务工单
+const handleCreateServiceOrder = async (row: any) => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要为合同 "${row.contractNumber}" 创建服务工单吗？`,
+      '确认创建',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
+      }
+    )
+
+    loading.value = true
+    const result = await serviceOrderApi.createFromContract(row.id)
+    ElMessage.success('服务工单创建成功')
+
+    // 刷新列表以更新按钮状态
+    await getContractList()
+
+    // 跳转到工单详情页
+    if (result && result.data && result.data.id) {
+      router.push(`/service-orders/${result.data.id}`)
+    } else if (result && result.id) {
+      router.push(`/service-orders/${result.id}`)
+    } else {
+      console.warn('工单创建成功，但无法获取工单ID，无法跳转')
+    }
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      console.error('创建服务工单失败:', error)
+      const errorMsg = error.response?.data?.detail || '创建服务工单失败'
+      ElMessage.error(errorMsg)
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+// 查看服务工单
+const handleViewServiceOrder = async (row: any) => {
+  try {
+    loading.value = true
+    // 获取合同关联的工单
+    const result = await serviceOrderApi.getByContract(row.id)
+
+    // 检查返回数据的多种可能结构
+    if (result && result.data && result.data.items && result.data.items.length > 0) {
+      // 跳转到第一个工单的详情页
+      router.push(`/service-orders/${result.data.items[0].id}`)
+    } else if (result && result.items && result.items.length > 0) {
+      // 备用：直接在result中的items
+      router.push(`/service-orders/${result.items[0].id}`)
+    } else {
+      ElMessage.warning('该合同暂无关联工单')
+    }
+  } catch (error: any) {
+    console.error('获取工单失败:', error)
+    const errorMsg = error.response?.data?.detail || error.message || '获取工单失败'
+    ElMessage.error(errorMsg)
+  } finally {
+    loading.value = false
+  }
 }
 
 // 组件挂载
@@ -358,5 +864,23 @@ onMounted(() => {
 .pagination-container {
   margin-top: 20px;
   text-align: right;
+}
+
+.contract-detail {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.contract-content {
+  padding: 20px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  background-color: #f5f7fa;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.sign-link-info {
+  padding: 10px 0;
 }
 </style>

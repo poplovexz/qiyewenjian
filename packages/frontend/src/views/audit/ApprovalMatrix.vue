@@ -183,7 +183,7 @@ const ruleTypes = ref([
 // 方法
 const refreshMatrix = async () => {
   try {
-    const response = await fetch('/api/v1/approval-matrix/matrix', {
+    const response = await fetch('/approval-matrix/matrix', {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
@@ -217,7 +217,7 @@ const viewRoleUsers = (role: any) => {
 
 const testAssignment = async (level: any) => {
   try {
-    const response = await fetch('/api/v1/approval-matrix/assign-approver', {
+    const response = await fetch('/approval-matrix/assign-approver', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -255,7 +255,7 @@ const testApprovalChain = async () => {
   try {
     testing.value = true
     
-    const response = await fetch('/api/v1/approval-matrix/approval-chain', {
+    const response = await fetch('/approval-matrix/approval-chain', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -287,7 +287,7 @@ const testApprovalChain = async () => {
 watch(selectedRuleType, async (newType) => {
   if (newType) {
     try {
-      const response = await fetch(`/api/v1/approval-matrix/approval-levels/${newType}`, {
+      const response = await fetch(`/approval-matrix/approval-levels/${newType}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

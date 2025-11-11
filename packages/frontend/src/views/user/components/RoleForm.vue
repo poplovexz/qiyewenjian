@@ -19,16 +19,27 @@
           placeholder="请输入角色名称"
           maxlength="50"
           show-word-limit
+          @input="handleNameInput"
         />
       </el-form-item>
-      
+
       <el-form-item label="角色编码" prop="jiaose_bianma">
         <el-input
           v-model="formData.jiaose_bianma"
-          placeholder="请输入角色编码，如：admin、user"
+          placeholder="自动生成或手动输入，如：admin、user"
           maxlength="50"
           show-word-limit
-        />
+        >
+          <template #append>
+            <el-button @click="generateCode" :icon="Refresh">
+              重新生成
+            </el-button>
+          </template>
+        </el-input>
+        <div class="form-tip">
+          <el-icon><InfoFilled /></el-icon>
+          <span>角色编码会根据角色名称自动生成，也可以手动修改</span>
+        </div>
       </el-form-item>
       
       <el-form-item label="角色描述" prop="miaoshu">
@@ -69,7 +80,9 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import { Refresh, InfoFilled } from '@element-plus/icons-vue'
 import type { Role } from '@/api/modules/role'
+import { roleApi } from '@/api/modules/user'
 
 interface Props {
   visible: boolean
@@ -133,6 +146,76 @@ const formRules: FormRules = {
   ]
 }
 
+// 中文拼音映射表（常用字）
+const pinyinMap: Record<string, string> = {
+  '业': 'ye', '务': 'wu', '员': 'yuan',
+  '财': 'cai',
+  '管': 'guan', '理': 'li',
+  '销': 'xiao', '售': 'shou',
+  '客': 'ke', '服': 'fu',
+  '技': 'ji', '术': 'shu',
+  '产': 'chan', '品': 'pin',
+  '运': 'yun', '营': 'ying',
+  '人': 'ren', '事': 'shi',
+  '行': 'xing', '政': 'zheng',
+  '总': 'zong', '经': 'jing',
+  '副': 'fu',
+  '主': 'zhu',
+  '专': 'zhuan',
+  '助': 'zhu'
+}
+
+// 生成角色编码
+const generateCode = () => {
+  const name = formData.value.jiaose_ming.trim()
+  if (!name) {
+    ElMessage.warning('请先输入角色名称')
+    return
+  }
+
+  let code = ''
+
+  // 尝试使用拼音映射
+  for (const char of name) {
+    if (pinyinMap[char]) {
+      code += pinyinMap[char]
+    } else if (/[a-zA-Z0-9]/.test(char)) {
+      // 保留英文和数字
+      code += char.toLowerCase()
+    }
+  }
+
+  // 如果没有生成任何编码，使用默认规则
+  if (!code) {
+    // 提取英文和数字
+    code = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
+
+    // 如果还是空的，使用时间戳
+    if (!code) {
+      code = 'role_' + Date.now()
+    }
+  }
+
+  // 清理编码：只保留字母、数字和下划线
+  code = code.replace(/[^a-z0-9_]/g, '')
+
+  // 确保以字母开头
+  if (!/^[a-z]/.test(code)) {
+    code = 'role_' + code
+  }
+
+  formData.value.jiaose_bianma = code
+  ElMessage.success('角色编码已生成: ' + code)
+}
+
+// 处理角色名称输入
+const handleNameInput = () => {
+  // 只在创建模式且编码为空时自动生成
+  if (props.mode === 'create' && !formData.value.jiaose_bianma) {
+    generateCode()
+  }
+}
+
 // 重置表单
 const resetForm = () => {
   formData.value = {
@@ -167,44 +250,20 @@ const handleClose = () => {
 // 处理提交
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     loading.value = true
-    
+
     // 调用API创建或更新角色
     if (props.mode === 'create') {
-      const response = await fetch('/api/v1/roles', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(formData.value)
-      })
-
-      if (!response.ok) {
-        throw new Error('创建角色失败')
-      }
-
+      await roleApi.createRole(formData.value)
       ElMessage.success('角色创建成功')
     } else {
-      const response = await fetch(`/api/v1/roles/${props.role!.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(formData.value)
-      })
-
-      if (!response.ok) {
-        throw new Error('更新角色失败')
-      }
-
+      await roleApi.updateRole(props.role!.id, formData.value)
       ElMessage.success('角色更新成功')
     }
-    
+
     emit('success')
     handleClose()
   } catch (error) {
@@ -219,5 +278,18 @@ const handleSubmit = async () => {
 <style scoped>
 .dialog-footer {
   text-align: right;
+}
+
+.form-tip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #909399;
+}
+
+.form-tip .el-icon {
+  font-size: 14px;
 }
 </style>

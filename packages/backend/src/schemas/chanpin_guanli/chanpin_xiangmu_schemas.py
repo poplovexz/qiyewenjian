@@ -2,7 +2,7 @@
 产品项目数据验证模式
 """
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 from decimal import Decimal
 
@@ -22,9 +22,17 @@ class ChanpinXiangmuBase(BaseModel):
     zhuangtai: Optional[str] = Field("active", description="状态")
 
 
-class ChanpinXiangmuCreate(ChanpinXiangmuBase):
+class ChanpinXiangmuCreate(BaseModel):
     """创建产品项目模式"""
-    pass
+    xiangmu_mingcheng: str = Field(..., min_length=1, max_length=200, description="项目名称")
+    xiangmu_bianma: Optional[str] = Field(None, min_length=1, max_length=100, description="项目编码（可选，不提供则自动生成）")
+    fenlei_id: str = Field(..., description="所属分类ID")
+    yewu_baojia: Decimal = Field(..., ge=0, description="业务报价")
+    baojia_danwei: Optional[str] = Field("yuan", description="报价单位")
+    banshi_tianshu: Optional[int] = Field(0, ge=0, description="办事天数")
+    xiangmu_beizhu: Optional[str] = Field(None, max_length=2000, description="项目备注")
+    paixu: Optional[int] = Field(0, ge=0, description="排序号")
+    zhuangtai: Optional[str] = Field("active", description="状态")
 
 
 class ChanpinXiangmuUpdate(BaseModel):
@@ -54,11 +62,15 @@ class ChanpinXiangmuResponse(ChanpinXiangmuBase):
 
 class ChanpinXiangmuListItem(BaseModel):
     """产品项目列表项模式"""
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     xiangmu_mingcheng: str
     xiangmu_bianma: str
     fenlei_id: str
     fenlei_mingcheng: str
+    fenlei_bianma: Optional[str] = None
+    chanpin_leixing: Optional[str] = None
     yewu_baojia: Decimal
     baojia_danwei: str
     banshi_tianshu: int
@@ -67,9 +79,6 @@ class ChanpinXiangmuListItem(BaseModel):
     created_at: datetime
     updated_at: datetime
     buzou_count: int = 0
-    
-    class Config:
-        from_attributes = True
 
 
 class ChanpinXiangmuListParams(BaseModel):
@@ -83,6 +92,8 @@ class ChanpinXiangmuListParams(BaseModel):
 
 class ChanpinXiangmuListResponse(BaseModel):
     """产品项目列表响应模式"""
+    model_config = ConfigDict(from_attributes=True)
+
     items: List[ChanpinXiangmuListItem]
     total: int
     page: int

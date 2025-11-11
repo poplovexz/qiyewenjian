@@ -28,7 +28,7 @@ export const productCategoryApi = {
    * 获取产品分类列表
    */
   getList(params: ProductCategoryListParams): Promise<ProductCategoryListResponse> {
-    return request.get('/api/v1/product-management/categories/', { params })
+    return request.get('/product-management/categories/', { params })
   },
 
   /**
@@ -36,35 +36,35 @@ export const productCategoryApi = {
    */
   getOptions(chanpin_leixing?: string): Promise<ProductCategoryOption[]> {
     const params = chanpin_leixing ? { chanpin_leixing } : {}
-    return request.get('/api/v1/product-management/categories/options', { params })
+    return request.get('/product-management/categories/options', { params })
   },
 
   /**
    * 根据ID获取产品分类详情
    */
   getById(id: string): Promise<ProductCategory> {
-    return request.get(`/api/v1/product-management/categories/${id}`)
+    return request.get(`/product-management/categories/${id}`)
   },
 
   /**
    * 创建产品分类
    */
   create(data: ProductCategoryCreate): Promise<ProductCategory> {
-    return request.post('/api/v1/product-management/categories/', data)
+    return request.post('/product-management/categories/', data)
   },
 
   /**
    * 更新产品分类
    */
   update(id: string, data: ProductCategoryUpdate): Promise<ProductCategory> {
-    return request.put(`/api/v1/product-management/categories/${id}`, data)
+    return request.put(`/product-management/categories/${id}`, data)
   },
 
   /**
    * 删除产品分类
    */
   delete(id: string): Promise<void> {
-    return request.delete(`/api/v1/product-management/categories/${id}`)
+    return request.delete(`/product-management/categories/${id}`)
   }
 }
 
@@ -76,42 +76,42 @@ export const productApi = {
    * 获取产品项目列表
    */
   getList(params: ProductListParams): Promise<ProductListResponse> {
-    return request.get('/api/v1/product-management/products/', { params })
+    return request.get('/product-management/products/', { params })
   },
 
   /**
    * 根据ID获取产品项目详情
    */
   getById(id: string): Promise<Product> {
-    return request.get(`/api/v1/product-management/products/${id}`)
+    return request.get(`/product-management/products/${id}`)
   },
 
   /**
    * 获取产品项目完整详情（包含步骤列表）
    */
   getDetail(id: string): Promise<ProductDetail> {
-    return request.get(`/api/v1/product-management/products/${id}/detail`)
+    return request.get(`/product-management/products/${id}/detail`)
   },
 
   /**
    * 创建产品项目
    */
   create(data: ProductCreate): Promise<Product> {
-    return request.post('/api/v1/product-management/products/', data)
+    return request.post('/product-management/products/', data)
   },
 
   /**
    * 更新产品项目
    */
   update(id: string, data: ProductUpdate): Promise<Product> {
-    return request.put(`/api/v1/product-management/products/${id}`, data)
+    return request.put(`/product-management/products/${id}`, data)
   },
 
   /**
    * 删除产品项目
    */
   delete(id: string): Promise<void> {
-    return request.delete(`/api/v1/product-management/products/${id}`)
+    return request.delete(`/product-management/products/${id}`)
   }
 }
 
@@ -123,42 +123,42 @@ export const productStepApi = {
    * 获取产品步骤列表
    */
   getList(xiangmu_id: string): Promise<ProductStep[]> {
-    return request.get(`/api/v1/product-management/products/${xiangmu_id}/steps`)
+    return request.get(`/product-management/products/${xiangmu_id}/steps`)
   },
 
   /**
    * 根据ID获取产品步骤详情
    */
   getById(id: string): Promise<ProductStep> {
-    return request.get(`/api/v1/product-management/steps/${id}`)
+    return request.get(`/product-management/steps/${id}`)
   },
 
   /**
    * 创建产品步骤
    */
   create(data: ProductStepCreate): Promise<ProductStep> {
-    return request.post('/api/v1/product-management/steps/', data)
+    return request.post('/product-management/steps/', data)
   },
 
   /**
    * 更新产品步骤
    */
   update(id: string, data: ProductStepUpdate): Promise<ProductStep> {
-    return request.put(`/api/v1/product-management/steps/${id}`, data)
+    return request.put(`/product-management/steps/${id}`, data)
   },
 
   /**
    * 删除产品步骤
    */
   delete(id: string): Promise<void> {
-    return request.delete(`/api/v1/product-management/steps/${id}`)
+    return request.delete(`/product-management/steps/${id}`)
   },
 
   /**
    * 批量更新产品步骤
    */
   batchUpdate(xiangmu_id: string, steps: any[]): Promise<ProductStep[]> {
-    return request.put(`/api/v1/product-management/products/${xiangmu_id}/steps`, {
+    return request.put(`/product-management/products/${xiangmu_id}/steps`, {
       xiangmu_id,
       buzou_list: steps
     })

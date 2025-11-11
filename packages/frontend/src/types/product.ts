@@ -91,7 +91,7 @@ export interface Product {
 // 产品项目创建参数
 export interface ProductCreate {
   xiangmu_mingcheng: string
-  xiangmu_bianma: string
+  xiangmu_bianma?: string  // 可选，由后端自动生成
   fenlei_id: string
   chanpin_leixing?: 'zengzhi' | 'daili_jizhang'
   yewu_baojia: number
