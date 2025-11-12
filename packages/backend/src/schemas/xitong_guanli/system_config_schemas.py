@@ -1,6 +1,7 @@
 """
 系统配置Schema
 """
+from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field
 
@@ -17,8 +18,8 @@ class SystemConfigResponse(BaseModel):
     value_type: Optional[str] = None
     is_editable: str
     sort_order: int
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         from_attributes = True
