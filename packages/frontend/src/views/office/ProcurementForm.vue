@@ -16,14 +16,18 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="采购类型" prop="caigou_leixing">
-              <el-select v-model="form.caigou_leixing" placeholder="请选择采购类型" style="width: 100%">
-                <el-option label="办公用品" value="bangongyongpin" />
-                <el-option label="办公设备" value="bangongshebei" />
-                <el-option label="电子设备" value="dianzishebei" />
-                <el-option label="家具" value="jiaju" />
-                <el-option label="耗材" value="haocai" />
-                <el-option label="软件服务" value="ruanjianfuwu" />
-                <el-option label="其他" value="qita" />
+              <el-select
+                v-model="form.caigou_leixing"
+                placeholder="请选择采购类型"
+                style="width: 100%"
+                :loading="zhichuLeibieLoading"
+              >
+                <el-option
+                  v-for="item in zhichuLeibieOptions"
+                  :key="item.id"
+                  :label="item.mingcheng"
+                  :value="item.mingcheng"
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -154,12 +158,13 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules, UploadProps, UploadUserFile } from 'element-plus'
-import { 
-  getProcurementDetail, 
-  createProcurement, 
+import {
+  getProcurementDetail,
+  createProcurement,
   updateProcurement,
-  type ProcurementApplication 
+  type ProcurementApplication
 } from '@/api/office'
+import { getZhichuLeibieList, type ZhichuLeibie } from '@/api/modules/finance-settings'
 import { useAuthStore } from '@/stores/modules/auth'
 
 const router = useRouter()
@@ -172,6 +177,10 @@ const loading = ref(false)
 const saving = ref(false)
 const submitting = ref(false)
 const fileList = ref<UploadUserFile[]>([])
+
+// 支出类别选项
+const zhichuLeibieOptions = ref<ZhichuLeibie[]>([])
+const zhichuLeibieLoading = ref(false)
 
 const procurementId = computed(() => route.params.id as string)
 const isEdit = computed(() => !!procurementId.value)
@@ -219,6 +228,22 @@ const uploadAction = computed(() => `${import.meta.env.VITE_API_BASE_URL}/upload
 const uploadHeaders = computed(() => ({
   Authorization: `Bearer ${authStore.accessToken}`
 }))
+
+// 加载支出类别列表
+const loadZhichuLeibieOptions = async () => {
+  zhichuLeibieLoading.value = true
+  try {
+    const res = await getZhichuLeibieList({ page: 1, size: 200 })
+    const allItems = (res as any).items || []
+    // 只显示启用状态的类别
+    zhichuLeibieOptions.value = allItems.filter((item: ZhichuLeibie) => item.zhuangtai === 'active')
+  } catch (error: any) {
+    ElMessage.error(error.message || '加载采购类型失败')
+    zhichuLeibieOptions.value = []
+  } finally {
+    zhichuLeibieLoading.value = false
+  }
+}
 
 // 获取详情（编辑模式）
 const fetchDetail = async () => {
@@ -350,6 +375,7 @@ const handleBack = () => {
 }
 
 onMounted(() => {
+  loadZhichuLeibieOptions()
   fetchDetail()
 })
 </script>

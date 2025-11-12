@@ -19,12 +19,18 @@
           </el-select>
         </el-form-item>
         <el-form-item label="报销类型">
-          <el-select v-model="searchForm.baoxiao_leixing" placeholder="请选择" clearable>
-            <el-option label="差旅费" value="chailvfei" />
-            <el-option label="餐饮费" value="canyinfei" />
-            <el-option label="交通费" value="jiaotongfei" />
-            <el-option label="办公用品" value="bangongyongpin" />
-            <el-option label="其他" value="qita" />
+          <el-select
+            v-model="searchForm.baoxiao_leixing"
+            placeholder="请选择"
+            clearable
+            :loading="baoxiaoLeibieLoading"
+          >
+            <el-option
+              v-for="item in baoxiaoLeibieOptions"
+              :key="item.id"
+              :label="item.mingcheng"
+              :value="item.mingcheng"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="搜索">
@@ -116,16 +122,21 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { 
-  getMyReimbursementList, 
+import {
+  getMyReimbursementList,
   deleteReimbursement,
   submitReimbursementForApproval,
-  type ReimbursementApplication 
+  type ReimbursementApplication
 } from '@/api/office'
+import { getBaoxiaoLeibieList, type BaoxiaoLeibie } from '@/api/modules/finance-settings'
 
 const router = useRouter()
 const loading = ref(false)
 const tableData = ref<ReimbursementApplication[]>([])
+
+// 报销类别选项
+const baoxiaoLeibieOptions = ref<BaoxiaoLeibie[]>([])
+const baoxiaoLeibieLoading = ref(false)
 
 const searchForm = reactive({
   shenhe_zhuangtai: '',
@@ -138,6 +149,22 @@ const pagination = reactive({
   size: 10,
   total: 0
 })
+
+// 加载报销类别列表
+const loadBaoxiaoLeibieOptions = async () => {
+  baoxiaoLeibieLoading.value = true
+  try {
+    const res = await getBaoxiaoLeibieList({ page: 1, size: 100 })
+    const allItems = (res as any).items || []
+    // 只显示启用状态的类别
+    baoxiaoLeibieOptions.value = allItems.filter((item: BaoxiaoLeibie) => item.zhuangtai === 'active')
+  } catch (error: any) {
+    // 静默失败，不影响主要功能
+    baoxiaoLeibieOptions.value = []
+  } finally {
+    baoxiaoLeibieLoading.value = false
+  }
+}
 
 // 获取列表数据
 const fetchData = async () => {
@@ -225,14 +252,8 @@ const handleCurrentChange = () => {
 
 // 辅助函数
 const getTypeLabel = (type: string) => {
-  const map: Record<string, string> = {
-    chailvfei: '差旅费',
-    canyinfei: '餐饮费',
-    jiaotongfei: '交通费',
-    bangongyongpin: '办公用品',
-    qita: '其他'
-  }
-  return map[type] || type
+  // 现在报销类型直接存储类别名称，无需映射
+  return type || '-'
 }
 
 const getStatusLabel = (status: string) => {
@@ -261,6 +282,7 @@ const formatDate = (date: string) => {
 }
 
 onMounted(() => {
+  loadBaoxiaoLeibieOptions()
   fetchData()
 })
 </script>

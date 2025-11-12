@@ -16,12 +16,18 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="报销类型" prop="baoxiao_leixing">
-              <el-select v-model="form.baoxiao_leixing" placeholder="请选择报销类型" style="width: 100%">
-                <el-option label="差旅费" value="chailvfei" />
-                <el-option label="餐饮费" value="canyinfei" />
-                <el-option label="交通费" value="jiaotongfei" />
-                <el-option label="办公用品" value="bangongyongpin" />
-                <el-option label="其他" value="qita" />
+              <el-select
+                v-model="form.baoxiao_leixing"
+                placeholder="请选择报销类型"
+                style="width: 100%"
+                :loading="baoxiaoLeibieLoading"
+              >
+                <el-option
+                  v-for="item in baoxiaoLeibieOptions"
+                  :key="item.id"
+                  :label="item.mingcheng"
+                  :value="item.mingcheng"
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -121,12 +127,13 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules, UploadProps, UploadUserFile } from 'element-plus'
-import { 
-  getReimbursementDetail, 
-  createReimbursement, 
+import {
+  getReimbursementDetail,
+  createReimbursement,
   updateReimbursement,
-  type ReimbursementApplication 
+  type ReimbursementApplication
 } from '@/api/office'
+import { getBaoxiaoLeibieList, type BaoxiaoLeibie } from '@/api/modules/finance-settings'
 import { useAuthStore } from '@/stores/modules/auth'
 
 const router = useRouter()
@@ -139,6 +146,10 @@ const loading = ref(false)
 const saving = ref(false)
 const submitting = ref(false)
 const fileList = ref<UploadUserFile[]>([])
+
+// 报销类别选项
+const baoxiaoLeibieOptions = ref<BaoxiaoLeibie[]>([])
+const baoxiaoLeibieLoading = ref(false)
 
 const reimbursementId = computed(() => route.params.id as string)
 const isEdit = computed(() => !!reimbursementId.value)
@@ -175,6 +186,22 @@ const uploadAction = computed(() => `${import.meta.env.VITE_API_BASE_URL}/upload
 const uploadHeaders = computed(() => ({
   Authorization: `Bearer ${authStore.accessToken}`
 }))
+
+// 加载报销类别列表
+const loadBaoxiaoLeibieOptions = async () => {
+  baoxiaoLeibieLoading.value = true
+  try {
+    const res = await getBaoxiaoLeibieList({ page: 1, size: 100 })
+    const allItems = (res as any).items || []
+    // 只显示启用状态的类别
+    baoxiaoLeibieOptions.value = allItems.filter((item: BaoxiaoLeibie) => item.zhuangtai === 'active')
+  } catch (error: any) {
+    ElMessage.error(error.message || '加载报销类型失败')
+    baoxiaoLeibieOptions.value = []
+  } finally {
+    baoxiaoLeibieLoading.value = false
+  }
+}
 
 // 获取详情（编辑模式）
 const fetchDetail = async () => {
@@ -299,6 +326,7 @@ const handleBack = () => {
 }
 
 onMounted(() => {
+  loadBaoxiaoLeibieOptions()
   fetchDetail()
 })
 </script>

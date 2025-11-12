@@ -80,7 +80,11 @@ from .shenhe_guanli import (
 # 财务管理模块
 from .caiwu_guanli import (
     KaipiaoShenqing,
-    ChengbenJilu
+    ChengbenJilu,
+    ShoufukuanQudao,
+    ShouruLeibie,
+    BaoxiaoLeibie,
+    ZhichuLeibie
 )
 
 # 服务管理模块
@@ -170,6 +174,10 @@ __all__ = [
     # 财务管理
     "KaipiaoShenqing",
     "ChengbenJilu",
+    "ShoufukuanQudao",
+    "ShouruLeibie",
+    "BaoxiaoLeibie",
+    "ZhichuLeibie",
 
     # 服务管理
     "FuwuGongdan",

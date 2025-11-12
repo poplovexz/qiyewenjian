@@ -16,7 +16,7 @@ from .endpoints.hetong_guanli import hetong_moban, hetong, hetong_yifang_zhuti, 
 from .endpoints.xiansuo_guanli import xiansuo, xiansuo_laiyuan, xiansuo_zhuangtai, xiansuo_genjin, xiansuo_baojia
 from .endpoints.zhifu_guanli import zhifu_dingdan, zhifu_liushui, zhifu_tongzhi, hetong_zhifu, yinhang_huikuan_danju
 from .endpoints.shenhe_guanli import shenhe_guize, shenhe_liucheng, shenhe_jilu, rule_test, approval_matrix, payment_audit
-from .endpoints.caiwu_guanli import kaipiao, chengben
+from .endpoints.caiwu_guanli import kaipiao, chengben, caiwu_shezhi
 from .endpoints.fuwu_guanli import fuwu_gongdan, task_items
 from .endpoints.heguishixiang_guanli import heguishixiang_moban
 from .endpoints import audit_workflows, audit_records
@@ -83,6 +83,7 @@ api_router.include_router(payment_audit.router, prefix="/payment-audit", tags=["
 # 财务管理模块
 api_router.include_router(kaipiao.router, prefix="/invoices", tags=["开票申请"])
 api_router.include_router(chengben.router, prefix="/costs", tags=["成本记录"])
+api_router.include_router(caiwu_shezhi.router, prefix="/finance-settings", tags=["财务设置"])
 
 # 服务管理模块
 api_router.include_router(fuwu_gongdan.router, prefix="/service-orders", tags=["服务工单管理"])

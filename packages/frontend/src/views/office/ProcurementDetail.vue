@@ -249,16 +249,8 @@ const handleBack = () => {
 
 // 辅助函数
 const getTypeLabel = (type: string) => {
-  const map: Record<string, string> = {
-    bangongyongpin: '办公用品',
-    bangongshebei: '办公设备',
-    dianzishebei: '电子设备',
-    jiaju: '家具',
-    haocai: '耗材',
-    ruanjianfuwu: '软件服务',
-    qita: '其他'
-  }
-  return map[type] || type
+  // 现在采购类型直接存储类别名称，无需映射
+  return type || '-'
 }
 
 const getStatusLabel = (status: string) => {

@@ -923,6 +923,15 @@ const routes: RouteRecordRaw[] = [
             meta: {
               title: '基础数据管理'
             }
+          },
+          // 财务设置
+          {
+            path: 'finance',
+            name: 'FinanceSettings',
+            component: () => import('@/views/settings/data/FinanceSettings.vue'),
+            meta: {
+              title: '财务设置'
+            }
           }
         ]
       }

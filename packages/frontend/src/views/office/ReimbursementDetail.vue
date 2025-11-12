@@ -222,14 +222,8 @@ const handleBack = () => {
 
 // 辅助函数
 const getTypeLabel = (type: string) => {
-  const map: Record<string, string> = {
-    chailvfei: '差旅费',
-    canyinfei: '餐饮费',
-    jiaotongfei: '交通费',
-    bangongyongpin: '办公用品',
-    qita: '其他'
-  }
-  return map[type] || type
+  // 现在报销类型直接存储类别名称，无需映射
+  return type || '-'
 }
 
 const getStatusLabel = (status: string) => {

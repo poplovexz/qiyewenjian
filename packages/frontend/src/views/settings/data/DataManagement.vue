@@ -97,6 +97,22 @@
             </div>
           </el-card>
         </el-col>
+
+        <!-- 财务设置 -->
+        <el-col :xs="24" :sm="12" :md="8" :lg="6">
+          <el-card shadow="hover" class="data-card" @click="navigateTo('/settings/finance')">
+            <div class="data-card-content">
+              <div class="icon-wrapper finance">
+                <el-icon :size="32"><Money /></el-icon>
+              </div>
+              <h3>财务设置</h3>
+              <p>管理收付款渠道、收入类别、报销类别、支出类别</p>
+              <div class="stats">
+                <el-tag type="warning" size="small">财务管理</el-tag>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
       </el-row>
     </el-card>
   </div>
@@ -106,7 +122,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Box, Opportunity, Document, DocumentChecked } from '@element-plus/icons-vue'
+import { Box, Opportunity, Document, DocumentChecked, Money } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -197,6 +213,11 @@ onMounted(() => {
 
         &.compliance {
           background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+          color: white;
+        }
+
+        &.finance {
+          background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
           color: white;
         }
       }

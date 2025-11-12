@@ -17,6 +17,24 @@ from .chengben_schemas import (
     ChengbenStatistics,
     ChengbenAnalysis
 )
+from .caiwu_shezhi_schemas import (
+    ShoufukuanQudaoCreate,
+    ShoufukuanQudaoUpdate,
+    ShoufukuanQudaoResponse,
+    ShoufukuanQudaoListResponse,
+    ShouruLeibieCreate,
+    ShouruLeibieUpdate,
+    ShouruLeibieResponse,
+    ShouruLeibieListResponse,
+    BaoxiaoLeibieCreate,
+    BaoxiaoLeibieUpdate,
+    BaoxiaoLeibieResponse,
+    BaoxiaoLeibieListResponse,
+    ZhichuLeibieCreate,
+    ZhichuLeibieUpdate,
+    ZhichuLeibieResponse,
+    ZhichuLeibieListResponse
+)
 
 __all__ = [
     # 开票申请
@@ -33,5 +51,29 @@ __all__ = [
     "ChengbenJiluListResponse",
     "ChengbenJiluListParams",
     "ChengbenStatistics",
-    "ChengbenAnalysis"
+    "ChengbenAnalysis",
+
+    # 收付款渠道
+    "ShoufukuanQudaoCreate",
+    "ShoufukuanQudaoUpdate",
+    "ShoufukuanQudaoResponse",
+    "ShoufukuanQudaoListResponse",
+
+    # 收入类别
+    "ShouruLeibieCreate",
+    "ShouruLeibieUpdate",
+    "ShouruLeibieResponse",
+    "ShouruLeibieListResponse",
+
+    # 报销类别
+    "BaoxiaoLeibieCreate",
+    "BaoxiaoLeibieUpdate",
+    "BaoxiaoLeibieResponse",
+    "BaoxiaoLeibieListResponse",
+
+    # 支出类别
+    "ZhichuLeibieCreate",
+    "ZhichuLeibieUpdate",
+    "ZhichuLeibieResponse",
+    "ZhichuLeibieListResponse"
 ]

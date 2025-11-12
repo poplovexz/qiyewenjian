@@ -17,14 +17,18 @@
           <el-input v-model="searchForm.caigou_mingcheng" placeholder="请输入物品名称" clearable />
         </el-form-item>
         <el-form-item label="采购类型">
-          <el-select v-model="searchForm.caigou_leixing" placeholder="请选择" clearable>
-            <el-option label="办公用品" value="bangongyongpin" />
-            <el-option label="办公设备" value="bangongshebei" />
-            <el-option label="电子设备" value="dianzishebei" />
-            <el-option label="家具" value="jiaju" />
-            <el-option label="耗材" value="haocai" />
-            <el-option label="软件服务" value="ruanjianfuwu" />
-            <el-option label="其他" value="qita" />
+          <el-select
+            v-model="searchForm.caigou_leixing"
+            placeholder="请选择"
+            clearable
+            :loading="zhichuLeibieLoading"
+          >
+            <el-option
+              v-for="item in zhichuLeibieOptions"
+              :key="item.id"
+              :label="item.mingcheng"
+              :value="item.mingcheng"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="审核状态">
@@ -111,10 +115,15 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getProcurementList, deleteProcurement, type ProcurementApplication } from '@/api/office'
+import { getZhichuLeibieList, type ZhichuLeibie } from '@/api/modules/finance-settings'
 
 const router = useRouter()
 const loading = ref(false)
 const tableData = ref<ProcurementApplication[]>([])
+
+// 支出类别选项
+const zhichuLeibieOptions = ref<ZhichuLeibie[]>([])
+const zhichuLeibieLoading = ref(false)
 
 const searchForm = reactive({
   shenqing_bianhao: '',
@@ -128,6 +137,22 @@ const pagination = reactive({
   page_size: 10,
   total: 0
 })
+
+// 加载支出类别列表
+const loadZhichuLeibieOptions = async () => {
+  zhichuLeibieLoading.value = true
+  try {
+    const res = await getZhichuLeibieList({ page: 1, size: 200 })
+    const allItems = (res as any).items || []
+    // 只显示启用状态的类别
+    zhichuLeibieOptions.value = allItems.filter((item: ZhichuLeibie) => item.zhuangtai === 'active')
+  } catch (error: any) {
+    // 静默失败，不影响主要功能
+    zhichuLeibieOptions.value = []
+  } finally {
+    zhichuLeibieLoading.value = false
+  }
+}
 
 // 获取数据
 const fetchData = async () => {
@@ -197,16 +222,8 @@ const handleDelete = async (row: ProcurementApplication) => {
 
 // 辅助函数
 const getTypeLabel = (type: string) => {
-  const map: Record<string, string> = {
-    bangongyongpin: '办公用品',
-    bangongshebei: '办公设备',
-    dianzishebei: '电子设备',
-    jiaju: '家具',
-    haocai: '耗材',
-    ruanjianfuwu: '软件服务',
-    qita: '其他'
-  }
-  return map[type] || type
+  // 现在采购类型直接存储类别名称，无需映射
+  return type || '-'
 }
 
 const getStatusLabel = (status: string) => {
@@ -240,6 +257,7 @@ const formatDateTime = (date: string) => {
 }
 
 onMounted(() => {
+  loadZhichuLeibieOptions()
   fetchData()
 })
 </script>
