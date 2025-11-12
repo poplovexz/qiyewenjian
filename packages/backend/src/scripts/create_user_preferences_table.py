@@ -24,6 +24,7 @@ def create_user_preferences_table():
         created_by VARCHAR(36),
         updated_by VARCHAR(36),
         is_deleted VARCHAR(1) DEFAULT 'N',
+        remark VARCHAR(500),
         CONSTRAINT uk_user_preference UNIQUE (user_id, preference_key),
         CONSTRAINT fk_user_preferences_user FOREIGN KEY (user_id) REFERENCES yonghu(id) ON DELETE CASCADE
     );

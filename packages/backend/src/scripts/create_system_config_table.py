@@ -33,6 +33,7 @@ def create_system_config_table():
         created_by VARCHAR(36),
         updated_by VARCHAR(36),
         is_deleted VARCHAR(1) DEFAULT 'N',
+        remark VARCHAR(500),
         CONSTRAINT idx_system_config_key UNIQUE (config_key)
     );
     
