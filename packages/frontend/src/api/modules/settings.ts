@@ -49,53 +49,35 @@ export interface UserPreferencesUpdate {
  * 获取个人信息
  */
 export function getUserProfile() {
-  return request<UserProfile>({
-    url: '/users/me/profile',
-    method: 'get'
-  })
+  return request.get<UserProfile>('/users/me/profile')
 }
 
 /**
  * 更新个人信息
  */
 export function updateUserProfile(data: UserProfileUpdate) {
-  return request<UserProfile>({
-    url: '/users/me/profile',
-    method: 'put',
-    data
-  })
+  return request.put<UserProfile>('/users/me/profile', data)
 }
 
 /**
  * 修改密码
  */
 export function changePassword(data: PasswordChange) {
-  return request<{ message: string }>({
-    url: '/users/me/password',
-    method: 'put',
-    data
-  })
+  return request.put<{ message: string }>('/users/me/password', data)
 }
 
 /**
  * 获取用户偏好设置
  */
 export function getUserPreferences() {
-  return request<UserPreferences>({
-    url: '/users/me/preferences',
-    method: 'get'
-  })
+  return request.get<UserPreferences>('/users/me/preferences')
 }
 
 /**
  * 更新用户偏好设置
  */
 export function updateUserPreferences(data: UserPreferencesUpdate) {
-  return request<UserPreferences>({
-    url: '/users/me/preferences',
-    method: 'put',
-    data
-  })
+  return request.put<UserPreferences>('/users/me/preferences', data)
 }
 
 // ==================== 系统配置相关 ====================
@@ -136,19 +118,14 @@ export interface CacheClearResponse {
  * 获取系统信息
  */
 export function getSystemInfo() {
-  return request<SystemInfo>({
-    url: '/system/info',
-    method: 'get'
-  })
+  return request.get<SystemInfo>('/system/info')
 }
 
 /**
  * 获取所有配置
  */
 export function getAllConfigs(configType?: string) {
-  return request<SystemConfig[]>({
-    url: '/system/configs',
-    method: 'get',
+  return request.get<SystemConfig[]>('/system/configs', {
     params: configType ? { config_type: configType } : undefined
   })
 }
@@ -157,20 +134,15 @@ export function getAllConfigs(configType?: string) {
  * 获取单个配置
  */
 export function getConfigByKey(configKey: string) {
-  return request<SystemConfig>({
-    url: `/system/configs/${configKey}`,
-    method: 'get'
-  })
+  return request.get<SystemConfig>(`/system/configs/${configKey}`)
 }
 
 /**
  * 更新单个配置
  */
 export function updateConfig(configKey: string, configValue: string) {
-  return request<SystemConfig>({
-    url: `/system/configs/${configKey}`,
-    method: 'put',
-    data: { config_value: configValue }
+  return request.put<SystemConfig>(`/system/configs/${configKey}`, {
+    config_value: configValue
   })
 }
 
@@ -178,20 +150,17 @@ export function updateConfig(configKey: string, configValue: string) {
  * 批量更新配置
  */
 export function batchUpdateConfigs(configs: Record<string, string>) {
-  return request<{ updated: Record<string, string>; errors: Record<string, string> }>({
-    url: '/system/configs',
-    method: 'put',
-    data: { configs }
-  })
+  return request.put<{ updated: Record<string, string>; errors: Record<string, string> }>(
+    '/system/configs',
+    { configs }
+  )
 }
 
 /**
  * 清除缓存
  */
 export function clearCache(pattern?: string) {
-  return request<CacheClearResponse>({
-    url: '/system/cache/clear',
-    method: 'post',
+  return request.post<CacheClearResponse>('/system/cache/clear', undefined, {
     params: pattern ? { pattern } : undefined
   })
 }

@@ -34,18 +34,33 @@
           </el-card>
         </el-col>
 
-        <!-- 线索设置 -->
+        <!-- 线索来源 -->
         <el-col :xs="24" :sm="12" :md="8" :lg="6">
-          <el-card shadow="hover" class="data-card" @click="handleLeadSettings">
+          <el-card shadow="hover" class="data-card" @click="navigateTo('/lead-sources')">
             <div class="data-card-content">
               <div class="icon-wrapper lead">
                 <el-icon :size="32"><Opportunity /></el-icon>
               </div>
-              <h3>线索设置</h3>
-              <p>管理线索来源和线索状态</p>
+              <h3>线索来源</h3>
+              <p>管理线索来源配置</p>
               <div class="stats">
-                <el-tag type="info" size="small">{{ leadStats.sources }} 个来源</el-tag>
-                <el-tag type="success" size="small">{{ leadStats.statuses }} 个状态</el-tag>
+                <el-tag type="info" size="small">线索管理</el-tag>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+
+        <!-- 线索状态 -->
+        <el-col :xs="24" :sm="12" :md="8" :lg="6">
+          <el-card shadow="hover" class="data-card" @click="navigateTo('/lead-statuses')">
+            <div class="data-card-content">
+              <div class="icon-wrapper lead">
+                <el-icon :size="32"><Opportunity /></el-icon>
+              </div>
+              <h3>线索状态</h3>
+              <p>管理线索状态配置</p>
+              <div class="stats">
+                <el-tag type="success" size="small">线索管理</el-tag>
               </div>
             </div>
           </el-card>
@@ -84,23 +99,6 @@
         </el-col>
       </el-row>
     </el-card>
-
-    <!-- 线索设置弹窗 -->
-    <el-dialog
-      v-model="leadSettingsVisible"
-      title="线索设置"
-      width="80%"
-      :close-on-click-modal="false"
-    >
-      <el-tabs v-model="leadActiveTab">
-        <el-tab-pane label="线索来源" name="source">
-          <LeadSourceSettings />
-        </el-tab-pane>
-        <el-tab-pane label="线索状态" name="status">
-          <LeadStatusSettings />
-        </el-tab-pane>
-      </el-tabs>
-    </el-dialog>
   </div>
 </template>
 
@@ -109,8 +107,6 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Box, Opportunity, Document, DocumentChecked } from '@element-plus/icons-vue'
-import LeadSourceSettings from './LeadSourceSettings.vue'
-import LeadStatusSettings from './LeadStatusSettings.vue'
 
 const router = useRouter()
 
@@ -120,23 +116,9 @@ const productStats = ref({
   products: 0
 })
 
-const leadStats = ref({
-  sources: 0,
-  statuses: 0
-})
-
-// 线索设置弹窗
-const leadSettingsVisible = ref(false)
-const leadActiveTab = ref('source')
-
-// 导航到产品管理
+// 导航到指定页面
 const navigateTo = (path: string) => {
   router.push(path)
-}
-
-// 打开线索设置
-const handleLeadSettings = () => {
-  leadSettingsVisible.value = true
 }
 
 // 打开合同设置
@@ -157,11 +139,6 @@ const loadStats = async () => {
     productStats.value = {
       categories: 8,
       products: 24
-    }
-    
-    leadStats.value = {
-      sources: 6,
-      statuses: 5
     }
   } catch (error: any) {
     console.error('加载统计数据失败:', error)
