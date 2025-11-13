@@ -85,11 +85,27 @@ if [ -d "packages" ]; then
     mkdir -p $BACKUP_DIR
     cp -r packages $BACKUP_DIR/ 2>/dev/null || true
     echo "✓ 已备份到: $BACKUP_DIR"
+
+    # 保存.env文件
+    if [ -f "packages/backend/.env" ]; then
+        cp packages/backend/.env /tmp/.env.backup
+    fi
+
+    # 修复权限后删除旧文件
+    chmod -R u+w packages/ 2>/dev/null || true
+    rm -rf packages
 fi
 
 # 解压
 tar -xzf /tmp/deploy-package.tar.gz
 rm /tmp/deploy-package.tar.gz
+
+# 恢复.env文件
+if [ -f "/tmp/.env.backup" ]; then
+    cp /tmp/.env.backup packages/backend/.env
+    rm /tmp/.env.backup
+    echo "✓ 已恢复配置文件"
+fi
 
 # 安装依赖
 cd packages/backend
@@ -122,8 +138,60 @@ fi
 echo "✓ 配置文件存在"
 ENDSSH
 
-# 6. 重启服务
-echo -e "${YELLOW}[6/7] 重启服务...${NC}"
+# 6. 运行数据库迁移
+echo -e "${YELLOW}[6/8] 运行数据库迁移...${NC}"
+sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} << 'ENDSSH'
+cd /home/saas/proxy-system/packages/backend
+source venv/bin/activate
+cd src
+
+# 检查并运行必要的数据库迁移脚本
+echo "检查数据库表..."
+
+# 检查办公管理表是否存在
+python3 << 'PYEOF'
+import sys
+from core.database import engine
+from sqlalchemy import text
+
+try:
+    with engine.connect() as conn:
+        result = conn.execute(text("""
+            SELECT COUNT(*) FROM information_schema.tables
+            WHERE table_schema = 'public'
+            AND table_name IN ('baoxiao_shenqing', 'qingjia_shenqing', 'caigou_shenqing')
+        """))
+        count = result.scalar()
+
+        if count < 3:
+            print("NEED_OFFICE_TABLES")
+            sys.exit(1)
+        else:
+            print("办公管理表已存在")
+            sys.exit(0)
+except Exception as e:
+    print(f"检查失败: {e}")
+    sys.exit(1)
+PYEOF
+
+if [ $? -eq 1 ]; then
+    echo "创建办公管理表..."
+    python3 scripts/create_bangong_guanli_tables.py
+    python3 scripts/init_office_permissions.py
+    echo "✓ 办公管理表创建完成"
+fi
+
+# 确保admin用户拥有所有权限（每次部署都运行）
+echo "确保admin用户权限..."
+python3 scripts/ensure_admin_permissions.py || echo "⚠️  admin权限配置可能失败"
+
+echo "✓ 数据库迁移完成"
+ENDSSH
+
+echo -e "${GREEN}✓ 数据库迁移完成${NC}"
+
+# 7. 重启服务
+echo -e "${YELLOW}[7/8] 重启服务...${NC}"
 sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} << 'ENDSSH'
 # 停止旧进程
 pkill -f "uvicorn.*main:app" || true
@@ -132,7 +200,7 @@ sleep 2
 # 启动新进程
 cd /home/saas/proxy-system/packages/backend
 source venv/bin/activate
-nohup uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4 \
+nohup uvicorn main:app --app-dir src --host 0.0.0.0 --port 8000 --workers 4 \
     > /home/saas/proxy-system/logs/backend.log 2>&1 &
 
 sleep 3
@@ -141,8 +209,8 @@ ENDSSH
 
 echo -e "${GREEN}✓ 服务重启完成${NC}"
 
-# 7. 验证部署
-echo -e "${YELLOW}[7/7] 验证部署...${NC}"
+# 8. 验证部署
+echo -e "${YELLOW}[8/8] 验证部署...${NC}"
 sleep 2
 
 # 检查健康状态
@@ -153,6 +221,43 @@ else
     echo -e "${RED}✗ 后端服务可能未正常启动${NC}"
     echo -e "${YELLOW}请检查日志: ssh ${PROD_USER}@${PROD_HOST} 'tail -50 /home/saas/proxy-system/logs/backend.log'${NC}"
 fi
+
+# 验证关键数据库表
+echo -e "${YELLOW}验证数据库表...${NC}"
+sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} << 'ENDSSH'
+cd /home/saas/proxy-system/packages/backend
+source venv/bin/activate
+cd src
+
+python3 << 'PYEOF'
+from core.database import engine
+from sqlalchemy import text
+
+try:
+    with engine.connect() as conn:
+        # 检查关键表
+        tables_to_check = [
+            'yonghu', 'jiaose', 'quanxian',  # 用户管理
+            'baoxiao_shenqing', 'qingjia_shenqing', 'caigou_shenqing',  # 办公管理
+            'deploy_history', 'deploy_config'  # 部署管理
+        ]
+
+        for table in tables_to_check:
+            result = conn.execute(text(f"""
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables
+                    WHERE table_schema = 'public'
+                    AND table_name = '{table}'
+                )
+            """))
+            exists = result.scalar()
+            status = "✓" if exists else "✗"
+            print(f"  {status} {table}")
+
+except Exception as e:
+    print(f"验证失败: {e}")
+PYEOF
+ENDSSH
 
 # 清理
 rm -f deploy-package.tar.gz
