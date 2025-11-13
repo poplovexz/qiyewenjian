@@ -192,13 +192,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules, type UploadProps } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { useContractManagementStore } from '@/stores/modules/contractManagement'
-import { useUserStore } from '@/stores/modules/user'
+import { useAuthStore } from '@/stores/modules/auth'
 import type { PaymentMethodCreate, PaymentMethodUpdate, ContractParty } from '@/api/modules/contract'
 
 const route = useRoute()
 const router = useRouter()
 const contractStore = useContractManagementStore()
-const userStore = useUserStore()
+const authStore = useAuthStore()
 
 // 响应式数据
 const formRef = ref<FormInstance>()
@@ -211,7 +211,7 @@ const isEdit = computed(() => !!route.params.id)
 // 上传配置
 const uploadUrl = computed(() => `${import.meta.env.VITE_API_BASE_URL}/upload/image`)
 const uploadHeaders = computed(() => ({
-  Authorization: `Bearer ${userStore.token}`
+  Authorization: `Bearer ${authStore.accessToken}`
 }))
 
 // 表单数据
