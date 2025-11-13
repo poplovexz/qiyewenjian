@@ -226,17 +226,25 @@ echo "[SUCCESS] 解压完成"
 echo "[INFO] 安装Python依赖..."
 cd packages/backend
 
-if [ ! -d "venv" ]; then
-    echo "[INFO] 创建虚拟环境..."
-    python3 -m venv venv
+# 删除旧的虚拟环境，确保依赖完整
+if [ -d "venv" ]; then
+    echo "[INFO] 删除旧的虚拟环境..."
+    rm -rf venv
 fi
 
+echo "[INFO] 创建新的虚拟环境..."
+python3 -m venv venv
+
 source venv/bin/activate
+echo "[INFO] 升级pip..."
 pip install --upgrade pip -q
 
+echo "[INFO] 安装项目依赖..."
 if [ -f "requirements-production.txt" ]; then
+    echo "[INFO] 使用 requirements-production.txt"
     pip install -r requirements-production.txt -q
 else
+    echo "[WARNING] requirements-production.txt 不存在，使用默认依赖列表"
     pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic \
         python-jose PyJWT passlib bcrypt python-multipart redis pydantic-settings -q
 fi

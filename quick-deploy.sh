@@ -109,17 +109,28 @@ fi
 
 # 安装依赖
 cd packages/backend
-if [ ! -d "venv" ]; then
-    python3 -m venv venv
+
+# 删除旧的虚拟环境，确保依赖完整
+if [ -d "venv" ]; then
+    echo "删除旧的虚拟环境..."
+    rm -rf venv
 fi
+
+echo "创建新的虚拟环境..."
+python3 -m venv venv
+
 source venv/bin/activate
+echo "升级pip..."
 pip install --upgrade pip -q
 
+echo "安装项目依赖..."
 if [ -f "requirements-production.txt" ]; then
+    echo "使用 requirements-production.txt"
     pip install -r requirements-production.txt -q
 else
+    echo "使用默认依赖列表"
     pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic \
-        python-jose passlib bcrypt python-multipart redis pydantic-settings -q
+        python-jose PyJWT passlib bcrypt python-multipart redis pydantic-settings -q
 fi
 
 echo "✓ 服务器部署完成"

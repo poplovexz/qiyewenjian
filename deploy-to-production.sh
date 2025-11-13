@@ -289,21 +289,32 @@ set -e
 
 cd /home/saas/proxy-system/packages/backend
 
-# 创建Python虚拟环境
-if [ ! -d "venv" ]; then
-    echo "创建Python虚拟环境..."
-    python3 -m venv venv
+# 删除旧的虚拟环境，确保依赖完整
+if [ -d "venv" ]; then
+    echo "删除旧的虚拟环境..."
+    rm -rf venv
 fi
+
+# 创建新的Python虚拟环境
+echo "创建新的虚拟环境..."
+python3 -m venv venv
 
 # 激活虚拟环境并安装依赖
 source venv/bin/activate
+echo "升级pip..."
 pip install --upgrade pip -q
 
 # 安装核心依赖
 echo "安装Python依赖..."
-pip install -q fastapi uvicorn sqlalchemy psycopg2-binary pydantic \
-    python-jose passlib bcrypt python-multipart redis pydantic-settings \
-    alembic python-dateutil
+if [ -f "requirements-production.txt" ]; then
+    echo "使用 requirements-production.txt"
+    pip install -q -r requirements-production.txt
+else
+    echo "使用默认依赖列表"
+    pip install -q fastapi uvicorn sqlalchemy psycopg2-binary pydantic \
+        python-jose PyJWT passlib bcrypt python-multipart redis pydantic-settings \
+        alembic python-dateutil
+fi
 
 echo "Python依赖安装完成"
 ENDSSH
