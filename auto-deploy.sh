@@ -283,6 +283,28 @@ ENDSSH
 log_success "✓ 配置检查完成"
 
 # ============================================
+# 步骤 6.5: 数据库迁移和权限配置
+# ============================================
+print_header "步骤 6.5/8: 数据库迁移和权限配置"
+
+log_info "运行数据库迁移和权限配置..."
+
+sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} << 'ENDSSH'
+cd /home/saas/proxy-system/packages/backend
+source venv/bin/activate
+export PYTHONPATH=/home/saas/proxy-system/packages/backend/src
+cd src
+
+# 确保admin用户拥有所有权限（每次部署都运行）
+echo "[INFO] 确保admin用户权限..."
+python3 scripts/ensure_admin_permissions.py || echo "[WARNING] admin权限配置可能失败"
+
+echo "[SUCCESS] 数据库迁移和权限配置完成"
+ENDSSH
+
+log_success "✓ 数据库迁移和权限配置完成"
+
+# ============================================
 # 步骤 7: 重启服务
 # ============================================
 print_header "步骤 7/8: 重启服务"

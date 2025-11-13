@@ -418,6 +418,12 @@ cd ..
 echo "创建管理员用户..."
 python3 create_admin_user.py || echo "管理员用户可能已存在"
 
+# 确保admin用户拥有所有权限（每次部署都运行）
+echo "确保admin用户权限..."
+cd src
+python3 scripts/ensure_admin_permissions.py || echo "⚠️  admin权限配置可能失败"
+cd ..
+
 # 初始化银行支付工作流
 echo "初始化银行支付工作流..."
 python3 init_bank_payment_workflow.py || echo "工作流可能已存在"
