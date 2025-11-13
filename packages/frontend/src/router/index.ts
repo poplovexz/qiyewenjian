@@ -932,6 +932,15 @@ const routes: RouteRecordRaw[] = [
             meta: {
               title: '财务设置'
             }
+          },
+          // 部署管理
+          {
+            path: 'deploy',
+            name: 'DeployManagement',
+            component: () => import('@/views/settings/deploy/DeployManagement.vue'),
+            meta: {
+              title: '部署管理'
+            }
           }
         ]
       }

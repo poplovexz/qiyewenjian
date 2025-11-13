@@ -48,6 +48,14 @@
             <span>数据管理</span>
           </el-menu-item>
         </el-menu-item-group>
+
+        <!-- 部署管理（仅管理员可见） -->
+        <el-menu-item-group v-if="isAdmin" title="部署管理">
+          <el-menu-item index="/settings/deploy">
+            <el-icon><Upload /></el-icon>
+            <span>部署管理</span>
+          </el-menu-item>
+        </el-menu-item-group>
       </el-menu>
     </div>
 
@@ -60,7 +68,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { User, Lock, Bell, Setting, Document, Coin, Files } from '@element-plus/icons-vue'
+import { User, Lock, Bell, Setting, Document, Coin, Files, Upload } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()

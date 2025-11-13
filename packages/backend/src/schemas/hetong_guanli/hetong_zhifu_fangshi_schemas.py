@@ -17,6 +17,11 @@ class HetongZhifuFangshiBase(BaseModel):
     kaihuhang_mingcheng: Optional[str] = Field(None, max_length=200, description="开户行名称")
     kaihuhang_dizhi: Optional[str] = Field(None, max_length=300, description="开户行地址")
     lianhanghao: Optional[str] = Field(None, max_length=50, description="联行号")
+    weixin_haoma: Optional[str] = Field(None, max_length=100, description="微信号/微信收款账号")
+    weixin_shoukuan_ming: Optional[str] = Field(None, max_length=100, description="微信收款名")
+    zhifubao_haoma: Optional[str] = Field(None, max_length=100, description="支付宝账号")
+    zhifubao_shoukuan_ming: Optional[str] = Field(None, max_length=100, description="支付宝收款名")
+    erweima_lujing: Optional[str] = Field(None, max_length=500, description="收款二维码图片路径")
     danbi_xiange: Optional[Decimal] = Field(None, description="单笔限额")
     riqi_xiange: Optional[Decimal] = Field(None, description="日期限额")
     zhifu_zhuangtai: str = Field(default="active", description="支付状态")
@@ -59,6 +64,11 @@ class HetongZhifuFangshiUpdate(BaseModel):
     kaihuhang_mingcheng: Optional[str] = Field(None, max_length=200, description="开户行名称")
     kaihuhang_dizhi: Optional[str] = Field(None, max_length=300, description="开户行地址")
     lianhanghao: Optional[str] = Field(None, max_length=50, description="联行号")
+    weixin_haoma: Optional[str] = Field(None, max_length=100, description="微信号/微信收款账号")
+    weixin_shoukuan_ming: Optional[str] = Field(None, max_length=100, description="微信收款名")
+    zhifubao_haoma: Optional[str] = Field(None, max_length=100, description="支付宝账号")
+    zhifubao_shoukuan_ming: Optional[str] = Field(None, max_length=100, description="支付宝收款名")
+    erweima_lujing: Optional[str] = Field(None, max_length=500, description="收款二维码图片路径")
     danbi_xiange: Optional[Decimal] = Field(None, description="单笔限额")
     riqi_xiange: Optional[Decimal] = Field(None, description="日期限额")
     zhifu_zhuangtai: Optional[str] = Field(None, description="支付状态")
@@ -100,6 +110,11 @@ class HetongZhifuFangshiResponse(BaseModel):
     kaihuhang_mingcheng: Optional[str]
     kaihuhang_dizhi: Optional[str]
     lianhanghao: Optional[str]
+    weixin_haoma: Optional[str]
+    weixin_shoukuan_ming: Optional[str]
+    zhifubao_haoma: Optional[str]
+    zhifubao_shoukuan_ming: Optional[str]
+    erweima_lujing: Optional[str]
     danbi_xiange: Optional[Decimal]
     riqi_xiange: Optional[Decimal]
     zhifu_zhuangtai: str

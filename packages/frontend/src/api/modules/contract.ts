@@ -337,7 +337,9 @@ export interface PaymentMethod {
   kaihuhang_mingcheng?: string
   lianhang_hao?: string
   weixin_haoma?: string
+  weixin_shoukuan_ming?: string
   zhifubao_haoma?: string
+  zhifubao_shoukuan_ming?: string
   erweima_lujing?: string
   zhifu_zhuangtai: string
   shi_moren: boolean
@@ -357,7 +359,9 @@ export interface PaymentMethodCreate {
   kaihuhang_mingcheng?: string
   lianhang_hao?: string
   weixin_haoma?: string
+  weixin_shoukuan_ming?: string
   zhifubao_haoma?: string
+  zhifubao_shoukuan_ming?: string
   erweima_lujing?: string
   zhifu_zhuangtai?: string
   shi_moren?: boolean
@@ -372,7 +376,9 @@ export interface PaymentMethodUpdate {
   kaihuhang_mingcheng?: string
   lianhang_hao?: string
   weixin_haoma?: string
+  weixin_shoukuan_ming?: string
   zhifubao_haoma?: string
+  zhifubao_shoukuan_ming?: string
   erweima_lujing?: string
   zhifu_zhuangtai?: string
   shi_moren?: boolean

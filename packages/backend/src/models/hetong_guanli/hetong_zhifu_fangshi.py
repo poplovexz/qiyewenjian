@@ -64,7 +64,40 @@ class HetongZhifuFangshi(BaseModel):
         nullable=True,
         comment="联行号"
     )
-    
+
+    # 微信支付信息
+    weixin_haoma = Column(
+        String(100),
+        nullable=True,
+        comment="微信号/微信收款账号"
+    )
+
+    weixin_shoukuan_ming = Column(
+        String(100),
+        nullable=True,
+        comment="微信收款名"
+    )
+
+    # 支付宝信息
+    zhifubao_haoma = Column(
+        String(100),
+        nullable=True,
+        comment="支付宝账号"
+    )
+
+    zhifubao_shoukuan_ming = Column(
+        String(100),
+        nullable=True,
+        comment="支付宝收款名"
+    )
+
+    # 二维码信息（微信/支付宝收款码）
+    erweima_lujing = Column(
+        String(500),
+        nullable=True,
+        comment="收款二维码图片路径"
+    )
+
     # 限额信息
     danbi_xiange = Column(
         Numeric(15, 2),

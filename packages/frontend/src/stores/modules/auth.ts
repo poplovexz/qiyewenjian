@@ -91,18 +91,19 @@ export const useAuthStore = defineStore('auth', () => {
         expires_in: response.expires_in ?? 0
       }
 
-      if (!tokenInfo.access_token || !tokenInfo.refresh_token) {
-        throw new Error('登录响应缺少有效的token信息')
+      // 验证必须有access_token，refresh_token可选（兼容旧版本）
+      if (!tokenInfo.access_token) {
+        throw new Error('登录响应缺少access_token')
       }
 
       // 保存令牌和用户信息
       accessToken.value = tokenInfo.access_token
-      refreshToken.value = tokenInfo.refresh_token
+      refreshToken.value = tokenInfo.refresh_token || tokenInfo.access_token // 如果没有refresh_token，使用access_token
       userInfo.value = response.user
 
       // 保存到本地存储
       saveToStorage(tokenInfo, response.user)
-      
+
       ElMessage.success(response.message || '登录成功')
       return true
     } catch (error: any) {

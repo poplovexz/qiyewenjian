@@ -21,6 +21,7 @@ from .endpoints.fuwu_guanli import fuwu_gongdan, task_items
 from .endpoints.heguishixiang_guanli import heguishixiang_moban
 from .endpoints import audit_workflows, audit_records
 from .endpoints.bangong_guanli import baoxiao, qingjia, duiwai_fukuan, caigou, gongzuo_jiaojie
+from .endpoints.deploy import deploy, deploy_config
 
 # 注册路由
 api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
@@ -101,6 +102,10 @@ api_router.include_router(gongzuo_jiaojie.router, prefix="/office/handover", tag
 
 # 系统管理模块
 api_router.include_router(system_config.router, prefix="/system", tags=["系统配置管理"])
+
+# 部署管理模块
+api_router.include_router(deploy.router, prefix="/deploy", tags=["部署管理"])
+api_router.include_router(deploy_config.router, prefix="/deploy", tags=["部署配置"])
 
 
 @api_router.get("/")
