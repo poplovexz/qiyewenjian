@@ -238,7 +238,7 @@ if [ -f "requirements-production.txt" ]; then
     pip install -r requirements-production.txt -q
 else
     pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic \
-        python-jose passlib bcrypt python-multipart redis pydantic-settings -q
+        python-jose PyJWT passlib bcrypt python-multipart redis pydantic-settings -q
 fi
 
 echo "[SUCCESS] 依赖安装完成"
