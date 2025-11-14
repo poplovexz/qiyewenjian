@@ -70,6 +70,7 @@ class ZhifuDingdanResponse(BaseModel):
     kehu_id: str
     yifang_zhuti_id: Optional[str]
     zhifu_fangshi_id: Optional[str]
+    zhifu_peizhi_id: Optional[str]
     dingdan_bianhao: str
     dingdan_mingcheng: str
     dingdan_miaoshu: Optional[str]
@@ -78,9 +79,14 @@ class ZhifuDingdanResponse(BaseModel):
     shifu_jine: Decimal
     zhifu_leixing: str
     zhifu_zhuangtai: str
+    zhifu_pingtai: Optional[str]
+    zhifu_fangshi_mingxi: Optional[str]
     disanfang_dingdan_hao: Optional[str]
     disanfang_liushui_hao: Optional[str]
     erweima_lujing: Optional[str]
+    erweima_neirong: Optional[str]
+    tuikuan_jine: Optional[Decimal]
+    tuikuan_cishu: Optional[str]
     chuangjian_shijian: datetime
     zhifu_shijian: Optional[datetime]
     guoqi_shijian: Optional[datetime]
@@ -126,3 +132,47 @@ class ZhifuDingdanStatistics(BaseModel):
     total_amount: Decimal = Field(..., description="总金额")
     paid_amount: Decimal = Field(..., description="已支付金额")
     pending_amount: Decimal = Field(..., description="待支付金额")
+
+
+class CreatePaymentRequest(BaseModel):
+    """创建第三方支付请求"""
+    dingdan_id: str = Field(..., description="支付订单ID")
+    zhifu_pingtai: str = Field(..., description="支付平台：weixin/zhifubao")
+    zhifu_fangshi: str = Field(..., description="支付方式：jsapi/app/h5/native/page/wap")
+    openid: Optional[str] = Field(None, description="微信用户openid（JSAPI支付必填）")
+    return_url: Optional[str] = Field(None, description="支付成功返回URL（支付宝必填）")
+    quit_url: Optional[str] = Field(None, description="支付取消返回URL（支付宝可选）")
+
+    @validator('zhifu_pingtai')
+    def validate_zhifu_pingtai(cls, v):
+        allowed_platforms = ['weixin', 'zhifubao']
+        if v not in allowed_platforms:
+            raise ValueError(f'支付平台必须是以下之一: {", ".join(allowed_platforms)}')
+        return v
+
+    @validator('zhifu_fangshi')
+    def validate_zhifu_fangshi(cls, v):
+        allowed_methods = ['jsapi', 'app', 'h5', 'native', 'page', 'wap']
+        if v not in allowed_methods:
+            raise ValueError(f'支付方式必须是以下之一: {", ".join(allowed_methods)}')
+        return v
+
+
+class CreatePaymentResponse(BaseModel):
+    """创建第三方支付响应"""
+    dingdan_id: str
+    dingdan_bianhao: str
+    zhifu_pingtai: str
+    zhifu_fangshi: str
+    payment_data: dict
+
+
+class QueryPaymentResponse(BaseModel):
+    """查询支付订单响应"""
+    dingdan_id: str
+    dingdan_bianhao: str
+    zhifu_zhuangtai: str
+    zhifu_pingtai: Optional[str]
+    disanfang_dingdan_hao: Optional[str]
+    disanfang_liushui_hao: Optional[str]
+    query_result: dict

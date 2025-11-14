@@ -373,6 +373,26 @@ const routes: RouteRecordRaw[] = [
           permissions: ['finance_manage']
         }
       },
+      // 支付配置管理
+      {
+        path: 'payment-configs',
+        name: 'PaymentConfigManage',
+        component: () => import('@/views/payment/PaymentConfigManage.vue'),
+        meta: {
+          title: '支付配置管理',
+          permissions: ['payment_config:read']
+        }
+      },
+      // 退款管理
+      {
+        path: 'refunds',
+        name: 'RefundManage',
+        component: () => import('@/views/payment/RefundManage.vue'),
+        meta: {
+          title: '退款管理',
+          permissions: ['zhifu:tuikuan:list']
+        }
+      },
       // 银行汇款管理
       {
         path: 'bank-transfers',

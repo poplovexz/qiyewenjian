@@ -3,11 +3,12 @@
 """
 from typing import Optional
 from datetime import datetime
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import or_
 from fastapi import HTTPException
 
 from models.hetong_guanli import HetongZhifuFangshi, HetongYifangZhuti
+from models.zhifu_guanli import ZhifuPeizhi
 from schemas.hetong_guanli import (
     HetongZhifuFangshiCreate,
     HetongZhifuFangshiUpdate,
@@ -59,39 +60,34 @@ class HetongZhifuFangshiService:
         size: int = 20,
         search: Optional[str] = None,
         yifang_zhuti_id: Optional[str] = None,
-        zhifu_leixing: Optional[str] = None,
         zhifu_zhuangtai: Optional[str] = None
     ) -> HetongZhifuFangshiListResponse:
         """获取支付方式列表"""
-        query = self.db.query(HetongZhifuFangshi).filter(HetongZhifuFangshi.is_deleted == "N")
-        
+        # 使用joinedload加载关联数据
+        query = self.db.query(HetongZhifuFangshi).options(
+            joinedload(HetongZhifuFangshi.yifang_zhuti),
+            joinedload(HetongZhifuFangshi.zhifu_peizhi)
+        ).filter(HetongZhifuFangshi.is_deleted == "N")
+
         # 搜索条件
         if search:
-            search_filter = or_(
-                HetongZhifuFangshi.zhifu_mingcheng.contains(search),
-                HetongZhifuFangshi.zhanghu_mingcheng.contains(search),
-                HetongZhifuFangshi.zhanghu_haoma.contains(search)
-            )
-            query = query.filter(search_filter)
-        
+            query = query.filter(HetongZhifuFangshi.zhifu_mingcheng.contains(search))
+
         # 筛选条件
         if yifang_zhuti_id:
             query = query.filter(HetongZhifuFangshi.yifang_zhuti_id == yifang_zhuti_id)
-        
-        if zhifu_leixing:
-            query = query.filter(HetongZhifuFangshi.zhifu_leixing == zhifu_leixing)
-        
+
         if zhifu_zhuangtai:
             query = query.filter(HetongZhifuFangshi.zhifu_zhuangtai == zhifu_zhuangtai)
-        
+
         # 排序
         query = query.order_by(HetongZhifuFangshi.paixu, HetongZhifuFangshi.created_at.desc())
-        
+
         # 分页
         total = query.count()
         offset = (page - 1) * size
         items = query.offset(offset).limit(size).all()
-        
+
         return HetongZhifuFangshiListResponse(
             total=total,
             items=[HetongZhifuFangshiResponse.model_validate(item) for item in items],

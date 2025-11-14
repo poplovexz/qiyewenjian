@@ -1,37 +1,30 @@
 <template>
   <div class="payment-method-list">
     <div class="page-header">
-      <h1>支付方式管理</h1>
-      <el-button type="primary" @click="handleCreate">
-        <el-icon><Plus /></el-icon>
-        新建支付方式
-      </el-button>
+      <h1>支付管理</h1>
     </div>
 
-    <!-- 搜索筛选 -->
-    <div class="search-bar">
+    <!-- 标签页切换 -->
+    <el-tabs v-model="activeTab" class="payment-tabs">
+      <!-- 支付方式管理 -->
+      <el-tab-pane label="支付方式" name="methods">
+        <div class="tab-header">
+          <el-button type="primary" @click="handleCreate">
+            <el-icon><Plus /></el-icon>
+            新建支付方式
+          </el-button>
+        </div>
+
+        <!-- 搜索筛选 -->
+        <div class="search-bar">
       <el-form :model="searchForm" inline>
         <el-form-item label="搜索">
           <el-input
             v-model="searchForm.search"
-            placeholder="支付方式名称、账户名称"
+            placeholder="支付方式名称"
             clearable
             style="width: 200px"
           />
-        </el-form-item>
-        <el-form-item label="支付方式">
-          <el-select
-            v-model="searchForm.zhifu_leixing"
-            placeholder="请选择支付方式"
-            clearable
-            style="width: 150px"
-          >
-            <el-option label="银行转账" value="yinhangzhuanzhang" />
-            <el-option label="微信支付" value="weixin" />
-            <el-option label="支付宝" value="zhifubao" />
-            <el-option label="现金" value="xianjin" />
-            <el-option label="其他" value="qita" />
-          </el-select>
         </el-form-item>
         <el-form-item label="状态">
           <el-select
@@ -58,25 +51,29 @@
       stripe
       style="width: 100%"
     >
-      <el-table-column label="乙方主体" width="180">
+      <el-table-column label="乙方主体" width="200">
         <template #default="{ row }">
           {{ row.yifang_zhuti?.zhuti_mingcheng || '-' }}
         </template>
       </el-table-column>
-      <el-table-column prop="zhifu_leixing" label="支付方式" width="120">
+      <el-table-column prop="zhifu_mingcheng" label="支付方式" width="200" />
+      <el-table-column label="支付配置" width="200">
         <template #default="{ row }">
-          <el-tag :type="getPaymentTypeTag(row.zhifu_leixing)">
-            {{ getPaymentTypeText(row.zhifu_leixing) }}
-          </el-tag>
+          {{ row.zhifu_peizhi?.peizhi_mingcheng || '-' }}
         </template>
       </el-table-column>
-      <el-table-column prop="zhanghu_mingcheng" label="账户名称" width="150" />
-      <el-table-column prop="zhanghu_haoma" label="账户号码" width="200" />
-      <el-table-column prop="kaihuhang_mingcheng" label="开户行" width="200" />
+      <el-table-column label="配置类型" width="120">
+        <template #default="{ row }">
+          <el-tag v-if="row.zhifu_peizhi" :type="getPaymentTypeTagType(row.zhifu_peizhi.peizhi_leixing)">
+            {{ getPaymentTypeLabel(row.zhifu_peizhi.peizhi_leixing) }}
+          </el-tag>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="shi_moren" label="默认支付" width="100">
         <template #default="{ row }">
-          <el-tag :type="row.shi_moren ? 'success' : 'info'">
-            {{ row.shi_moren ? '是' : '否' }}
+          <el-tag :type="row.shi_moren === 'Y' ? 'success' : 'info'">
+            {{ row.shi_moren === 'Y' ? '是' : '否' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -87,6 +84,7 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="paixu" label="排序" width="80" />
       <el-table-column prop="created_at" label="创建时间" width="180">
         <template #default="{ row }">
           {{ formatDate(row.created_at) }}
@@ -98,7 +96,7 @@
             编辑
           </el-button>
           <el-button
-            v-if="!row.shi_moren"
+            v-if="row.shi_moren !== 'Y'"
             type="success"
             size="small"
             @click="handleSetDefault(row)"
@@ -112,18 +110,25 @@
       </el-table-column>
     </el-table>
 
-    <!-- 分页 -->
-    <div class="pagination">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.size"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="pagination.total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </div>
+        <!-- 分页 -->
+        <div class="pagination">
+          <el-pagination
+            v-model:current-page="pagination.page"
+            v-model:page-size="pagination.size"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="pagination.total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
+      </el-tab-pane>
+
+      <!-- 支付配置管理 -->
+      <el-tab-pane label="支付配置" name="configs">
+        <PaymentConfigManage />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
@@ -134,9 +139,13 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { useContractManagementStore } from '@/stores/modules/contractManagement'
 import type { PaymentMethod } from '@/api/modules/contract'
+import PaymentConfigManage from '@/views/payment/PaymentConfigManage.vue'
 
 const router = useRouter()
 const contractStore = useContractManagementStore()
+
+// 标签页
+const activeTab = ref('methods')
 
 // 响应式数据
 const loading = ref(false)
@@ -145,7 +154,6 @@ const tableData = ref<PaymentMethod[]>([])
 // 搜索表单
 const searchForm = reactive({
   search: '',
-  zhifu_leixing: '',
   zhifu_zhuangtai: ''
 })
 
@@ -155,30 +163,6 @@ const pagination = reactive({
   size: 20,
   total: 0
 })
-
-// 获取支付方式类型标签
-const getPaymentTypeTag = (type: string) => {
-  const tagMap: Record<string, string> = {
-    yinhangzhuanzhang: 'primary',
-    weixin: 'success',
-    zhifubao: 'warning',
-    xianjin: 'info',
-    qita: 'info'
-  }
-  return tagMap[type] || 'info'
-}
-
-// 获取支付方式类型文本
-const getPaymentTypeText = (type: string) => {
-  const textMap: Record<string, string> = {
-    yinhangzhuanzhang: '银行转账',
-    weixin: '微信支付',
-    zhifubao: '支付宝',
-    xianjin: '现金',
-    qita: '其他'
-  }
-  return textMap[type] || type
-}
 
 // 格式化日期
 const formatDate = (date: string) => {
@@ -193,13 +177,13 @@ const loadData = async () => {
       page: pagination.page,
       size: pagination.size,
       search: searchForm.search || undefined,
-      zhifu_leixing: searchForm.zhifu_leixing || undefined,
       zhifu_zhuangtai: searchForm.zhifu_zhuangtai || undefined
     }
     const response = await contractStore.fetchPaymentMethods(params)
     tableData.value = response.items
     pagination.total = response.total
   } catch (error) {
+    console.error('加载数据失败:', error)
     ElMessage.error('加载数据失败')
   } finally {
     loading.value = false
@@ -216,7 +200,6 @@ const handleSearch = () => {
 const handleReset = () => {
   Object.assign(searchForm, {
     search: '',
-    zhifu_leixing: '',
     zhifu_zhuangtai: ''
   })
   pagination.page = 1
@@ -248,7 +231,7 @@ const handleSetDefault = async (row: PaymentMethod) => {
 const handleDelete = async (row: PaymentMethod) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除支付方式"${row.zhanghu_mingcheng}"吗？`,
+      `确定要删除支付方式"${row.zhifu_mingcheng}"吗？`,
       '确认删除',
       {
         confirmButtonText: '确定',
@@ -256,7 +239,7 @@ const handleDelete = async (row: PaymentMethod) => {
         type: 'warning'
       }
     )
-    
+
     await contractStore.deletePaymentMethod(row.id)
     ElMessage.success('删除成功')
     loadData()
@@ -277,6 +260,28 @@ const handleSizeChange = (size: number) => {
 const handleCurrentChange = (page: number) => {
   pagination.page = page
   loadData()
+}
+
+// 辅助函数：获取支付类型标签
+const getPaymentTypeLabel = (type: string) => {
+  const map: Record<string, string> = {
+    weixin: '微信支付',
+    zhifubao: '支付宝',
+    yinhang: '银行汇款',
+    xianjin: '现金支付'
+  }
+  return map[type] || type
+}
+
+// 辅助函数：获取支付类型标签颜色
+const getPaymentTypeTagType = (type: string) => {
+  const map: Record<string, string> = {
+    weixin: 'success',
+    zhifubao: 'primary',
+    yinhang: 'warning',
+    xianjin: 'info'
+  }
+  return map[type] || ''
 }
 
 // 初始化
@@ -301,6 +306,16 @@ onMounted(() => {
   margin: 0;
   font-size: 24px;
   color: #303133;
+}
+
+.payment-tabs {
+  margin-top: 20px;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
 }
 
 .search-bar {

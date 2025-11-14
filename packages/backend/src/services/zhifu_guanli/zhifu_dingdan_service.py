@@ -216,3 +216,65 @@ class ZhifuDingdanService:
         today = datetime.now().strftime("%Y%m%d")
         random_suffix = str(uuid.uuid4().int)[:4]
         return f"ZF{today}{random_suffix}"
+
+    def get_by_dingdan_hao(self, dingdan_hao: str) -> Optional[ZhifuDingdan]:
+        """
+        根据订单号获取支付订单
+
+        Args:
+            dingdan_hao: 订单号（dingdan_bianhao）
+
+        Returns:
+            支付订单对象或None
+        """
+        return self.db.query(ZhifuDingdan).filter(
+            ZhifuDingdan.dingdan_bianhao == dingdan_hao,
+            ZhifuDingdan.is_deleted == "N"
+        ).first()
+
+    def update_status(
+        self,
+        dingdan_id: str,
+        zhuangtai: str,
+        disanfang_dingdan_hao: Optional[str] = None
+    ) -> ZhifuDingdan:
+        """
+        更新订单状态
+
+        Args:
+            dingdan_id: 订单ID
+            zhuangtai: 新状态
+            disanfang_dingdan_hao: 第三方订单号
+
+        Returns:
+            更新后的订单对象
+        """
+        dingdan = self.db.query(ZhifuDingdan).filter(
+            ZhifuDingdan.id == dingdan_id,
+            ZhifuDingdan.is_deleted == "N"
+        ).first()
+
+        if not dingdan:
+            raise HTTPException(status_code=404, detail="支付订单不存在")
+
+        dingdan.zhifu_zhuangtai = zhuangtai
+
+        if disanfang_dingdan_hao:
+            dingdan.disanfang_dingdan_hao = disanfang_dingdan_hao
+
+        if zhuangtai == 'paid':
+            dingdan.zhifu_shijian = datetime.now()
+            dingdan.shifu_jine = dingdan.yingfu_jine
+
+        self.db.commit()
+        self.db.refresh(dingdan)
+
+        # 发布订单状态更新事件
+        publish(EventNames.PAYMENT_ORDER_STATUS_CHANGED, {
+            "zhifu_dingdan_id": dingdan.id,
+            "old_status": dingdan.zhifu_zhuangtai,
+            "new_status": zhuangtai,
+            "disanfang_dingdan_hao": disanfang_dingdan_hao
+        })
+
+        return dingdan

@@ -6,11 +6,17 @@ from .zhifu_liushui import ZhifuLiushui
 from .zhifu_tongzhi import ZhifuTongzhi
 from .hetong_zhifu import HetongZhifu
 from .yinhang_huikuan_danju import YinhangHuikuanDanju
+from .zhifu_peizhi import ZhifuPeizhi
+from .zhifu_huidiao_rizhi import ZhifuHuidiaoRizhi
+from .zhifu_tuikuan import ZhifuTuikuan
 
 __all__ = [
     "ZhifuDingdan",
     "ZhifuLiushui",
     "ZhifuTongzhi",
     "HetongZhifu",
-    "YinhangHuikuanDanju"
+    "YinhangHuikuanDanju",
+    "ZhifuPeizhi",
+    "ZhifuHuidiaoRizhi",
+    "ZhifuTuikuan"
 ]

@@ -36,7 +36,6 @@ def get_zhifu_fangshi_list(
     size: int = 20,
     search: Optional[str] = None,
     yifang_zhuti_id: Optional[str] = None,
-    zhifu_leixing: Optional[str] = None,
     zhifu_zhuangtai: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
@@ -48,7 +47,6 @@ def get_zhifu_fangshi_list(
         size=size,
         search=search,
         yifang_zhuti_id=yifang_zhuti_id,
-        zhifu_leixing=zhifu_leixing,
         zhifu_zhuangtai=zhifu_zhuangtai
     )
 

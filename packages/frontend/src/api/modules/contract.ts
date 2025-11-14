@@ -326,23 +326,15 @@ export interface ContractPartyListResponse {
   size: number
 }
 
-// 支付方式相关接口类型定义
+// 支付方式相关接口类型定义 - 关联支付配置
 export interface PaymentMethod {
   id: string
   yifang_zhuti_id: string
-  zhifu_leixing: string
+  zhifu_peizhi_id: string
   zhifu_mingcheng: string
-  zhanghu_mingcheng?: string
-  zhanghu_haoma?: string
-  kaihuhang_mingcheng?: string
-  lianhang_hao?: string
-  weixin_haoma?: string
-  weixin_shoukuan_ming?: string
-  zhifubao_haoma?: string
-  zhifubao_shoukuan_ming?: string
-  erweima_lujing?: string
   zhifu_zhuangtai: string
-  shi_moren: boolean
+  shi_moren: string  // 'Y' 或 'N'
+  paixu: string
   beizhu?: string
   created_at: string
   updated_at: string
@@ -352,36 +344,20 @@ export interface PaymentMethod {
 
 export interface PaymentMethodCreate {
   yifang_zhuti_id: string
-  zhifu_leixing: string
+  zhifu_peizhi_id: string
   zhifu_mingcheng: string
-  zhanghu_mingcheng?: string
-  zhanghu_haoma?: string
-  kaihuhang_mingcheng?: string
-  lianhang_hao?: string
-  weixin_haoma?: string
-  weixin_shoukuan_ming?: string
-  zhifubao_haoma?: string
-  zhifubao_shoukuan_ming?: string
-  erweima_lujing?: string
   zhifu_zhuangtai?: string
-  shi_moren?: boolean
+  shi_moren?: string  // 'Y' 或 'N'
+  paixu?: string
   beizhu?: string
 }
 
 export interface PaymentMethodUpdate {
-  zhifu_leixing?: string
+  zhifu_peizhi_id?: string
   zhifu_mingcheng?: string
-  zhanghu_mingcheng?: string
-  zhanghu_haoma?: string
-  kaihuhang_mingcheng?: string
-  lianhang_hao?: string
-  weixin_haoma?: string
-  weixin_shoukuan_ming?: string
-  zhifubao_haoma?: string
-  zhifubao_shoukuan_ming?: string
-  erweima_lujing?: string
   zhifu_zhuangtai?: string
-  shi_moren?: boolean
+  shi_moren?: string  // 'Y' 或 'N'
+  paixu?: string
   beizhu?: string
 }
 

@@ -94,23 +94,62 @@ class ZhifuDingdan(BaseModel):
         comment="支付状态：pending(待支付)、paying(支付中)、paid(已支付)、failed(支付失败)、cancelled(已取消)、refunded(已退款)"
     )
     
+    # 支付配置
+    zhifu_peizhi_id = Column(
+        String(36),
+        ForeignKey("zhifu_peizhi.id"),
+        nullable=True,
+        comment="支付配置ID"
+    )
+
     # 第三方支付信息
     disanfang_dingdan_hao = Column(
         String(100),
         nullable=True,
         comment="第三方支付订单号"
     )
-    
+
     disanfang_liushui_hao = Column(
         String(100),
         nullable=True,
         comment="第三方支付流水号"
     )
-    
+
+    zhifu_pingtai = Column(
+        String(20),
+        nullable=True,
+        comment="支付平台：weixin(微信)、zhifubao(支付宝)"
+    )
+
+    zhifu_fangshi_mingxi = Column(
+        String(50),
+        nullable=True,
+        comment="支付方式明细：jsapi(公众号)、app(APP)、h5(H5)、native(扫码)、page(网页)、wap(手机网页)"
+    )
+
     erweima_lujing = Column(
         String(500),
         nullable=True,
         comment="支付二维码图片路径"
+    )
+
+    erweima_neirong = Column(
+        Text,
+        nullable=True,
+        comment="支付二维码内容（code_url或支付链接）"
+    )
+
+    # 退款信息
+    tuikuan_jine = Column(
+        Numeric(10, 2),
+        default=0.00,
+        comment="退款金额"
+    )
+
+    tuikuan_cishu = Column(
+        String(10),
+        default="0",
+        comment="退款次数"
     )
     
     # 时间信息
@@ -164,9 +203,15 @@ class ZhifuDingdan(BaseModel):
     kehu = relationship("Kehu")
     yifang_zhuti = relationship("HetongYifangZhuti")
     zhifu_fangshi = relationship("HetongZhifuFangshi")
+    zhifu_peizhi = relationship("ZhifuPeizhi")
     zhifu_liushui_list = relationship(
         "ZhifuLiushui",
         back_populates="zhifu_dingdan",
+        cascade="all, delete-orphan"
+    )
+    tuikuan_jilu_list = relationship(
+        "ZhifuTuikuan",
+        foreign_keys="ZhifuTuikuan.zhifu_dingdan_id",
         cascade="all, delete-orphan"
     )
     

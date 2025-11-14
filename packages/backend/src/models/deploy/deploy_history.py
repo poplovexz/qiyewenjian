@@ -1,7 +1,7 @@
 """部署历史数据库模型"""
 from sqlalchemy import Column, Integer, String, Text, DateTime, Enum as SQLEnum
 from sqlalchemy.sql import func
-from src.core.database import Base
+from core.database import Base
 import enum
 
 

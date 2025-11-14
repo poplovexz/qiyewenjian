@@ -14,7 +14,7 @@ from .endpoints.xitong_guanli import system_config
 from .endpoints.chanpin_guanli import chanpin_fenlei, chanpin_xiangmu, chanpin_buzou
 from .endpoints.hetong_guanli import hetong_moban, hetong, hetong_yifang_zhuti, hetong_zhifu_fangshi, hetong_qianshu, hetong_generate, hetong_qianshu_public, hetong_zhifu_public, hetong_sign
 from .endpoints.xiansuo_guanli import xiansuo, xiansuo_laiyuan, xiansuo_zhuangtai, xiansuo_genjin, xiansuo_baojia
-from .endpoints.zhifu_guanli import zhifu_dingdan, zhifu_liushui, zhifu_tongzhi, hetong_zhifu, yinhang_huikuan_danju
+from .endpoints.zhifu_guanli import zhifu_dingdan, zhifu_liushui, zhifu_tongzhi, hetong_zhifu, yinhang_huikuan_danju, zhifu_peizhi, zhifu_api, zhifu_huidiao, zhifu_tuikuan
 from .endpoints.shenhe_guanli import shenhe_guize, shenhe_liucheng, shenhe_jilu, rule_test, approval_matrix, payment_audit
 from .endpoints.caiwu_guanli import kaipiao, chengben, caiwu_shezhi
 from .endpoints.fuwu_guanli import fuwu_gongdan, task_items
@@ -54,6 +54,7 @@ api_router.include_router(hetong_generate.router, prefix="/contract-generate", t
 api_router.include_router(hetong_qianshu_public.router, prefix="/public/contract-signing", tags=["合同签署公共接口"])
 api_router.include_router(hetong_zhifu_public.router, prefix="/public/contract-payment", tags=["合同支付公共接口"])
 api_router.include_router(hetong_sign.router, prefix="/contract-sign", tags=["合同客户签署"])
+api_router.include_router(zhifu_huidiao.router, prefix="/public/payment-callback", tags=["支付回调接口"])
 
 # 线索管理模块路由
 api_router.include_router(xiansuo.router, prefix="/leads", tags=["线索管理"])
@@ -63,7 +64,10 @@ api_router.include_router(xiansuo_genjin.router, prefix="/lead-followups", tags=
 api_router.include_router(xiansuo_baojia.router, prefix="/lead-quotes", tags=["线索报价管理"])
 
 # 支付管理模块路由
+api_router.include_router(zhifu_peizhi.router, prefix="/payment-configs", tags=["支付配置管理"])
+api_router.include_router(zhifu_api.router, prefix="/payment-api", tags=["第三方支付API"])
 api_router.include_router(zhifu_dingdan.router, prefix="/payment-orders", tags=["支付订单管理"])
+api_router.include_router(zhifu_tuikuan.router, prefix="/payment-refunds", tags=["退款管理"])
 api_router.include_router(zhifu_liushui.router, prefix="/payment-records", tags=["支付流水管理"])
 api_router.include_router(zhifu_tongzhi.router, prefix="/notifications", tags=["支付通知管理"])
 api_router.include_router(hetong_zhifu.router, prefix="/contract-payments", tags=["合同支付管理"])

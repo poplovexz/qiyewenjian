@@ -4,37 +4,36 @@
 from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, ConfigDict
+
+
+# 简化的关联对象Schema
+class YifangZhutiSimple(BaseModel):
+    """乙方主体简化信息"""
+    id: str
+    zhuti_mingcheng: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ZhifuPeizhiSimple(BaseModel):
+    """支付配置简化信息"""
+    id: str
+    peizhi_mingcheng: str
+    peizhi_leixing: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HetongZhifuFangshiBase(BaseModel):
-    """合同支付方式基础模型"""
+    """合同支付方式基础模型 - 关联到支付配置"""
     yifang_zhuti_id: str = Field(..., description="乙方主体ID")
-    zhifu_leixing: str = Field(..., description="支付类型")
+    zhifu_peizhi_id: str = Field(..., description="支付配置ID - 关联到支付配置管理")
     zhifu_mingcheng: str = Field(..., min_length=1, max_length=100, description="支付方式名称")
-    zhanghu_mingcheng: Optional[str] = Field(None, max_length=100, description="账户名称")
-    zhanghu_haoma: Optional[str] = Field(None, max_length=100, description="账户号码")
-    kaihuhang_mingcheng: Optional[str] = Field(None, max_length=200, description="开户行名称")
-    kaihuhang_dizhi: Optional[str] = Field(None, max_length=300, description="开户行地址")
-    lianhanghao: Optional[str] = Field(None, max_length=50, description="联行号")
-    weixin_haoma: Optional[str] = Field(None, max_length=100, description="微信号/微信收款账号")
-    weixin_shoukuan_ming: Optional[str] = Field(None, max_length=100, description="微信收款名")
-    zhifubao_haoma: Optional[str] = Field(None, max_length=100, description="支付宝账号")
-    zhifubao_shoukuan_ming: Optional[str] = Field(None, max_length=100, description="支付宝收款名")
-    erweima_lujing: Optional[str] = Field(None, max_length=500, description="收款二维码图片路径")
-    danbi_xiange: Optional[Decimal] = Field(None, description="单笔限额")
-    riqi_xiange: Optional[Decimal] = Field(None, description="日期限额")
     zhifu_zhuangtai: str = Field(default="active", description="支付状态")
     shi_moren: str = Field(default="N", description="是否默认")
     paixu: str = Field(default="0", description="排序号")
     beizhu: Optional[str] = Field(None, description="备注")
-
-    @validator('zhifu_leixing')
-    def validate_zhifu_leixing(cls, v):
-        allowed_types = ['weixin', 'zhifubao', 'yinhangzhuanzhang', 'xianjin', 'qita']
-        if v not in allowed_types:
-            raise ValueError(f'支付类型必须是以下之一: {", ".join(allowed_types)}')
-        return v
 
     @validator('zhifu_zhuangtai')
     def validate_zhifu_zhuangtai(cls, v):
@@ -57,32 +56,12 @@ class HetongZhifuFangshiCreate(HetongZhifuFangshiBase):
 
 class HetongZhifuFangshiUpdate(BaseModel):
     """更新合同支付方式的请求模型"""
-    zhifu_leixing: Optional[str] = Field(None, description="支付类型")
+    zhifu_peizhi_id: Optional[str] = Field(None, description="支付配置ID")
     zhifu_mingcheng: Optional[str] = Field(None, min_length=1, max_length=100, description="支付方式名称")
-    zhanghu_mingcheng: Optional[str] = Field(None, max_length=100, description="账户名称")
-    zhanghu_haoma: Optional[str] = Field(None, max_length=100, description="账户号码")
-    kaihuhang_mingcheng: Optional[str] = Field(None, max_length=200, description="开户行名称")
-    kaihuhang_dizhi: Optional[str] = Field(None, max_length=300, description="开户行地址")
-    lianhanghao: Optional[str] = Field(None, max_length=50, description="联行号")
-    weixin_haoma: Optional[str] = Field(None, max_length=100, description="微信号/微信收款账号")
-    weixin_shoukuan_ming: Optional[str] = Field(None, max_length=100, description="微信收款名")
-    zhifubao_haoma: Optional[str] = Field(None, max_length=100, description="支付宝账号")
-    zhifubao_shoukuan_ming: Optional[str] = Field(None, max_length=100, description="支付宝收款名")
-    erweima_lujing: Optional[str] = Field(None, max_length=500, description="收款二维码图片路径")
-    danbi_xiange: Optional[Decimal] = Field(None, description="单笔限额")
-    riqi_xiange: Optional[Decimal] = Field(None, description="日期限额")
     zhifu_zhuangtai: Optional[str] = Field(None, description="支付状态")
     shi_moren: Optional[str] = Field(None, description="是否默认")
     paixu: Optional[str] = Field(None, description="排序号")
     beizhu: Optional[str] = Field(None, description="备注")
-
-    @validator('zhifu_leixing')
-    def validate_zhifu_leixing(cls, v):
-        if v is not None:
-            allowed_types = ['weixin', 'zhifubao', 'yinhangzhuanzhang', 'xianjin', 'qita']
-            if v not in allowed_types:
-                raise ValueError(f'支付类型必须是以下之一: {", ".join(allowed_types)}')
-        return v
 
     @validator('zhifu_zhuangtai')
     def validate_zhifu_zhuangtai(cls, v):
@@ -103,20 +82,8 @@ class HetongZhifuFangshiResponse(BaseModel):
     """合同支付方式响应模型"""
     id: str
     yifang_zhuti_id: str
-    zhifu_leixing: str
+    zhifu_peizhi_id: str
     zhifu_mingcheng: str
-    zhanghu_mingcheng: Optional[str]
-    zhanghu_haoma: Optional[str]
-    kaihuhang_mingcheng: Optional[str]
-    kaihuhang_dizhi: Optional[str]
-    lianhanghao: Optional[str]
-    weixin_haoma: Optional[str]
-    weixin_shoukuan_ming: Optional[str]
-    zhifubao_haoma: Optional[str]
-    zhifubao_shoukuan_ming: Optional[str]
-    erweima_lujing: Optional[str]
-    danbi_xiange: Optional[Decimal]
-    riqi_xiange: Optional[Decimal]
     zhifu_zhuangtai: str
     shi_moren: str
     paixu: str
@@ -125,8 +92,11 @@ class HetongZhifuFangshiResponse(BaseModel):
     updated_at: datetime
     created_by: Optional[str]
 
-    class Config:
-        from_attributes = True
+    # 关联对象
+    yifang_zhuti: Optional[YifangZhutiSimple] = None  # 乙方主体信息
+    zhifu_peizhi: Optional[ZhifuPeizhiSimple] = None  # 支付配置信息
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HetongZhifuFangshiListResponse(BaseModel):
