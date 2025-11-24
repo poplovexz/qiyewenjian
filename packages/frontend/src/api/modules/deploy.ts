@@ -273,3 +273,50 @@ export function deleteDeployConfig(environment: string) {
   })
 }
 
+/**
+ * Git分支信息
+ */
+export interface GitBranchesResponse {
+  current_branch: string
+  branches: string[]
+}
+
+/**
+ * 获取Git分支列表
+ */
+export function getGitBranches() {
+  return request<GitBranchesResponse>({
+    url: '/deploy/branches',
+    method: 'get'
+  })
+}
+
+/**
+ * 部署前检查结果
+ */
+export interface PreDeployCheckResult {
+  overall_status: 'success' | 'warning' | 'error'
+  errors: number
+  warnings: number
+  checks: Array<{
+    name: string
+    status: 'success' | 'warning' | 'error' | 'checking'
+    message: string
+  }>
+  can_deploy: boolean
+  message: string
+  deep_check: boolean
+}
+
+/**
+ * 部署前检查
+ * @param deepCheck 是否执行深度检查（包括实际构建和依赖安装测试）
+ */
+export function preDeployCheck(deepCheck: boolean = false) {
+  return request<PreDeployCheckResult>({
+    url: '/deploy/pre-check',
+    method: 'get',
+    params: { deep_check: deepCheck }
+  })
+}
+

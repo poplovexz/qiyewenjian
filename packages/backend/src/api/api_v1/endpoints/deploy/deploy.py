@@ -223,3 +223,41 @@ def rollback_deploy(
         error_message=deploy.error_message,
     )
 
+
+@router.get("/branches", summary="获取Git分支列表")
+def get_git_branches(
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(get_current_user)
+):
+    """
+    获取Git分支列表
+
+    返回当前分支和所有可用分支
+    """
+    service = DeployService(db)
+    return service.get_git_branches()
+
+
+@router.get("/pre-check", summary="部署前检查")
+def pre_deploy_check(
+    deep_check: bool = Query(False, description="是否执行深度检查（包括实际构建和依赖安装测试）"),
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(get_current_user)
+):
+    """
+    部署前检查
+
+    检查项目：
+    - 依赖文件是否存在
+    - 数据库迁移文件
+    - 前端文件结构（快速检查）
+    - 依赖文件内容（快速检查）
+    - 后端代码检查
+
+    如果 deep_check=true，还会执行：
+    - 前端实际构建测试（耗时1-2分钟）
+    - 依赖实际安装测试（耗时1-2分钟）
+    """
+    service = DeployService(db)
+    return service.pre_deploy_check(deep_check=deep_check)
+

@@ -48,6 +48,18 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/Profile.vue'),
     meta: { title: '个人中心', requiresAuth: true }
   },
+  {
+    path: '/profile/change-password',
+    name: 'ChangePassword',
+    component: () => import('@/views/ChangePassword.vue'),
+    meta: { title: '修改密码', requiresAuth: true }
+  },
+  {
+    path: '/approvals',
+    name: 'ApprovalList',
+    component: () => import('@/views/ApprovalList.vue'),
+    meta: { title: '待我审批', requiresAuth: true }
+  },
   // 办公管理 - 请假申请
   {
     path: '/office/leave',

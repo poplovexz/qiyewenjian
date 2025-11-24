@@ -9,6 +9,9 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import Vant from 'vant'
 import 'vant/lib/index.css'
 
+// 引入权限指令
+import { permission, role } from './directives/permission'
+
 console.log('🚀 移动端应用开始初始化...')
 console.log('📍 当前路径:', window.location.pathname)
 console.log('🔗 Base URL:', import.meta.env.BASE_URL)
@@ -22,6 +25,10 @@ pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 app.use(router)
 app.use(Vant)
+
+// 注册全局指令
+app.directive('permission', permission)
+app.directive('role', role)
 
 console.log('✅ 插件已加载，准备挂载应用...')
 

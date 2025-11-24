@@ -129,12 +129,14 @@ import {
   deleteReimbursement,
   type ReimbursementApplication
 } from '@/api/office'
+import { useUserStore } from '@/stores/user'
 import ApprovalWorkflow from '@/components/office/ApprovalWorkflow.vue'
 import ApprovalDialog from '@/components/office/ApprovalDialog.vue'
 import dayjs from 'dayjs'
 
 const router = useRouter()
 const route = useRoute()
+const userStore = useUserStore()
 
 const reimbursementId = computed(() => route.params.id as string)
 
@@ -161,8 +163,11 @@ const canSubmit = computed(() => {
 
 // 是否可以审批
 const canApprove = computed(() => {
-  // TODO: 根据实际审批权限判断
-  return detail.value.shenhe_zhuangtai === 'shenhezhong'
+  // 检查审批权限
+  const hasPermission = userStore.hasPermission('office:baoxiao:approve')
+  // 检查审核状态
+  const isPending = detail.value.shenhe_zhuangtai === 'pending' || detail.value.shenhe_zhuangtai === 'shenhezhong'
+  return hasPermission && isPending
 })
 
 // 是否可以删除

@@ -106,11 +106,13 @@
     </van-popup>
 
     <!-- 报销时间选择器 -->
-    <van-popup v-model:show="showTimePicker" position="bottom">
+    <van-popup v-model:show="showTimePicker" position="bottom" round>
       <van-datetime-picker
         v-model="reimbursementTime"
         type="date"
         title="选择报销时间"
+        :min-date="minDate"
+        :max-date="maxDate"
         @confirm="onTimeConfirm"
         @cancel="showTimePicker = false"
       />
@@ -153,6 +155,10 @@ const submitting = ref(false)
 const showReimbursementTypePicker = ref(false)
 const showTimePicker = ref(false)
 const reimbursementTime = ref(new Date())
+
+// 日期范围限制
+const minDate = new Date(2020, 0, 1) // 2020-01-01
+const maxDate = new Date() // 今天
 
 // 报销类型选项
 const reimbursementTypeOptions = [
@@ -310,8 +316,31 @@ onMounted(() => {
 <style scoped>
 .reimbursement-form-container {
   min-height: 100vh;
-  background-color: #f5f5f5;
-  padding-bottom: 80px;
+  background: linear-gradient(180deg, #f0f2f5 0%, #ffffff 100%);
+  padding-bottom: 100px;
+}
+
+:deep(.van-cell-group) {
+  margin: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+:deep(.van-cell-group__title) {
+  padding: 16px 16px 8px;
+  color: #323233;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+:deep(.van-field__label) {
+  color: #646566;
+  font-weight: 500;
+}
+
+:deep(.van-field__control) {
+  color: #323233;
 }
 
 .submit-buttons {
@@ -319,15 +348,32 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 12px 16px;
-  background-color: #fff;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 20%, #ffffff 100%);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
   display: flex;
   gap: 12px;
+  z-index: 100;
 }
 
 .submit-buttons .van-button {
   flex: 1;
+  height: 44px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.submit-buttons .van-button--default {
+  background-color: #f7f8fa;
+  border-color: #f7f8fa;
+  color: #646566;
+}
+
+.submit-buttons .van-button--primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 </style>
 

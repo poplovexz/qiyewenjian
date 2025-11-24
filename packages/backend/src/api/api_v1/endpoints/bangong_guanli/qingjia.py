@@ -1,5 +1,5 @@
 """
-请假申请管理API端点（简化版）
+请假申请管理API端点
 """
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
@@ -24,7 +24,11 @@ async def create_qingjia_shenqing(
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
 ):
-    """创建请假申请"""
+    """
+    创建请假申请
+
+    移动端和PC端都可以访问，只需要登录即可
+    """
     service = QingjiaService(db)
     return service.create_qingjia_shenqing(shenqing_data, current_user.id)
 
@@ -37,11 +41,15 @@ async def get_qingjia_shenqing_list(
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
 ):
-    """获取请假申请列表"""
+    """
+    获取请假申请列表
+
+    移动端和PC端都可以访问，只需要登录即可
+    """
     params = QingjiaShenqingListParams(page=page, size=size, shenhe_zhuangtai=shenhe_zhuangtai)
     service = QingjiaService(db)
     items, total = service.get_qingjia_shenqing_list(params)
-    
+
     return {
         "items": items,
         "total": total,
@@ -57,7 +65,11 @@ async def get_qingjia_shenqing(
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
 ):
-    """获取请假申请详情"""
+    """
+    获取请假申请详情
+
+    移动端和PC端都可以访问，只需要登录即可
+    """
     service = QingjiaService(db)
     return service.get_qingjia_shenqing_by_id(shenqing_id)
 
@@ -69,7 +81,11 @@ async def update_qingjia_shenqing(
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
 ):
-    """更新请假申请"""
+    """
+    更新请假申请
+
+    移动端和PC端都可以访问，只需要登录即可
+    """
     service = QingjiaService(db)
     return service.update_qingjia_shenqing(shenqing_id, update_data, current_user.id)
 
@@ -80,7 +96,11 @@ async def delete_qingjia_shenqing(
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
 ):
-    """删除请假申请"""
+    """
+    删除请假申请
+
+    移动端和PC端都可以访问，只需要登录即可
+    """
     service = QingjiaService(db)
     return service.delete_qingjia_shenqing(shenqing_id, current_user.id)
 
@@ -91,7 +111,11 @@ async def submit_qingjia_for_approval(
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
 ):
-    """提交请假申请进行审批"""
+    """
+    提交请假申请进行审批
+
+    移动端和PC端都可以访问，只需要登录即可
+    """
     service = QingjiaService(db)
     return service.submit_for_approval(shenqing_id, current_user.id)
 
@@ -103,7 +127,11 @@ async def approve_qingjia_shenqing(
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
 ):
-    """审批通过请假申请"""
+    """
+    审批通过请假申请
+
+    移动端和PC端都可以访问，只需要登录即可
+    """
     service = QingjiaService(db)
     return service.approve_application(shenqing_id, current_user.id, shenhe_yijian)
 
@@ -115,6 +143,10 @@ async def reject_qingjia_shenqing(
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
 ):
-    """审批拒绝请假申请"""
+    """
+    审批拒绝请假申请
+
+    移动端和PC端都可以访问，只需要登录即可
+    """
     service = QingjiaService(db)
     return service.reject_application(shenqing_id, current_user.id, shenhe_yijian)

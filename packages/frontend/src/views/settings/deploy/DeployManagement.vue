@@ -187,8 +187,31 @@
     <el-dialog
       v-model="showDeployDialog"
       title="触发部署"
-      width="500px"
+      width="600px"
     >
+      <!-- 部署前检查结果 -->
+      <el-alert
+        v-if="preCheckResult"
+        :title="preCheckResult.message"
+        :type="preCheckResult.overall_status === 'success' ? 'success' : preCheckResult.overall_status === 'error' ? 'error' : 'warning'"
+        :closable="false"
+        style="margin-bottom: 20px;"
+        show-icon
+      >
+        <template #default>
+          <div class="check-results">
+            <div v-for="(check, index) in preCheckResult.checks" :key="index" class="check-item">
+              <el-icon v-if="check.status === 'success'" color="#67C23A"><CircleCheck /></el-icon>
+              <el-icon v-else-if="check.status === 'error'" color="#F56C6C"><CircleClose /></el-icon>
+              <el-icon v-else-if="check.status === 'warning'" color="#E6A23C"><Warning /></el-icon>
+              <el-icon v-else color="#909399"><Loading /></el-icon>
+              <span class="check-name">{{ check.name }}:</span>
+              <span class="check-message">{{ check.message }}</span>
+            </div>
+          </div>
+        </template>
+      </el-alert>
+
       <el-form :model="deployForm" label-width="100px">
         <el-form-item label="部署环境">
           <el-select v-model="deployForm.environment" style="width: 100%">
@@ -198,7 +221,25 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Git分支">
-          <el-input v-model="deployForm.branch" placeholder="main" />
+          <el-select
+            v-model="deployForm.branch"
+            placeholder="请选择分支"
+            style="width: 100%"
+            filterable
+            :loading="branchesLoading"
+          >
+            <el-option
+              v-for="branch in gitBranches"
+              :key="branch"
+              :label="branch"
+              :value="branch"
+            >
+              <span>{{ branch }}</span>
+              <el-tag v-if="branch === currentBranch" size="small" type="success" style="margin-left: 8px">
+                当前
+              </el-tag>
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="部署说明">
           <el-input
@@ -217,7 +258,20 @@
       </el-form>
       <template #footer>
         <el-button @click="showDeployDialog = false">取消</el-button>
-        <el-button type="primary" @click="handleDeploy" :loading="deploying">
+        <el-button @click="runPreCheck(false)" :loading="preChecking">
+          <el-icon><Search /></el-icon>
+          快速检查
+        </el-button>
+        <el-button @click="runPreCheck(true)" :loading="preChecking">
+          <el-icon><Search /></el-icon>
+          深度检查
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handleDeploy"
+          :loading="deploying"
+          :disabled="preCheckResult && !preCheckResult.can_deploy"
+        >
           开始部署
         </el-button>
       </template>
@@ -330,7 +384,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, watch, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Upload } from '@element-plus/icons-vue'
+import { Upload, CircleCheck, CircleClose, Warning, Loading, Search } from '@element-plus/icons-vue'
 import {
   triggerDeploy,
   getDeployStatus,
@@ -342,11 +396,14 @@ import {
   createDeployConfig,
   updateDeployConfig,
   deleteDeployConfig as deleteDeployConfigApi,
+  getGitBranches,
+  preDeployCheck,
   type DeployHistoryItem,
   type DeployStatusResponse,
   type DeployTriggerRequest,
   type DeployConfig,
   type DeployConfigCreate,
+  type PreDeployCheckResult,
   type DeployConfigUpdate
 } from '@/api/modules/deploy'
 
@@ -358,6 +415,11 @@ const isProduction = computed(() => {
   return apiBaseUrl.startsWith('/') && !apiBaseUrl.startsWith('http')
 })
 
+// Git分支相关
+const gitBranches = ref<string[]>([])
+const currentBranch = ref<string>('main')
+const branchesLoading = ref(false)
+
 // 部署表单
 const showDeployDialog = ref(false)
 const deploying = ref(false)
@@ -368,6 +430,10 @@ const deployForm = ref<DeployTriggerRequest>({
   skip_build: false,
   skip_migration: false
 })
+
+// 部署前检查
+const preChecking = ref(false)
+const preCheckResult = ref<PreDeployCheckResult | null>(null)
 
 // 当前部署
 const currentDeploy = ref<DeployStatusResponse | null>(null)
@@ -417,6 +483,27 @@ const configForm = ref<DeployConfigCreate & { id?: number }>({
 // 轮询定时器
 let pollingTimer: number | null = null
 
+// 加载Git分支列表
+const loadGitBranches = async () => {
+  branchesLoading.value = true
+  try {
+    const res = await getGitBranches()
+    gitBranches.value = res.branches
+    currentBranch.value = res.current_branch
+    // 默认选中当前分支
+    if (!deployForm.value.branch || deployForm.value.branch === 'main') {
+      deployForm.value.branch = res.current_branch
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message || '加载分支列表失败')
+    // 失败时使用默认值
+    gitBranches.value = ['main']
+    currentBranch.value = 'main'
+  } finally {
+    branchesLoading.value = false
+  }
+}
+
 // 加载部署历史
 const loadHistory = async () => {
   loading.value = true
@@ -436,6 +523,32 @@ const loadHistory = async () => {
   }
 }
 
+// 运行部署前检查
+const runPreCheck = async (deepCheck: boolean = false) => {
+  try {
+    preChecking.value = true
+    preCheckResult.value = null
+
+    const checkType = deepCheck ? '深度检查' : '快速检查'
+    ElMessage.info(`正在执行${checkType}...${deepCheck ? '（可能需要1-2分钟）' : ''}`)
+
+    const result = await preDeployCheck(deepCheck)
+    preCheckResult.value = result
+
+    if (result.overall_status === 'success') {
+      ElMessage.success(`${checkType}通过，可以部署`)
+    } else if (result.overall_status === 'error') {
+      ElMessage.error(`${checkType}失败：${result.errors} 个错误`)
+    } else {
+      ElMessage.warning(`${checkType}完成：${result.warnings} 个警告`)
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message || '部署前检查失败')
+  } finally {
+    preChecking.value = false
+  }
+}
+
 // 触发部署
 const handleDeploy = async () => {
   try {
@@ -443,11 +556,12 @@ const handleDeploy = async () => {
     const res = await triggerDeploy(deployForm.value)
     currentDeploy.value = res
     showDeployDialog.value = false
+    preCheckResult.value = null  // 清空检查结果
     ElMessage.success('部署已启动')
-    
+
     // 开始轮询状态
     startPolling()
-    
+
     // 刷新历史列表
     loadHistory()
   } catch (error: any) {
@@ -747,6 +861,13 @@ watch(showConfigFormDialog, (newVal) => {
   }
 })
 
+// 监听部署对话框打开，加载分支列表
+watch(showDeployDialog, (newVal) => {
+  if (newVal) {
+    loadGitBranches()
+  }
+})
+
 onMounted(() => {
   loadHistory()
 })
@@ -832,6 +953,24 @@ onUnmounted(() => {
   .config-management {
     .config-actions {
       margin-bottom: 20px;
+    }
+  }
+
+  .check-results {
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+
+      .check-name {
+        font-weight: 500;
+        min-width: 120px;
+      }
+
+      .check-message {
+        color: #606266;
+      }
     }
   }
 }

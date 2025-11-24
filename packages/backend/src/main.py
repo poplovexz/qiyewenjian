@@ -143,7 +143,18 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     """处理所有未捕获的异常，确保返回CORS头"""
+    import traceback
+
     origin = request.headers.get("origin")
+
+    # 打印详细的错误信息
+    print(f"❌ 未捕获的异常:")
+    print(f"   URL: {request.url}")
+    print(f"   方法: {request.method}")
+    print(f"   异常类型: {type(exc).__name__}")
+    print(f"   异常信息: {str(exc)}")
+    print(f"   堆栈跟踪:")
+    traceback.print_exc()
 
     # 创建响应
     response = JSONResponse(

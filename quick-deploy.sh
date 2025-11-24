@@ -33,7 +33,7 @@ if ! command -v sshpass &> /dev/null; then
 fi
 
 # 1. 构建前端
-echo -e "${YELLOW}[1/7] 构建前端...${NC}"
+echo -e "${YELLOW}[1/9] 构建前端...${NC}"
 cd packages/frontend
 npm run build:prod || {
     echo -e "${RED}前端构建失败${NC}"
@@ -42,8 +42,18 @@ npm run build:prod || {
 cd ../..
 echo -e "${GREEN}✓ 前端构建完成${NC}"
 
-# 2. 打包项目
-echo -e "${YELLOW}[2/7] 打包项目...${NC}"
+# 2. 构建移动端
+echo -e "${YELLOW}[2/9] 构建移动端...${NC}"
+cd packages/mobile
+npm run build || {
+    echo -e "${RED}移动端构建失败${NC}"
+    exit 1
+}
+cd ../..
+echo -e "${GREEN}✓ 移动端构建完成${NC}"
+
+# 3. 打包项目
+echo -e "${YELLOW}[3/9] 打包项目...${NC}"
 tar -czf deploy-package.tar.gz \
     --exclude='node_modules' \
     --exclude='venv' \
@@ -54,12 +64,13 @@ tar -czf deploy-package.tar.gz \
     --exclude='*.log' \
     packages/backend \
     packages/frontend/dist \
+    packages/mobile/dist \
     deploy-scripts
 
 echo -e "${GREEN}✓ 打包完成 ($(du -h deploy-package.tar.gz | cut -f1))${NC}"
 
-# 3. 上传文件
-echo -e "${YELLOW}[3/7] 上传到生产服务器...${NC}"
+# 4. 上传文件
+echo -e "${YELLOW}[4/9] 上传到生产服务器...${NC}"
 sshpass -p "$PROD_PASS" scp -o StrictHostKeyChecking=no \
     deploy-package.tar.gz ${PROD_USER}@${PROD_HOST}:/tmp/ || {
     echo -e "${RED}上传失败${NC}"
@@ -67,8 +78,8 @@ sshpass -p "$PROD_PASS" scp -o StrictHostKeyChecking=no \
 }
 echo -e "${GREEN}✓ 上传完成${NC}"
 
-# 4. 部署到服务器
-echo -e "${YELLOW}[4/7] 在服务器上部署...${NC}"
+# 5. 部署到服务器
+echo -e "${YELLOW}[5/9] 在服务器上部署...${NC}"
 sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} << 'ENDSSH'
 set -e
 
@@ -130,7 +141,8 @@ if [ -f "requirements-production.txt" ]; then
 else
     echo "使用默认依赖列表"
     pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic \
-        python-jose PyJWT passlib bcrypt python-multipart redis pydantic-settings -q
+        python-jose PyJWT passlib bcrypt python-multipart redis pydantic-settings \
+        "wechatpayv3>=2.0.0" python-alipay-sdk cryptography -q
 fi
 
 echo "✓ 服务器部署完成"
@@ -138,8 +150,8 @@ ENDSSH
 
 echo -e "${GREEN}✓ 服务器部署完成${NC}"
 
-# 5. 检查配置
-echo -e "${YELLOW}[5/7] 检查配置...${NC}"
+# 6. 检查配置
+echo -e "${YELLOW}[6/9] 检查配置...${NC}"
 sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} << 'ENDSSH'
 if [ ! -f "/home/saas/proxy-system/packages/backend/.env" ]; then
     echo "⚠ 警告: .env 文件不存在"
@@ -149,11 +161,36 @@ fi
 echo "✓ 配置文件存在"
 ENDSSH
 
-# 6. 运行数据库迁移
-echo -e "${YELLOW}[6/8] 运行数据库迁移...${NC}"
+# 7. 运行数据库迁移
+echo -e "${YELLOW}[7/9] 运行数据库迁移...${NC}"
 sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} << 'ENDSSH'
 cd /home/saas/proxy-system/packages/backend
 source venv/bin/activate
+
+# 运行所有SQL迁移脚本
+echo "运行数据库迁移脚本..."
+cd /home/saas/proxy-system/packages/backend
+
+# 按顺序执行迁移脚本
+MIGRATIONS=(
+    "migrations/create_bangong_guanli_tables.sql"
+    "migrations/create_payment_tables.sql"
+    "migrations/create_payment_api_tables.sql"
+    "migrations/add_payment_order_fields.sql"
+    "migrations/add_contract_sign_payment_fields.sql"
+    "migrations/add_offline_payment_types.sql"
+    "migrations/refactor_hetong_zhifu_fangshi_to_use_payment_config.sql"
+    "migrations/add_remark_to_zhifu_peizhi.sql"
+    "migrations/add_remark_to_zhifu_tuikuan.sql"
+)
+
+for migration in "${MIGRATIONS[@]}"; do
+    if [ -f "$migration" ]; then
+        echo "执行迁移: $migration"
+        PGPASSWORD=proxy_password_123 psql -h localhost -U proxy_user -d proxy_db -f "$migration" 2>&1 | grep -v "already exists" || true
+    fi
+done
+
 cd src
 
 # 检查并运行必要的数据库迁移脚本
@@ -201,8 +238,8 @@ ENDSSH
 
 echo -e "${GREEN}✓ 数据库迁移完成${NC}"
 
-# 7. 重启服务
-echo -e "${YELLOW}[7/8] 重启服务...${NC}"
+# 8. 重启服务
+echo -e "${YELLOW}[8/9] 重启服务...${NC}"
 sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} << 'ENDSSH'
 # 停止旧进程
 pkill -f "uvicorn.*main:app" || true
@@ -220,8 +257,8 @@ ENDSSH
 
 echo -e "${GREEN}✓ 服务重启完成${NC}"
 
-# 8. 验证部署
-echo -e "${YELLOW}[8/8] 验证部署...${NC}"
+# 9. 验证部署
+echo -e "${YELLOW}[9/9] 验证部署...${NC}"
 sleep 2
 
 # 检查健康状态
@@ -270,6 +307,24 @@ except Exception as e:
 PYEOF
 ENDSSH
 
+# 验证前端和移动端文件
+echo -e "${YELLOW}验证前端和移动端文件...${NC}"
+sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} << 'ENDSSH'
+echo "检查前端文件:"
+if [ -f "/home/saas/proxy-system/packages/frontend/dist/index.html" ]; then
+    echo "  ✓ 前端 index.html 存在"
+else
+    echo "  ✗ 前端 index.html 不存在"
+fi
+
+echo "检查移动端文件:"
+if [ -f "/home/saas/proxy-system/packages/mobile/dist/index.html" ]; then
+    echo "  ✓ 移动端 index.html 存在"
+else
+    echo "  ✗ 移动端 index.html 不存在"
+fi
+ENDSSH
+
 # 清理
 rm -f deploy-package.tar.gz
 
@@ -279,8 +334,9 @@ echo -e "${BLUE}║          部署完成！                    ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "${GREEN}访问地址:${NC}"
-echo -e "  前端: ${BLUE}http://${PROD_HOST}${NC}"
-echo -e "  API:  ${BLUE}http://${PROD_HOST}:8000/docs${NC}"
+echo -e "  前端PC端: ${BLUE}http://${PROD_HOST}${NC}"
+echo -e "  移动端:   ${BLUE}http://${PROD_HOST}:81${NC}"
+echo -e "  API文档:  ${BLUE}http://${PROD_HOST}:8000/docs${NC}"
 echo ""
 echo -e "${YELLOW}查看日志:${NC}"
 echo -e "  ssh ${PROD_USER}@${PROD_HOST} 'tail -f /home/saas/proxy-system/logs/backend.log'"

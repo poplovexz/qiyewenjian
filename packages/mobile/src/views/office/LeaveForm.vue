@@ -105,7 +105,7 @@
     </van-form>
 
     <!-- 请假类型选择器 -->
-    <van-popup v-model:show="showLeaveTypePicker" position="bottom">
+    <van-popup v-model:show="showLeaveTypePicker" position="bottom" round>
       <van-picker
         :columns="leaveTypeOptions"
         @confirm="onLeaveTypeConfirm"
@@ -114,7 +114,7 @@
     </van-popup>
 
     <!-- 开始时间选择器 -->
-    <van-popup v-model:show="showStartTimePicker" position="bottom">
+    <van-popup v-model:show="showStartTimePicker" position="bottom" round>
       <van-datetime-picker
         v-model="startTime"
         type="datetime"
@@ -125,7 +125,7 @@
     </van-popup>
 
     <!-- 结束时间选择器 -->
-    <van-popup v-model:show="showEndTimePicker" position="bottom">
+    <van-popup v-model:show="showEndTimePicker" position="bottom" round>
       <van-datetime-picker
         v-model="endTime"
         type="datetime"
@@ -353,8 +353,31 @@ onMounted(() => {
 <style scoped>
 .leave-form-container {
   min-height: 100vh;
-  background-color: #f5f5f5;
-  padding-bottom: 80px;
+  background: linear-gradient(180deg, #f0f2f5 0%, #ffffff 100%);
+  padding-bottom: 100px;
+}
+
+:deep(.van-cell-group) {
+  margin: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+:deep(.van-cell-group__title) {
+  padding: 16px 16px 8px;
+  color: #323233;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+:deep(.van-field__label) {
+  color: #646566;
+  font-weight: 500;
+}
+
+:deep(.van-field__control) {
+  color: #323233;
 }
 
 .submit-buttons {
@@ -362,15 +385,32 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 12px 16px;
-  background-color: #fff;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 20%, #ffffff 100%);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
   display: flex;
   gap: 12px;
+  z-index: 100;
 }
 
 .submit-buttons .van-button {
   flex: 1;
+  height: 44px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.submit-buttons .van-button--default {
+  background-color: #f7f8fa;
+  border-color: #f7f8fa;
+  color: #646566;
+}
+
+.submit-buttons .van-button--primary {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
 }
 </style>
 

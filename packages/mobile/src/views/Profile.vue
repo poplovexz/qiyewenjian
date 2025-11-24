@@ -28,12 +28,56 @@
       </van-cell-group>
     </div>
 
-    <div class="menu-list">
-      <van-cell-group inset>
-        <van-cell title="我的任务" is-link @click="router.push('/tasks')" icon="todo-list-o" />
-        <van-cell title="工单列表" is-link @click="router.push('/orders')" icon="orders-o" />
+    <!-- 角色和权限信息 -->
+    <div class="role-permission-card">
+      <van-cell-group inset title="角色与权限">
+        <van-cell title="我的角色" :value="roleText" />
+        <van-cell
+          title="我的权限"
+          :value="`${userStore.permissions.length} 项`"
+          is-link
+          @click="showPermissions = true"
+        />
       </van-cell-group>
     </div>
+
+    <div class="menu-list">
+      <van-cell-group inset title="功能菜单">
+        <van-cell title="我的任务" is-link @click="router.push('/tasks')" icon="todo-list-o" />
+        <van-cell title="工单列表" is-link @click="router.push('/orders')" icon="orders-o" />
+        <van-cell
+          v-permission="['office:baoxiao:approve', 'office:qingjia:approve']"
+          title="待我审批"
+          is-link
+          @click="router.push('/approvals')"
+          icon="passed"
+        />
+        <van-cell title="修改密码" is-link @click="router.push('/profile/change-password')" icon="lock" />
+      </van-cell-group>
+    </div>
+
+    <!-- 权限列表弹出层 -->
+    <van-popup v-model:show="showPermissions" position="bottom" round :style="{ height: '60%' }">
+      <div class="permission-popup">
+        <div class="popup-header">
+          <h3>我的权限列表</h3>
+          <van-icon name="cross" @click="showPermissions = false" />
+        </div>
+        <div class="permission-list">
+          <van-empty v-if="userStore.permissions.length === 0" description="暂无权限" />
+          <div v-else class="permission-items">
+            <div
+              v-for="(perm, index) in userStore.permissions"
+              :key="index"
+              class="permission-item"
+            >
+              <van-icon name="shield-o" color="#667eea" />
+              <span>{{ perm }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </van-popup>
 
     <div class="logout-button">
       <van-button block type="danger" @click="handleLogout">退出登录</van-button>
@@ -49,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { showConfirmDialog, showToast } from 'vant'
 import { useUserStore } from '@/stores/user'
@@ -59,6 +103,7 @@ import type { TaskItemStatistics } from '@/types/task'
 const router = useRouter()
 const userStore = useUserStore()
 const active = ref(3)
+const showPermissions = ref(false)
 
 const statistics = ref<TaskItemStatistics>({
   total_count: 0,
@@ -69,6 +114,14 @@ const statistics = ref<TaskItemStatistics>({
   total_jihua_gongshi: 0,
   total_shiji_gongshi: 0,
   avg_completion_rate: 0
+})
+
+// 角色文本
+const roleText = computed(() => {
+  if (!userStore.roles || userStore.roles.length === 0) {
+    return '暂无角色'
+  }
+  return userStore.roles.join(', ')
 })
 
 const loadStatistics = async () => {
@@ -140,8 +193,56 @@ onMounted(() => {
   margin-top: 16px;
 }
 
+.role-permission-card {
+  margin-top: 16px;
+}
+
 .logout-button {
   margin: 20px 16px;
+}
+
+/* 权限弹出层样式 */
+.permission-popup {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #ebedf0;
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.permission-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.permission-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.permission-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #f7f8fa;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #323233;
 }
 </style>
 
