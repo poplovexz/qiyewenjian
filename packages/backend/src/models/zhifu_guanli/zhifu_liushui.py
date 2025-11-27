@@ -16,15 +16,29 @@ class ZhifuLiushui(BaseModel):
     zhifu_dingdan_id = Column(
         String(36),
         ForeignKey("zhifu_dingdan.id", ondelete="CASCADE"),
-        nullable=False,
-        comment="支付订单ID"
+        nullable=True,
+        comment="支付订单ID（收入流水必填）"
     )
-    
+
     kehu_id = Column(
         String(36),
         ForeignKey("kehu.id", ondelete="CASCADE"),
+        nullable=True,
+        comment="客户ID（收入流水必填）"
+    )
+
+    baoxiao_shenqing_id = Column(
+        String(36),
+        ForeignKey("baoxiao_shenqing.id", ondelete="CASCADE"),
+        nullable=True,
+        comment="报销申请ID（支出流水必填）"
+    )
+
+    guanlian_leixing = Column(
+        String(20),
+        default="zhifu_dingdan",
         nullable=False,
-        comment="客户ID"
+        comment="关联类型：zhifu_dingdan(支付订单)、baoxiao_shenqing(报销申请)"
     )
     
     # 流水基本信息
@@ -38,7 +52,7 @@ class ZhifuLiushui(BaseModel):
     liushui_leixing = Column(
         String(20),
         nullable=False,
-        comment="流水类型：income(收入)、refund(退款)、fee(手续费)"
+        comment="流水类型：income(收入)、refund(退款)、fee(手续费)、expense(支出)"
     )
     
     # 金额信息
@@ -57,7 +71,7 @@ class ZhifuLiushui(BaseModel):
     shiji_shouru = Column(
         Numeric(10, 2),
         nullable=False,
-        comment="实际收入"
+        comment="实际金额（收入为正，支出为负）"
     )
     
     # 支付信息
@@ -156,6 +170,7 @@ class ZhifuLiushui(BaseModel):
     # 关联关系
     zhifu_dingdan = relationship("ZhifuDingdan", back_populates="zhifu_liushui_list")
     kehu = relationship("Kehu")
+    baoxiao_shenqing = relationship("BaoxiaoShenqing")
     
     def __repr__(self) -> str:
         return f"<ZhifuLiushui(liushui_bianhao='{self.liushui_bianhao}', jiaoyijine='{self.jiaoyijine}', liushui_zhuangtai='{self.liushui_zhuangtai}')>"

@@ -9,18 +9,22 @@ from pydantic import BaseModel, Field, validator
 
 class ZhifuLiushuiCreate(BaseModel):
     """创建支付流水的请求模式"""
-    zhifu_dingdan_id: str = Field(..., description="支付订单ID")
-    kehu_id: str = Field(..., description="客户ID")
+    zhifu_dingdan_id: Optional[str] = Field(None, description="支付订单ID（收入流水必填）")
+    kehu_id: Optional[str] = Field(None, description="客户ID（收入流水必填）")
+    baoxiao_shenqing_id: Optional[str] = Field(None, description="报销申请ID（支出流水必填）")
+    guanlian_leixing: str = Field("zhifu_dingdan", description="关联类型：zhifu_dingdan/baoxiao_shenqing")
     liushui_leixing: str = Field(..., description="流水类型")
     jiaoyijine: Decimal = Field(..., gt=0, description="交易金额")
     shouxufei: Decimal = Field(0, ge=0, description="手续费")
-    shiji_shouru: Decimal = Field(..., gt=0, description="实际收入")
+    shiji_shouru: Decimal = Field(..., description="实际金额（收入为正，支出为负）")
     zhifu_fangshi: str = Field(..., description="支付方式")
     zhifu_zhanghu: Optional[str] = Field(None, description="支付账户")
     disanfang_liushui_hao: Optional[str] = Field(None, description="第三方流水号")
     disanfang_dingdan_hao: Optional[str] = Field(None, description="第三方订单号")
     jiaoyishijian: datetime = Field(..., description="交易时间")
     daozhangjian: Optional[datetime] = Field(None, description="到账时间")
+    liushui_zhuangtai: str = Field("success", description="流水状态")
+    duizhang_zhuangtai: str = Field("pending", description="对账状态")
     yinhang_mingcheng: Optional[str] = Field(None, description="银行名称")
     yinhang_zhanghu: Optional[str] = Field(None, description="银行账户")
     zhuanzhang_pingzheng: Optional[str] = Field(None, description="转账凭证路径")
@@ -28,7 +32,7 @@ class ZhifuLiushuiCreate(BaseModel):
 
     @validator('liushui_leixing')
     def validate_liushui_leixing(cls, v):
-        allowed_types = ['income', 'refund', 'fee']
+        allowed_types = ['income', 'refund', 'fee', 'expense']
         if v not in allowed_types:
             raise ValueError(f'流水类型必须是以下之一: {", ".join(allowed_types)}')
         return v
@@ -74,8 +78,10 @@ class ZhifuLiushuiUpdate(BaseModel):
 class ZhifuLiushuiResponse(BaseModel):
     """支付流水响应模式"""
     id: str
-    zhifu_dingdan_id: str
-    kehu_id: str
+    zhifu_dingdan_id: Optional[str]
+    kehu_id: Optional[str]
+    baoxiao_shenqing_id: Optional[str]
+    guanlian_leixing: str
     liushui_bianhao: str
     liushui_leixing: str
     jiaoyijine: Decimal

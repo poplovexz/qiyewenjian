@@ -29,45 +29,60 @@ class ZhifuLiushuiService:
     
     def create_zhifu_liushui(self, liushui_data: ZhifuLiushuiCreate, created_by: str) -> ZhifuLiushuiResponse:
         """创建支付流水"""
-        # 验证支付订单是否存在
-        zhifu_dingdan = self.db.query(ZhifuDingdan).filter(
-            ZhifuDingdan.id == liushui_data.zhifu_dingdan_id,
-            ZhifuDingdan.is_deleted == "N"
-        ).first()
-        
-        if not zhifu_dingdan:
-            raise HTTPException(status_code=404, detail="支付订单不存在")
-        
-        # 验证客户是否存在
-        kehu = self.db.query(Kehu).filter(
-            Kehu.id == liushui_data.kehu_id,
-            Kehu.is_deleted == "N"
-        ).first()
-        
-        if not kehu:
-            raise HTTPException(status_code=404, detail="客户不存在")
-        
+        zhifu_dingdan = None
+
+        # 根据关联类型验证
+        if liushui_data.guanlian_leixing == "zhifu_dingdan":
+            # 验证支付订单是否存在
+            if not liushui_data.zhifu_dingdan_id:
+                raise HTTPException(status_code=400, detail="支付订单流水必须提供支付订单ID")
+
+            zhifu_dingdan = self.db.query(ZhifuDingdan).filter(
+                ZhifuDingdan.id == liushui_data.zhifu_dingdan_id,
+                ZhifuDingdan.is_deleted == "N"
+            ).first()
+
+            if not zhifu_dingdan:
+                raise HTTPException(status_code=404, detail="支付订单不存在")
+
+            # 验证客户是否存在
+            if not liushui_data.kehu_id:
+                raise HTTPException(status_code=400, detail="支付订单流水必须提供客户ID")
+
+            kehu = self.db.query(Kehu).filter(
+                Kehu.id == liushui_data.kehu_id,
+                Kehu.is_deleted == "N"
+            ).first()
+
+            if not kehu:
+                raise HTTPException(status_code=404, detail="客户不存在")
+
+        elif liushui_data.guanlian_leixing == "baoxiao_shenqing":
+            # 报销申请流水不需要验证支付订单和客户
+            if not liushui_data.baoxiao_shenqing_id:
+                raise HTTPException(status_code=400, detail="报销流水必须提供报销申请ID")
+
         # 生成流水编号
         liushui_bianhao = self._generate_liushui_bianhao()
-        
+
         # 创建支付流水
         zhifu_liushui = ZhifuLiushui(
             liushui_bianhao=liushui_bianhao,
             **liushui_data.model_dump(),
             created_by=created_by
         )
-        
+
         self.db.add(zhifu_liushui)
-        
-        # 如果是收入流水，更新订单的实付金额
-        if liushui_data.liushui_leixing == "income":
+
+        # 如果是收入流水且有支付订单，更新订单的实付金额
+        if liushui_data.liushui_leixing == "income" and zhifu_dingdan:
             zhifu_dingdan.shifu_jine = (zhifu_dingdan.shifu_jine or Decimal('0')) + liushui_data.jiaoyijine
-            
+
             # 检查是否已完全支付
             if zhifu_dingdan.shifu_jine >= zhifu_dingdan.yingfu_jine:
                 zhifu_dingdan.zhifu_zhuangtai = "paid"
                 zhifu_dingdan.zhifu_shijian = liushui_data.jiaoyishijian
-        
+
         self.db.commit()
         self.db.refresh(zhifu_liushui)
         

@@ -20,6 +20,7 @@
         <el-form-item label="流水类型">
           <el-select v-model="searchForm.liushui_leixing" placeholder="全部类型" clearable style="width: 120px">
             <el-option label="收入" value="income" />
+            <el-option label="支出" value="expense" />
             <el-option label="退款" value="refund" />
             <el-option label="手续费" value="fee" />
           </el-select>
@@ -162,6 +163,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import { formatCurrency, formatDateTime } from '@/utils/format'
+import request from '@/utils/request'
 
 // 响应式数据
 const loading = ref(false)
@@ -186,59 +188,18 @@ const pagination = reactive({
 const fetchRecordList = async () => {
   loading.value = true
   try {
-    // TODO: 调用支付流水列表API
-    // const params = {
-    //   page: pagination.page,
-    //   size: pagination.size,
-    //   ...searchForm
-    // }
-    // const response = await paymentRecordApi.getList(params)
-    // tableData.value = response.data.items
-    // pagination.total = response.data.total
-    
-    // 模拟数据
-    tableData.value = [
-      {
-        id: '1',
-        liushui_bianhao: 'LS20241218001',
-        liushui_leixing: 'income',
-        jiaoyijine: 5000,
-        shouxufei: 0,
-        shiji_shouru: 5000,
-        zhifu_fangshi: 'weixin',
-        liushui_zhuangtai: 'success',
-        duizhang_zhuangtai: 'matched',
-        jiaoyishijian: '2024-12-18 10:35:00',
-        caiwu_queren_shijian: '2024-12-18 11:00:00'
-      },
-      {
-        id: '2',
-        liushui_bianhao: 'LS20241218002',
-        liushui_leixing: 'income',
-        jiaoyijine: 2000,
-        shouxufei: 20,
-        shiji_shouru: 1980,
-        zhifu_fangshi: 'yinhangzhuanzhang',
-        liushui_zhuangtai: 'success',
-        duizhang_zhuangtai: 'pending',
-        jiaoyishijian: '2024-12-18 15:10:00',
-        caiwu_queren_shijian: null
-      },
-      {
-        id: '3',
-        liushui_bianhao: 'LS20241218003',
-        liushui_leixing: 'refund',
-        jiaoyijine: 1000,
-        shouxufei: 0,
-        shiji_shouru: -1000,
-        zhifu_fangshi: 'zhifubao',
-        liushui_zhuangtai: 'success',
-        duizhang_zhuangtai: 'matched',
-        jiaoyishijian: '2024-12-18 16:20:00',
-        caiwu_queren_shijian: '2024-12-18 16:30:00'
-      }
-    ]
-    pagination.total = 3
+    const params = {
+      page: pagination.page,
+      size: pagination.size,
+      search: searchForm.search || undefined,
+      liushui_leixing: searchForm.liushui_leixing || undefined,
+      liushui_zhuangtai: searchForm.liushui_zhuangtai || undefined,
+      duizhang_zhuangtai: searchForm.duizhang_zhuangtai || undefined
+    }
+
+    const response = await request.get('/payment-records/', { params })
+    tableData.value = response.items || []
+    pagination.total = response.total || 0
   } catch (error) {
     console.error('获取流水列表失败:', error)
     ElMessage.error('获取流水列表失败')
@@ -289,12 +250,15 @@ const handleConfirm = async (row: any) => {
         type: 'warning'
       }
     )
-    
-    // TODO: 调用财务确认API
+
+    await request.post(`/payment-records/${row.id}/confirm`)
     ElMessage.success('财务确认成功')
     fetchRecordList()
-  } catch (error) {
-    // 用户取消操作
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      console.error('财务确认失败:', error)
+      ElMessage.error(error.message || '财务确认失败')
+    }
   }
 }
 
@@ -321,6 +285,7 @@ const handleCurrentChange = (page: number) => {
 const getTypeTagType = (type: string) => {
   const typeMap: Record<string, string> = {
     income: 'success',
+    expense: 'danger',
     refund: 'warning',
     fee: 'info'
   }
@@ -331,6 +296,7 @@ const getTypeTagType = (type: string) => {
 const getTypeText = (type: string) => {
   const typeMap: Record<string, string> = {
     income: '收入',
+    expense: '支出',
     refund: '退款',
     fee: '手续费'
   }
@@ -343,6 +309,8 @@ const getPaymentTypeText = (type: string) => {
     weixin: '微信支付',
     zhifubao: '支付宝',
     yinhangzhuanzhang: '银行转账',
+    baoxiao: '报销',
+    offline: '线下支付',
     xianjin: '现金',
     qita: '其他'
   }

@@ -11,14 +11,17 @@ import json
 
 from models.bangong_guanli import BaoxiaoShenqing
 from models.yonghu_guanli import Yonghu
-from models.zhifu_guanli import ZhifuTongzhi
+from models.zhifu_guanli import ZhifuTongzhi, ZhifuLiushui
 from schemas.bangong_guanli.baoxiao_schemas import (
     BaoxiaoShenqingCreate,
     BaoxiaoShenqingUpdate,
     BaoxiaoShenqingResponse,
     BaoxiaoShenqingListParams
 )
+from schemas.zhifu_guanli.zhifu_liushui_schemas import ZhifuLiushuiCreate
 from services.shenhe_guanli import ShenheWorkflowEngine
+from services.zhifu_guanli.zhifu_liushui_service import ZhifuLiushuiService
+from decimal import Decimal
 
 
 class BaoxiaoService:
@@ -268,6 +271,15 @@ class BaoxiaoService:
 
             self.db.commit()
 
+            # 创建支付流水记录（报销支出）
+            try:
+                self._create_expense_liushui(shenqing, submitted_by)
+            except Exception as e:
+                # 流水创建失败不影响审批流程
+                print(f"创建报销支出流水失败: {e}")
+                import traceback
+                traceback.print_exc()
+
             return {"message": "无需审批，已自动通过"}
 
     def approve_application(self, shenqing_id: str, approver_id: str, shenhe_yijian: str = None) -> Dict[str, str]:
@@ -304,6 +316,15 @@ class BaoxiaoService:
             shenqing.updated_at = datetime.now()
 
             self.db.commit()
+
+            # 创建支付流水记录（报销支出）
+            try:
+                self._create_expense_liushui(shenqing, approver_id)
+            except Exception as e:
+                # 流水创建失败不影响审批流程
+                print(f"创建报销支出流水失败: {e}")
+                import traceback
+                traceback.print_exc()
 
             # 发送通知给申请人
             self._send_approval_notification(shenqing, approver_id, "tongguo")
@@ -393,4 +414,42 @@ class BaoxiaoService:
         except Exception as e:
             # 通知发送失败不影响主流程
             print(f"发送通知失败: {e}")
+
+    def _create_expense_liushui(self, shenqing: BaoxiaoShenqing, approver_id: str):
+        """创建报销支出流水记录"""
+        # 检查是否已经创建过流水记录
+        existing_liushui = self.db.query(ZhifuLiushui).filter(
+            ZhifuLiushui.baoxiao_shenqing_id == shenqing.id,
+            ZhifuLiushui.is_deleted == "N"
+        ).first()
+
+        if existing_liushui:
+            print(f"报销申请 {shenqing.shenqing_bianhao} 已有流水记录，跳过创建")
+            return
+
+        # 创建支付流水服务
+        liushui_service = ZhifuLiushuiService(self.db)
+
+        # 构建流水数据
+        liushui_data = ZhifuLiushuiCreate(
+            zhifu_dingdan_id=None,
+            kehu_id=None,
+            baoxiao_shenqing_id=shenqing.id,
+            guanlian_leixing="baoxiao_shenqing",
+            liushui_leixing="expense",
+            jiaoyijine=shenqing.baoxiao_jine,
+            shouxufei=Decimal('0.00'),
+            shiji_shouru=-shenqing.baoxiao_jine,  # 支出为负数
+            zhifu_fangshi="baoxiao",
+            zhifu_zhanghu=shenqing.shenqing_ren.xingming if shenqing.shenqing_ren else "",
+            jiaoyishijian=datetime.now(),
+            daozhangjian=None,
+            liushui_zhuangtai="success",
+            duizhang_zhuangtai="pending",
+            beizhu=f"报销申请：{shenqing.baoxiao_yuanyin}"
+        )
+
+        # 创建流水记录
+        liushui_service.create_zhifu_liushui(liushui_data, "system")
+        print(f"为报销申请 {shenqing.shenqing_bianhao} 创建支出流水记录成功")
 
