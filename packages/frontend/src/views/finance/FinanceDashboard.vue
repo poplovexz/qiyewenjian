@@ -148,6 +148,7 @@ import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Money, SuccessFilled, Clock, Document, User, CreditCard } from '@element-plus/icons-vue'
 import { formatCurrency, formatDateTime } from '@/utils/format'
+import request from '@/utils/request'
 
 // 响应式数据
 const loading = ref(false)
@@ -165,20 +166,8 @@ const recentOrders = ref([])
 // 获取统计信息
 const fetchStatistics = async () => {
   try {
-    // TODO: 调用支付订单统计API
-    // const response = await paymentApi.getStatistics()
-    // statistics.value = response.data
-    
-    // 模拟数据
-    statistics.value = {
-      total_count: 156,
-      pending_count: 23,
-      paid_count: 128,
-      failed_count: 5,
-      total_amount: 2580000,
-      paid_amount: 2180000,
-      pending_amount: 400000
-    }
+    const response = await request.get('/payment-orders/statistics')
+    statistics.value = response
   } catch (error) {
     console.error('获取统计信息失败:', error)
     ElMessage.error('获取统计信息失败')
@@ -189,37 +178,10 @@ const fetchStatistics = async () => {
 const fetchRecentOrders = async () => {
   loading.value = true
   try {
-    // TODO: 调用支付订单列表API
-    // const response = await paymentApi.getList({ page: 1, size: 10 })
-    // recentOrders.value = response.data.items
-    
-    // 模拟数据
-    recentOrders.value = [
-      {
-        id: '1',
-        dingdan_bianhao: 'ZF20241218001',
-        dingdan_mingcheng: '代理记账服务费',
-        dingdan_jine: 5000,
-        zhifu_zhuangtai: 'paid',
-        chuangjian_shijian: '2024-12-18 10:30:00'
-      },
-      {
-        id: '2',
-        dingdan_bianhao: 'ZF20241218002',
-        dingdan_mingcheng: '税务申报服务费',
-        dingdan_jine: 3000,
-        zhifu_zhuangtai: 'pending',
-        chuangjian_shijian: '2024-12-18 11:15:00'
-      },
-      {
-        id: '3',
-        dingdan_bianhao: 'ZF20241218003',
-        dingdan_mingcheng: '财务咨询费',
-        dingdan_jine: 2000,
-        zhifu_zhuangtai: 'paid',
-        chuangjian_shijian: '2024-12-18 14:20:00'
-      }
-    ]
+    const response = await request.get('/payment-orders/', {
+      params: { page: 1, size: 10 }
+    })
+    recentOrders.value = response.items || []
   } catch (error) {
     console.error('获取最近订单失败:', error)
     ElMessage.error('获取最近订单失败')

@@ -12,9 +12,14 @@ from services.zhifu_guanli.zhifu_huidiao_service import ZhifuHuidiaoService
 from services.zhifu_guanli.zhifu_peizhi_service import ZhifuPeizhiService
 from services.zhifu_guanli.zhifu_dingdan_service import ZhifuDingdanService
 from services.zhifu_guanli.zhifu_tuikuan_service import ZhifuTuikuanService
+from services.zhifu_guanli.zhifu_liushui_service import ZhifuLiushuiService
 from models.zhifu_guanli.zhifu_tuikuan import ZhifuTuikuan
+from models.zhifu_guanli.zhifu_liushui import ZhifuLiushui
+from schemas.zhifu_guanli.zhifu_liushui_schemas import ZhifuLiushuiCreate
 from utils.payment.weixin_pay import WeixinPayUtil
 from utils.payment.alipay import AlipayUtil, ALIPAY_SDK_AVAILABLE
+from decimal import Decimal
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -129,15 +134,55 @@ async def weixin_payment_notify(
                     zhuangtai='paid',
                     disanfang_dingdan_hao=transaction_id
                 )
-                
+
+                # 创建支付流水记录
+                liushui_service = ZhifuLiushuiService(db)
+
+                # 检查是否已经创建过流水记录（避免重复创建）
+                existing_liushui = db.query(ZhifuLiushui).filter(
+                    ZhifuLiushui.zhifu_dingdan_id == dingdan.id,
+                    ZhifuLiushui.disanfang_dingdan_hao == transaction_id,
+                    ZhifuLiushui.is_deleted == "N"
+                ).first()
+
+                if not existing_liushui:
+                    # 获取交易金额和手续费
+                    amount_data = callback_data.get('amount', {})
+                    total_amount = Decimal(amount_data.get('total', 0)) / 100  # 微信金额单位是分
+                    payer_total = Decimal(amount_data.get('payer_total', 0)) / 100
+
+                    # 创建流水数据
+                    liushui_data = ZhifuLiushuiCreate(
+                        zhifu_dingdan_id=dingdan.id,
+                        kehu_id=dingdan.kehu_id,
+                        liushui_leixing="income",
+                        jiaoyijine=total_amount,
+                        shouxufei=Decimal('0.00'),  # 微信支付手续费通常在结算时扣除
+                        shiji_shouru=total_amount,
+                        zhifu_fangshi="weixin",
+                        zhifu_zhanghu=callback_data.get('payer', {}).get('openid', ''),
+                        disanfang_liushui_hao=transaction_id,
+                        disanfang_dingdan_hao=transaction_id,
+                        jiaoyishijian=datetime.now(),
+                        liushui_zhuangtai="success",
+                        duizhang_zhuangtai="pending"
+                    )
+
+                    try:
+                        liushui_service.create_zhifu_liushui(liushui_data, "system")
+                        logger.info(f"支付流水创建成功: {out_trade_no}")
+                    except Exception as e:
+                        logger.error(f"创建支付流水失败: {str(e)}")
+                        # 流水创建失败不影响回调成功响应
+
                 huidiao_service.update_log_result(
                     log.id,
                     chuli_zhuangtai='chenggong',
                     chuli_jieguo=json.dumps(callback_data, ensure_ascii=False)
                 )
-                
+
                 logger.info(f"微信支付回调处理成功: {out_trade_no}")
-                
+
                 return Response(
                     content=json.dumps({'code': 'SUCCESS', 'message': '成功'}),
                     media_type='application/json'
@@ -288,15 +333,54 @@ async def zhifubao_payment_notify(
                     zhuangtai='paid',
                     disanfang_dingdan_hao=trade_no
                 )
-                
+
+                # 创建支付流水记录
+                liushui_service = ZhifuLiushuiService(db)
+
+                # 检查是否已经创建过流水记录（避免重复创建）
+                existing_liushui = db.query(ZhifuLiushui).filter(
+                    ZhifuLiushui.zhifu_dingdan_id == dingdan.id,
+                    ZhifuLiushui.disanfang_dingdan_hao == trade_no,
+                    ZhifuLiushui.is_deleted == "N"
+                ).first()
+
+                if not existing_liushui:
+                    # 获取交易金额
+                    total_amount = Decimal(data_dict.get('total_amount', '0'))
+                    buyer_pay_amount = Decimal(data_dict.get('buyer_pay_amount', '0'))
+
+                    # 创建流水数据
+                    liushui_data = ZhifuLiushuiCreate(
+                        zhifu_dingdan_id=dingdan.id,
+                        kehu_id=dingdan.kehu_id,
+                        liushui_leixing="income",
+                        jiaoyijine=total_amount,
+                        shouxufei=Decimal('0.00'),  # 支付宝手续费通常在结算时扣除
+                        shiji_shouru=total_amount,
+                        zhifu_fangshi="zhifubao",
+                        zhifu_zhanghu=data_dict.get('buyer_logon_id', ''),
+                        disanfang_liushui_hao=trade_no,
+                        disanfang_dingdan_hao=trade_no,
+                        jiaoyishijian=datetime.now(),
+                        liushui_zhuangtai="success",
+                        duizhang_zhuangtai="pending"
+                    )
+
+                    try:
+                        liushui_service.create_zhifu_liushui(liushui_data, "system")
+                        logger.info(f"支付流水创建成功: {out_trade_no}")
+                    except Exception as e:
+                        logger.error(f"创建支付流水失败: {str(e)}")
+                        # 流水创建失败不影响回调成功响应
+
                 huidiao_service.update_log_result(
                     log.id,
                     chuli_zhuangtai='chenggong',
                     chuli_jieguo=json.dumps(data_dict, ensure_ascii=False)
                 )
-                
+
                 logger.info(f"支付宝支付回调处理成功: {out_trade_no}")
-                
+
                 return Response(content='success', media_type='text/plain')
             else:
                 # 其他状态

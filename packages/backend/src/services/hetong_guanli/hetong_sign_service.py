@@ -233,6 +233,7 @@ class HetongSignService:
             dict: 支付信息（包含支付URL或二维码）
         """
         from models.zhifu_guanli import ZhifuPeizhi, ZhifuDingdan
+        from models.hetong_guanli import HetongZhifuFangshi
         from services.zhifu_guanli.zhifu_api_service import ZhifuApiService
         from decimal import Decimal
 
@@ -252,6 +253,10 @@ class HetongSignService:
         # 检查是否已支付
         if hetong.payment_status == "paid":
             raise HTTPException(status_code=400, detail="合同已支付")
+
+        # 检查合同是否有乙方主体
+        if not hetong.yifang_zhuti_id:
+            raise HTTPException(status_code=400, detail="合同未设置乙方主体，无法支付，请联系业务员")
 
         # 银行转账不需要调用支付接口
         if payment_request.payment_method == "bank":
@@ -299,16 +304,41 @@ class HetongSignService:
         if not peizhi_leixing:
             raise HTTPException(status_code=400, detail=f"不支持的支付方式: {payment_request.payment_method}")
 
-        # 查找启用的支付配置（优先使用生产环境配置）
-        logger.info(f"查找支付配置: peizhi_leixing={peizhi_leixing}")
-        zhifu_peizhi = self.db.query(ZhifuPeizhi).filter(
+        # 优先查找该乙方主体关联的支付配置
+        logger.info(f"查找乙方主体 {hetong.yifang_zhuti_id} 的支付配置: peizhi_leixing={peizhi_leixing}")
+        zhifu_fangshi = self.db.query(HetongZhifuFangshi).join(
+            ZhifuPeizhi, HetongZhifuFangshi.zhifu_peizhi_id == ZhifuPeizhi.id
+        ).filter(
+            HetongZhifuFangshi.yifang_zhuti_id == hetong.yifang_zhuti_id,
+            HetongZhifuFangshi.zhifu_zhuangtai == "active",
+            HetongZhifuFangshi.is_deleted == "N",
             ZhifuPeizhi.peizhi_leixing == peizhi_leixing,
             ZhifuPeizhi.zhuangtai == "qiyong",
             ZhifuPeizhi.is_deleted == "N"
         ).order_by(
-            # 优先使用生产环境配置
-            ZhifuPeizhi.huanjing.desc()
+            HetongZhifuFangshi.shi_moren.desc(),  # 优先使用默认支付方式
+            HetongZhifuFangshi.paixu.asc()
         ).first()
+
+        zhifu_peizhi = None
+        zhifu_fangshi_id = None
+
+        if zhifu_fangshi:
+            # 找到了该乙方主体关联的支付配置
+            zhifu_peizhi = zhifu_fangshi.zhifu_peizhi
+            zhifu_fangshi_id = zhifu_fangshi.id
+            logger.info(f"找到乙方主体关联的支付配置: {zhifu_peizhi.peizhi_mingcheng}")
+        else:
+            # 如果没有找到乙方主体关联的支付配置，则查找全局启用的支付配置
+            logger.info(f"未找到乙方主体关联的支付配置，查找全局启用的支付配置")
+            zhifu_peizhi = self.db.query(ZhifuPeizhi).filter(
+                ZhifuPeizhi.peizhi_leixing == peizhi_leixing,
+                ZhifuPeizhi.zhuangtai == "qiyong",
+                ZhifuPeizhi.is_deleted == "N"
+            ).order_by(
+                # 优先使用生产环境配置
+                ZhifuPeizhi.huanjing.desc()
+            ).first()
 
         if not zhifu_peizhi:
             raise HTTPException(
@@ -360,10 +390,12 @@ class HetongSignService:
 
         logger.info(f"支付配置准备完成: {zhifu_peizhi.peizhi_mingcheng}")
 
-        # 创建支付订单
+        # 创建支付订单，关联乙方主体和支付方式
         zhifu_dingdan = ZhifuDingdan(
             hetong_id=hetong.id,
             kehu_id=hetong.kehu_id,
+            yifang_zhuti_id=hetong.yifang_zhuti_id,  # 关联乙方主体
+            zhifu_fangshi_id=zhifu_fangshi_id,  # 关联支付方式（如果有）
             dingdan_bianhao=f"HT{hetong.hetong_bianhao}_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             dingdan_mingcheng=f"合同支付-{hetong.hetong_mingcheng}",
             dingdan_miaoshu=f"合同编号：{hetong.hetong_bianhao}",

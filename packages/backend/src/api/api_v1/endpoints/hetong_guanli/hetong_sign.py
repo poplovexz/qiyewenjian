@@ -134,12 +134,13 @@ async def get_available_payment_methods(
     """
     获取可用的支付方式（无需认证）
 
-    - 返回系统中已配置且启用的支付方式
+    - 优先返回合同乙方主体关联的支付方式
+    - 如果没有关联，则返回系统中所有启用的支付方式
     - 包括微信支付、支付宝、银行转账等
     - 用于客户签署页面显示可用的支付选项
     """
     from models.zhifu_guanli import ZhifuPeizhi
-    from models.hetong_guanli import Hetong
+    from models.hetong_guanli import Hetong, HetongZhifuFangshi
 
     # 验证签署令牌
     hetong = db.query(Hetong).filter(
@@ -150,17 +151,43 @@ async def get_available_payment_methods(
     if not hetong:
         raise HTTPException(status_code=404, detail="签署链接无效")
 
-    # 查询所有启用的支付配置
-    payment_configs = db.query(ZhifuPeizhi).filter(
-        ZhifuPeizhi.zhuangtai == "qiyong",
-        ZhifuPeizhi.is_deleted == "N"
-    ).all()
-
     # 构建可用支付方式列表
     available_methods = []
+    has_wechat = False
+    has_alipay = False
 
-    # 检查是否有微信支付配置
-    has_wechat = any(p.peizhi_leixing == "weixin" for p in payment_configs)
+    # 如果合同有乙方主体，优先查找该主体关联的支付方式
+    if hetong.yifang_zhuti_id:
+        zhifu_fangshi_list = db.query(HetongZhifuFangshi).join(
+            ZhifuPeizhi, HetongZhifuFangshi.zhifu_peizhi_id == ZhifuPeizhi.id
+        ).filter(
+            HetongZhifuFangshi.yifang_zhuti_id == hetong.yifang_zhuti_id,
+            HetongZhifuFangshi.zhifu_zhuangtai == "active",
+            HetongZhifuFangshi.is_deleted == "N",
+            ZhifuPeizhi.zhuangtai == "qiyong",
+            ZhifuPeizhi.is_deleted == "N"
+        ).all()
+
+        # 检查是否有微信支付和支付宝
+        for fangshi in zhifu_fangshi_list:
+            if fangshi.zhifu_peizhi.peizhi_leixing == "weixin":
+                has_wechat = True
+            elif fangshi.zhifu_peizhi.peizhi_leixing == "zhifubao":
+                has_alipay = True
+
+    # 如果没有找到乙方主体关联的支付方式，则查询所有启用的支付配置
+    if not has_wechat and not has_alipay:
+        payment_configs = db.query(ZhifuPeizhi).filter(
+            ZhifuPeizhi.zhuangtai == "qiyong",
+            ZhifuPeizhi.is_deleted == "N"
+        ).all()
+
+        # 检查是否有微信支付配置
+        has_wechat = any(p.peizhi_leixing == "weixin" for p in payment_configs)
+        # 检查是否有支付宝配置
+        has_alipay = any(p.peizhi_leixing == "zhifubao" for p in payment_configs)
+
+    # 添加微信支付
     if has_wechat:
         available_methods.append({
             "method": "wechat",
@@ -169,8 +196,7 @@ async def get_available_payment_methods(
             "description": "使用微信扫码支付"
         })
 
-    # 检查是否有支付宝配置
-    has_alipay = any(p.peizhi_leixing == "zhifubao" for p in payment_configs)
+    # 添加支付宝
     if has_alipay:
         available_methods.append({
             "method": "alipay",
