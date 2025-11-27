@@ -182,6 +182,7 @@ MIGRATIONS=(
     "migrations/refactor_hetong_zhifu_fangshi_to_use_payment_config.sql"
     "migrations/add_remark_to_zhifu_peizhi.sql"
     "migrations/add_remark_to_zhifu_tuikuan.sql"
+    "migrations/update_paid_order_shifu_jine.sql"
 )
 
 for migration in "${MIGRATIONS[@]}"; do
