@@ -9,12 +9,15 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 import uuid
 import json
+import logging
 
 from models.zhifu_guanli import ZhifuDingdan, ZhifuPeizhi, ZhifuHuidiaoRizhi
 from services.zhifu_guanli.zhifu_peizhi_service import ZhifuPeizhiService
 from utils.payment.weixin_pay import WeixinPayUtil
 from utils.payment.alipay import AlipayUtil
 from core.events import publish, EventNames
+
+logger = logging.getLogger(__name__)
 
 
 class ZhifuApiService:
@@ -99,9 +102,9 @@ class ZhifuApiService:
             
             self.db.commit()
             self.db.refresh(dingdan)
-            
+
             # 发布支付创建事件
-            publish(EventNames.PAYMENT_CREATED, {
+            publish(EventNames.PAYMENT_ORDER_CREATED, {
                 "dingdan_id": dingdan.id,
                 "zhifu_pingtai": zhifu_pingtai,
                 "zhifu_fangshi": zhifu_fangshi,
@@ -176,12 +179,24 @@ class ZhifuApiService:
     ) -> Dict[str, Any]:
         """创建支付宝订单"""
         # 初始化支付宝工具
+        # 判断是否为沙箱环境
+        is_sandbox = peizhi.huanjing == "shachang"
+
+        # 调试日志
+        logger.info(f"_create_alipay_payment 收到的配置:")
+        logger.info(f"  APPID: {peizhi.zhifubao_appid}")
+        logger.info(f"  私钥: {peizhi.zhifubao_shanghu_siyao[:50] if peizhi.zhifubao_shanghu_siyao else 'None'}")
+        logger.info(f"  公钥: {peizhi.zhifubao_zhifubao_gongyao[:50] if peizhi.zhifubao_zhifubao_gongyao else 'None'}")
+        logger.info(f"  网关: {peizhi.zhifubao_wangguan}")
+
         alipay = AlipayUtil(
             appid=peizhi.zhifubao_appid,
             app_private_key=peizhi.zhifubao_shanghu_siyao,
             alipay_public_key=peizhi.zhifubao_zhifubao_gongyao,
             notify_url=peizhi.tongzhi_url,
-            return_url=return_url
+            return_url=return_url,
+            debug=is_sandbox,
+            gateway_url=peizhi.zhifubao_wangguan  # 使用配置的网关地址
         )
         
         # 订单参数
@@ -189,21 +204,26 @@ class ZhifuApiService:
         subject = dingdan.dingdan_mingcheng
         total_amount = float(dingdan.yingfu_jine)
         body = dingdan.dingdan_miaoshu or ""
-        
+
         # 根据支付方式调用不同的接口
-        if zhifu_fangshi == "page":
-            if not return_url:
-                raise HTTPException(status_code=400, detail="网页支付需要提供return_url")
-            return alipay.create_page_pay(out_trade_no, subject, total_amount, body)
-        
+        if zhifu_fangshi == "native":
+            # 扫码支付 - 使用 precreate 方法生成二维码字符串
+            return alipay.create_precreate_pay(out_trade_no, subject, total_amount, body)
+
+        elif zhifu_fangshi == "page":
+            # 网页支付 - 跳转到支付宝页面
+            return alipay.create_page_pay(out_trade_no, subject, total_amount, body, return_url)
+
         elif zhifu_fangshi == "wap":
+            # 手机网页支付
             if not return_url:
                 raise HTTPException(status_code=400, detail="手机网页支付需要提供return_url")
             return alipay.create_wap_pay(out_trade_no, subject, total_amount, body, quit_url)
-        
+
         elif zhifu_fangshi == "app":
+            # APP支付
             return alipay.create_app_pay(out_trade_no, subject, total_amount, body)
-        
+
         else:
             raise HTTPException(status_code=400, detail=f"不支持的支付宝支付方式: {zhifu_fangshi}")
     
@@ -267,11 +287,15 @@ class ZhifuApiService:
     
     def _query_alipay_payment(self, dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
         """查询支付宝订单"""
+        is_sandbox = peizhi.huanjing == "shachang"
+
         alipay = AlipayUtil(
             appid=peizhi.zhifubao_appid,
             app_private_key=peizhi.zhifubao_shanghu_siyao,
             alipay_public_key=peizhi.zhifubao_zhifubao_gongyao,
-            notify_url=peizhi.tongzhi_url
+            notify_url=peizhi.tongzhi_url,
+            debug=is_sandbox,
+            gateway_url=peizhi.zhifubao_wangguan
         )
         
         return alipay.query_order(dingdan.dingdan_bianhao)
@@ -338,11 +362,15 @@ class ZhifuApiService:
     
     def _close_alipay_payment(self, dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
         """关闭支付宝订单"""
+        is_sandbox = peizhi.huanjing == "shachang"
+
         alipay = AlipayUtil(
             appid=peizhi.zhifubao_appid,
             app_private_key=peizhi.zhifubao_shanghu_siyao,
             alipay_public_key=peizhi.zhifubao_zhifubao_gongyao,
-            notify_url=peizhi.tongzhi_url
+            notify_url=peizhi.tongzhi_url,
+            debug=is_sandbox,
+            gateway_url=peizhi.zhifubao_wangguan
         )
         
         return alipay.close_order(dingdan.dingdan_bianhao)

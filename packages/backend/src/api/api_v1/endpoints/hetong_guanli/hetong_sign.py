@@ -1,7 +1,7 @@
 """
 合同签署相关API端点
 """
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -15,7 +15,10 @@ from schemas.hetong_guanli.hetong_schemas import (
     CustomerPaymentRequest,
     PaymentCallbackRequest,
     BankPaymentInfoRequest,
-    BankPaymentInfoResponse
+    BankPaymentInfoResponse,
+    PaymentInitiateResponse,
+    PaymentCallbackResponse,
+    AvailablePaymentMethodsResponse
 )
 
 router = APIRouter()
@@ -88,7 +91,7 @@ async def customer_sign_contract(
     return service.customer_sign_contract(sign_token, sign_request, client_ip)
 
 
-@router.post("/sign/{sign_token}/pay", summary="发起支付")
+@router.post("/sign/{sign_token}/pay", response_model=PaymentInitiateResponse, summary="发起支付")
 async def initiate_payment(
     sign_token: str,
     payment_request: CustomerPaymentRequest,
@@ -105,7 +108,7 @@ async def initiate_payment(
     return service.initiate_payment(sign_token, payment_request)
 
 
-@router.post("/sign/{sign_token}/payment-callback", summary="支付回调")
+@router.post("/sign/{sign_token}/payment-callback", response_model=PaymentCallbackResponse, summary="支付回调")
 async def payment_callback(
     sign_token: str,
     callback_data: PaymentCallbackRequest,
@@ -121,6 +124,73 @@ async def payment_callback(
     success = service.handle_payment_callback(sign_token, callback_data)
 
     return {"success": success, "message": "支付状态已更新"}
+
+
+@router.get("/sign/{sign_token}/available-payment-methods", response_model=AvailablePaymentMethodsResponse, summary="获取可用的支付方式")
+async def get_available_payment_methods(
+    sign_token: str,
+    db: Session = Depends(get_db)
+):
+    """
+    获取可用的支付方式（无需认证）
+
+    - 返回系统中已配置且启用的支付方式
+    - 包括微信支付、支付宝、银行转账等
+    - 用于客户签署页面显示可用的支付选项
+    """
+    from models.zhifu_guanli import ZhifuPeizhi
+    from models.hetong_guanli import Hetong
+
+    # 验证签署令牌
+    hetong = db.query(Hetong).filter(
+        Hetong.sign_token == sign_token,
+        Hetong.is_deleted == "N"
+    ).first()
+
+    if not hetong:
+        raise HTTPException(status_code=404, detail="签署链接无效")
+
+    # 查询所有启用的支付配置
+    payment_configs = db.query(ZhifuPeizhi).filter(
+        ZhifuPeizhi.zhuangtai == "qiyong",
+        ZhifuPeizhi.is_deleted == "N"
+    ).all()
+
+    # 构建可用支付方式列表
+    available_methods = []
+
+    # 检查是否有微信支付配置
+    has_wechat = any(p.peizhi_leixing == "weixin" for p in payment_configs)
+    if has_wechat:
+        available_methods.append({
+            "method": "wechat",
+            "label": "微信支付",
+            "icon": "wechat",
+            "description": "使用微信扫码支付"
+        })
+
+    # 检查是否有支付宝配置
+    has_alipay = any(p.peizhi_leixing == "zhifubao" for p in payment_configs)
+    if has_alipay:
+        available_methods.append({
+            "method": "alipay",
+            "label": "支付宝",
+            "icon": "alipay",
+            "description": "使用支付宝扫码支付"
+        })
+
+    # 银行转账始终可用
+    available_methods.append({
+        "method": "bank",
+        "label": "银行转账",
+        "icon": "bank",
+        "description": "通过银行转账支付"
+    })
+
+    return {
+        "available_methods": available_methods,
+        "has_online_payment": has_wechat or has_alipay
+    }
 
 
 @router.post("/sign/{sign_token}/bank-payment", response_model=BankPaymentInfoResponse, summary="客户提交银行汇款信息")
@@ -139,3 +209,53 @@ async def submit_bank_payment_info(
     service = HetongSignService(db)
     return service.submit_bank_payment_info(sign_token, payment_info)
 
+
+@router.get("/sign/{sign_token}/payment-status", summary="查询支付状态")
+async def get_payment_status(
+    sign_token: str,
+    db: Session = Depends(get_db)
+):
+    """
+    查询支付状态（无需认证）
+
+    - 用于前端轮询查询支付是否完成
+    - 返回支付状态和相关信息
+    """
+    service = HetongSignService(db)
+    return service.get_payment_status(sign_token)
+
+
+@router.post("/sign/{sign_token}/test-payment-success", summary="测试：模拟支付成功")
+async def test_payment_success(
+    sign_token: str,
+    db: Session = Depends(get_db)
+):
+    """
+    测试接口：模拟支付成功（仅用于开发测试）
+
+    - 直接更新合同支付状态为已支付
+    - 生产环境应该删除此接口
+    """
+    from models.hetong_guanli import Hetong
+    from datetime import datetime
+
+    hetong = db.query(Hetong).filter(
+        Hetong.sign_token == sign_token,
+        Hetong.is_deleted == "N"
+    ).first()
+
+    if not hetong:
+        raise HTTPException(status_code=404, detail="签署链接无效")
+
+    # 更新支付状态
+    hetong.payment_status = "paid"
+    hetong.paid_at = datetime.now()
+    hetong.payment_transaction_id = f"TEST_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    hetong.updated_at = datetime.now()
+
+    db.commit()
+
+    return {
+        "success": True,
+        "message": "支付状态已更新为成功（测试）"
+    }

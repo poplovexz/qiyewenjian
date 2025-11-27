@@ -18,6 +18,7 @@ export interface ZhifuPeizhiCreate {
 
   // 支付宝配置
   zhifubao_appid?: string
+  zhifubao_wangguan?: string
   zhifubao_shanghu_siyao?: string
   zhifubao_zhifubao_gongyao?: string
 
@@ -47,6 +48,7 @@ export interface ZhifuPeizhiUpdate {
 
   // 支付宝配置
   zhifubao_appid?: string
+  zhifubao_wangguan?: string
   zhifubao_shanghu_siyao?: string
   zhifubao_zhifubao_gongyao?: string
 
@@ -78,6 +80,7 @@ export interface ZhifuPeizhiResponse {
 
   // 支付宝配置（脱敏）
   zhifubao_appid?: string
+  zhifubao_wangguan?: string
   zhifubao_shanghu_siyao_masked?: string
   zhifubao_zhifubao_gongyao_masked?: string
 
@@ -115,6 +118,47 @@ export interface ZhifuPeizhiListParams {
 }
 
 /**
+ * 支付配置详情接口（包含解密后的敏感信息，用于编辑）
+ */
+export interface ZhifuPeizhiDetail {
+  id: string
+  peizhi_mingcheng: string
+  peizhi_leixing: 'weixin' | 'zhifubao' | 'yinhang' | 'xianjin'
+  zhuangtai: 'qiyong' | 'tingyong'
+  huanjing: 'shachang' | 'shengchan' | 'wuxu'
+
+  // 微信支付配置（解密后的明文）
+  weixin_appid?: string
+  weixin_shanghu_hao?: string
+  weixin_shanghu_siyao?: string
+  weixin_zhengshu_xuliehao?: string
+  weixin_api_v3_miyao?: string
+
+  // 支付宝配置（解密后的明文）
+  zhifubao_appid?: string
+  zhifubao_wangguan?: string
+  zhifubao_shanghu_siyao?: string
+  zhifubao_zhifubao_gongyao?: string
+
+  // 银行汇款配置
+  yinhang_mingcheng?: string
+  yinhang_zhanghu_mingcheng?: string
+  yinhang_zhanghu_haoma?: string
+  kaihuhang_mingcheng?: string
+  kaihuhang_lianhanghao?: string
+
+  // 通用配置
+  tongzhi_url?: string
+  beizhu?: string
+
+  // 审计字段
+  created_at: string
+  updated_at: string
+  created_by?: string
+  updated_by?: string
+}
+
+/**
  * 创建支付配置
  */
 export function createZhifuPeizhi(data: ZhifuPeizhiCreate) {
@@ -137,11 +181,21 @@ export function getZhifuPeizhiList(params?: ZhifuPeizhiListParams) {
 }
 
 /**
- * 获取支付配置详情
+ * 获取支付配置详情（脱敏显示）
  */
 export function getZhifuPeizhi(id: string) {
   return request<ZhifuPeizhiResponse>({
     url: `/payment-configs/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 获取支付配置编辑数据（包含解密后的敏感信息）
+ */
+export function getZhifuPeizhiForEdit(id: string) {
+  return request<ZhifuPeizhiDetail>({
+    url: `/payment-configs/${id}/edit`,
     method: 'get'
   })
 }

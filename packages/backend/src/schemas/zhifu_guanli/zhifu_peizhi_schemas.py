@@ -24,6 +24,7 @@ class ZhifuPeizhiCreate(BaseModel):
     zhifubao_appid: Optional[str] = Field(None, description="支付宝APPID")
     zhifubao_shanghu_siyao: Optional[str] = Field(None, description="支付宝商户私钥")
     zhifubao_zhifubao_gongyao: Optional[str] = Field(None, description="支付宝公钥")
+    zhifubao_wangguan: Optional[str] = Field(None, description="支付宝网关地址")
 
     # 银行汇款配置
     yinhang_mingcheng: Optional[str] = Field(None, description="银行名称")
@@ -77,6 +78,7 @@ class ZhifuPeizhiUpdate(BaseModel):
     zhifubao_appid: Optional[str] = Field(None, description="支付宝APPID")
     zhifubao_shanghu_siyao: Optional[str] = Field(None, description="支付宝商户私钥")
     zhifubao_zhifubao_gongyao: Optional[str] = Field(None, description="支付宝公钥")
+    zhifubao_wangguan: Optional[str] = Field(None, description="支付宝网关地址")
 
     # 银行汇款配置
     yinhang_mingcheng: Optional[str] = Field(None, description="银行名称")
@@ -123,6 +125,7 @@ class ZhifuPeizhiResponse(BaseModel):
 
     # 支付宝配置（脱敏显示）
     zhifubao_appid: Optional[str] = None
+    zhifubao_wangguan: Optional[str] = None
     zhifubao_shanghu_siyao_masked: Optional[str] = None  # 脱敏显示
     zhifubao_zhifubao_gongyao_masked: Optional[str] = None  # 脱敏显示
 
@@ -164,6 +167,7 @@ class ZhifuPeizhiDetail(BaseModel):
 
     # 支付宝配置（解密后的明文）
     zhifubao_appid: Optional[str] = None
+    zhifubao_wangguan: Optional[str] = None
     zhifubao_shanghu_siyao: Optional[str] = None
     zhifubao_zhifubao_gongyao: Optional[str] = None
 

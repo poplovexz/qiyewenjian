@@ -13,6 +13,7 @@ from schemas.zhifu_guanli.zhifu_peizhi_schemas import (
     ZhifuPeizhiCreate,
     ZhifuPeizhiUpdate,
     ZhifuPeizhiResponse,
+    ZhifuPeizhiDetail,
     ZhifuPeizhiListResponse
 )
 
@@ -90,6 +91,19 @@ async def get_zhifu_peizhi(
     """
     service = ZhifuPeizhiService(db)
     return service.get_zhifu_peizhi_by_id(peizhi_id)
+
+
+@router.get("/{peizhi_id}/edit", response_model=ZhifuPeizhiDetail, summary="获取支付配置编辑数据")
+async def get_zhifu_peizhi_for_edit(
+    peizhi_id: str,
+    db: Session = Depends(get_db),
+    current_user: Yonghu = Depends(require_permission("payment_config:update"))
+):
+    """
+    根据ID获取支付配置编辑数据（包含解密后的敏感信息，用于编辑表单）
+    """
+    service = ZhifuPeizhiService(db)
+    return service.get_zhifu_peizhi_detail(peizhi_id)
 
 
 @router.put("/{peizhi_id}", response_model=ZhifuPeizhiResponse, summary="更新支付配置")

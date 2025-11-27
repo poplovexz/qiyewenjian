@@ -213,7 +213,15 @@
           <el-form-item label="支付宝APPID" prop="zhifubao_appid">
             <el-input v-model="formData.zhifubao_appid" placeholder="请输入支付宝APPID" />
           </el-form-item>
-          
+
+          <el-form-item label="支付宝网关" prop="zhifubao_wangguan">
+            <el-input v-model="formData.zhifubao_wangguan" placeholder="请输入支付宝网关地址" />
+            <div class="form-tip">
+              沙箱环境: https://openapi-sandbox.dl.alipaydev.com/gateway.do<br>
+              生产环境: https://openapi.alipay.com/gateway.do
+            </div>
+          </el-form-item>
+
           <el-form-item label="商户私钥" prop="zhifubao_shanghu_siyao">
             <el-input
               v-model="formData.zhifubao_shanghu_siyao"
@@ -318,6 +326,7 @@
         
         <template v-if="viewData.peizhi_leixing === 'zhifubao'">
           <el-descriptions-item label="支付宝APPID" :span="2">{{ viewData.zhifubao_appid || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="支付宝网关" :span="2">{{ viewData.zhifubao_wangguan || '-' }}</el-descriptions-item>
           <el-descriptions-item label="商户私钥" :span="2">{{ viewData.zhifubao_shanghu_siyao_masked || '-' }}</el-descriptions-item>
           <el-descriptions-item label="支付宝公钥" :span="2">{{ viewData.zhifubao_zhifubao_gongyao_masked || '-' }}</el-descriptions-item>
         </template>
@@ -345,6 +354,7 @@ import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'elem
 import { Plus } from '@element-plus/icons-vue'
 import {
   getZhifuPeizhiList,
+  getZhifuPeizhiForEdit,
   createZhifuPeizhi,
   updateZhifuPeizhi,
   deleteZhifuPeizhi,
@@ -392,6 +402,7 @@ const formData = reactive<ZhifuPeizhiCreate>({
   weixin_zhengshu_xuliehao: '',
   weixin_api_v3_miyao: '',
   zhifubao_appid: '',
+  zhifubao_wangguan: '',
   zhifubao_shanghu_siyao: '',
   zhifubao_zhifubao_gongyao: '',
   tongzhi_url: '',
@@ -465,11 +476,24 @@ const handleCreate = () => {
 }
 
 // 编辑
-const handleEdit = (row: ZhifuPeizhiResponse) => {
-  isEdit.value = true
-  dialogTitle.value = '编辑支付配置'
-  Object.assign(formData, row)
-  dialogVisible.value = true
+const handleEdit = async (row: ZhifuPeizhiResponse) => {
+  try {
+    isEdit.value = true
+    dialogTitle.value = '编辑支付配置'
+
+    // 调用编辑专用API获取完整数据（包括解密后的敏感信息）
+    const data = await getZhifuPeizhiForEdit(row.id)
+
+    // 先重置表单，避免旧数据残留
+    resetForm()
+
+    // 将获取的数据赋值给表单
+    Object.assign(formData, data)
+
+    dialogVisible.value = true
+  } catch (error: any) {
+    ElMessage.error(error.message || '获取配置详情失败')
+  }
 }
 
 // 查看

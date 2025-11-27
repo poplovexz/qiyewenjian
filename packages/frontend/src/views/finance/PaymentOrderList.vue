@@ -62,16 +62,20 @@
       </template>
 
       <el-table :data="tableData" v-loading="loading" stripe>
-        <el-table-column prop="dingdan_bianhao" label="订单编号" width="150" />
-        <el-table-column prop="dingdan_mingcheng" label="订单名称" min-width="200" />
+        <el-table-column prop="dingdan_bianhao" label="订单编号" width="180" />
+        <el-table-column prop="hetong_bianhao" label="合同编号" width="150">
+          <template #default="{ row }">
+            {{ row.hetong_bianhao || '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="hetong_mingcheng" label="合同名称" min-width="180" show-overflow-tooltip>
+          <template #default="{ row }">
+            {{ row.hetong_mingcheng || '-' }}
+          </template>
+        </el-table-column>
         <el-table-column prop="dingdan_jine" label="订单金额" width="120" align="right">
           <template #default="{ row }">
             {{ formatCurrency(row.dingdan_jine) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="yingfu_jine" label="应付金额" width="120" align="right">
-          <template #default="{ row }">
-            {{ formatCurrency(row.yingfu_jine) }}
           </template>
         </el-table-column>
         <el-table-column prop="shifu_jine" label="实付金额" width="120" align="right">
@@ -89,11 +93,6 @@
             <el-tag :type="getStatusType(row.zhifu_zhuangtai)">
               {{ getStatusText(row.zhifu_zhuangtai) }}
             </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="chuangjian_shijian" label="创建时间" width="180">
-          <template #default="{ row }">
-            {{ formatDateTime(row.chuangjian_shijian) }}
           </template>
         </el-table-column>
         <el-table-column prop="zhifu_shijian" label="支付时间" width="180">
@@ -139,6 +138,76 @@
         />
       </div>
     </el-card>
+
+    <!-- 订单详情对话框 -->
+    <el-dialog
+      v-model="detailDialogVisible"
+      title="支付订单详情"
+      width="800px"
+      :close-on-click-modal="false"
+    >
+      <el-descriptions :column="2" border v-if="currentOrder">
+        <el-descriptions-item label="订单编号">
+          {{ currentOrder.dingdan_bianhao }}
+        </el-descriptions-item>
+        <el-descriptions-item label="订单状态">
+          <el-tag :type="getStatusType(currentOrder.zhifu_zhuangtai)">
+            {{ getStatusText(currentOrder.zhifu_zhuangtai) }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="合同编号">
+          {{ currentOrder.hetong_bianhao || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="合同名称">
+          {{ currentOrder.hetong_mingcheng || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="订单名称" :span="2">
+          {{ currentOrder.dingdan_mingcheng }}
+        </el-descriptions-item>
+        <el-descriptions-item label="订单描述" :span="2">
+          {{ currentOrder.dingdan_miaoshu || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="订单金额">
+          {{ formatCurrency(currentOrder.dingdan_jine) }}
+        </el-descriptions-item>
+        <el-descriptions-item label="应付金额">
+          {{ formatCurrency(currentOrder.yingfu_jine) }}
+        </el-descriptions-item>
+        <el-descriptions-item label="实付金额">
+          {{ formatCurrency(currentOrder.shifu_jine) }}
+        </el-descriptions-item>
+        <el-descriptions-item label="退款金额">
+          {{ formatCurrency(currentOrder.tuikuan_jine || 0) }}
+        </el-descriptions-item>
+        <el-descriptions-item label="支付方式">
+          {{ getPaymentTypeText(currentOrder.zhifu_leixing) }}
+        </el-descriptions-item>
+        <el-descriptions-item label="支付平台">
+          {{ currentOrder.zhifu_pingtai || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="第三方订单号" :span="2">
+          {{ currentOrder.disanfang_dingdan_hao || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="第三方流水号" :span="2">
+          {{ currentOrder.disanfang_liushui_hao || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="创建时间">
+          {{ formatDateTime(currentOrder.chuangjian_shijian) }}
+        </el-descriptions-item>
+        <el-descriptions-item label="支付时间">
+          {{ currentOrder.zhifu_shijian ? formatDateTime(currentOrder.zhifu_shijian) : '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="过期时间" :span="2">
+          {{ currentOrder.guoqi_shijian ? formatDateTime(currentOrder.guoqi_shijian) : '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="备注" :span="2">
+          {{ currentOrder.beizhu || '-' }}
+        </el-descriptions-item>
+      </el-descriptions>
+      <template #footer>
+        <el-button @click="detailDialogVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -147,10 +216,13 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import { formatCurrency, formatDateTime } from '@/utils/format'
+import request from '@/utils/request'
 
 // 响应式数据
 const loading = ref(false)
 const tableData = ref([])
+const detailDialogVisible = ref(false)
+const currentOrder = ref(null)
 
 // 搜索表单
 const searchForm = reactive({
@@ -170,56 +242,17 @@ const pagination = reactive({
 const fetchOrderList = async () => {
   loading.value = true
   try {
-    // TODO: 调用支付订单列表API
-    // const params = {
-    //   page: pagination.page,
-    //   size: pagination.size,
-    //   ...searchForm
-    // }
-    // const response = await paymentOrderApi.getList(params)
-    // tableData.value = response.data.items
-    // pagination.total = response.data.total
-    
-    // 模拟数据
-    tableData.value = [
-      {
-        id: '1',
-        dingdan_bianhao: 'ZF20241218001',
-        dingdan_mingcheng: '代理记账服务费',
-        dingdan_jine: 5000,
-        yingfu_jine: 5000,
-        shifu_jine: 5000,
-        zhifu_leixing: 'weixin',
-        zhifu_zhuangtai: 'paid',
-        chuangjian_shijian: '2024-12-18 10:30:00',
-        zhifu_shijian: '2024-12-18 10:35:00'
-      },
-      {
-        id: '2',
-        dingdan_bianhao: 'ZF20241218002',
-        dingdan_mingcheng: '税务申报服务费',
-        dingdan_jine: 3000,
-        yingfu_jine: 3000,
-        shifu_jine: 0,
-        zhifu_leixing: 'zhifubao',
-        zhifu_zhuangtai: 'pending',
-        chuangjian_shijian: '2024-12-18 11:15:00',
-        zhifu_shijian: null
-      },
-      {
-        id: '3',
-        dingdan_bianhao: 'ZF20241218003',
-        dingdan_mingcheng: '财务咨询费',
-        dingdan_jine: 2000,
-        yingfu_jine: 2000,
-        shifu_jine: 2000,
-        zhifu_leixing: 'yinhangzhuanzhang',
-        zhifu_zhuangtai: 'paid',
-        chuangjian_shijian: '2024-12-18 14:20:00',
-        zhifu_shijian: '2024-12-18 15:10:00'
-      }
-    ]
-    pagination.total = 3
+    const params = {
+      page: pagination.page,
+      size: pagination.size,
+      search: searchForm.search || undefined,
+      zhifu_zhuangtai: searchForm.zhifu_zhuangtai || undefined,
+      zhifu_leixing: searchForm.zhifu_leixing || undefined
+    }
+
+    const response = await request.get('/payment-orders/', { params })
+    tableData.value = response.items || []
+    pagination.total = response.total || 0
   } catch (error) {
     console.error('获取订单列表失败:', error)
     ElMessage.error('获取订单列表失败')
@@ -253,8 +286,8 @@ const handleCreate = () => {
 
 // 查看订单
 const handleView = (row: any) => {
-  // TODO: 跳转到订单详情页面
-  ElMessage.info(`查看订单: ${row.dingdan_bianhao}`)
+  currentOrder.value = row
+  detailDialogVisible.value = true
 }
 
 // 编辑订单

@@ -8,15 +8,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# 由于alipay-sdk-python的导入问题，暂时使用占位实现
-# 实际使用时需要根据SDK文档正确导入
+# 导入支付宝SDK
 try:
+    from alipay import AliPay
     from alipay.aop.api.AlipayClientConfig import AlipayClientConfig
     from alipay.aop.api.DefaultAlipayClient import DefaultAlipayClient
     ALIPAY_SDK_AVAILABLE = True
 except ImportError:
     logger.warning("支付宝SDK未正确安装，支付宝支付功能将不可用")
     ALIPAY_SDK_AVAILABLE = False
+    AliPay = None  # 占位符，避免NameError
 
 
 class AlipayUtil:
@@ -29,7 +30,8 @@ class AlipayUtil:
         alipay_public_key: str,
         notify_url: str,
         return_url: Optional[str] = None,
-        debug: bool = False
+        debug: bool = False,
+        gateway_url: Optional[str] = None
     ):
         """
         初始化支付宝支付工具
@@ -41,6 +43,7 @@ class AlipayUtil:
             notify_url: 支付回调通知URL
             return_url: 支付成功返回URL
             debug: 是否为沙箱环境
+            gateway_url: 支付宝网关地址(可选,如果不提供则根据debug自动选择)
         """
         self.appid = appid
         self.app_private_key = app_private_key
@@ -49,6 +52,17 @@ class AlipayUtil:
         self.return_url = return_url
         self.debug = debug
 
+        # 设置网关地址
+        # 沙箱环境下强制使用官方沙箱网关，避免误用生产网关
+        if debug:
+            # 使用支付宝官方沙箱网关
+            self.gateway_url = "https://openapi.alipaydev.com/gateway.do"
+        else:
+            # 生产环境优先使用配置的网关，否则使用默认官方网关
+            self.gateway_url = gateway_url or "https://openapi.alipay.com/gateway.do"
+
+        logger.info(f"初始化支付宝网关: {self.gateway_url} (debug={self.debug})")
+
         # 初始化支付宝客户端
         self.alipay = None
         if ALIPAY_SDK_AVAILABLE:
@@ -56,17 +70,79 @@ class AlipayUtil:
         else:
             logger.warning("支付宝SDK不可用，支付功能将受限")
     
+    def _format_private_key(self, key: str) -> str:
+        """
+        格式化私钥为PEM格式
+
+        Args:
+            key: 私钥字符串(可能是纯Base64或PEM格式)
+
+        Returns:
+            PEM格式的私钥
+        """
+        if not key:
+            raise ValueError("私钥不能为空")
+
+        # 移除所有空白字符
+        key = key.strip().replace('\n', '').replace('\r', '').replace(' ', '')
+
+        # 如果已经是PEM格式,直接返回
+        if '-----BEGIN' in key:
+            return key
+
+        # 添加PEM头尾
+        pem_key = f"-----BEGIN RSA PRIVATE KEY-----\n"
+        # 每64个字符换行
+        for i in range(0, len(key), 64):
+            pem_key += key[i:i+64] + "\n"
+        pem_key += "-----END RSA PRIVATE KEY-----"
+
+        return pem_key
+
+    def _format_public_key(self, key: str) -> str:
+        """
+        格式化公钥为PEM格式
+
+        Args:
+            key: 公钥字符串(可能是纯Base64或PEM格式)
+
+        Returns:
+            PEM格式的公钥
+        """
+        if not key:
+            raise ValueError("公钥不能为空")
+
+        # 移除所有空白字符
+        key = key.strip().replace('\n', '').replace('\r', '').replace(' ', '')
+
+        # 如果已经是PEM格式,直接返回
+        if '-----BEGIN' in key:
+            return key
+
+        # 添加PEM头尾
+        pem_key = f"-----BEGIN PUBLIC KEY-----\n"
+        # 每64个字符换行
+        for i in range(0, len(key), 64):
+            pem_key += key[i:i+64] + "\n"
+        pem_key += "-----END PUBLIC KEY-----"
+
+        return pem_key
+
     def _init_client(self):
         """初始化支付宝客户端"""
         if not ALIPAY_SDK_AVAILABLE:
             return
 
         try:
+            # 格式化密钥为PEM格式
+            formatted_private_key = self._format_private_key(self.app_private_key)
+            formatted_public_key = self._format_public_key(self.alipay_public_key)
+
             self.alipay = AliPay(
                 appid=self.appid,
                 app_notify_url=self.notify_url,
-                app_private_key_string=self.app_private_key,
-                alipay_public_key_string=self.alipay_public_key,
+                app_private_key_string=formatted_private_key,
+                alipay_public_key_string=formatted_public_key,
                 sign_type="RSA2",
                 debug=self.debug
             )
@@ -104,16 +180,15 @@ class AlipayUtil:
                 body=body,
                 return_url=return_url
             )
-            
-            # 构建完整的支付URL
-            if self.debug:
-                pay_url = f"https://openapi.alipaydev.com/gateway.do?{order_string}"
-            else:
-                pay_url = f"https://openapi.alipay.com/gateway.do?{order_string}"
+
+            # 构建完整的支付URL,使用配置的网关地址
+            pay_url = f"{self.gateway_url}?{order_string}"
             
             logger.info(f"网页支付订单创建成功：{out_trade_no}")
             return {
                 'success': True,
+                'qr_code': pay_url,  # 用于扫码支付的URL
+                'pay_url': pay_url,
                 'data': {
                     'pay_url': pay_url,
                     'order_string': order_string
@@ -160,11 +235,8 @@ class AlipayUtil:
                 quit_url=quit_url
             )
             
-            # 构建完整的支付URL
-            if self.debug:
-                pay_url = f"https://openapi.alipaydev.com/gateway.do?{order_string}"
-            else:
-                pay_url = f"https://openapi.alipay.com/gateway.do?{order_string}"
+            # 构建完整的支付URL，统一使用初始化时选择的网关地址
+            pay_url = f"{self.gateway_url}?{order_string}"
             
             logger.info(f"手机网站支付订单创建成功：{out_trade_no}")
             return {
@@ -191,13 +263,13 @@ class AlipayUtil:
     ) -> Dict[str, Any]:
         """
         创建APP支付订单
-        
+
         Args:
             out_trade_no: 商户订单号
             subject: 订单标题
             total_amount: 订单金额（单位：元）
             body: 订单描述
-            
+
         Returns:
             支付订单字符串
         """
@@ -208,7 +280,7 @@ class AlipayUtil:
                 subject=subject,
                 body=body
             )
-            
+
             logger.info(f"APP支付订单创建成功：{out_trade_no}")
             return {
                 'success': True,
@@ -219,6 +291,65 @@ class AlipayUtil:
             }
         except Exception as e:
             logger.error(f"APP支付订单创建异常：{str(e)}")
+            return {
+                'success': False,
+                'message': f'订单创建异常：{str(e)}'
+            }
+
+    def create_precreate_pay(
+        self,
+        out_trade_no: str,
+        subject: str,
+        total_amount: float,
+        body: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        创建扫码支付订单（当面付-扫码支付）
+        返回二维码字符串，前端可以直接生成二维码图片
+
+        Args:
+            out_trade_no: 商户订单号
+            subject: 订单标题
+            total_amount: 订单金额（单位：元）
+            body: 订单描述
+
+        Returns:
+            包含二维码字符串的字典
+        """
+        try:
+            result = self.alipay.api_alipay_trade_precreate(
+                out_trade_no=out_trade_no,
+                total_amount=str(total_amount),
+                subject=subject,
+                body=body
+            )
+
+            # precreate 返回的是一个字典，包含 code 和 qr_code
+            if result.get('code') == '10000':
+                qr_code = result.get('qr_code')
+                logger.info(f"扫码支付订单创建成功：{out_trade_no}, 二维码：{qr_code[:50]}...")
+                return {
+                    'success': True,
+                    'qr_code': qr_code,  # 这是一个字符串，前端需要转换成二维码图片
+                    'code_url': qr_code,  # 兼容微信的字段名
+                    'data': {
+                        'qr_code': qr_code,
+                        'code_url': qr_code
+                    },
+                    'message': '订单创建成功'
+                }
+            else:
+                error_msg = result.get('msg', '订单创建失败')
+                logger.error(f"扫码支付订单创建失败：{result}")
+                return {
+                    'success': False,
+                    'error_code': result.get('code'),
+                    'message': error_msg
+                }
+        except Exception as e:
+            logger.error(f"扫码支付订单创建异常：{str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
             return {
                 'success': False,
                 'message': f'订单创建异常：{str(e)}'
@@ -432,4 +563,3 @@ class AlipayUtil:
         except Exception as e:
             logger.error(f"支付宝同步返回签名验证异常：{str(e)}")
             return False
-

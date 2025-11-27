@@ -86,7 +86,7 @@ class ZhifuDingdanResponse(BaseModel):
     erweima_lujing: Optional[str]
     erweima_neirong: Optional[str]
     tuikuan_jine: Optional[Decimal]
-    tuikuan_cishu: Optional[str]
+    tuikuan_cishu: Optional[int]
     chuangjian_shijian: datetime
     zhifu_shijian: Optional[datetime]
     guoqi_shijian: Optional[datetime]
@@ -97,6 +97,10 @@ class ZhifuDingdanResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     created_by: str
+
+    # 关联的合同信息
+    hetong_bianhao: Optional[str] = None
+    hetong_mingcheng: Optional[str] = None
 
     class Config:
         from_attributes = True

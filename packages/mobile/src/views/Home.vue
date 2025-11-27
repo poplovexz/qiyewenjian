@@ -141,10 +141,19 @@ const statistics = ref<TaskItemStatistics>({
 
 const loadStatistics = async () => {
   try {
+    console.log('📊 Loading statistics...')
+    console.log('🔐 Current user token:', userStore.token ? userStore.token.substring(0, 30) + '...' : 'NO TOKEN')
+    console.log('👤 Current user info:', userStore.userInfo)
     const res = await getTaskItemStatistics()
+    console.log('✅ Statistics loaded:', res)
     statistics.value = res
   } catch (error) {
-    console.error('Load statistics error:', error)
+    console.error('❌ Load statistics error:', error)
+    console.error('Error details:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    })
   }
 }
 

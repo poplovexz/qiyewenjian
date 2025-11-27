@@ -137,7 +137,7 @@ class ZhifuDingdanService:
     def get_zhifu_dingdan_list(self, params: ZhifuDingdanListParams) -> ZhifuDingdanListResponse:
         """获取支付订单列表"""
         query = self.db.query(ZhifuDingdan).filter(ZhifuDingdan.is_deleted == "N")
-        
+
         # 搜索条件
         if params.search:
             search_pattern = f"%{params.search}%"
@@ -147,37 +147,54 @@ class ZhifuDingdanService:
                     ZhifuDingdan.dingdan_mingcheng.ilike(search_pattern)
                 )
             )
-        
+
         # 筛选条件
         if params.hetong_id:
             query = query.filter(ZhifuDingdan.hetong_id == params.hetong_id)
-        
+
         if params.kehu_id:
             query = query.filter(ZhifuDingdan.kehu_id == params.kehu_id)
-        
+
         if params.zhifu_leixing:
             query = query.filter(ZhifuDingdan.zhifu_leixing == params.zhifu_leixing)
-        
+
         if params.zhifu_zhuangtai:
             query = query.filter(ZhifuDingdan.zhifu_zhuangtai == params.zhifu_zhuangtai)
-        
+
         if params.start_date:
             query = query.filter(ZhifuDingdan.chuangjian_shijian >= params.start_date)
-        
+
         if params.end_date:
             query = query.filter(ZhifuDingdan.chuangjian_shijian <= params.end_date)
-        
+
         # 总数
         total = query.count()
-        
+
         # 分页和排序
         items = query.order_by(desc(ZhifuDingdan.chuangjian_shijian)).offset(
             (params.page - 1) * params.size
         ).limit(params.size).all()
-        
+
+        # 构建响应，包含合同信息
+        response_items = []
+        for item in items:
+            item_dict = ZhifuDingdanResponse.model_validate(item).model_dump()
+
+            # 查询关联的合同信息
+            hetong = self.db.query(Hetong).filter(
+                Hetong.id == item.hetong_id,
+                Hetong.is_deleted == "N"
+            ).first()
+
+            if hetong:
+                item_dict['hetong_bianhao'] = hetong.hetong_bianhao
+                item_dict['hetong_mingcheng'] = hetong.hetong_mingcheng
+
+            response_items.append(ZhifuDingdanResponse(**item_dict))
+
         return ZhifuDingdanListResponse(
             total=total,
-            items=[ZhifuDingdanResponse.model_validate(item) for item in items],
+            items=response_items,
             page=params.page,
             size=params.size
         )

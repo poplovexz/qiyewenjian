@@ -78,6 +78,11 @@ class ZhifuPeizhi(BaseModel):
         comment="支付宝公钥（加密）"
     )
 
+    zhifubao_wangguan = Column(
+        String(500),
+        comment="支付宝网关地址"
+    )
+
     # 银行汇款配置
     yinhang_mingcheng = Column(
         String(100),

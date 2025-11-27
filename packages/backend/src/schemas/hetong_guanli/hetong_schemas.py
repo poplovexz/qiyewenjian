@@ -259,3 +259,35 @@ class BankPaymentInfoResponse(BaseModel):
     message: str = Field(..., description="提示信息")
     danju_id: str = Field(..., description="单据ID")
     danju_bianhao: str = Field(..., description="单据编号")
+
+
+class PaymentMethodItem(BaseModel):
+    """可用支付方式条目模型"""
+    method: str = Field(..., description="支付方式标识，如 wechat/alipay/bank")
+    label: str = Field(..., description="展示名称")
+    icon: Optional[str] = Field(None, description="图标标识")
+    description: Optional[str] = Field(None, description="说明")
+
+
+class AvailablePaymentMethodsResponse(BaseModel):
+    """获取可用支付方式响应模型"""
+    available_methods: List[PaymentMethodItem] = Field(..., description="可用支付方式列表")
+    has_online_payment: bool = Field(..., description="是否存在在线支付方式")
+
+
+class PaymentInitiateResponse(BaseModel):
+    """发起支付响应模型，兼容扫码支付与银行确认"""
+    payment_method: str = Field(..., description="支付方式：wechat/alipay/bank")
+    message: Optional[str] = Field(None, description="提示信息（银行转账场景）")
+    order_id: Optional[str] = Field(None, description="订单ID（在线支付场景）")
+    order_no: Optional[str] = Field(None, description="订单编号（在线支付场景）")
+    amount: Optional[str] = Field(None, description="支付金额（在线支付场景）")
+    qr_code: Optional[str] = Field(None, description="二维码内容（扫码场景）")
+    payment_config: Optional[str] = Field(None, description="支付配置名称（在线支付场景）")
+
+
+class PaymentCallbackResponse(BaseModel):
+    """支付回调响应模型"""
+    success: bool = Field(..., description="是否处理成功")
+    message: str = Field(..., description="提示信息")
+    danju_bianhao: str = Field(..., description="单据编号")

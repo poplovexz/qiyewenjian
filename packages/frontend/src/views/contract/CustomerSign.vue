@@ -163,20 +163,22 @@
 
             <el-form label-width="120px">
               <el-form-item label="支付方式">
-                <el-radio-group v-model="paymentMethod">
-                  <el-radio label="wechat">
+                <el-radio-group v-model="paymentMethod" v-loading="loadingPaymentMethods">
+                  <el-radio
+                    v-for="method in availablePaymentMethods"
+                    :key="method.method"
+                    :label="method.method"
+                  >
                     <el-icon><Money /></el-icon>
-                    微信支付
-                  </el-radio>
-                  <el-radio label="alipay">
-                    <el-icon><Money /></el-icon>
-                    支付宝
-                  </el-radio>
-                  <el-radio label="bank">
-                    <el-icon><Money /></el-icon>
-                    银行转账
+                    {{ method.label }}
+                    <span class="payment-method-desc">{{ method.description }}</span>
                   </el-radio>
                 </el-radio-group>
+                <div v-if="availablePaymentMethods.length === 0 && !loadingPaymentMethods" class="no-payment-methods">
+                  <el-alert type="warning" :closable="false">
+                    暂无可用的在线支付方式，请选择银行转账
+                  </el-alert>
+                </div>
               </el-form-item>
             </el-form>
 
@@ -209,8 +211,9 @@
 
             <!-- 微信/支付宝二维码 -->
             <div v-if="paymentMethod !== 'bank' && paymentQrCode" class="qr-code-container">
-              <img :src="paymentQrCode" alt="支付二维码" class="qr-code" />
+              <QRCode :value="paymentQrCode" :size="250" />
               <p>请使用{{ getPaymentMethodText(paymentMethod) }}扫码支付</p>
+              <p class="qr-tip">支付金额：¥{{ contractInfo.payment_amount }}</p>
             </div>
           </div>
 
@@ -245,11 +248,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, nextTick, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Loading, Money, Edit, Delete } from '@element-plus/icons-vue'
 import { request } from '@/utils/request'
+import QRCode from '@/components/QRCode.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -264,6 +268,9 @@ const paying = ref(false)
 const paymentCompleted = ref(false)
 const paymentMethod = ref('wechat')
 const paymentQrCode = ref('')
+const availablePaymentMethods = ref<any[]>([])
+const loadingPaymentMethods = ref(false)
+let paymentStatusTimer: number | null = null
 
 // 签名相关
 const signatureCanvas = ref<HTMLCanvasElement>()
@@ -293,16 +300,50 @@ const signFormRules = {
 // 获取签署令牌
 const signToken = route.params.token as string
 
+// 加载可用支付方式
+const loadAvailablePaymentMethods = async () => {
+  try {
+    loadingPaymentMethods.value = true
+    const response = await request.get(`/contract-sign/sign/${signToken}/available-payment-methods`)
+    const data = response.data || response
+    availablePaymentMethods.value = data.available_methods || []
+
+    // 设置默认支付方式为第一个可用的在线支付方式
+    if (availablePaymentMethods.value.length > 0) {
+      const firstOnlineMethod = availablePaymentMethods.value.find(m => m.method !== 'bank')
+      paymentMethod.value = firstOnlineMethod ? firstOnlineMethod.method : 'bank'
+    }
+  } catch (err: any) {
+    console.error('加载支付方式失败:', err)
+    // 如果加载失败，使用默认支付方式
+    availablePaymentMethods.value = [
+      { method: 'bank', label: '银行转账', icon: 'bank', description: '通过银行转账支付' }
+    ]
+    paymentMethod.value = 'bank'
+  } finally {
+    loadingPaymentMethods.value = false
+  }
+}
+
 // 加载合同信息
 const loadContractInfo = async () => {
   try {
     loading.value = true
     const response = await request.get(`/contract-sign/sign/${signToken}`)
     contractInfo.value = response.data || response
-    
+
+    // 加载可用支付方式
+    await loadAvailablePaymentMethods()
+
     // 如果已经签署，跳到支付步骤
     if (contractInfo.value.signed_at) {
       currentStep.value = 2
+
+      // 如果已经支付成功，直接跳到完成步骤
+      if (contractInfo.value.payment_status === 'paid') {
+        paymentCompleted.value = true
+        currentStep.value = 3
+      }
     }
   } catch (err: any) {
     console.error('加载合同信息失败:', err)
@@ -435,6 +476,14 @@ const submitSignature = async () => {
 
 // 发起支付
 const initiatePayment = async () => {
+  // 检查是否已支付
+  if (contractInfo.value.payment_status === 'paid') {
+    ElMessage.warning('该合同已支付，无需重复支付')
+    paymentCompleted.value = true
+    nextStep()
+    return
+  }
+
   try {
     paying.value = true
 
@@ -460,6 +509,9 @@ const initiatePayment = async () => {
       paymentQrCode.value = paymentInfo.qr_code
 
       ElMessage.success('支付订单已创建，请扫码支付')
+
+      // 开始轮询支付状态
+      startPaymentStatusPolling()
     }
   } catch (error: any) {
     console.error('发起支付失败:', error)
@@ -469,8 +521,63 @@ const initiatePayment = async () => {
   }
 }
 
+// 开始轮询支付状态
+const startPaymentStatusPolling = () => {
+  console.log('🔍 开始轮询支付状态...')
+
+  // 清除之前的定时器
+  if (paymentStatusTimer) {
+    clearInterval(paymentStatusTimer)
+  }
+
+  // 每3秒查询一次支付状态
+  paymentStatusTimer = window.setInterval(async () => {
+    try {
+      console.log('🔍 发送支付状态查询请求...')
+      const response = await request.get(`/contract-sign/sign/${signToken}/payment-status`, {
+        timeout: 30000  // 增加超时时间到30秒
+      })
+      console.log('🔍 收到支付状态响应:', response)
+
+      const status = response.data || response
+      console.log('🔍 解析后的状态:', status)
+      console.log('🔍 payment_status 值:', status.payment_status)
+
+      if (status.payment_status === 'paid') {
+        console.log('✅ 检测到支付成功！')
+        // 支付成功
+        stopPaymentStatusPolling()
+        paymentCompleted.value = true
+        paymentQrCode.value = ''
+        currentStep.value = 3  // 直接设置为完成步骤
+        ElMessage.success('支付成功！')
+
+        console.log('🔄 已跳转到完成步骤，当前步骤:', currentStep.value)
+      } else {
+        console.log('⏳ 支付状态:', status.payment_status, '继续轮询...')
+      }
+    } catch (error) {
+      console.error('❌ 查询支付状态失败:', error)
+      // 超时错误不停止轮询，继续尝试
+      if (error.code !== 'ECONNABORTED') {
+        console.error('非超时错误，停止轮询')
+        stopPaymentStatusPolling()
+      }
+    }
+  }, 3000)
+}
+
+// 停止轮询支付状态
+const stopPaymentStatusPolling = () => {
+  if (paymentStatusTimer) {
+    clearInterval(paymentStatusTimer)
+    paymentStatusTimer = null
+  }
+}
+
 // 跳过支付
 const skipPayment = () => {
+  stopPaymentStatusPolling()
   paymentCompleted.value = false
   nextStep()
 }
@@ -516,6 +623,11 @@ const getPaymentMethodText = (method: string) => {
 // 组件挂载
 onMounted(() => {
   loadContractInfo()
+})
+
+// 组件卸载时清除定时器
+onUnmounted(() => {
+  stopPaymentStatusPolling()
 })
 </script>
 
@@ -762,6 +874,17 @@ onMounted(() => {
   margin: 5px 0;
   color: #e6a23c;
   font-size: 13px;
+}
+
+/* 支付方式样式 */
+.payment-method-desc {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #909399;
+}
+
+.no-payment-methods {
+  margin-top: 10px;
 }
 
 /* 移动端适配 */

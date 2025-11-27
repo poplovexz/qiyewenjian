@@ -261,39 +261,74 @@ class ZhifuPeizhiService:
             'updated_by': peizhi.updated_by
         }
         
-        # 解密并脱敏显示
+        # 解密并脱敏显示（增加异常处理，避免解密失败导致API崩溃）
         if peizhi.weixin_appid:
-            decrypted = encryption.decrypt(peizhi.weixin_appid)
-            peizhi_dict['weixin_appid'] = decrypted
-        
+            try:
+                decrypted = encryption.decrypt(peizhi.weixin_appid)
+                peizhi_dict['weixin_appid'] = decrypted
+            except Exception:
+                # 解密失败，返回脱敏占位符
+                peizhi_dict['weixin_appid'] = '****'
+
         if peizhi.weixin_shanghu_hao:
-            decrypted = encryption.decrypt(peizhi.weixin_shanghu_hao)
-            peizhi_dict['weixin_shanghu_hao'] = decrypted
-        
+            try:
+                decrypted = encryption.decrypt(peizhi.weixin_shanghu_hao)
+                peizhi_dict['weixin_shanghu_hao'] = decrypted
+            except Exception:
+                peizhi_dict['weixin_shanghu_hao'] = '****'
+
         if peizhi.weixin_shanghu_siyao:
             peizhi_dict['weixin_shanghu_siyao_masked'] = self._mask_sensitive_data(peizhi.weixin_shanghu_siyao)
-        
+
         if peizhi.weixin_zhengshu_xuliehao:
-            decrypted = encryption.decrypt(peizhi.weixin_zhengshu_xuliehao)
-            peizhi_dict['weixin_zhengshu_xuliehao'] = decrypted
-        
+            try:
+                decrypted = encryption.decrypt(peizhi.weixin_zhengshu_xuliehao)
+                peizhi_dict['weixin_zhengshu_xuliehao'] = decrypted
+            except Exception:
+                peizhi_dict['weixin_zhengshu_xuliehao'] = '****'
+
         if peizhi.weixin_api_v3_miyao:
             peizhi_dict['weixin_api_v3_miyao_masked'] = self._mask_sensitive_data(peizhi.weixin_api_v3_miyao)
-        
+
         if peizhi.zhifubao_appid:
-            decrypted = encryption.decrypt(peizhi.zhifubao_appid)
-            peizhi_dict['zhifubao_appid'] = decrypted
-        
+            try:
+                decrypted = encryption.decrypt(peizhi.zhifubao_appid)
+                peizhi_dict['zhifubao_appid'] = decrypted
+            except Exception:
+                peizhi_dict['zhifubao_appid'] = '****'
+
+        # 支付宝网关不需要加密，直接返回
+        if peizhi.zhifubao_wangguan:
+            peizhi_dict['zhifubao_wangguan'] = peizhi.zhifubao_wangguan
+
         if peizhi.zhifubao_shanghu_siyao:
             peizhi_dict['zhifubao_shanghu_siyao_masked'] = self._mask_sensitive_data(peizhi.zhifubao_shanghu_siyao)
-        
+
         if peizhi.zhifubao_zhifubao_gongyao:
             peizhi_dict['zhifubao_zhifubao_gongyao_masked'] = self._mask_sensitive_data(peizhi.zhifubao_zhifubao_gongyao)
-        
+
+        # 银行汇款配置
+        if peizhi.yinhang_mingcheng:
+            peizhi_dict['yinhang_mingcheng'] = peizhi.yinhang_mingcheng
+        if peizhi.yinhang_zhanghu_mingcheng:
+            peizhi_dict['yinhang_zhanghu_mingcheng'] = peizhi.yinhang_zhanghu_mingcheng
+        if peizhi.yinhang_zhanghu_haoma:
+            peizhi_dict['yinhang_zhanghu_haoma'] = peizhi.yinhang_zhanghu_haoma
+        if peizhi.kaihuhang_mingcheng:
+            peizhi_dict['kaihuhang_mingcheng'] = peizhi.kaihuhang_mingcheng
+        if peizhi.kaihuhang_lianhanghao:
+            peizhi_dict['kaihuhang_lianhanghao'] = peizhi.kaihuhang_lianhanghao
+
         return ZhifuPeizhiResponse(**peizhi_dict)
     
     def _to_detail(self, peizhi: ZhifuPeizhi) -> ZhifuPeizhiDetail:
         """转换为详情模型（解密，不脱敏）"""
+        print(f"🔍 _to_detail 开始处理配置: {peizhi.peizhi_mingcheng}, 类型: {peizhi.peizhi_leixing}")
+        print(f"🔍 数据库中的支付宝字段:")
+        print(f"  - zhifubao_appid: {peizhi.zhifubao_appid[:20] if peizhi.zhifubao_appid else None}...")
+        print(f"  - zhifubao_shanghu_siyao: {peizhi.zhifubao_shanghu_siyao[:20] if peizhi.zhifubao_shanghu_siyao else None}...")
+        print(f"  - zhifubao_wangguan: {peizhi.zhifubao_wangguan}")
+
         peizhi_dict = {
             'id': peizhi.id,
             'peizhi_mingcheng': peizhi.peizhi_mingcheng,
@@ -319,15 +354,41 @@ class ZhifuPeizhiService:
             'zhifubao_shanghu_siyao': peizhi.zhifubao_shanghu_siyao,
             'zhifubao_zhifubao_gongyao': peizhi.zhifubao_zhifubao_gongyao
         }
-        
+
         for field_name, encrypted_value in encrypted_fields_map.items():
             if encrypted_value:
                 try:
-                    peizhi_dict[field_name] = encryption.decrypt(encrypted_value)
-                except Exception:
-                    peizhi_dict[field_name] = None
+                    decrypted_value = encryption.decrypt(encrypted_value)
+                    peizhi_dict[field_name] = decrypted_value
+                    print(f"  ✅ {field_name} 解密成功: {decrypted_value[:20] if decrypted_value and len(decrypted_value) > 20 else decrypted_value}...")
+                except Exception as e:
+                    # 解密失败，可能是明文数据，直接返回原值
+                    print(f"  ⚠️  {field_name} 解密失败（可能是明文数据）: {str(e)}")
+                    print(f"  ℹ️  使用原值（明文）: {encrypted_value[:20] if len(encrypted_value) > 20 else encrypted_value}...")
+                    peizhi_dict[field_name] = encrypted_value
             else:
                 peizhi_dict[field_name] = None
-        
-        return ZhifuPeizhiDetail(**peizhi_dict)
+
+        # 支付宝网关不需要加密，直接返回（确保字段存在，即使为空）
+        peizhi_dict['zhifubao_wangguan'] = peizhi.zhifubao_wangguan or None
+
+        # 银行汇款配置（确保字段存在，即使为空）
+        peizhi_dict['yinhang_mingcheng'] = peizhi.yinhang_mingcheng or None
+        peizhi_dict['yinhang_zhanghu_mingcheng'] = peizhi.yinhang_zhanghu_mingcheng or None
+        peizhi_dict['yinhang_zhanghu_haoma'] = peizhi.yinhang_zhanghu_haoma or None
+        peizhi_dict['kaihuhang_mingcheng'] = peizhi.kaihuhang_mingcheng or None
+        peizhi_dict['kaihuhang_lianhanghao'] = peizhi.kaihuhang_lianhanghao or None
+
+        print(f"🔍 解密后的字典内容:")
+        print(f"  - zhifubao_appid: {peizhi_dict.get('zhifubao_appid', 'NOT_SET')}")
+        print(f"  - zhifubao_shanghu_siyao: {peizhi_dict.get('zhifubao_shanghu_siyao', 'NOT_SET')[:20] if peizhi_dict.get('zhifubao_shanghu_siyao') else 'NOT_SET'}...")
+        print(f"  - zhifubao_wangguan: {peizhi_dict.get('zhifubao_wangguan', 'NOT_SET')}")
+
+        result = ZhifuPeizhiDetail(**peizhi_dict)
+        print(f"🔍 返回的 ZhifuPeizhiDetail 对象:")
+        print(f"  - zhifubao_appid: {result.zhifubao_appid}")
+        print(f"  - zhifubao_shanghu_siyao: {result.zhifubao_shanghu_siyao[:20] if result.zhifubao_shanghu_siyao else None}...")
+        print(f"  - zhifubao_wangguan: {result.zhifubao_wangguan}")
+
+        return result
 
