@@ -14,6 +14,7 @@ import logging
 from models.zhifu_guanli import ZhifuDingdan, ZhifuPeizhi, ZhifuHuidiaoRizhi
 from services.zhifu_guanli.zhifu_peizhi_service import ZhifuPeizhiService
 from utils.payment.weixin_pay import WeixinPayUtil
+from utils.payment.weixin_pay_sandbox import WeixinPaySandboxUtil
 from utils.payment.alipay import AlipayUtil
 from core.events import publish, EventNames
 
@@ -136,38 +137,66 @@ class ZhifuApiService:
         openid: Optional[str] = None
     ) -> Dict[str, Any]:
         """创建微信支付订单"""
-        # 初始化微信支付工具
-        weixin_pay = WeixinPayUtil(
-            appid=peizhi.weixin_appid,
-            mchid=peizhi.weixin_shanghu_hao,
-            private_key=peizhi.weixin_shanghu_siyao,
-            cert_serial_no=peizhi.weixin_zhengshu_xuliehao,
-            apiv3_key=peizhi.weixin_api_v3_miyao,
-            notify_url=peizhi.tongzhi_url
-        )
-        
+        # 检查是否为沙箱环境
+        is_sandbox = peizhi.huanjing == "shachang"
+
         # 订单参数
         out_trade_no = dingdan.dingdan_bianhao
         description = dingdan.dingdan_mingcheng
         amount = int(float(dingdan.yingfu_jine) * 100)  # 转换为分
-        
-        # 根据支付方式调用不同的接口
-        if zhifu_fangshi == "jsapi":
-            if not openid:
-                raise HTTPException(status_code=400, detail="JSAPI支付需要提供openid")
-            return weixin_pay.create_jsapi_order(out_trade_no, description, amount, openid)
-        
-        elif zhifu_fangshi == "app":
-            return weixin_pay.create_app_order(out_trade_no, description, amount)
-        
-        elif zhifu_fangshi == "h5":
-            return weixin_pay.create_h5_order(out_trade_no, description, amount)
-        
-        elif zhifu_fangshi == "native":
-            return weixin_pay.create_native_order(out_trade_no, description, amount)
-        
+
+        if is_sandbox:
+            # 使用沙箱环境工具类 (API v2)
+            weixin_pay = WeixinPaySandboxUtil(
+                appid=peizhi.weixin_appid,
+                mch_id=peizhi.weixin_shanghu_hao,
+                api_key=peizhi.weixin_api_v3_miyao,  # 沙箱环境使用API密钥
+                notify_url=peizhi.tongzhi_url
+            )
+
+            # 沙箱环境目前只支持Native支付
+            if zhifu_fangshi != "native":
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"沙箱环境目前只支持Native扫码支付，不支持: {zhifu_fangshi}"
+                )
+
+            # 创建Native订单
+            return weixin_pay.create_native_order(
+                out_trade_no=out_trade_no,
+                total_fee=amount,
+                body=description,
+                product_id=dingdan.id,
+                spbill_create_ip="127.0.0.1"
+            )
         else:
-            raise HTTPException(status_code=400, detail=f"不支持的微信支付方式: {zhifu_fangshi}")
+            # 使用正式环境工具类 (API v3)
+            weixin_pay = WeixinPayUtil(
+                appid=peizhi.weixin_appid,
+                mchid=peizhi.weixin_shanghu_hao,
+                private_key=peizhi.weixin_shanghu_siyao,
+                cert_serial_no=peizhi.weixin_zhengshu_xuliehao,
+                apiv3_key=peizhi.weixin_api_v3_miyao,
+                notify_url=peizhi.tongzhi_url
+            )
+
+            # 根据支付方式调用不同的接口
+            if zhifu_fangshi == "jsapi":
+                if not openid:
+                    raise HTTPException(status_code=400, detail="JSAPI支付需要提供openid")
+                return weixin_pay.create_jsapi_order(out_trade_no, description, amount, openid)
+
+            elif zhifu_fangshi == "app":
+                return weixin_pay.create_app_order(out_trade_no, description, amount)
+
+            elif zhifu_fangshi == "h5":
+                return weixin_pay.create_h5_order(out_trade_no, description, amount)
+
+            elif zhifu_fangshi == "native":
+                return weixin_pay.create_native_order(out_trade_no, description, amount)
+
+            else:
+                raise HTTPException(status_code=400, detail=f"不支持的微信支付方式: {zhifu_fangshi}")
     
     def _create_alipay_payment(
         self,
@@ -274,15 +303,28 @@ class ZhifuApiService:
     
     def _query_weixin_payment(self, dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
         """查询微信支付订单"""
-        weixin_pay = WeixinPayUtil(
-            appid=peizhi.weixin_appid,
-            mchid=peizhi.weixin_shanghu_hao,
-            private_key=peizhi.weixin_shanghu_siyao,
-            cert_serial_no=peizhi.weixin_zhengshu_xuliehao,
-            apiv3_key=peizhi.weixin_api_v3_miyao,
-            notify_url=peizhi.tongzhi_url
-        )
-        
+        # 检查是否为沙箱环境
+        is_sandbox = peizhi.huanjing == "shachang"
+
+        if is_sandbox:
+            # 使用沙箱环境工具类
+            weixin_pay = WeixinPaySandboxUtil(
+                appid=peizhi.weixin_appid,
+                mch_id=peizhi.weixin_shanghu_hao,
+                api_key=peizhi.weixin_api_v3_miyao,
+                notify_url=peizhi.tongzhi_url
+            )
+        else:
+            # 使用正式环境工具类
+            weixin_pay = WeixinPayUtil(
+                appid=peizhi.weixin_appid,
+                mchid=peizhi.weixin_shanghu_hao,
+                private_key=peizhi.weixin_shanghu_siyao,
+                cert_serial_no=peizhi.weixin_zhengshu_xuliehao,
+                apiv3_key=peizhi.weixin_api_v3_miyao,
+                notify_url=peizhi.tongzhi_url
+            )
+
         return weixin_pay.query_order(dingdan.dingdan_bianhao)
     
     def _query_alipay_payment(self, dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
@@ -349,15 +391,28 @@ class ZhifuApiService:
     
     def _close_weixin_payment(self, dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
         """关闭微信支付订单"""
-        weixin_pay = WeixinPayUtil(
-            appid=peizhi.weixin_appid,
-            mchid=peizhi.weixin_shanghu_hao,
-            private_key=peizhi.weixin_shanghu_siyao,
-            cert_serial_no=peizhi.weixin_zhengshu_xuliehao,
-            apiv3_key=peizhi.weixin_api_v3_miyao,
-            notify_url=peizhi.tongzhi_url
-        )
-        
+        # 检查是否为沙箱环境
+        is_sandbox = peizhi.huanjing == "shachang"
+
+        if is_sandbox:
+            # 使用沙箱环境工具类
+            weixin_pay = WeixinPaySandboxUtil(
+                appid=peizhi.weixin_appid,
+                mch_id=peizhi.weixin_shanghu_hao,
+                api_key=peizhi.weixin_api_v3_miyao,
+                notify_url=peizhi.tongzhi_url
+            )
+        else:
+            # 使用正式环境工具类
+            weixin_pay = WeixinPayUtil(
+                appid=peizhi.weixin_appid,
+                mchid=peizhi.weixin_shanghu_hao,
+                private_key=peizhi.weixin_shanghu_siyao,
+                cert_serial_no=peizhi.weixin_zhengshu_xuliehao,
+                apiv3_key=peizhi.weixin_api_v3_miyao,
+                notify_url=peizhi.tongzhi_url
+            )
+
         return weixin_pay.close_order(dingdan.dingdan_bianhao)
     
     def _close_alipay_payment(self, dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:

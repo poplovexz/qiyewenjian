@@ -17,6 +17,7 @@ from models.zhifu_guanli.zhifu_tuikuan import ZhifuTuikuan
 from models.zhifu_guanli.zhifu_liushui import ZhifuLiushui
 from schemas.zhifu_guanli.zhifu_liushui_schemas import ZhifuLiushuiCreate
 from utils.payment.weixin_pay import WeixinPayUtil
+from utils.payment.weixin_pay_sandbox import WeixinPaySandboxUtil
 from utils.payment.alipay import AlipayUtil, ALIPAY_SDK_AVAILABLE
 from decimal import Decimal
 from datetime import datetime
@@ -75,20 +76,35 @@ async def weixin_payment_notify(
             
             # 获取解密后的配置
             peizhi_detail = peizhi_service.get_detail(peizhi.id)
-            
-            # 初始化微信支付工具
-            weixin_util = WeixinPayUtil({
-                'weixin_appid': peizhi_detail.weixin_appid,
-                'weixin_shanghu_hao': peizhi_detail.weixin_shanghu_hao,
-                'weixin_shanghu_siyao': peizhi_detail.weixin_shanghu_siyao,
-                'weixin_zhengshu_xuliehao': peizhi_detail.weixin_zhengshu_xuliehao,
-                'weixin_api_v3_miyao': peizhi_detail.weixin_api_v3_miyao,
-                'tongzhi_url': peizhi_detail.tongzhi_url
-            })
-            
-            # 验证签名并解密数据
-            callback_result = weixin_util.callback(headers, body_str)
-            
+
+            # 检查是否为沙箱环境
+            is_sandbox = peizhi_detail.huanjing == "shachang"
+
+            if is_sandbox:
+                # 沙箱环境使用API v2回调验证
+                weixin_util = WeixinPaySandboxUtil(
+                    appid=peizhi_detail.weixin_appid,
+                    mch_id=peizhi_detail.weixin_shanghu_hao,
+                    api_key=peizhi_detail.weixin_api_v3_miyao,
+                    notify_url=peizhi_detail.tongzhi_url
+                )
+
+                # 验证签名
+                callback_result = weixin_util.verify_notify(body_str)
+            else:
+                # 正式环境使用API v3回调验证
+                weixin_util = WeixinPayUtil({
+                    'weixin_appid': peizhi_detail.weixin_appid,
+                    'weixin_shanghu_hao': peizhi_detail.weixin_shanghu_hao,
+                    'weixin_shanghu_siyao': peizhi_detail.weixin_shanghu_siyao,
+                    'weixin_zhengshu_xuliehao': peizhi_detail.weixin_zhengshu_xuliehao,
+                    'weixin_api_v3_miyao': peizhi_detail.weixin_api_v3_miyao,
+                    'tongzhi_url': peizhi_detail.tongzhi_url
+                })
+
+                # 验证签名并解密数据
+                callback_result = weixin_util.callback(headers, body_str)
+
             if not callback_result.get('success'):
                 # 签名验证失败
                 huidiao_service.update_log_verification(
@@ -101,31 +117,43 @@ async def weixin_payment_notify(
                     chuli_zhuangtai='shibai',
                     cuowu_xinxi='签名验证失败'
                 )
-                
-                return Response(
-                    content=json.dumps({'code': 'FAIL', 'message': '签名验证失败'}),
-                    media_type='application/json'
-                )
+
+                # 沙箱环境返回XML格式
+                if is_sandbox:
+                    return Response(
+                        content='<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[签名验证失败]]></return_msg></xml>',
+                        media_type='application/xml'
+                    )
+                else:
+                    return Response(
+                        content=json.dumps({'code': 'FAIL', 'message': '签名验证失败'}),
+                        media_type='application/json'
+                    )
             
             # 签名验证成功
             huidiao_service.update_log_verification(log.id, qianming_yanzheng='chenggong')
             
             # 获取回调数据
             callback_data = callback_result.get('data', {})
-            
-            # 提取订单信息
+
+            # 提取订单信息 (沙箱和正式环境字段名相同)
             out_trade_no = callback_data.get('out_trade_no')  # 商户订单号
             transaction_id = callback_data.get('transaction_id')  # 微信订单号
-            trade_state = callback_data.get('trade_state')  # 交易状态
-            
+
+            # 交易状态 (沙箱环境使用result_code, 正式环境使用trade_state)
+            if is_sandbox:
+                trade_state = 'SUCCESS' if callback_data.get('result_code') == 'SUCCESS' else 'FAIL'
+            else:
+                trade_state = callback_data.get('trade_state')  # 交易状态
+
             if not out_trade_no:
                 raise ValueError("回调数据中缺少商户订单号")
-            
+
             # 查找订单
             dingdan = dingdan_service.get_by_dingdan_hao(out_trade_no)
             if not dingdan:
                 raise ValueError(f"订单不存在: {out_trade_no}")
-            
+
             # 更新订单状态
             if trade_state == 'SUCCESS':
                 # 支付成功
@@ -146,10 +174,22 @@ async def weixin_payment_notify(
                 ).first()
 
                 if not existing_liushui:
-                    # 获取交易金额和手续费
-                    amount_data = callback_data.get('amount', {})
-                    total_amount = Decimal(amount_data.get('total', 0)) / 100  # 微信金额单位是分
-                    payer_total = Decimal(amount_data.get('payer_total', 0)) / 100
+                    # 获取交易金额
+                    if is_sandbox:
+                        # 沙箱环境直接从total_fee获取
+                        total_amount = Decimal(callback_data.get('total_fee', 0)) / 100
+                    else:
+                        # 正式环境从amount对象获取
+                        amount_data = callback_data.get('amount', {})
+                        total_amount = Decimal(amount_data.get('total', 0)) / 100
+
+                    # 获取支付账户(openid)
+                    if is_sandbox:
+                        # 沙箱环境从openid字段获取
+                        zhifu_zhanghu = callback_data.get('openid', '')
+                    else:
+                        # 正式环境从payer对象获取
+                        zhifu_zhanghu = callback_data.get('payer', {}).get('openid', '')
 
                     # 创建流水数据
                     liushui_data = ZhifuLiushuiCreate(
@@ -160,7 +200,7 @@ async def weixin_payment_notify(
                         shouxufei=Decimal('0.00'),  # 微信支付手续费通常在结算时扣除
                         shiji_shouru=total_amount,
                         zhifu_fangshi="weixin",
-                        zhifu_zhanghu=callback_data.get('payer', {}).get('openid', ''),
+                        zhifu_zhanghu=zhifu_zhanghu,
                         disanfang_liushui_hao=transaction_id,
                         disanfang_dingdan_hao=transaction_id,
                         jiaoyishijian=datetime.now(),
@@ -183,10 +223,17 @@ async def weixin_payment_notify(
 
                 logger.info(f"微信支付回调处理成功: {out_trade_no}")
 
-                return Response(
-                    content=json.dumps({'code': 'SUCCESS', 'message': '成功'}),
-                    media_type='application/json'
-                )
+                # 返回响应 (沙箱环境返回XML, 正式环境返回JSON)
+                if is_sandbox:
+                    return Response(
+                        content='<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>',
+                        media_type='application/xml'
+                    )
+                else:
+                    return Response(
+                        content=json.dumps({'code': 'SUCCESS', 'message': '成功'}),
+                        media_type='application/json'
+                    )
             else:
                 # 其他状态
                 huidiao_service.update_log_result(
@@ -194,12 +241,19 @@ async def weixin_payment_notify(
                     chuli_zhuangtai='chenggong',
                     chuli_jieguo=f"交易状态: {trade_state}"
                 )
-                
-                return Response(
-                    content=json.dumps({'code': 'SUCCESS', 'message': '成功'}),
-                    media_type='application/json'
-                )
-                
+
+                # 返回响应
+                if is_sandbox:
+                    return Response(
+                        content='<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>',
+                        media_type='application/xml'
+                    )
+                else:
+                    return Response(
+                        content=json.dumps({'code': 'SUCCESS', 'message': '成功'}),
+                        media_type='application/json'
+                    )
+
         except Exception as e:
             logger.error(f"微信支付回调处理失败: {str(e)}")
             huidiao_service.update_log_result(
@@ -207,7 +261,18 @@ async def weixin_payment_notify(
                 chuli_zhuangtai='shibai',
                 cuowu_xinxi=str(e)
             )
-            
+
+            # 返回错误响应
+            # 注意: 这里的is_sandbox可能未定义,需要从peizhi获取
+            try:
+                if peizhi_detail and peizhi_detail.huanjing == "shachang":
+                    return Response(
+                        content=f'<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[{str(e)}]]></return_msg></xml>',
+                        media_type='application/xml'
+                    )
+            except:
+                pass
+
             return Response(
                 content=json.dumps({'code': 'FAIL', 'message': str(e)}),
                 media_type='application/json'

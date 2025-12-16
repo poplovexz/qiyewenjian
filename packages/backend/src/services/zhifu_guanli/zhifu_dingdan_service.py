@@ -10,7 +10,7 @@ from decimal import Decimal
 import uuid
 
 from models.zhifu_guanli import ZhifuDingdan
-from models.hetong_guanli import Hetong
+from models.hetong_guanli import Hetong, HetongYifangZhuti
 from models.kehu_guanli import Kehu
 from schemas.zhifu_guanli.zhifu_dingdan_schemas import (
     ZhifuDingdanCreate,
@@ -175,7 +175,7 @@ class ZhifuDingdanService:
             (params.page - 1) * params.size
         ).limit(params.size).all()
 
-        # 构建响应，包含合同信息
+        # 构建响应，包含合同和客户信息
         response_items = []
         for item in items:
             item_dict = ZhifuDingdanResponse.model_validate(item).model_dump()
@@ -189,6 +189,32 @@ class ZhifuDingdanService:
             if hetong:
                 item_dict['hetong_bianhao'] = hetong.hetong_bianhao
                 item_dict['hetong_mingcheng'] = hetong.hetong_mingcheng
+
+            # 查询关联的客户信息
+            kehu = self.db.query(Kehu).filter(
+                Kehu.id == item.kehu_id,
+                Kehu.is_deleted == "N"
+            ).first()
+
+            if kehu:
+                item_dict['kehu_mingcheng'] = kehu.gongsi_mingcheng
+
+            # 查询关联的乙方主体信息（收款方）
+            # 优先使用订单的乙方主体ID，如果没有则使用合同的乙方主体ID
+            yifang_zhuti_id = item.yifang_zhuti_id
+            if not yifang_zhuti_id and hetong:
+                yifang_zhuti_id = hetong.yifang_zhuti_id
+
+            if yifang_zhuti_id:
+                yifang_zhuti = self.db.query(HetongYifangZhuti).filter(
+                    HetongYifangZhuti.id == yifang_zhuti_id,
+                    HetongYifangZhuti.is_deleted == "N"
+                ).first()
+
+                if yifang_zhuti:
+                    item_dict['yifang_zhuti_mingcheng'] = yifang_zhuti.zhuti_mingcheng
+                    item_dict['yifang_kaihuhang'] = yifang_zhuti.kaihuhang
+                    item_dict['yifang_yinhangzhanghu'] = yifang_zhuti.yinhangzhanghu
 
             response_items.append(ZhifuDingdanResponse(**item_dict))
 

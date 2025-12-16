@@ -63,6 +63,16 @@
 
       <el-table :data="tableData" v-loading="loading" stripe>
         <el-table-column prop="dingdan_bianhao" label="订单编号" width="180" />
+        <el-table-column prop="kehu_mingcheng" label="付款方" width="180" show-overflow-tooltip>
+          <template #default="{ row }">
+            {{ row.kehu_mingcheng || '-' }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="yifang_zhuti_mingcheng" label="收款方" width="180" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{ row.yifang_zhuti_mingcheng || '-' }}
+          </template>
+        </el-table-column>
         <el-table-column prop="hetong_bianhao" label="合同编号" width="150">
           <template #default="{ row }">
             {{ row.hetong_bianhao || '-' }}
@@ -154,6 +164,18 @@
           <el-tag :type="getStatusType(currentOrder.zhifu_zhuangtai)">
             {{ getStatusText(currentOrder.zhifu_zhuangtai) }}
           </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="付款方（客户）" :span="2">
+          {{ currentOrder.kehu_mingcheng || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="收款方" :span="2">
+          {{ currentOrder.yifang_zhuti_mingcheng || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="收款账户" :span="2" v-if="currentOrder.yifang_yinhangzhanghu">
+          <div>
+            <div>开户行：{{ currentOrder.yifang_kaihuhang || '-' }}</div>
+            <div>账号：{{ currentOrder.yifang_yinhangzhanghu }}</div>
+          </div>
         </el-descriptions-item>
         <el-descriptions-item label="合同编号">
           {{ currentOrder.hetong_bianhao || '-' }}

@@ -102,6 +102,14 @@ class ZhifuDingdanResponse(BaseModel):
     hetong_bianhao: Optional[str] = None
     hetong_mingcheng: Optional[str] = None
 
+    # 关联的客户信息
+    kehu_mingcheng: Optional[str] = None
+
+    # 关联的乙方主体信息（收款方）
+    yifang_zhuti_mingcheng: Optional[str] = None
+    yifang_kaihuhang: Optional[str] = None
+    yifang_yinhangzhanghu: Optional[str] = None
+
     class Config:
         from_attributes = True
 
