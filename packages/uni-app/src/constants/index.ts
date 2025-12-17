@@ -26,14 +26,16 @@ export const TASK_STATUS = {
   PENDING: 'pending',
   IN_PROGRESS: 'in_progress',
   COMPLETED: 'completed',
+  SKIPPED: 'skipped',
   CANCELLED: 'cancelled'
 } as const
 
-export const TASK_STATUS_MAP: Record<string, { label: string; color: string }> = {
-  [TASK_STATUS.PENDING]: { label: '待处理', color: '#fa8c16' },
-  [TASK_STATUS.IN_PROGRESS]: { label: '进行中', color: '#1989fa' },
-  [TASK_STATUS.COMPLETED]: { label: '已完成', color: '#07c160' },
-  [TASK_STATUS.CANCELLED]: { label: '已取消', color: '#999999' }
+export const TASK_STATUS_MAP: Record<string, { label: string; color: string; bgColor: string }> = {
+  [TASK_STATUS.PENDING]: { label: '待处理', color: '#fa8c16', bgColor: '#fff7e6' },
+  [TASK_STATUS.IN_PROGRESS]: { label: '进行中', color: '#1989fa', bgColor: '#e6f7ff' },
+  [TASK_STATUS.COMPLETED]: { label: '已完成', color: '#07c160', bgColor: '#f6ffed' },
+  [TASK_STATUS.SKIPPED]: { label: '已跳过', color: '#999999', bgColor: '#f5f5f5' },
+  [TASK_STATUS.CANCELLED]: { label: '已取消', color: '#999999', bgColor: '#f5f5f5' }
 }
 
 // 分页默认配置

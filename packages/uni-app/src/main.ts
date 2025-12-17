@@ -1,5 +1,6 @@
 import { createSSRApp } from "vue";
 import { createPinia } from "pinia";
+// @ts-ignore - uv-ui 没有类型声明
 import uvUI from '@climblee/uv-ui';
 import App from "./App.vue";
 

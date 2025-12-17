@@ -15,8 +15,9 @@ export const isLoggedIn = (): boolean => {
 export const setupRouterGuard = () => {
   // 拦截 uni.switchTab
   const originalSwitchTab = uni.switchTab
-  uni.switchTab = (options) => {
-    if (!isLoggedIn() && !whiteList.includes(options.url)) {
+  uni.switchTab = (options: UniApp.SwitchTabOptions) => {
+    const url = String(options.url)
+    if (!isLoggedIn() && !whiteList.includes(url)) {
       return uni.reLaunch({ url: '/pages/login/index' })
     }
     return originalSwitchTab(options)
@@ -24,8 +25,8 @@ export const setupRouterGuard = () => {
 
   // 拦截 uni.navigateTo
   const originalNavigateTo = uni.navigateTo
-  uni.navigateTo = (options) => {
-    const url = options.url.split('?')[0]
+  uni.navigateTo = (options: UniApp.NavigateToOptions) => {
+    const url = String(options.url).split('?')[0]
     if (!isLoggedIn() && !whiteList.includes(url)) {
       return uni.reLaunch({ url: '/pages/login/index' })
     }
@@ -34,8 +35,8 @@ export const setupRouterGuard = () => {
 
   // 拦截 uni.redirectTo
   const originalRedirectTo = uni.redirectTo
-  uni.redirectTo = (options) => {
-    const url = options.url.split('?')[0]
+  uni.redirectTo = (options: UniApp.RedirectToOptions) => {
+    const url = String(options.url).split('?')[0]
     if (!isLoggedIn() && !whiteList.includes(url)) {
       return uni.reLaunch({ url: '/pages/login/index' })
     }
