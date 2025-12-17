@@ -1,0 +1,75 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/tasks/index",
+			"style": {
+				"navigationBarTitleText": "任务列表",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/tasks/detail",
+			"style": {
+				"navigationBarTitleText": "任务详情"
+			}
+		},
+		{
+			"path": "pages/profile/index",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "服务人员任务管理",
+		"navigationBarBackgroundColor": "#1989fa",
+		"backgroundColor": "#F5F5F5",
+		"backgroundTextStyle": "dark"
+	},
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#1989fa",
+		"backgroundColor": "#ffffff",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/tabs/home.png",
+				"selectedIconPath": "static/tabs/home-active.png"
+			},
+			{
+				"pagePath": "pages/tasks/index",
+				"text": "任务",
+				"iconPath": "static/tabs/task.png",
+				"selectedIconPath": "static/tabs/task-active.png"
+			},
+			{
+				"pagePath": "pages/profile/index",
+				"text": "我的",
+				"iconPath": "static/tabs/profile.png",
+				"selectedIconPath": "static/tabs/profile-active.png"
+			}
+		]
+	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^uv-(.*)": "@climblee/uv-ui/components/uv-$1/uv-$1.vue"
+		}
+	}
+}

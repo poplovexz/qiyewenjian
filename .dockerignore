@@ -1,0 +1,55 @@
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node
+**/node_modules/
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/venv/
+
+# Build artifacts
+**/dist/
+**/build/
+
+# Logs
+*.log
+**/*.log
+
+# Local env files
+.env
+.env.local
+.env.*.local
+
+# Documentation (optional)
+docs/
+*.md
+!README.md
+
+# Tests
+**/tests/
+**/e2e/
+**/*.test.*
+**/*.spec.*
+
+# Docker (avoid recursive)
+docker-compose*.yml
+Dockerfile*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
