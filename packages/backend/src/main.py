@@ -22,6 +22,10 @@ from core.exception_handlers import (
     validation_exception_handler,
     general_exception_handler
 )
+from core.sentry import init_sentry
+
+# 初始化 Sentry 错误监控（需要在其他模块之前初始化）
+init_sentry()
 
 # 初始化日志系统
 setup_logging(

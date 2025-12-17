@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     RATE_LIMIT_MAX_REQUESTS: int = 200        # 每个 IP 每分钟最大请求数
     RATE_LIMIT_WINDOW_SECONDS: int = 60       # 限流时间窗口（秒）
 
+    # Sentry 错误监控配置
+    SENTRY_DSN: Optional[str] = None          # Sentry DSN，为空则不启用
+    SENTRY_ENVIRONMENT: str = "development"   # 环境标识
+    SENTRY_TRACES_SAMPLE_RATE: float = 0.1    # 性能监控采样率
+
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:

@@ -32,3 +32,4 @@ alipay-sdk-python>=3.7.4,<4.0.0
 # Utilities
 python-dotenv>=1.0.0,<2.0.0
 httpx>=0.25.0,<1.0.0
+sentry-sdk==2.48.0
