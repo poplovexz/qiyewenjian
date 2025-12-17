@@ -8,8 +8,12 @@ import App from './App.vue'
 import router from './router'
 import { pinia } from './stores'
 import { tokenManager } from './utils/tokenManager'
+import { initSentry, captureException } from './utils/sentry'
 
 const app = createApp(App)
+
+// 初始化 Sentry 错误监控（需要在其他插件之前初始化）
+initSentry(app, router)
 
 // 注册 Element Plus 图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -19,6 +23,18 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(pinia)
 app.use(router)
 app.use(ElementPlus)
+
+// 全局错误处理
+app.config.errorHandler = (err, instance, info) => {
+  console.error('Vue Error:', err)
+  console.error('Component:', instance)
+  console.error('Info:', info)
+
+  // 上报到 Sentry
+  if (err instanceof Error) {
+    captureException(err, { component: instance?.$options?.name, info })
+  }
+}
 
 // 直接挂载应用，不进行复杂的初始化
 try {
@@ -43,6 +59,12 @@ try {
 
 } catch (error) {
   console.error('❌ 应用挂载失败:', error)
+
+  // 上报启动错误到 Sentry
+  if (error instanceof Error) {
+    captureException(error, { phase: 'app-mount' })
+  }
+
   // 清除可能的问题数据
   try {
     localStorage.clear()
@@ -50,5 +72,8 @@ try {
     console.log('✅ 应用重新挂载成功')
   } catch (retryError) {
     console.error('❌ 应用重新挂载也失败:', retryError)
+    if (retryError instanceof Error) {
+      captureException(retryError, { phase: 'app-mount-retry' })
+    }
   }
 }
