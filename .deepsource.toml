@@ -1,0 +1,72 @@
+version = 1
+
+# 测试覆盖率报告（可选）
+test_patterns = [
+  "packages/backend/tests/**",
+  "packages/frontend/src/**/*.test.ts",
+  "packages/frontend/src/**/*.spec.ts"
+]
+
+# 排除目录
+exclude_patterns = [
+  "packages/backend/venv/**",
+  "packages/backend/.venv/**",
+  "**/node_modules/**",
+  "**/dist/**",
+  "**/build/**",
+  "**/.git/**"
+]
+
+# ===== Python 后端分析器 =====
+[[analyzers]]
+name = "python"
+enabled = true
+
+  [analyzers.meta]
+  runtime_version = "3.x"
+  max_line_length = 120
+
+# ===== JavaScript/TypeScript 前端分析器 =====
+[[analyzers]]
+name = "javascript"
+enabled = true
+
+  [analyzers.meta]
+  plugins = ["vue"]
+  environment = ["browser", "node"]
+  dialect = "typescript"
+  style_guide = "standard"
+
+# ===== SQL 分析器（数据库相关）=====
+[[analyzers]]
+name = "sql"
+enabled = true
+
+# ===== Docker 分析器 =====
+[[analyzers]]
+name = "docker"
+enabled = true
+
+# ===== Shell 脚本分析器 =====
+[[analyzers]]
+name = "shell"
+enabled = true
+
+# ===== TOML 配置分析器 =====
+[[analyzers]]
+name = "toml"
+enabled = true
+
+# ===== 代码格式化转换器 =====
+[[transformers]]
+name = "black"
+enabled = true
+
+[[transformers]]
+name = "isort"
+enabled = true
+
+[[transformers]]
+name = "prettier"
+enabled = true
+
