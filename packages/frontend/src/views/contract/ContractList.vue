@@ -768,9 +768,9 @@ const handleCreateServiceOrder = async (row: any) => {
     await getContractList()
 
     // 跳转到工单详情页
-    if (result && result.data && result.data.id) {
+    if (result?.data && result.data.id) {
       router.push(`/service-orders/${result.data.id}`)
-    } else if (result && result.id) {
+    } else if (result?.id) {
       router.push(`/service-orders/${result.id}`)
     } else {
       console.warn('工单创建成功，但无法获取工单ID，无法跳转')
@@ -794,10 +794,10 @@ const handleViewServiceOrder = async (row: any) => {
     const result = await serviceOrderApi.getByContract(row.id)
 
     // 检查返回数据的多种可能结构
-    if (result && result.data && result.data.items && result.data.items.length > 0) {
+    if (result?.data && result.data.items && result.data.items.length > 0) {
       // 跳转到第一个工单的详情页
       router.push(`/service-orders/${result.data.items[0].id}`)
-    } else if (result && result.items && result.items.length > 0) {
+    } else if (result?.items && result.items.length > 0) {
       // 备用：直接在result中的items
       router.push(`/service-orders/${result.items[0].id}`)
     } else {
