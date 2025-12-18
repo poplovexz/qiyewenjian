@@ -592,7 +592,7 @@ const loadContractStatuses = async () => {
         try {
           const response = await xiansuoApi.getContractStatus(lead.id)
           // response本身就是数据对象，不需要.data
-          if (response && response.contract_status) {
+          if (response?.contract_status) {
             contractStatusMap.value.set(lead.id, response)
           }
         } catch (error) {
@@ -858,7 +858,7 @@ const handleViewAudit = async (xiansuo: Xiansuo) => {
   try {
     const contractInfo = getContractStatusInfo(xiansuo.id)
 
-    if (contractInfo && contractInfo.audit_details) {
+    if (contractInfo?.audit_details) {
       // 显示审核详情弹框
       currentAuditDetails.value = contractInfo.audit_details
       auditDialogVisible.value = true

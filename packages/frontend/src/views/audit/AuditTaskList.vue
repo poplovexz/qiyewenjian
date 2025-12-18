@@ -255,7 +255,7 @@ const fetchProcessedAudits = async () => {
     console.log('已处理任务响应:', response)
 
     // 处理响应数据
-    if (response && response.data) {
+    if (response?.data) {
       processedAudits.value = response.data.items || response.data || []
     } else if (response) {
       processedAudits.value = response.items || response || []
