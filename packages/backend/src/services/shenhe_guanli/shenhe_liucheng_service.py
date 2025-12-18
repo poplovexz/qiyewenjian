@@ -217,7 +217,8 @@ class ShenheLiuchengService:
         
         return {"type": "未知", "name": "未知对象"}
     
-    def _to_response(self, liucheng: ShenheLiucheng) -> ShenheLiuchengResponse:
+    @staticmethod
+    def _to_response(liucheng: ShenheLiucheng) -> ShenheLiuchengResponse:
         """转换为响应模型"""
         return ShenheLiuchengResponse(
             id=liucheng.id,

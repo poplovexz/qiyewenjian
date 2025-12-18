@@ -28,7 +28,8 @@ class SystemHealthChecker:
             "checks": {}
         }
 
-    async def check_database_health(self) -> Dict[str, Any]:
+    @staticmethod
+    async def check_database_health() -> Dict[str, Any]:
         """检查数据库健康状态"""
         print("🔍 检查数据库健康状态...")
         
@@ -88,7 +89,8 @@ class SystemHealthChecker:
 
         return result
 
-    async def check_api_endpoints(self) -> Dict[str, Any]:
+    @staticmethod
+    async def check_api_endpoints() -> Dict[str, Any]:
         """检查API端点健康状态"""
         print("🌐 检查API端点健康状态...")
         
@@ -161,7 +163,8 @@ class SystemHealthChecker:
         print(f"✓ API成功率: {result['success_rate']}%")
         return result
 
-    async def check_system_resources(self) -> Dict[str, Any]:
+    @staticmethod
+    async def check_system_resources() -> Dict[str, Any]:
         """检查系统资源使用情况"""
         print("💻 检查系统资源...")
         
@@ -205,7 +208,8 @@ class SystemHealthChecker:
 
         return result
 
-    async def check_business_logic(self) -> Dict[str, Any]:
+    @staticmethod
+    async def check_business_logic() -> Dict[str, Any]:
         """检查业务逻辑健康状态"""
         print("🏢 检查业务逻辑...")
         
@@ -270,7 +274,8 @@ class SystemHealthChecker:
 
         return result
 
-    async def check_data_integrity(self) -> Dict[str, Any]:
+    @staticmethod
+    async def check_data_integrity() -> Dict[str, Any]:
         """检查数据完整性"""
         print("🔒 检查数据完整性...")
         

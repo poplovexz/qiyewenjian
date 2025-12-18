@@ -327,7 +327,8 @@ class FuwuGongdanService:
 
         return self.create_gongdan(gongdan_data, created_by)
 
-    def _map_hetong_leixing_to_fuwu_leixing(self, hetong_leixing: str) -> str:
+    @staticmethod
+    def _map_hetong_leixing_to_fuwu_leixing(hetong_leixing: str) -> str:
         """将合同类型映射到服务类型"""
         mapping = {
             "daili_jizhang": "daili_jizhang",
@@ -387,7 +388,8 @@ class FuwuGongdanService:
 
         return xiangmu_list
 
-    def _convert_to_gongshi(self, shichang: float, danwei: str) -> float:
+    @staticmethod
+    def _convert_to_gongshi(shichang: float, danwei: str) -> float:
         """将时长转换为工时（小时）
 
         Args:
@@ -405,7 +407,8 @@ class FuwuGongdanService:
         multiplier = danwei_map.get(danwei, 1.0)
         return float(shichang) * multiplier
 
-    def _get_default_xiangmu_by_service_type(self, fuwu_leixing: str) -> List[FuwuGongdanXiangmuCreate]:
+    @staticmethod
+    def _get_default_xiangmu_by_service_type(fuwu_leixing: str) -> List[FuwuGongdanXiangmuCreate]:
         """根据服务类型获取默认项目列表"""
         if fuwu_leixing == "daili_jizhang":
             return [

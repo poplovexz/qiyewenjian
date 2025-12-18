@@ -31,11 +31,13 @@ AlipayUtil = alipay_module.AlipayUtil
 class StubAlipay:
     """用于模拟支付宝SDK返回的 order_string"""
 
-    def api_alipay_trade_page_pay(self, **kwargs):
+    @staticmethod
+    def api_alipay_trade_page_pay(**kwargs):
         # 返回一个可拼接到网关后的订单串
         return "method=alipay.trade.page.pay&biz_content=%7B...%7D&timestamp=2025-01-01+00%3A00%3A00"
 
-    def api_alipay_trade_wap_pay(self, **kwargs):
+    @staticmethod
+    def api_alipay_trade_wap_pay(**kwargs):
         return "method=alipay.trade.wap.pay&biz_content=%7B...%7D&timestamp=2025-01-01+00%3A00%3A00"
 
 

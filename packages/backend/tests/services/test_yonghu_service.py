@@ -15,7 +15,8 @@ from src.core.security import get_password_hash
 class TestYonghuService:
     """用户管理服务测试类"""
     
-    def test_create_yonghu_success(self, db_session: Session):
+    @staticmethod
+    def test_create_yonghu_success(db_session: Session):
         """测试创建用户成功"""
         yonghu_service = YonghuService(db_session)
         
@@ -41,7 +42,8 @@ class TestYonghuService:
         db_user = db_session.query(Yonghu).filter(Yonghu.id == result.id).first()
         assert db_user.mima != "password123"
     
-    def test_create_yonghu_duplicate_username(self, db_session: Session, test_user: Yonghu):
+    @staticmethod
+    def test_create_yonghu_duplicate_username(db_session: Session, test_user: Yonghu):
         """测试创建用户时用户名重复"""
         yonghu_service = YonghuService(db_session)
         
@@ -58,7 +60,8 @@ class TestYonghuService:
         assert exc_info.value.status_code == 400
         assert "用户名已存在" in str(exc_info.value.detail)
     
-    def test_create_yonghu_duplicate_email(self, db_session: Session, test_user: Yonghu):
+    @staticmethod
+    def test_create_yonghu_duplicate_email(db_session: Session, test_user: Yonghu):
         """测试创建用户时邮箱重复"""
         yonghu_service = YonghuService(db_session)
         
@@ -75,7 +78,8 @@ class TestYonghuService:
         assert exc_info.value.status_code == 400
         assert "邮箱已存在" in str(exc_info.value.detail)
     
-    def test_get_yonghu_by_id_success(self, db_session: Session, test_user: Yonghu):
+    @staticmethod
+    def test_get_yonghu_by_id_success(db_session: Session, test_user: Yonghu):
         """测试根据ID获取用户成功"""
         yonghu_service = YonghuService(db_session)
         
@@ -86,7 +90,8 @@ class TestYonghuService:
         assert result.yonghu_ming == test_user.yonghu_ming
         assert result.xingming == test_user.xingming
     
-    def test_get_yonghu_by_id_not_found(self, db_session: Session):
+    @staticmethod
+    def test_get_yonghu_by_id_not_found(db_session: Session):
         """测试根据ID获取用户不存在"""
         yonghu_service = YonghuService(db_session)
         
@@ -94,7 +99,8 @@ class TestYonghuService:
         
         assert result is None
     
-    def test_get_yonghu_list(self, db_session: Session, test_user: Yonghu):
+    @staticmethod
+    def test_get_yonghu_list(db_session: Session, test_user: Yonghu):
         """测试获取用户列表"""
         yonghu_service = YonghuService(db_session)
         
@@ -109,7 +115,8 @@ class TestYonghuService:
         user_ids = [item.id for item in result.items]
         assert test_user.id in user_ids
     
-    def test_get_yonghu_list_with_search(self, db_session: Session, test_user: Yonghu):
+    @staticmethod
+    def test_get_yonghu_list_with_search(db_session: Session, test_user: Yonghu):
         """测试搜索用户列表"""
         yonghu_service = YonghuService(db_session)
         
@@ -122,7 +129,8 @@ class TestYonghuService:
         user_names = [item.yonghu_ming for item in result.items]
         assert "testuser" in user_names
     
-    def test_get_yonghu_list_with_status_filter(self, db_session: Session, test_user: Yonghu):
+    @staticmethod
+    def test_get_yonghu_list_with_status_filter(db_session: Session, test_user: Yonghu):
         """测试按状态筛选用户列表"""
         yonghu_service = YonghuService(db_session)
         
@@ -132,7 +140,8 @@ class TestYonghuService:
         for item in result.items:
             assert item.zhuangtai == "正常"
     
-    def test_update_yonghu_success(self, db_session: Session, test_user: Yonghu):
+    @staticmethod
+    def test_update_yonghu_success(db_session: Session, test_user: Yonghu):
         """测试更新用户成功"""
         yonghu_service = YonghuService(db_session)
         
@@ -149,7 +158,8 @@ class TestYonghuService:
         assert result.remark == "更新后的备注"
         assert result.yonghu_ming == test_user.yonghu_ming  # 未更新的字段保持不变
     
-    def test_update_yonghu_not_found(self, db_session: Session):
+    @staticmethod
+    def test_update_yonghu_not_found(db_session: Session):
         """测试更新不存在的用户"""
         yonghu_service = YonghuService(db_session)
         
@@ -161,7 +171,8 @@ class TestYonghuService:
         assert exc_info.value.status_code == 404
         assert "用户不存在" in str(exc_info.value.detail)
     
-    def test_delete_yonghu_success(self, db_session: Session, test_user: Yonghu):
+    @staticmethod
+    def test_delete_yonghu_success(db_session: Session, test_user: Yonghu):
         """测试删除用户成功"""
         yonghu_service = YonghuService(db_session)
         
@@ -173,7 +184,8 @@ class TestYonghuService:
         db_user = db_session.query(Yonghu).filter(Yonghu.id == test_user.id).first()
         assert db_user.is_deleted == 'Y'
     
-    def test_delete_yonghu_not_found(self, db_session: Session):
+    @staticmethod
+    def test_delete_yonghu_not_found(db_session: Session):
         """测试删除不存在的用户"""
         yonghu_service = YonghuService(db_session)
         
@@ -183,7 +195,8 @@ class TestYonghuService:
         assert exc_info.value.status_code == 404
         assert "用户不存在" in str(exc_info.value.detail)
     
-    def test_assign_roles_success(self, db_session: Session, test_user: Yonghu, test_role: Jiaose):
+    @staticmethod
+    def test_assign_roles_success(db_session: Session, test_user: Yonghu, test_role: Jiaose):
         """测试分配角色成功"""
         yonghu_service = YonghuService(db_session)
         
@@ -198,7 +211,8 @@ class TestYonghuService:
         ).first()
         assert user_role is not None
     
-    def test_get_yonghu_roles(self, db_session: Session, test_user: Yonghu, test_role: Jiaose):
+    @staticmethod
+    def test_get_yonghu_roles(db_session: Session, test_user: Yonghu, test_role: Jiaose):
         """测试获取用户角色列表"""
         yonghu_service = YonghuService(db_session)
         

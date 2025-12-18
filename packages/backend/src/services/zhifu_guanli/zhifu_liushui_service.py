@@ -211,7 +211,8 @@ class ZhifuLiushuiService:
         
         return ZhifuLiushuiResponse.model_validate(zhifu_liushui)
     
-    def _generate_liushui_bianhao(self) -> str:
+    @staticmethod
+    def _generate_liushui_bianhao() -> str:
         """生成流水编号"""
         # 格式：LS + YYYYMMDD + 6位随机数
         today = datetime.now().strftime("%Y%m%d")

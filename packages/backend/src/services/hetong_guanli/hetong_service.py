@@ -179,7 +179,8 @@ class HetongService:
 
         return hetong_response
     
-    def _generate_hetong_bianhao(self) -> str:
+    @staticmethod
+    def _generate_hetong_bianhao() -> str:
         """生成合同编号"""
         from datetime import datetime
         import random
@@ -192,7 +193,8 @@ class HetongService:
         random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=3))
         return f"HT{timestamp}{random_suffix}"
     
-    def _generate_hetong_content_from_baojia(self, moban: HetongMoban, baojia: XiansuoBaojia, kehu: Kehu) -> str:
+    @staticmethod
+    def _generate_hetong_content_from_baojia(moban: HetongMoban, baojia: XiansuoBaojia, kehu: Kehu) -> str:
         """基于模板和报价生成合同内容"""
         content = moban.moban_neirong
         

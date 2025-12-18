@@ -190,7 +190,8 @@ class ShenheJiluService:
         
         return result
     
-    def _to_response(self, jilu: ShenheJilu) -> ShenheJiluResponse:
+    @staticmethod
+    def _to_response(jilu: ShenheJilu) -> ShenheJiluResponse:
         """转换为响应模型"""
         return ShenheJiluResponse(
             id=jilu.id,

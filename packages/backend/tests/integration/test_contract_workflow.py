@@ -67,8 +67,8 @@ class TestContractWorkflow:
         """合同支付服务"""
         return HetongZhifuService(db_session)
 
+    @staticmethod
     async def test_complete_contract_workflow(
-        self,
         db_session: Session,
         test_user_id: str,
         xiansuo_service: XiansuoService,

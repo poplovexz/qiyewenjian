@@ -38,7 +38,8 @@ def test_service_record_data():
 class TestFuwuJiluAPI:
     """服务记录管理 API 测试类"""
     
-    def test_create_service_record_success(self, test_customer_data, test_service_record_data):
+    @staticmethod
+    def test_create_service_record_success(test_customer_data, test_service_record_data):
         """测试创建服务记录成功"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -68,7 +69,8 @@ class TestFuwuJiluAPI:
         assert "id" in data
         assert "created_at" in data
     
-    def test_create_service_record_customer_not_found(self, test_service_record_data):
+    @staticmethod
+    def test_create_service_record_customer_not_found(test_service_record_data):
         """测试创建服务记录时客户不存在"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -84,7 +86,8 @@ class TestFuwuJiluAPI:
         assert response.status_code == 404
         assert "客户不存在" in response.json()["detail"]
     
-    def test_create_service_record_invalid_data(self):
+    @staticmethod
+    def test_create_service_record_invalid_data():
         """测试创建服务记录时数据验证失败"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -105,7 +108,8 @@ class TestFuwuJiluAPI:
         
         assert response.status_code == 422
     
-    def test_get_service_record_list(self, test_customer_data, test_service_record_data):
+    @staticmethod
+    def test_get_service_record_list(test_customer_data, test_service_record_data):
         """测试获取服务记录列表"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -136,7 +140,8 @@ class TestFuwuJiluAPI:
         assert "size" in data
         assert len(data["items"]) >= 1
     
-    def test_get_service_record_list_with_filters(self, test_customer_data, test_service_record_data):
+    @staticmethod
+    def test_get_service_record_list_with_filters(test_customer_data, test_service_record_data):
         """测试带筛选条件的服务记录列表"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -179,7 +184,8 @@ class TestFuwuJiluAPI:
         data = response.json()
         assert all(item["goutong_fangshi"] == "phone" for item in data["items"])
     
-    def test_get_service_record_detail(self, test_customer_data, test_service_record_data):
+    @staticmethod
+    def test_get_service_record_detail(test_customer_data, test_service_record_data):
         """测试获取服务记录详情"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -208,7 +214,8 @@ class TestFuwuJiluAPI:
         assert data["id"] == record_id
         assert data["kehu_id"] == customer_id
     
-    def test_update_service_record(self, test_customer_data, test_service_record_data):
+    @staticmethod
+    def test_update_service_record(test_customer_data, test_service_record_data):
         """测试更新服务记录"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -248,7 +255,8 @@ class TestFuwuJiluAPI:
         assert data["chuli_zhuangtai"] == update_data["chuli_zhuangtai"]
         assert data["chuli_jieguo"] == update_data["chuli_jieguo"]
     
-    def test_update_service_record_status(self, test_customer_data, test_service_record_data):
+    @staticmethod
+    def test_update_service_record_status(test_customer_data, test_service_record_data):
         """测试更新服务记录处理状态"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -284,7 +292,8 @@ class TestFuwuJiluAPI:
         assert data["chuli_zhuangtai"] == "completed"
         assert data["chuli_jieguo"] == "问题已解决"
     
-    def test_get_customer_service_records(self, test_customer_data, test_service_record_data):
+    @staticmethod
+    def test_get_customer_service_records(test_customer_data, test_service_record_data):
         """测试获取客户的服务记录"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -315,7 +324,8 @@ class TestFuwuJiluAPI:
         assert len(data["items"]) >= 1
         assert all(item["kehu_id"] == customer_id for item in data["items"])
     
-    def test_delete_service_record(self, test_customer_data, test_service_record_data):
+    @staticmethod
+    def test_delete_service_record(test_customer_data, test_service_record_data):
         """测试删除服务记录"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}

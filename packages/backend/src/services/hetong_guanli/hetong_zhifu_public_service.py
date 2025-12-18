@@ -371,7 +371,8 @@ class HetongZhifuPublicService:
             print(f"处理支付宝通知失败: {e}")
             return False
     
-    def handle_wechat_notify(self, notify_data: bytes) -> bool:
+    @staticmethod
+    def handle_wechat_notify(notify_data: bytes) -> bool:
         """
         处理微信支付通知
         

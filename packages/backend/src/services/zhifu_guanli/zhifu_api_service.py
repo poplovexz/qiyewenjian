@@ -129,8 +129,8 @@ class ZhifuApiService:
                 detail=f"创建支付订单失败: {str(e)}"
             )
     
+    @staticmethod
     def _create_weixin_payment(
-        self,
         dingdan: ZhifuDingdan,
         peizhi: Any,
         zhifu_fangshi: str,
@@ -198,8 +198,8 @@ class ZhifuApiService:
             else:
                 raise HTTPException(status_code=400, detail=f"不支持的微信支付方式: {zhifu_fangshi}")
     
+    @staticmethod
     def _create_alipay_payment(
-        self,
         dingdan: ZhifuDingdan,
         peizhi: Any,
         zhifu_fangshi: str,
@@ -301,7 +301,8 @@ class ZhifuApiService:
                 detail=f"查询支付订单失败: {str(e)}"
             )
     
-    def _query_weixin_payment(self, dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
+    @staticmethod
+    def _query_weixin_payment(dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
         """查询微信支付订单"""
         # 检查是否为沙箱环境
         is_sandbox = peizhi.huanjing == "shachang"
@@ -327,7 +328,8 @@ class ZhifuApiService:
 
         return weixin_pay.query_order(dingdan.dingdan_bianhao)
     
-    def _query_alipay_payment(self, dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
+    @staticmethod
+    def _query_alipay_payment(dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
         """查询支付宝订单"""
         is_sandbox = peizhi.huanjing == "shachang"
 
@@ -389,7 +391,8 @@ class ZhifuApiService:
                 detail=f"关闭支付订单失败: {str(e)}"
             )
     
-    def _close_weixin_payment(self, dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
+    @staticmethod
+    def _close_weixin_payment(dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
         """关闭微信支付订单"""
         # 检查是否为沙箱环境
         is_sandbox = peizhi.huanjing == "shachang"
@@ -415,7 +418,8 @@ class ZhifuApiService:
 
         return weixin_pay.close_order(dingdan.dingdan_bianhao)
     
-    def _close_alipay_payment(self, dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
+    @staticmethod
+    def _close_alipay_payment(dingdan: ZhifuDingdan, peizhi: Any) -> Dict[str, Any]:
         """关闭支付宝订单"""
         is_sandbox = peizhi.huanjing == "shachang"
 

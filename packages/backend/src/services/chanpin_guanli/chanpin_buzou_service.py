@@ -23,7 +23,8 @@ class ChanpinBuzouService:
     def __init__(self, db: Session):
         self.db = db
 
-    def _convert_to_days(self, time: Decimal, unit: str) -> float:
+    @staticmethod
+    def _convert_to_days(time: Decimal, unit: str) -> float:
         """将时间转换为天数
 
         Args:

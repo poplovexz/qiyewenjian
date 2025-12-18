@@ -84,7 +84,8 @@ def test_user():
 class TestAuthAPI:
     """认证 API 测试类"""
     
-    def test_login_success(self, client, test_user):
+    @staticmethod
+    def test_login_success(client, test_user):
         """测试登录成功"""
         response = client.post(
             "/api/v1/auth/login",
@@ -104,7 +105,8 @@ class TestAuthAPI:
         assert "access_token" in data["token"]
         assert "refresh_token" in data["token"]
     
-    def test_login_wrong_credentials(self, client, test_user):
+    @staticmethod
+    def test_login_wrong_credentials(client, test_user):
         """测试登录失败 - 错误凭据"""
         response = client.post(
             "/api/v1/auth/login",
@@ -117,7 +119,8 @@ class TestAuthAPI:
         assert response.status_code == 401
         assert "用户名或密码错误" in response.json()["detail"]
     
-    def test_login_missing_fields(self, client):
+    @staticmethod
+    def test_login_missing_fields(client):
         """测试登录失败 - 缺少字段"""
         response = client.post(
             "/api/v1/auth/login",
@@ -129,7 +132,8 @@ class TestAuthAPI:
         
         assert response.status_code == 422  # Validation error
     
-    def test_get_current_user_success(self, client, test_user):
+    @staticmethod
+    def test_get_current_user_success(client, test_user):
         """测试获取当前用户信息成功"""
         # 先登录获取令牌
         login_response = client.post(
@@ -157,13 +161,15 @@ class TestAuthAPI:
         assert isinstance(data["roles"], list)
         assert isinstance(data["permissions"], list)
     
-    def test_get_current_user_no_token(self, client):
+    @staticmethod
+    def test_get_current_user_no_token(client):
         """测试获取当前用户信息失败 - 无令牌"""
         response = client.get("/api/v1/auth/me")
         
         assert response.status_code == 403  # Forbidden
     
-    def test_get_current_user_invalid_token(self, client):
+    @staticmethod
+    def test_get_current_user_invalid_token(client):
         """测试获取当前用户信息失败 - 无效令牌"""
         response = client.get(
             "/api/v1/auth/me",
@@ -172,7 +178,8 @@ class TestAuthAPI:
         
         assert response.status_code == 401
     
-    def test_change_password_success(self, client, test_user):
+    @staticmethod
+    def test_change_password_success(client, test_user):
         """测试修改密码成功"""
         # 先登录获取令牌
         login_response = client.post(
@@ -199,7 +206,8 @@ class TestAuthAPI:
         assert response.status_code == 200
         assert response.json()["message"] == "密码修改成功"
     
-    def test_change_password_mismatch(self, client, test_user):
+    @staticmethod
+    def test_change_password_mismatch(client, test_user):
         """测试修改密码失败 - 密码不匹配"""
         # 先登录获取令牌
         login_response = client.post(
@@ -226,7 +234,8 @@ class TestAuthAPI:
         assert response.status_code == 400
         assert "新密码与确认密码不匹配" in response.json()["detail"]
     
-    def test_logout(self, client, test_user):
+    @staticmethod
+    def test_logout(client, test_user):
         """测试登出"""
         # 先登录获取令牌
         login_response = client.post(

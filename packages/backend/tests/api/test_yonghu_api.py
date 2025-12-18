@@ -42,7 +42,8 @@ class TestYonghuAPI:
         token = response.json()["token"]["access_token"]
         return {"Authorization": f"Bearer {token}"}
     
-    def test_create_yonghu_success(self, client: TestClient, auth_headers: dict):
+    @staticmethod
+    def test_create_yonghu_success(client: TestClient, auth_headers: dict):
         """测试创建用户成功"""
         yonghu_data = {
             "yonghu_ming": "newuser",
@@ -66,7 +67,8 @@ class TestYonghuAPI:
         assert data["xingming"] == "新用户"
         assert "mima" not in data  # 密码不应该返回
     
-    def test_create_yonghu_duplicate_username(self, client: TestClient, auth_headers: dict, test_user: Yonghu):
+    @staticmethod
+    def test_create_yonghu_duplicate_username(client: TestClient, auth_headers: dict, test_user: Yonghu):
         """测试创建重复用户名的用户"""
         yonghu_data = {
             "yonghu_ming": test_user.yonghu_ming,  # 重复用户名
@@ -84,7 +86,8 @@ class TestYonghuAPI:
         assert response.status_code == 400
         assert "用户名已存在" in response.json()["detail"]
     
-    def test_get_yonghu_by_id_success(self, client: TestClient, auth_headers: dict, test_user: Yonghu):
+    @staticmethod
+    def test_get_yonghu_by_id_success(client: TestClient, auth_headers: dict, test_user: Yonghu):
         """测试根据ID获取用户成功"""
         response = client.get(
             f"/api/v1/users/{test_user.id}",
@@ -97,7 +100,8 @@ class TestYonghuAPI:
         assert data["yonghu_ming"] == test_user.yonghu_ming
         assert "mima" not in data  # 密码不应该返回
     
-    def test_get_yonghu_by_id_not_found(self, client: TestClient, auth_headers: dict):
+    @staticmethod
+    def test_get_yonghu_by_id_not_found(client: TestClient, auth_headers: dict):
         """测试根据ID获取不存在的用户"""
         response = client.get(
             f"/api/v1/users/{str(uuid.uuid4())}",
@@ -107,7 +111,8 @@ class TestYonghuAPI:
         assert response.status_code == 404
         assert "用户不存在" in response.json()["detail"]
     
-    def test_get_yonghu_list(self, client: TestClient, auth_headers: dict, test_user: Yonghu):
+    @staticmethod
+    def test_get_yonghu_list(client: TestClient, auth_headers: dict, test_user: Yonghu):
         """测试获取用户列表"""
         response = client.get(
             "/api/v1/users/",
@@ -123,7 +128,8 @@ class TestYonghuAPI:
         assert data["total"] >= 1
         assert len(data["items"]) >= 1
     
-    def test_get_yonghu_list_with_search(self, client: TestClient, auth_headers: dict, test_user: Yonghu):
+    @staticmethod
+    def test_get_yonghu_list_with_search(client: TestClient, auth_headers: dict, test_user: Yonghu):
         """测试搜索用户列表"""
         response = client.get(
             f"/api/v1/users/?search={test_user.yonghu_ming}",
@@ -137,7 +143,8 @@ class TestYonghuAPI:
         found = any(item["yonghu_ming"] == test_user.yonghu_ming for item in data["items"])
         assert found
     
-    def test_update_yonghu_success(self, client: TestClient, auth_headers: dict, test_user: Yonghu):
+    @staticmethod
+    def test_update_yonghu_success(client: TestClient, auth_headers: dict, test_user: Yonghu):
         """测试更新用户成功"""
         update_data = {
             "xingming": "更新后的姓名",
@@ -157,7 +164,8 @@ class TestYonghuAPI:
         assert data["shouji"] == "13900139000"
         assert data["remark"] == "更新后的备注"
     
-    def test_update_yonghu_not_found(self, client: TestClient, auth_headers: dict):
+    @staticmethod
+    def test_update_yonghu_not_found(client: TestClient, auth_headers: dict):
         """测试更新不存在的用户"""
         update_data = {"xingming": "新姓名"}
         
@@ -170,7 +178,8 @@ class TestYonghuAPI:
         assert response.status_code == 404
         assert "用户不存在" in response.json()["detail"]
     
-    def test_delete_yonghu_success(self, client: TestClient, auth_headers: dict, db_session: Session):
+    @staticmethod
+    def test_delete_yonghu_success(client: TestClient, auth_headers: dict, db_session: Session):
         """测试删除用户成功"""
         # 创建一个新用户用于删除测试
         new_user = Yonghu(
@@ -194,7 +203,8 @@ class TestYonghuAPI:
         
         assert response.status_code == 204
     
-    def test_delete_yonghu_not_found(self, client: TestClient, auth_headers: dict):
+    @staticmethod
+    def test_delete_yonghu_not_found(client: TestClient, auth_headers: dict):
         """测试删除不存在的用户"""
         response = client.delete(
             f"/api/v1/users/{str(uuid.uuid4())}",
@@ -204,7 +214,8 @@ class TestYonghuAPI:
         assert response.status_code == 404
         assert "用户不存在" in response.json()["detail"]
     
-    def test_unauthorized_access(self, client: TestClient):
+    @staticmethod
+    def test_unauthorized_access(client: TestClient):
         """测试未授权访问"""
         response = client.get("/api/v1/users/")
         assert response.status_code == 403

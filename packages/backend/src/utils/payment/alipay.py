@@ -70,7 +70,8 @@ class AlipayUtil:
         else:
             logger.warning("支付宝SDK不可用，支付功能将受限")
     
-    def _format_private_key(self, key: str) -> str:
+    @staticmethod
+    def _format_private_key(key: str) -> str:
         """
         格式化私钥为PEM格式
 
@@ -99,7 +100,8 @@ class AlipayUtil:
 
         return pem_key
 
-    def _format_public_key(self, key: str) -> str:
+    @staticmethod
+    def _format_public_key(key: str) -> str:
         """
         格式化公钥为PEM格式
 

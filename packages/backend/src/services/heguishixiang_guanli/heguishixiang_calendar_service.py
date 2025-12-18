@@ -286,7 +286,8 @@ class HeguishixiangCalendarService:
             ]
         }
 
-    def _get_status_info(self, shili: HeguishixiangShili) -> Dict[str, Any]:
+    @staticmethod
+    def _get_status_info(shili: HeguishixiangShili) -> Dict[str, Any]:
         """获取状态信息"""
         now = datetime.now()
         deadline = shili.jihua_jieshu_shijian
@@ -335,8 +336,8 @@ class HeguishixiangCalendarService:
                 "message": f"{days_remaining} 天后到期"
             }
 
+    @staticmethod
     def _get_calendar_summary(
-        self,
         shili_list: List[HeguishixiangShili],
         year: int,
         month: Optional[int] = None

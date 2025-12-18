@@ -188,7 +188,8 @@ class ShenheWorkflowEngine:
 
         return None
     
-    def _check_trigger_condition(self, rule: ShenheGuize, trigger_data: Dict[str, Any]) -> bool:
+    @staticmethod
+    def _check_trigger_condition(rule: ShenheGuize, trigger_data: Dict[str, Any]) -> bool:
         """检查触发条件是否满足"""
         try:
             condition = json.loads(rule.chufa_tiaojian) if isinstance(rule.chufa_tiaojian, str) else rule.chufa_tiaojian
@@ -337,7 +338,8 @@ class ShenheWorkflowEngine:
         
         self.db.commit()
     
-    def _check_step_condition(self, step_config: Dict[str, Any], trigger_data: Dict[str, Any]) -> bool:
+    @staticmethod
+    def _check_step_condition(step_config: Dict[str, Any], trigger_data: Dict[str, Any]) -> bool:
         """检查步骤条件"""
         condition = step_config.get("condition")
         if not condition:
