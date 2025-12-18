@@ -95,7 +95,7 @@
           :class="{ 'fullscreen': isFullscreen }"
           v-loading="previewLoading"
         >
-          <div class="content-wrapper" v-html="previewContent"></div>
+          <div class="content-wrapper" v-html="sanitizeContractHtml(previewContent)"></div>
         </div>
       </div>
     </div>
@@ -117,6 +117,7 @@ import { ElMessage } from 'element-plus'
 import { View, Download, FullScreen, Printer } from '@element-plus/icons-vue'
 import { useContractStore } from '@/stores/modules/contract'
 import type { ContractTemplate } from '@/api/modules/contract'
+import { sanitizeContractHtml } from '@/utils/sanitize'
 
 // Props
 interface Props {

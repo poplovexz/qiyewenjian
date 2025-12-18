@@ -181,10 +181,14 @@ async def prometheus_metrics():
 
 if __name__ == "__main__":
     import uvicorn
+    import os
     print("🚀 启动代理记账营运内部系统后端服务...")
+    # 安全修复：从环境变量读取 host，默认 127.0.0.1
+    # 生产环境通过反向代理访问，不需要绑定 0.0.0.0
+    host = os.getenv("UVICORN_HOST", "127.0.0.1")
     uvicorn.run(
         "main:app",
-        host="0.0.0.0",
+        host=host,
         port=8000,
         reload=True,
         reload_dirs=["."]

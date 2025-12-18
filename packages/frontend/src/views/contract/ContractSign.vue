@@ -58,7 +58,7 @@
         <template #header>
           <h3>合同内容</h3>
         </template>
-        <div class="contract-content" v-html="contractInfo.hetong_neirong"></div>
+        <div class="contract-content" v-html="sanitizeContractHtml(contractInfo.hetong_neirong)"></div>
       </el-card>
 
       <!-- 签署表单 -->
@@ -182,6 +182,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { contractSignApi } from '@/api/modules/contract'
+import { sanitizeContractHtml } from '@/utils/sanitize'
 
 // 路由
 const route = useRoute()

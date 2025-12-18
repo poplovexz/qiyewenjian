@@ -6,10 +6,21 @@ import hashlib
 import random
 import string
 import time
-import xml.etree.ElementTree as ET
+import warnings
 from typing import Dict, Any, Optional
 import requests
 import logging
+
+# 安全修复：使用 defusedxml 防止 XXE 攻击
+try:
+    import defusedxml.ElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+    warnings.warn(
+        "defusedxml 未安装，使用标准库 xml.etree.ElementTree。"
+        "建议安装 defusedxml 以防止 XXE 攻击：pip install defusedxml",
+        SecurityWarning
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -68,10 +79,10 @@ class WeixinPaySandboxUtil:
         # 拼接字符串
         sign_str = "&".join([f"{k}={v}" for k, v in sorted_params])
         sign_str += f"&key={key}"
-        
+
         # MD5加密并转大写
-        md5 = hashlib.md5()
-        md5.update(sign_str.encode('utf-8'))
+        # 安全修复：MD5 用于微信支付签名，是协议要求，非安全敏感
+        md5 = hashlib.md5(sign_str.encode('utf-8'), usedforsecurity=False)
         return md5.hexdigest().upper()
     
     def _dict_to_xml(self, data: Dict[str, Any]) -> str:

@@ -40,7 +40,7 @@
               
               <div v-if="record.fujian_lujing" class="attachments">
                 <span class="label">附件：</span>
-                <el-link :href="record.fujian_lujing" target="_blank" type="primary">
+                <el-link :href="record.fujian_lujing" target="_blank" rel="noopener noreferrer" type="primary">
                   <el-icon><Document /></el-icon>
                   {{ record.fujian_miaoshu || '查看附件' }}
                 </el-link>

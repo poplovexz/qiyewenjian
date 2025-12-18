@@ -240,14 +240,14 @@
             label="代理记账合同"
             name="daili_jizhang"
           >
-            <div class="preview-content" v-html="previewContent.daili_jizhang"></div>
+            <div class="preview-content" v-html="sanitizeContractHtml(previewContent.daili_jizhang)"></div>
           </el-tab-pane>
-          <el-tab-pane 
+          <el-tab-pane
             v-if="generateForm.contractTypes.includes('zengzhi_fuwu')"
             label="增值服务合同"
             name="zengzhi_fuwu"
           >
-            <div class="preview-content" v-html="previewContent.zengzhi_fuwu"></div>
+            <div class="preview-content" v-html="sanitizeContractHtml(previewContent.zengzhi_fuwu)"></div>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -300,6 +300,7 @@ import { useContractManagementStore } from '@/stores/modules/contractManagement'
 import { contractApi } from '@/api/modules/contract'
 import type { XiansuoBaojiaDetail } from '@/types/xiansuo'
 import type { ContractParty } from '@/api/modules/contract'
+import { sanitizeContractHtml } from '@/utils/sanitize'
 
 const route = useRoute()
 const router = useRouter()

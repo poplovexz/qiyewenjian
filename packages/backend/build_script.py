@@ -4,12 +4,16 @@
 """
 import subprocess
 import sys
+import shlex
 from pathlib import Path
+from typing import List
 
 def run_command(command: str) -> int:
-    """运行命令并返回退出码"""
+    """运行命令并返回退出码（安全方式，不使用 shell=True）"""
     print(f"运行: {command}")
-    result = subprocess.run(command, shell=True)
+    # 安全修复：使用 shlex.split 解析命令，避免 shell=True
+    args: List[str] = shlex.split(command)
+    result = subprocess.run(args)
     return result.returncode
 
 def main():

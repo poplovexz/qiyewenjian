@@ -76,7 +76,7 @@
       <el-divider content-position="left">附件信息</el-divider>
       <div v-if="attachments.length > 0" class="attachments">
         <div v-for="(file, index) in attachments" :key="index" class="attachment-item">
-          <el-link :href="file" target="_blank" type="primary">
+          <el-link :href="file" target="_blank" rel="noopener noreferrer" type="primary">
             <el-icon><Document /></el-icon>
             附件{{ index + 1 }}
           </el-link>

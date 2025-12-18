@@ -213,8 +213,9 @@ class RedisClient:
         """生成缓存键"""
         if args or kwargs:
             # 将参数转换为字符串并生成哈希
+            # 安全修复：MD5 用于缓存键生成，不用于安全目的
             params_str = str(args) + str(sorted(kwargs.items()))
-            params_hash = hashlib.md5(params_str.encode()).hexdigest()[:8]
+            params_hash = hashlib.md5(params_str.encode(), usedforsecurity=False).hexdigest()[:8]
             return f"{prefix}:{params_hash}"
         else:
             return prefix

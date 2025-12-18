@@ -224,7 +224,7 @@
         </el-descriptions>
 
         <el-divider content-position="left">合同内容</el-divider>
-        <div class="contract-content" v-html="currentContract.hetong_neirong"></div>
+        <div class="contract-content" v-html="sanitizeContractHtml(currentContract.hetong_neirong)"></div>
       </div>
       <template #footer>
         <el-button @click="viewDialogVisible = false">关闭</el-button>
@@ -387,6 +387,7 @@ import { useRouter } from 'vue-router'
 import { useContractManagementStore } from '@/stores/modules/contractManagement'
 import { contractApi } from '@/api/modules/contract'
 import { serviceOrderApi } from '@/api/modules/serviceOrder'
+import { sanitizeContractHtml } from '@/utils/sanitize'
 
 const router = useRouter()
 const contractStore = useContractManagementStore()

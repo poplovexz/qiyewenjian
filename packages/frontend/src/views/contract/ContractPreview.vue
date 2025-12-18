@@ -105,7 +105,7 @@
                 </el-tag>
               </el-descriptions-item>
               <el-descriptions-item label="签署链接" v-if="signingInfo.qianshu_lianjie">
-                <el-link :href="signingInfo.qianshu_lianjie" target="_blank" type="primary">
+                <el-link :href="signingInfo.qianshu_lianjie" target="_blank" rel="noopener noreferrer" type="primary">
                   查看签署链接
                 </el-link>
               </el-descriptions-item>
@@ -206,7 +206,7 @@
       <!-- 合同内容预览 -->
       <div class="contract-content" v-if="contract">
         <h3>合同内容</h3>
-        <div class="content-viewer" v-html="contract.hetong_neirong"></div>
+        <div class="content-viewer" v-html="sanitizeContractHtml(contract.hetong_neirong)"></div>
       </div>
 
       <!-- 电子签名 -->
@@ -292,6 +292,7 @@ import { useContractManagementStore } from '@/stores/modules/contractManagement'
 import { useAuditManagementStore } from '@/stores/modules/auditManagement'
 import { contractTypeOptions, contractStatusOptions } from '@/api/modules/contract'
 import { formatDateTime, formatDate, formatAmount } from '@/utils/format'
+import { sanitizeContractHtml } from '@/utils/sanitize'
 
 const route = useRoute()
 const router = useRouter()

@@ -180,7 +180,7 @@
                   <div class="log-type">{{ getLogTypeText(log.caozuo_leixing) }}</div>
                   <div class="log-description">{{ log.caozuo_neirong }}</div>
                   <div v-if="log.fujian_lujing" class="log-attachment">
-                    <el-link :href="log.fujian_lujing" target="_blank">
+                    <el-link :href="log.fujian_lujing" target="_blank" rel="noopener noreferrer">
                       <el-icon><Paperclip /></el-icon>
                       查看附件
                     </el-link>

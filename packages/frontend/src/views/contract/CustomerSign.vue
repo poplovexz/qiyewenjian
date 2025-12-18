@@ -49,7 +49,7 @@
           </el-descriptions>
 
           <el-divider content-position="left">合同内容</el-divider>
-          <div class="contract-content" v-html="contractInfo.hetong_neirong"></div>
+          <div class="contract-content" v-html="sanitizeContractHtml(contractInfo.hetong_neirong)"></div>
 
           <div class="step-actions">
             <el-button type="primary" size="large" @click="nextStep">
@@ -254,6 +254,7 @@ import { ElMessage } from 'element-plus'
 import { Loading, Money, Edit, Delete } from '@element-plus/icons-vue'
 import { request } from '@/utils/request'
 import QRCode from '@/components/QRCode.vue'
+import { sanitizeContractHtml } from '@/utils/sanitize'
 
 const route = useRoute()
 const router = useRouter()

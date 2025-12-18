@@ -222,7 +222,7 @@
       width="80%"
       :close-on-click-modal="false"
     >
-      <div class="template-preview" v-html="previewContent"></div>
+      <div class="template-preview" v-html="sanitizeContractHtml(previewContent)"></div>
       
       <template #footer>
         <div class="dialog-footer">
@@ -245,6 +245,7 @@ import { useContractManagementStore } from '@/stores/modules/contractManagement'
 import { useContractStore } from '@/stores/modules/contract'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
 import { contractTypeOptions, type ContractCreate, type ContractUpdate } from '@/api/modules/contract'
+import { sanitizeContractHtml } from '@/utils/sanitize'
 
 const route = useRoute()
 const router = useRouter()

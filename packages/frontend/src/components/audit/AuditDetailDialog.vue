@@ -110,6 +110,7 @@
                   <el-link
                     :href="getFileUrl(record.fujian_lujing)"
                     target="_blank"
+                    rel="noopener noreferrer"
                     type="primary"
                   >
                     {{ record.fujian_miaoshu || '查看附件' }}
