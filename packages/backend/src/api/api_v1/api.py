@@ -15,7 +15,7 @@ from .endpoints.chanpin_guanli import chanpin_fenlei, chanpin_xiangmu, chanpin_b
 from .endpoints.hetong_guanli import hetong_moban, hetong, hetong_yifang_zhuti, hetong_zhifu_fangshi, hetong_qianshu, hetong_generate, hetong_qianshu_public, hetong_zhifu_public, hetong_sign
 from .endpoints.xiansuo_guanli import xiansuo, xiansuo_laiyuan, xiansuo_zhuangtai, xiansuo_genjin, xiansuo_baojia
 from .endpoints.zhifu_guanli import zhifu_dingdan, zhifu_liushui, zhifu_tongzhi, hetong_zhifu, yinhang_huikuan_danju, zhifu_peizhi, zhifu_api, zhifu_huidiao, zhifu_tuikuan
-from .endpoints.shenhe_guanli import shenhe_guize, shenhe_liucheng, shenhe_jilu, rule_test, approval_matrix, payment_audit
+from .endpoints.shenhe_guanli import shenhe_guize, rule_test, approval_matrix, payment_audit
 from .endpoints.caiwu_guanli import kaipiao, chengben, caiwu_shezhi
 from .endpoints.fuwu_guanli import fuwu_gongdan, task_items
 from .endpoints.heguishixiang_guanli import heguishixiang_moban

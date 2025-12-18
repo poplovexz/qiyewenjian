@@ -2,7 +2,6 @@
 产品管理模块一键初始化脚本
 """
 import sys
-import os
 from pathlib import Path
 
 # 添加项目根目录到Python路径

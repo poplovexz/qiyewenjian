@@ -8,7 +8,6 @@ from fastapi import HTTPException
 from datetime import datetime
 
 from models.bangong_guanli import DuiwaiFukuanShenqing
-from models.yonghu_guanli import Yonghu
 from schemas.bangong_guanli.duiwai_fukuan_schemas import (
     DuiwaiFukuanShenqingCreate,
     DuiwaiFukuanShenqingUpdate,

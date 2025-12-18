@@ -4,7 +4,6 @@
 将 @require_permission 装饰器改为 Depends(require_permission(...))
 """
 import re
-import sys
 from pathlib import Path
 
 # PTC-W6004: 定义允许的基础目录，防止路径遍历攻击

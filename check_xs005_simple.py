@@ -4,7 +4,6 @@
 简单检查线索XS005的脚本
 """
 import sys
-import os
 sys.path.insert(0, '/var/www/packages/backend/src')
 
 from core.database import get_db

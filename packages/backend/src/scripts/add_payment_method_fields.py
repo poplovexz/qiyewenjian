@@ -17,7 +17,7 @@ src_path = Path(__file__).parent.parent
 sys.path.insert(0, str(src_path))
 
 from sqlalchemy import text
-from core.database import engine, SessionLocal
+from core.database import SessionLocal
 
 
 def add_payment_method_fields():

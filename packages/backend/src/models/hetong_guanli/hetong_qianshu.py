@@ -1,7 +1,7 @@
 """
 合同签署模型
 """
-from sqlalchemy import Column, String, Text, DateTime, Boolean
+from sqlalchemy import Column, String, Text, DateTime
 from sqlalchemy.dialects.mysql import CHAR
 from core.database import Base
 from core.mixins import TimestampMixin, UUIDMixin

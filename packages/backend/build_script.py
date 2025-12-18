@@ -5,7 +5,6 @@
 import subprocess
 import sys
 import shlex
-from pathlib import Path
 from typing import List
 
 def run_command(command: str) -> int:

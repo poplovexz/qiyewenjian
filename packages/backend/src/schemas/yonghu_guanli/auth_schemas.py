@@ -2,7 +2,7 @@
 认证相关的 Pydantic 模式
 """
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 

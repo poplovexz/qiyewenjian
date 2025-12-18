@@ -9,7 +9,6 @@ from core.database import get_db
 from core.security import get_current_user
 from models.yonghu_guanli import Yonghu
 from services.hetong_guanli.hetong_qianshu_service import HetongQianshuService
-from schemas.hetong_guanli import HetongQianshuCreate, HetongQianshuUpdate
 
 router = APIRouter()
 

@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, desc
+from sqlalchemy import and_, desc
 
 from models.zhifu_guanli.hetong_zhifu import HetongZhifu
 from schemas.zhifu_guanli.hetong_zhifu_schemas import (

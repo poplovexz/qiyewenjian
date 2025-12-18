@@ -7,10 +7,8 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'packages/backend/src'))
 
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
 import json
-from datetime import datetime
 
 # 从后端配置获取数据库连接
 from core.database import SessionLocal

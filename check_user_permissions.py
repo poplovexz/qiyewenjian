@@ -10,7 +10,7 @@ import os
 backend_src = os.path.join(os.path.dirname(__file__), 'packages/backend/src')
 sys.path.insert(0, backend_src)
 
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from core.database import SessionLocal
 from models.yonghu_guanli import Yonghu, Jiaose, Quanxian, YonghuJiaose, JiaoseQuanxian

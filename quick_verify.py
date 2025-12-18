@@ -4,7 +4,6 @@
 """
 
 import requests
-import json
 
 def quick_verify():
     """快速验证系统状态"""

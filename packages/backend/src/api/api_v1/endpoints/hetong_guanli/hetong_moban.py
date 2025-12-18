@@ -2,11 +2,10 @@
 合同模板管理 API 端点
 """
 from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from core.database import get_db
-from core.security import get_current_user
 from core.security.permissions import require_permission
 from models.yonghu_guanli import Yonghu
 from services.hetong_guanli import HetongMobanService
@@ -14,8 +13,7 @@ from schemas.hetong_guanli.hetong_moban_schemas import (
     HetongMobanCreate,
     HetongMobanUpdate,
     HetongMobanResponse,
-    HetongMobanListResponse,
-    HetongMobanPreview
+    HetongMobanListResponse
 )
 
 router = APIRouter()

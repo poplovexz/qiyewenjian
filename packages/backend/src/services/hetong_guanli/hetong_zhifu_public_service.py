@@ -6,13 +6,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from fastapi import HTTPException
 from datetime import datetime
-import uuid
 
 from models.hetong_guanli.hetong import Hetong
 from models.zhifu_guanli.hetong_zhifu import HetongZhifu
 from models.hetong_guanli.hetong_yifang_zhuti import HetongYifangZhuti
 from models.kehu_guanli.kehu import Kehu
-from core.exceptions import BusinessException
 
 
 class HetongZhifuPublicService:

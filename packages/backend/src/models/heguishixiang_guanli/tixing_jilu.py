@@ -1,7 +1,7 @@
 """
 提醒记录表
 """
-from sqlalchemy import Column, String, Text, ForeignKey, DateTime, Boolean, Integer
+from sqlalchemy import Column, String, Text, ForeignKey, DateTime, Integer
 from sqlalchemy.orm import relationship
 from models.base import BaseModel
 

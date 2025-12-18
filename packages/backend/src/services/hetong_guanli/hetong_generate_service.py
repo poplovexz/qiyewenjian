@@ -6,14 +6,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from fastapi import HTTPException
 from datetime import datetime, timedelta
-import re
 
 from models.hetong_guanli.hetong import Hetong
 from models.hetong_guanli.hetong_moban import HetongMoban
 from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
-from models.xiansuo_guanli.xiansuo import Xiansuo
 from models.kehu_guanli.kehu import Kehu
-from schemas.hetong_guanli.hetong_schemas import HetongCreate, HetongResponse
+from schemas.hetong_guanli.hetong_schemas import HetongResponse
 
 
 class HetongGenerateService:

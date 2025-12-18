@@ -4,7 +4,6 @@
 from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field, validator, computed_field
-from decimal import Decimal
 
 
 class HetongBase(BaseModel):

@@ -7,7 +7,7 @@ import uuid
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, desc, asc
+from sqlalchemy import or_, desc
 from fastapi import HTTPException
 
 from models.shenhe_guanli import ShenheGuize

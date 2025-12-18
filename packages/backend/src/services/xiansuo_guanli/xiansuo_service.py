@@ -2,9 +2,9 @@
 线索管理服务
 """
 from typing import Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import or_, and_, func
+from sqlalchemy import or_
 from fastapi import HTTPException
 from decimal import Decimal
 

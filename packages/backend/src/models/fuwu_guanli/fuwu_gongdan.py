@@ -3,7 +3,7 @@
 """
 from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Numeric, Integer
 from sqlalchemy.orm import relationship
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from ..base import BaseModel
 

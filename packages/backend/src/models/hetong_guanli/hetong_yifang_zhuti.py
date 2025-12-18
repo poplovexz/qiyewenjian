@@ -1,7 +1,7 @@
 """
 合同乙方主体表模型
 """
-from sqlalchemy import Column, String, Text, DateTime
+from sqlalchemy import Column, String, Text
 from sqlalchemy.orm import relationship
 from ..base import BaseModel
 

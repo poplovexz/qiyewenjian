@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from core.security import get_current_user
-from core.security.audit_permissions import require_audit_permission, require_amount_approval_authority
+from core.security.audit_permissions import require_audit_permission
 from models.yonghu_guanli import Yonghu
 from services.shenhe_guanli import ShenheGuizeService
 from schemas.shenhe_guanli import (

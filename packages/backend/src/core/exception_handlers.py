@@ -6,7 +6,6 @@
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException, RequestValidationError
-from pydantic import ValidationError
 
 from core.exceptions import BaseCustomException
 from core.error_codes import ErrorCode

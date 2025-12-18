@@ -8,7 +8,6 @@
 
 import sys
 import uuid
-from datetime import datetime
 sys.path.insert(0, '/var/www/packages/backend/src')
 
 from sqlalchemy import create_engine, text

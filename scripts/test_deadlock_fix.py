@@ -4,7 +4,6 @@
 """
 import sys
 import requests
-import time
 import json
 
 def test_frontend_access():

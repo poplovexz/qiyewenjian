@@ -3,7 +3,6 @@
 通过API创建审核权限
 """
 import requests
-import json
 
 def login_admin():
     """登录获取token"""

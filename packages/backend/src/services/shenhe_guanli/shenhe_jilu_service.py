@@ -1,11 +1,10 @@
 """
 审核记录服务
 """
-import uuid
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import and_, or_, desc, asc
+from sqlalchemy import desc, asc
 from fastapi import HTTPException
 
 from models.shenhe_guanli import ShenheJilu, ShenheLiucheng

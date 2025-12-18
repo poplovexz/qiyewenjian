@@ -5,9 +5,7 @@ import subprocess
 import time
 import sys
 import os
-import signal
 import tempfile
-import shlex
 
 def kill_processes():
     """清理旧进程"""

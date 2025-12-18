@@ -11,13 +11,9 @@ from core.security import get_current_user
 from models.yonghu_guanli import Yonghu
 from services.fuwu_guanli.fuwu_gongdan_service import FuwuGongdanService
 from schemas.fuwu_guanli.fuwu_gongdan_schemas import (
-    TaskItemListParams,
     TaskItemListResponse,
     TaskItemStatistics,
-    FuwuGongdanXiangmuResponse,
-    TaskItemStartRequest,
-    TaskItemCompleteRequest,
-    TaskItemPauseRequest
+    FuwuGongdanXiangmuResponse
 )
 
 router = APIRouter()

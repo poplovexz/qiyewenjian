@@ -14,8 +14,7 @@ import time
 from typing import Optional, Callable
 from functools import wraps
 
-from fastapi import Request, HTTPException, Depends
-from starlette.status import HTTP_429_TOO_MANY_REQUESTS
+from fastapi import Request
 
 from core.redis_client import redis_client
 from core.logging import get_logger

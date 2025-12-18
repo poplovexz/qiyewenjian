@@ -1,7 +1,7 @@
 """
 用户偏好设置模型
 """
-from sqlalchemy import Column, String, Boolean, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from models.base import BaseModel
 

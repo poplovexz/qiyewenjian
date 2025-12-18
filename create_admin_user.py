@@ -3,7 +3,6 @@
 创建默认admin用户的脚本
 """
 import sys
-import os
 import uuid
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker

@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from core.database import get_db
-from core.security import get_current_user
 from core.security.permissions import require_permission
 from models.yonghu_guanli import Yonghu
 from services.kehu_guanli import KehuService

@@ -3,10 +3,8 @@
 """
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
 from src.main import app
-from src.models.kehu_guanli import Kehu
 from tests.conftest import create_test_user
 
 

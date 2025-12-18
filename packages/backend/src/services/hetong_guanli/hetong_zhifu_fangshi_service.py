@@ -4,11 +4,9 @@
 from typing import Optional
 from datetime import datetime
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import or_
 from fastapi import HTTPException
 
 from models.hetong_guanli import HetongZhifuFangshi, HetongYifangZhuti
-from models.zhifu_guanli import ZhifuPeizhi
 from schemas.hetong_guanli import (
     HetongZhifuFangshiCreate,
     HetongZhifuFangshiUpdate,

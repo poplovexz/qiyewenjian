@@ -2,7 +2,7 @@
 服务工单管理 API
 """
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -12,7 +12,6 @@ from services.fuwu_guanli import FuwuGongdanService
 from schemas.fuwu_guanli.fuwu_gongdan_schemas import (
     FuwuGongdanCreate,
     FuwuGongdanUpdate,
-    FuwuGongdanResponse,
     FuwuGongdanDetailResponse,
     FuwuGongdanListResponse,
     FuwuGongdanListParams,

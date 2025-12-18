@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
 from models.shenhe_guanli import ShenheGuize
-from services.shenhe_guanli.shenhe_workflow_engine import ShenheWorkflowEngine
 
 
 class RuleTestService:

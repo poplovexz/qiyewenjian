@@ -9,7 +9,6 @@ from fastapi import HTTPException
 from src.services.yonghu_guanli.yonghu_service import YonghuService
 from src.schemas.yonghu_guanli import YonghuCreate, YonghuUpdate
 from src.models.yonghu_guanli import Yonghu, Jiaose, YonghuJiaose
-from src.core.security import get_password_hash
 
 
 class TestYonghuService:

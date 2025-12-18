@@ -4,8 +4,6 @@
 """
 import sys
 import requests
-import time
-import json
 
 def test_frontend_initialization():
     """测试前端初始化是否还有401错误"""

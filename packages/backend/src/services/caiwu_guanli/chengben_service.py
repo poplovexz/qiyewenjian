@@ -2,12 +2,11 @@
 成本记录管理服务
 """
 from typing import Optional, List, Dict, Any
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import and_, or_, func, desc
-from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
+from sqlalchemy import or_, func, desc
+from fastapi import HTTPException
 from datetime import datetime, timedelta
 from decimal import Decimal
-import uuid
 
 from models.caiwu_guanli import ChengbenJilu
 from models.hetong_guanli import Hetong
@@ -18,8 +17,7 @@ from schemas.caiwu_guanli.chengben_schemas import (
     ChengbenJiluListResponse,
     ChengbenJiluListParams,
     ChengbenStatistics,
-    ChengbenAnalysis,
-    ChengbenBudgetComparison
+    ChengbenAnalysis
 )
 
 

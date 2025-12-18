@@ -2,7 +2,7 @@
 银行汇款单据API
 """
 from typing import Dict, Any, Optional
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 
@@ -13,7 +13,6 @@ from services.zhifu_guanli.yinhang_huikuan_danju_service import YinhangHuikuanDa
 from schemas.zhifu_guanli import (
     YinhangHuikuanDanjuCreate,
     YinhangHuikuanDanjuUpdate,
-    YinhangHuikuanDanjuListParams,
     HuikuanDanjuAuditRequest
 )
 

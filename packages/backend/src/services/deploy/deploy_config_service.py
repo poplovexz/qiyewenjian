@@ -7,8 +7,7 @@ from models.deploy.deploy_config import DeployConfig
 from schemas.deploy.deploy_schemas import (
     DeployConfigCreate,
     DeployConfigUpdate,
-    DeployConfigResponse,
-)
+    )
 
 
 class DeployConfigService:
