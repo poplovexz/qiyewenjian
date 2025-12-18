@@ -365,8 +365,6 @@ class ShenheWorkflowEngine:
             return None
 
         try:
-            # 从数据库查询拥有该角色的用户
-            from models.yonghu_guanli.yonghu import Yonghu
             from models.yonghu_guanli.jiaose import Jiaose
             from models.yonghu_guanli.yonghu_jiaose import YonghuJiaose
 

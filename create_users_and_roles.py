@@ -256,7 +256,6 @@ def update_audit_rule(session, caiwu_user_id):
         
         result = session.execute(verify_query).fetchone()
         if result:
-            import json
             config = result[0]
             print(f"\n   更新后的配置:")
             print(f"   {json.dumps(config, ensure_ascii=False, indent=4)}")

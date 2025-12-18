@@ -32,7 +32,6 @@ async def get_my_processed_audits(
         from models.hetong_guanli.hetong import Hetong
         from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
         from models.xiansuo_guanli.xiansuo import Xiansuo
-        from models.yonghu_guanli import Yonghu as YonghuModel
 
         # 查询我已处理的审核记录
         records = db.query(ShenheJilu).filter(

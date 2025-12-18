@@ -80,7 +80,6 @@ def simulate_expired_token_scenario():
     try:
         # 创建一个明显过期的token（过去的时间戳）
         import base64
-        import json
         
         # 创建过期的JWT payload
         expired_payload = {

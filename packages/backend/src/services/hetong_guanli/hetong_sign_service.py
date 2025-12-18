@@ -171,7 +171,6 @@ class HetongSignService:
         if hetong.baojia_id:
             try:
                 from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
-                from models.xiansuo_guanli.xiansuo import Xiansuo
 
                 # 通过报价找到线索
                 baojia = self.db.query(XiansuoBaojia).filter(
@@ -500,7 +499,6 @@ class HetongSignService:
             # ✅ 自动更新线索状态为"已成交"（如果还未更新）
             if hetong.xiansuo_id:
                 try:
-                    from models.xiansuo_guanli.xiansuo import Xiansuo
                     xiansuo = self.db.query(Xiansuo).filter(
                         Xiansuo.id == hetong.xiansuo_id,
                         Xiansuo.is_deleted == "N"
