@@ -312,7 +312,7 @@ export interface PreDeployCheckResult {
  * 部署前检查
  * @param deepCheck 是否执行深度检查（包括实际构建和依赖安装测试）
  */
-export function preDeployCheck(deepCheck: boolean = false) {
+export function preDeployCheck(deepCheck = false) {
   return request<PreDeployCheckResult>({
     url: '/deploy/pre-check',
     method: 'get',

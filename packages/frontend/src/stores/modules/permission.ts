@@ -63,7 +63,7 @@ export const usePermissionStore = defineStore('permission', () => {
   }
 
   // 获取权限树形结构
-  const getPermissionTree = async (zhuangtai: string = 'active') => {
+  const getPermissionTree = async (zhuangtai = 'active') => {
     try {
       loading.value = true
       const tree = await permissionAPI.getPermissionTree(zhuangtai)
@@ -144,7 +144,7 @@ export const usePermissionStore = defineStore('permission', () => {
   }
 
   // 按资源类型获取权限
-  const getPermissionsByResourceType = async (ziyuan_leixing: string, zhuangtai: string = 'active') => {
+  const getPermissionsByResourceType = async (ziyuan_leixing: string, zhuangtai = 'active') => {
     try {
       const permissions = await permissionAPI.getPermissionsByResourceType(ziyuan_leixing, zhuangtai)
       return permissions

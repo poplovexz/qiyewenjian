@@ -100,7 +100,7 @@ const trendIcon = computed(() => {
 })
 
 // 数字动画效果
-const animateValue = (start: number, end: number, duration: number = 1000) => {
+const animateValue = (start: number, end: number, duration = 1000) => {
   if (!props.animated) {
     displayValue.value = end
     return

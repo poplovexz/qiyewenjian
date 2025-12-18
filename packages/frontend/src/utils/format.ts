@@ -8,7 +8,7 @@
  * @param format 格式化模式，默认为 'YYYY-MM-DD HH:mm:ss'
  * @returns 格式化后的日期字符串
  */
-export function formatDateTime(date: string | Date | null | undefined, format: string = 'YYYY-MM-DD HH:mm:ss'): string {
+export function formatDateTime(date: string | Date | null | undefined, format = 'YYYY-MM-DD HH:mm:ss'): string {
   if (!date) return '-'
   
   const d = typeof date === 'string' ? new Date(date) : date
@@ -56,7 +56,7 @@ export function formatTime(date: string | Date | null | undefined): string {
  * @param decimals 小数位数，默认为 2
  * @returns 格式化后的金额字符串
  */
-export function formatCurrency(amount: number | string | null | undefined, currency: string = '¥', decimals: number = 2): string {
+export function formatCurrency(amount: number | string | null | undefined, currency = '¥', decimals = 2): string {
   if (amount === null || amount === undefined || amount === '') return '-'
   
   const num = typeof amount === 'string' ? parseFloat(amount) : amount
@@ -75,7 +75,7 @@ export function formatCurrency(amount: number | string | null | undefined, curre
  * @param decimals 小数位数，默认为 2
  * @returns 格式化后的金额字符串
  */
-export function formatAmount(amount: number | string | null | undefined, decimals: number = 2): string {
+export function formatAmount(amount: number | string | null | undefined, decimals = 2): string {
   return formatCurrency(amount, '¥', decimals)
 }
 
@@ -149,7 +149,7 @@ export function formatBankCard(cardNumber: string | null | undefined): string {
  * @param decimals 小数位数，默认为 2
  * @returns 格式化后的百分比字符串
  */
-export function formatPercentage(value: number | null | undefined, isDecimal: boolean = true, decimals: number = 2): string {
+export function formatPercentage(value: number | null | undefined, isDecimal = true, decimals = 2): string {
   if (value === null || value === undefined) return '-'
   
   const percentage = isDecimal ? value * 100 : value

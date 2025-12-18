@@ -524,7 +524,7 @@ const loadHistory = async () => {
 }
 
 // 运行部署前检查
-const runPreCheck = async (deepCheck: boolean = false) => {
+const runPreCheck = async (deepCheck = false) => {
   try {
     preChecking.value = true
     preCheckResult.value = null

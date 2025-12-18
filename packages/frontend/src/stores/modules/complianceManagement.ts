@@ -248,7 +248,7 @@ export const useComplianceStore = defineStore('compliance', () => {
     }
   }
 
-  const fetchUpcomingItems = async (days: number = 7, kehu_id?: string): Promise<any[]> => {
+  const fetchUpcomingItems = async (days = 7, kehu_id?: string): Promise<any[]> => {
     try {
       const params: any = { days }
       if (kehu_id) params.kehu_id = kehu_id

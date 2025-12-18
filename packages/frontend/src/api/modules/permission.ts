@@ -80,7 +80,7 @@ export const permissionAPI = {
   },
 
   // 获取权限树形结构
-  async getPermissionTree(zhuangtai: string = 'active'): Promise<PermissionTreeNode[]> {
+  async getPermissionTree(zhuangtai = 'active'): Promise<PermissionTreeNode[]> {
     const response = await request.get('/user-management/permissions/tree', {
       params: { zhuangtai }
     })
@@ -111,7 +111,7 @@ export const permissionAPI = {
   },
 
   // 按资源类型获取权限
-  async getPermissionsByResourceType(ziyuan_leixing: string, zhuangtai: string = 'active'): Promise<Permission[]> {
+  async getPermissionsByResourceType(ziyuan_leixing: string, zhuangtai = 'active'): Promise<Permission[]> {
     const response = await request.get(`/user-management/permissions/by-resource-type/${ziyuan_leixing}`, {
       params: { zhuangtai }
     })

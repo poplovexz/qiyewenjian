@@ -254,7 +254,7 @@ class TokenManager {
   /**
    * 清除认证状态
    */
-  private _clearAuth(silent: boolean = false) {
+  private _clearAuth(silent = false) {
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
     localStorage.removeItem('user_info')

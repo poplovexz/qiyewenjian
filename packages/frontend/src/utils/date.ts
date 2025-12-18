@@ -10,7 +10,7 @@
  */
 export function formatDateTime(
   date: string | Date | null | undefined,
-  format: string = 'YYYY-MM-DD HH:mm:ss'
+  format = 'YYYY-MM-DD HH:mm:ss'
 ): string {
   if (!date) return ''
   

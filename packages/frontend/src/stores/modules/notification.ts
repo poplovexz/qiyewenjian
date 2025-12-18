@@ -95,7 +95,7 @@ export const useNotificationStore = defineStore('notification', () => {
 
   // 定时刷新未读数量
   let refreshTimer: any = null
-  const startAutoRefresh = (interval: number = 30000) => {
+  const startAutoRefresh = (interval = 30000) => {
     stopAutoRefresh()
     fetchUnreadCount() // 立即执行一次
     refreshTimer = setInterval(() => {

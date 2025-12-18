@@ -64,7 +64,7 @@ export function formatTime(date: string | Date | undefined): string {
  * @param decimals 小数位数，默认2位
  * @returns 格式化后的金额字符串
  */
-export function formatMoney(amount: number | string | undefined, decimals: number = 2): string {
+export function formatMoney(amount: number | string | undefined, decimals = 2): string {
   if (amount === undefined || amount === null || amount === '') return '0.00'
   
   const num = typeof amount === 'string' ? parseFloat(amount) : amount
