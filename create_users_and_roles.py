@@ -164,7 +164,7 @@ def assign_roles(session, users, roles):
         role_id = roles.get(assignment["role_code"])
         
         if not user_id or not role_id:
-            print(f"\n❌ 跳过分配: 用户或角色不存在")
+            print("\n❌ 跳过分配: 用户或角色不存在")
             continue
         
         # 检查是否已分配
@@ -211,7 +211,7 @@ def update_audit_rule(session, caiwu_user_id):
 
     result = session.execute(query).fetchone()
     if not result:
-        print(f"\n❌ 未找到审核规则")
+        print("\n❌ 未找到审核规则")
         return
 
     # 解析配置
@@ -244,7 +244,7 @@ def update_audit_rule(session, caiwu_user_id):
     session.commit()
     
     if result.rowcount > 0:
-        print(f"\n✅ 更新审核规则成功")
+        print("\n✅ 更新审核规则成功")
         print(f"   审核人ID: {caiwu_user_id}")
         
         # 验证更新
@@ -258,10 +258,10 @@ def update_audit_rule(session, caiwu_user_id):
         if result:
             import json
             config = result[0]
-            print(f"\n   更新后的配置:")
+            print("\n   更新后的配置:")
             print(f"   {json.dumps(config, ensure_ascii=False, indent=4)}")
     else:
-        print(f"\n❌ 更新审核规则失败")
+        print("\n❌ 更新审核规则失败")
 
 def verify_setup(session):
     """验证设置"""
@@ -311,14 +311,14 @@ def verify_setup(session):
         config = rule.shenhe_liucheng_peizhi
         approver_id = config.get('steps', [{}])[0].get('approver_user_id')
         
-        print(f"\n审核规则:")
+        print("\n审核规则:")
         print(f"  - 规则名称: {rule.guize_mingcheng}")
         print(f"  - 审核人ID: {approver_id}")
         
         if approver_id:
-            print(f"  ✅ 审核人已配置")
+            print("  ✅ 审核人已配置")
         else:
-            print(f"  ❌ 审核人未配置")
+            print("  ❌ 审核人未配置")
 
 def main():
     print("\n" + "="*80)
@@ -349,13 +349,13 @@ def main():
         print("✅ 所有操作完成！")
         print("="*80)
         
-        print(f"\n登录信息:")
-        print(f"  财务用户:")
-        print(f"    用户名: caiwu001")
-        print(f"    密码: caiwu123456")
-        print(f"  业务员用户:")
-        print(f"    用户名: yewu001")
-        print(f"    密码: yewu123456")
+        print("\n登录信息:")
+        print("  财务用户:")
+        print("    用户名: caiwu001")
+        print("    密码: caiwu123456")
+        print("  业务员用户:")
+        print("    用户名: yewu001")
+        print("    密码: yewu123456")
         
     except Exception as e:
         print(f"\n❌ 错误: {e}")

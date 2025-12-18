@@ -90,7 +90,7 @@ class AlipayUtil:
             return key
 
         # 添加PEM头尾
-        pem_key = f"-----BEGIN RSA PRIVATE KEY-----\n"
+        pem_key = "-----BEGIN RSA PRIVATE KEY-----\n"
         # 每64个字符换行
         for i in range(0, len(key), 64):
             pem_key += key[i:i+64] + "\n"
@@ -119,7 +119,7 @@ class AlipayUtil:
             return key
 
         # 添加PEM头尾
-        pem_key = f"-----BEGIN PUBLIC KEY-----\n"
+        pem_key = "-----BEGIN PUBLIC KEY-----\n"
         # 每64个字符换行
         for i in range(0, len(key), 64):
             pem_key += key[i:i+64] + "\n"

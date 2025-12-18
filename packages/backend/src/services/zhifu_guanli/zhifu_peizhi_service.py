@@ -324,7 +324,7 @@ class ZhifuPeizhiService:
     def _to_detail(self, peizhi: ZhifuPeizhi) -> ZhifuPeizhiDetail:
         """转换为详情模型（解密，不脱敏）"""
         print(f"🔍 _to_detail 开始处理配置: {peizhi.peizhi_mingcheng}, 类型: {peizhi.peizhi_leixing}")
-        print(f"🔍 数据库中的支付宝字段:")
+        print("🔍 数据库中的支付宝字段:")
         print(f"  - zhifubao_appid: {peizhi.zhifubao_appid[:20] if peizhi.zhifubao_appid else None}...")
         print(f"  - zhifubao_shanghu_siyao: {peizhi.zhifubao_shanghu_siyao[:20] if peizhi.zhifubao_shanghu_siyao else None}...")
         print(f"  - zhifubao_wangguan: {peizhi.zhifubao_wangguan}")
@@ -379,13 +379,13 @@ class ZhifuPeizhiService:
         peizhi_dict['kaihuhang_mingcheng'] = peizhi.kaihuhang_mingcheng or None
         peizhi_dict['kaihuhang_lianhanghao'] = peizhi.kaihuhang_lianhanghao or None
 
-        print(f"🔍 解密后的字典内容:")
+        print("🔍 解密后的字典内容:")
         print(f"  - zhifubao_appid: {peizhi_dict.get('zhifubao_appid', 'NOT_SET')}")
         print(f"  - zhifubao_shanghu_siyao: {peizhi_dict.get('zhifubao_shanghu_siyao', 'NOT_SET')[:20] if peizhi_dict.get('zhifubao_shanghu_siyao') else 'NOT_SET'}...")
         print(f"  - zhifubao_wangguan: {peizhi_dict.get('zhifubao_wangguan', 'NOT_SET')}")
 
         result = ZhifuPeizhiDetail(**peizhi_dict)
-        print(f"🔍 返回的 ZhifuPeizhiDetail 对象:")
+        print("🔍 返回的 ZhifuPeizhiDetail 对象:")
         print(f"  - zhifubao_appid: {result.zhifubao_appid}")
         print(f"  - zhifubao_shanghu_siyao: {result.zhifubao_shanghu_siyao[:20] if result.zhifubao_shanghu_siyao else None}...")
         print(f"  - zhifubao_wangguan: {result.zhifubao_wangguan}")

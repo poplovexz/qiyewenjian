@@ -47,7 +47,7 @@ async def handle_hetong_signed(payload: Dict[str, Any]):
                 created_by=signed_by
             )
             
-            logger.info(f"合同签署后自动创建服务工单成功", extra={
+            logger.info("合同签署后自动创建服务工单成功", extra={
                 "hetong_id": hetong_id,
                 "gongdan_id": gongdan.id,
                 "gongdan_bianhao": gongdan.gongdan_bianhao,
@@ -55,7 +55,7 @@ async def handle_hetong_signed(payload: Dict[str, Any]):
             })
             
         except Exception as e:
-            logger.error(f"基于合同创建服务工单失败", extra={
+            logger.error("基于合同创建服务工单失败", extra={
                 "hetong_id": hetong_id,
                 "error": str(e),
                 "signed_by": signed_by
@@ -66,7 +66,7 @@ async def handle_hetong_signed(payload: Dict[str, Any]):
             db.close()
             
     except Exception as e:
-        logger.error(f"处理合同签署事件失败", extra={
+        logger.error("处理合同签署事件失败", extra={
             "payload": payload,
             "error": str(e)
         })
@@ -119,7 +119,7 @@ async def handle_hetong_cancelled(payload: Dict[str, Any]):
                     cancelled_by=cancelled_by
                 )
                 
-                logger.info(f"合同取消后自动取消服务工单", extra={
+                logger.info("合同取消后自动取消服务工单", extra={
                     "hetong_id": hetong_id,
                     "gongdan_id": gongdan.id,
                     "gongdan_bianhao": gongdan.gongdan_bianhao,
@@ -127,7 +127,7 @@ async def handle_hetong_cancelled(payload: Dict[str, Any]):
                 })
             
         except Exception as e:
-            logger.error(f"取消合同相关服务工单失败", extra={
+            logger.error("取消合同相关服务工单失败", extra={
                 "hetong_id": hetong_id,
                 "error": str(e),
                 "cancelled_by": cancelled_by
@@ -137,7 +137,7 @@ async def handle_hetong_cancelled(payload: Dict[str, Any]):
             db.close()
             
     except Exception as e:
-        logger.error(f"处理合同取消事件失败", extra={
+        logger.error("处理合同取消事件失败", extra={
             "payload": payload,
             "error": str(e)
         })

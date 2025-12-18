@@ -95,10 +95,10 @@ def create_audit_rule():
         
         session.commit()
         print(f"✅ 成功创建审核规则: {rule_id}")
-        print(f"   规则名称: 合同金额修正审核")
-        print(f"   规则类型: hetong_jine_xiuzheng")
-        print(f"   触发条件: 价格降低任何金额")
-        print(f"   审核流程: 管理员审核")
+        print("   规则名称: 合同金额修正审核")
+        print("   规则类型: hetong_jine_xiuzheng")
+        print("   触发条件: 价格降低任何金额")
+        print("   审核流程: 管理员审核")
         
         return rule_id
         

@@ -78,7 +78,7 @@ def update_xiansuo_baojia_table():
         """))
         confirmed_count = confirmed_result.scalar()
         
-        print(f"\n📊 数据统计:")
+        print("\n📊 数据统计:")
         print(f"  总报价数量: {total_count}")
         print(f"  已确认/拒绝报价数量: {confirmed_count}")
         print(f"  待确认报价数量: {total_count - confirmed_count}")

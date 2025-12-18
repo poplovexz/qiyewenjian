@@ -125,7 +125,7 @@ def update_zengzhi_products():
             # 检查分类是否存在
             if category_name in existing_category_names:
                 category = existing_category_names[category_name]
-                print(f"  ✓ 分类已存在，更新排序")
+                print("  ✓ 分类已存在，更新排序")
                 category.paixu = paixu
                 updated_categories += 1
             else:
@@ -143,7 +143,7 @@ def update_zengzhi_products():
                 )
                 db.add(category)
                 db.flush()  # 获取ID
-                print(f"  ✓ 创建新分类")
+                print("  ✓ 创建新分类")
                 created_categories += 1
             
             # 获取该分类下的现有产品
@@ -211,11 +211,11 @@ def update_zengzhi_products():
         print("\n" + "=" * 60)
         print("✅ 增值服务产品数据更新完成！")
         print("=" * 60)
-        print(f"\n📊 统计信息:")
-        print(f"  分类:")
+        print("\n📊 统计信息:")
+        print("  分类:")
         print(f"    • 新建: {created_categories} 个")
         print(f"    • 更新: {updated_categories} 个")
-        print(f"  产品:")
+        print("  产品:")
         print(f"    • 新建: {created_products} 个")
         print(f"    • 更新: {updated_products} 个")
         print(f"    • 删除: {deleted_products} 个")

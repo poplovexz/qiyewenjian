@@ -86,32 +86,32 @@ class MetricsCollector:
         lines = []
         
         # 应用运行时长
-        lines.append(f"# HELP app_uptime_seconds Application uptime in seconds")
-        lines.append(f"# TYPE app_uptime_seconds gauge")
+        lines.append("# HELP app_uptime_seconds Application uptime in seconds")
+        lines.append("# TYPE app_uptime_seconds gauge")
         lines.append(f"app_uptime_seconds {self.get_uptime_seconds():.2f}")
         
         # 活跃连接数
-        lines.append(f"# HELP app_active_connections Current active connections")
-        lines.append(f"# TYPE app_active_connections gauge")
+        lines.append("# HELP app_active_connections Current active connections")
+        lines.append("# TYPE app_active_connections gauge")
         lines.append(f"app_active_connections {self.active_connections}")
         
         # 请求计数
-        lines.append(f"# HELP http_requests_total Total HTTP requests")
-        lines.append(f"# TYPE http_requests_total counter")
+        lines.append("# HELP http_requests_total Total HTTP requests")
+        lines.append("# TYPE http_requests_total counter")
         for key, count in self.request_count.items():
             method, path = key.split(":", 1)
             lines.append(f'http_requests_total{{method="{method}",path="{path}"}} {count}')
         
         # 错误计数
-        lines.append(f"# HELP http_errors_total Total HTTP errors")
-        lines.append(f"# TYPE http_errors_total counter")
+        lines.append("# HELP http_errors_total Total HTTP errors")
+        lines.append("# TYPE http_errors_total counter")
         for key, count in self.error_count.items():
             status, path = key.split(":", 1)
             lines.append(f'http_errors_total{{status="{status}",path="{path}"}} {count}')
         
         # 请求耗时
-        lines.append(f"# HELP http_request_duration_ms HTTP request duration in milliseconds")
-        lines.append(f"# TYPE http_request_duration_ms summary")
+        lines.append("# HELP http_request_duration_ms HTTP request duration in milliseconds")
+        lines.append("# TYPE http_request_duration_ms summary")
         for key in self.request_count.keys():
             stats = self.get_request_stats(key)
             method, path = key.split(":", 1)

@@ -61,7 +61,7 @@ def handle_baojia_confirmed(payload: Dict[str, Any]) -> None:
             # 3. 记录业务日志
             _log_baojia_business_event(
                 db, baojia_id, "confirmed", 
-                f"报价确认成功，线索状态更新，合同草稿生成已触发", 
+                "报价确认成功，线索状态更新，合同草稿生成已触发", 
                 queren_ren_id
             )
             

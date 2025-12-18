@@ -518,7 +518,7 @@ class XiansuoBaojiaService:
         import logging
         logger = logging.getLogger(__name__)
 
-        logger.error(f"=== 处理产品项目 ===")
+        logger.error("=== 处理产品项目 ===")
         logger.error(f"总项目数: {len(xiangmu_list)}")
 
         for xiangmu in xiangmu_list:
@@ -528,18 +528,18 @@ class XiansuoBaojiaService:
 
             try:
                 xiangmu_option = ChanpinXiangmuOption.model_validate(xiangmu)
-                logger.error(f"  ✅ 序列化成功")
+                logger.error("  ✅ 序列化成功")
 
                 if xiangmu.fenlei.chanpin_leixing == "zengzhi":
                     zengzhi_xiangmu.append(xiangmu_option)
-                    logger.error(f"  ➡️ 添加到增值服务")
+                    logger.error("  ➡️ 添加到增值服务")
                 elif xiangmu.fenlei.chanpin_leixing == "daili_jizhang":
                     daili_jizhang_xiangmu.append(xiangmu_option)
-                    logger.error(f"  ➡️ 添加到代理记账")
+                    logger.error("  ➡️ 添加到代理记账")
             except Exception as e:
                 logger.error(f"  ❌ 序列化失败: {e}")
 
-        logger.error(f"\n=== 最终统计 ===")
+        logger.error("\n=== 最终统计 ===")
         logger.error(f"增值服务项目数: {len(zengzhi_xiangmu)}")
         logger.error(f"代理记账项目数: {len(daili_jizhang_xiangmu)}")
 

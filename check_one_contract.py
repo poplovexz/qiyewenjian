@@ -31,13 +31,13 @@ def check_contract(hetong_bianhao):
             print(f"❌ 找不到合同: {hetong_bianhao}")
             return
         
-        print(f"\n=== 合同详情 ===")
+        print("\n=== 合同详情 ===")
         print(f"合同编号: {contract.hetong_bianhao}")
         print(f"合同名称: {contract.hetong_mingcheng}")
         print(f"创建时间: {contract.created_at}")
         print(f"更新时间: {contract.updated_at}")
         
-        print(f"\n=== 合同内容（前500字符） ===")
+        print("\n=== 合同内容（前500字符） ===")
         print(contract.hetong_neirong[:500])
         
     except Exception as e:

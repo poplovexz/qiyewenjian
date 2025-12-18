@@ -104,7 +104,7 @@ def fix_huikuan_danju():
         )
         session.add(tongzhi)
         
-        print(f"\n✅ 创建通知：")
+        print("\n✅ 创建通知：")
         print(f"   接收人: {yewuyuan.xingming}（{yewuyuan.yonghu_ming}）")
         print(f"   通知类型: {tongzhi.tongzhi_leixing}")
         print(f"   通知标题: {tongzhi.tongzhi_biaoti}")

@@ -279,7 +279,7 @@ def init_contract_templates():
         
         db.commit()
         
-        print(f"\n合同模板示例数据初始化完成!")
+        print("\n合同模板示例数据初始化完成!")
         print(f"新创建模板数量: {created_count}")
         print(f"总模板数量: {len(template_data)}")
         

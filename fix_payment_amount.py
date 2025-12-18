@@ -56,15 +56,15 @@ def fix_payment_amounts():
                     else:
                         # 设置默认金额
                         contract.payment_amount = "5000.00"
-                        print(f"  报价无金额，设置默认值: 5000.00")
+                        print("  报价无金额，设置默认值: 5000.00")
                 else:
                     # 设置默认金额
                     contract.payment_amount = "5000.00"
-                    print(f"  报价不存在，设置默认值: 5000.00")
+                    print("  报价不存在，设置默认值: 5000.00")
             else:
                 # 设置默认金额
                 contract.payment_amount = "5000.00"
-                print(f"  无报价ID，设置默认值: 5000.00")
+                print("  无报价ID，设置默认值: 5000.00")
             
             contract.updated_at = datetime.now()
         

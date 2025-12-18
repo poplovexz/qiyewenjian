@@ -114,7 +114,7 @@ class XiansuoService:
                         xiansuo.kehu_id = kehu_id
                         logger.info(f"✅ 为线索 {xiansuo_bianma} 创建/关联客户: {kehu_id}")
                     else:
-                        logger.warning(f"⚠️  客户创建返回None，线索将不关联客户")
+                        logger.warning("⚠️  客户创建返回None，线索将不关联客户")
                 except Exception as e:
                     logger.error(f"❌ 为线索创建客户失败，将继续创建线索: {str(e)}", exc_info=True)
                     # 即使客户创建失败，也继续创建线索
@@ -137,7 +137,7 @@ class XiansuoService:
                     continue
                 else:
                     logger.error(f"创建线索失败: {str(e)}")
-                    raise HTTPException(status_code=500, detail=f"创建线索失败: 编号生成冲突")
+                    raise HTTPException(status_code=500, detail="创建线索失败: 编号生成冲突")
             except Exception as e:
                 self.db.rollback()
                 logger.error(f"创建线索失败: {str(e)}", exc_info=True)

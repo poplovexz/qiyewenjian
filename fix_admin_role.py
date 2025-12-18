@@ -78,7 +78,7 @@ def fix_admin_role():
                     "updated_at": datetime.now()
                 }
             )
-            print(f"\n✅ 已创建admin角色")
+            print("\n✅ 已创建admin角色")
             print(f"   角色ID: {admin_role_id}")
         
         # 3. 检查用户角色关联是否存在
@@ -97,7 +97,7 @@ def fix_admin_role():
         ).fetchone()
         
         if user_role:
-            print(f"\n✅ admin用户已关联admin角色")
+            print("\n✅ admin用户已关联admin角色")
         else:
             # 创建用户角色关联
             user_role_id = str(uuid.uuid4())
@@ -119,7 +119,7 @@ def fix_admin_role():
                     "updated_at": datetime.now()
                 }
             )
-            print(f"\n✅ 已将admin用户关联到admin角色")
+            print("\n✅ 已将admin用户关联到admin角色")
         
         session.commit()
         
@@ -142,11 +142,11 @@ def fix_admin_role():
         ).fetchall()
         
         if result:
-            print(f"\n✅ admin用户的角色：")
+            print("\n✅ admin用户的角色：")
             for row in result:
                 print(f"   - {row[3]}（{row[2]}）")
         else:
-            print(f"\n❌ 验证失败：admin用户没有角色")
+            print("\n❌ 验证失败：admin用户没有角色")
             return False
         
         print("\n" + "=" * 60)

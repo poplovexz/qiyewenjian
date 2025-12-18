@@ -209,7 +209,7 @@ class ZhifuApiService:
         is_sandbox = peizhi.huanjing == "shachang"
 
         # 调试日志
-        logger.info(f"_create_alipay_payment 收到的配置:")
+        logger.info("_create_alipay_payment 收到的配置:")
         logger.info(f"  APPID: {peizhi.zhifubao_appid}")
         logger.info(f"  私钥: {peizhi.zhifubao_shanghu_siyao[:50] if peizhi.zhifubao_shanghu_siyao else 'None'}")
         logger.info(f"  公钥: {peizhi.zhifubao_zhifubao_gongyao[:50] if peizhi.zhifubao_zhifubao_gongyao else 'None'}")
