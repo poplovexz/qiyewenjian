@@ -421,12 +421,12 @@ const resetFilters = () => {
 
 const showItemDetail = (item: any) => {
   // 显示合规事项详情
-  console.log('显示事项详情:', item)
+  
 }
 
 const showMoreItems = (date: string) => {
   // 显示更多事项
-  console.log('显示更多事项:', date)
+  
 }
 
 // 生命周期

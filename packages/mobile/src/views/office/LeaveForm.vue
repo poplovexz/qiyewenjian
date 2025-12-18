@@ -254,7 +254,7 @@ const calculateDays = () => {
 // 文件上传后
 const afterRead = (file: any) => {
   // TODO: 实现文件上传到服务器
-  console.log('File uploaded:', file)
+  
 }
 
 // 删除文件前

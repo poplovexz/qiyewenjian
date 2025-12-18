@@ -291,10 +291,10 @@ const importPermissions = async () => {
 
     for (const permission of selectedPermissions.value) {
       try {
-        console.log('正在导入权限:', permission)
+        
         await permissionAPI.createPermission(permission)
         successCount++
-        console.log(`✅ 成功导入: ${permission.quanxian_bianma}`)
+        
       } catch (error: any) {
         console.error(`❌ 导入权限失败: ${permission.quanxian_bianma}`, error)
         console.error('错误详情:', error.response?.data)
@@ -310,7 +310,7 @@ const importPermissions = async () => {
       }
     }
 
-    console.log(`导入完成: 成功 ${successCount}, 失败 ${failCount}`)
+    
 
     importedCount.value += successCount
 

@@ -231,12 +231,7 @@ const handleSubmit = async () => {
     // 根据审核结果确定操作类型
     const action = formData.value.shenhe_jieguo === 'tongguo' ? 'approve' : 'reject'
 
-    console.log('提交审核:', {
-      taskId: props.task.id,
-      action,
-      shenhe_jieguo: formData.value.shenhe_jieguo,
-      shenhe_yijian: formData.value.shenhe_yijian
-    })
+    
 
     // 调用审核操作
     await auditStore.processAuditAction(

@@ -45,9 +45,9 @@ const testPaymentMethodsApi = async () => {
   apiError.value = null
   
   try {
-    console.log('开始测试支付方式API...')
+    
     const response = await paymentMethodApi.getList({ page: 1, size: 10 })
-    console.log('API响应:', response)
+    
     apiResult.value = response
     ElMessage.success('API调用成功')
   } catch (error) {

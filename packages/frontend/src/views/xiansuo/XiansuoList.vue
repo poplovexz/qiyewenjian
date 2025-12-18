@@ -617,7 +617,7 @@ const handleReset = async () => {
 }
 
 const handleRefresh = async () => {
-  console.log('手动刷新数据，清除缓存')
+  
   ElMessage.info('正在刷新数据...')
 
   // 强制刷新所有数据，清除缓存
@@ -958,11 +958,11 @@ const getStatusText = (status: string) => {
 // 获取线索的最新报价状态
 const getBaojiaStatus = (xiansuoId: string) => {
   const baojiaList = xiansuoStore.getBaojiaListByXiansuo(xiansuoId)
-  console.log(`🔍 获取线索 ${xiansuoId} 的报价状态:`)
-  console.log(`   - 从store获取的报价列表长度: ${baojiaList ? baojiaList.length : 0}`)
+  
+  
   
   if (!baojiaList || baojiaList.length === 0) {
-    console.log(`   - 结果: 无报价数据`)
+    
     return null
   }
 
@@ -971,13 +971,13 @@ const getBaojiaStatus = (xiansuoId: string) => {
     .filter(baojia => !baojia.is_expired && baojia.baojia_zhuangtai !== 'rejected')
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-  console.log(`   - 有效报价数量: ${validBaojia.length}`)
+  
   if (validBaojia.length > 0) {
-    console.log(`   - 最新有效报价状态: ${validBaojia[0].baojia_zhuangtai}`)
+    
   }
 
   const result = validBaojia.length > 0 ? validBaojia[0].baojia_zhuangtai : null
-  console.log(`   - 结果: ${result || '无有效报价'}`)
+  
   return result
 }
 
@@ -1011,7 +1011,7 @@ const formatDate = (dateStr: string) => {
 
 // 生命周期
 onMounted(async () => {
-  console.log('线索列表页面初始化，使用缓存优化加载')
+  
 
   // 检查认证状态
   const authStore = useAuthStore()
@@ -1038,7 +1038,7 @@ onMounted(async () => {
     // 加载合同状态
     await loadContractStatuses()
 
-    console.log('线索列表页面初始化完成')
+    
   } catch (error) {
     console.error('线索列表页面初始化失败:', error)
 

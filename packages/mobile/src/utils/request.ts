@@ -20,7 +20,7 @@ service.interceptors.request.use(
     // 添加Token
     if (userStore.token) {
       config.headers.Authorization = `Bearer ${userStore.token}`
-      console.log('🔑 Request with token:', config.url, 'Token:', userStore.token.substring(0, 20) + '...')
+      
     } else {
       console.warn('⚠️ Request without token:', config.url)
     }

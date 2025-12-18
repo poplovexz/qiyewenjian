@@ -38,20 +38,20 @@ app.config.errorHandler = (err, instance, info) => {
 
 // 直接挂载应用，不进行复杂的初始化
 try {
-  console.log('🚀 挂载应用...')
+  
   app.mount('#app')
-  console.log('✅ 应用挂载成功')
+  
 
   // 延迟初始化认证，避免阻塞应用启动
   setTimeout(async () => {
     try {
-      console.log('🔐 开始初始化认证...')
+      
       await tokenManager.initializeAuth()
       // 确保在Pinia完全初始化后再调用useAuthStore
       const { useAuthStore } = await import('./stores/modules/auth')
       const authStore = useAuthStore()
       await authStore.restoreFromStorage()
-      console.log('✅ 认证初始化完成')
+      
     } catch (error) {
       console.warn('⚠️ 认证初始化失败，但不影响应用使用:', error)
     }

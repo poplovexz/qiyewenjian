@@ -3,7 +3,7 @@
 
 async function configureAlipaySandbox() {
   try {
-    console.log('🚀 开始配置支付宝沙箱...');
+    
     
     // 支付宝沙箱配置数据
     const config = {
@@ -26,7 +26,7 @@ async function configureAlipaySandbox() {
       return;
     }
 
-    console.log('📡 发送配置请求...');
+    
     
     // 发送POST请求
     const response = await fetch('http://localhost:8000/api/v1/payment-configs/', {
@@ -45,8 +45,8 @@ async function configureAlipaySandbox() {
     }
 
     const result = await response.json();
-    console.log('✅ 支付宝沙箱配置成功!');
-    console.log('配置详情:', result);
+    
+    
     
     alert('✅ 支付宝沙箱配置成功！\n\n现在可以在合同签署页面测试支付功能了。');
     

@@ -80,7 +80,7 @@ const goToLoginPage = () => {
 
 onMounted(() => {
   // 检查是否需要显示认证修复界面
-  console.log('AuthFix mounted, showAuthFix:', showAuthFix.value)
+  
 })
 </script>
 
