@@ -215,12 +215,12 @@ class ShenheGuizeService:
         # 解析JSON字段
         try:
             chufa_tiaojian = json.loads(guize.chufa_tiaojian) if isinstance(guize.chufa_tiaojian, str) else guize.chufa_tiaojian
-        except:
+        except (json.JSONDecodeError, TypeError):
             chufa_tiaojian = {}
-        
+
         try:
             shenhe_liucheng_peizhi = json.loads(guize.shenhe_liucheng_peizhi) if isinstance(guize.shenhe_liucheng_peizhi, str) else guize.shenhe_liucheng_peizhi
-        except:
+        except (json.JSONDecodeError, TypeError):
             shenhe_liucheng_peizhi = {}
         
         return ShenheGuizeResponse(

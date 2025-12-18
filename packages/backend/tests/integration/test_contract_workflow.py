@@ -28,7 +28,10 @@ class TestContractWorkflow:
     @pytest.fixture
     def db_session(self):
         """获取数据库会话"""
-        db = next(get_db())
+        # PTC-W0063: 添加默认值防止 StopIteration
+        db = next(get_db(), None)
+        if db is None:
+            pytest.skip("无法获取数据库连接")
         yield db
         db.close()
 

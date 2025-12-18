@@ -1,7 +1,7 @@
 """
 用户角色关联表模型
 """
-from sqlalchemy import Column, ForeignKey, String, String
+from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from ..base import BaseModel

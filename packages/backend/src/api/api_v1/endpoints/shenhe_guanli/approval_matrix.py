@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from core.database import get_db
 from core.security.permissions import check_permission
 from core.security.jwt_handler import get_current_user
-from models.yonghu_guanli import Yonghu
+from models.yonghu_guanli import Yonghu, YonghuJiaose
 from services.shenhe_guanli.approval_matrix_service import ApprovalMatrixService
 
 router = APIRouter()

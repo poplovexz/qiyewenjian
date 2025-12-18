@@ -20,8 +20,11 @@ class TestHetongStage2:
     
     def setup_method(self):
         """测试前准备"""
-        self.db = next(get_db())
-        
+        # PTC-W0063: 添加默认值防止 StopIteration
+        self.db = next(get_db(), None)
+        if self.db is None:
+            raise RuntimeError("无法获取数据库连接")
+
         # 创建测试用户
         import uuid
         unique_id = str(uuid.uuid4())[:8]

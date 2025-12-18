@@ -468,10 +468,11 @@ class XiansuoBaojiaService:
         }
 
         # 填充统计数据
-        for status, count, amount in status_stats:
-            stats[f'{status}_count'] = count
+        # FLK-F402: 使用 baojia_status 避免覆盖导入的 status
+        for baojia_status, count, amount in status_stats:
+            stats[f'{baojia_status}_count'] = count
             stats['total_amount'] += amount or Decimal("0.00")
-            if status == 'accepted':
+            if baojia_status == 'accepted':
                 stats['accepted_amount'] = amount or Decimal("0.00")
 
         return XiansuoBaojiaStatistics(

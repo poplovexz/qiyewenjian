@@ -206,14 +206,14 @@ class AuditWorkflowService:
         try:
             steps_config = json.loads(workflow.shenhe_liucheng_peizhi) if isinstance(workflow.shenhe_liucheng_peizhi, str) else workflow.shenhe_liucheng_peizhi
             steps = steps_config.get("steps", [])
-        except:
+        except (json.JSONDecodeError, TypeError, AttributeError):
             steps = []
 
         # 解析触发条件获取审核类型
         try:
             trigger_config = json.loads(workflow.chufa_tiaojian) if isinstance(workflow.chufa_tiaojian, str) else workflow.chufa_tiaojian
             audit_type = trigger_config.get("audit_type", "")
-        except:
+        except (json.JSONDecodeError, TypeError, AttributeError):
             audit_type = ""
 
         # 提取工作流名称

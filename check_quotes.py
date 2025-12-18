@@ -10,8 +10,12 @@ from models.kehu_guanli import Kehu
 
 def check_quotes():
     """检查数据库中的报价记录"""
-    db = next(get_db())
-    
+    # PTC-W0063: 添加默认值防止 StopIteration
+    db = next(get_db(), None)
+    if db is None:
+        print("无法获取数据库连接")
+        return
+
     try:
         # 查询所有报价记录
         quotes = db.query(XiansuoBaojia).all()

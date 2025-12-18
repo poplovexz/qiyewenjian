@@ -28,7 +28,7 @@ def check_services():
         else:
             print(f"❌ 后端服务响应异常 (状态码: {response.status_code})")
             backend_ok = False
-    except:
+    except (requests.RequestException, OSError):
         print("❌ 后端服务未运行 (端口8000)")
         backend_ok = False
     
@@ -41,7 +41,7 @@ def check_services():
         else:
             print(f"❌ 前端服务响应异常 (状态码: {response.status_code})")
             frontend_ok = False
-    except:
+    except (requests.RequestException, OSError):
         print("❌ 前端服务未运行 (端口5174)")
         frontend_ok = False
     
