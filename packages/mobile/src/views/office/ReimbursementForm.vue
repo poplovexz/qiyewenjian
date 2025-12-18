@@ -136,7 +136,7 @@ import type { UploaderFileListItem } from 'vant'
 const router = useRouter()
 const route = useRoute()
 
-const isEdit = computed(() => !!route.params.id)
+const isEdit = computed(() => Boolean(route.params.id))
 const reimbursementId = computed(() => route.params.id as string)
 
 const formData = ref({

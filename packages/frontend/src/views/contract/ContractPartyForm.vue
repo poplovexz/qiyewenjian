@@ -232,7 +232,7 @@ const formRules: FormRules = {
 }
 
 // 计算属性
-const isEdit = computed(() => !!route.params.id)
+const isEdit = computed(() => Boolean(route.params.id))
 
 // 方法
 const fetchPartyDetail = async () => {

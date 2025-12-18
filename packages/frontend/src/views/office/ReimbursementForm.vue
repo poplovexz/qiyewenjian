@@ -152,7 +152,7 @@ const baoxiaoLeibieOptions = ref<BaoxiaoLeibie[]>([])
 const baoxiaoLeibieLoading = ref(false)
 
 const reimbursementId = computed(() => route.params.id as string)
-const isEdit = computed(() => !!reimbursementId.value)
+const isEdit = computed(() => Boolean(reimbursementId.value))
 const pageTitle = computed(() => isEdit.value ? '编辑报销申请' : '新建报销申请')
 
 const form = reactive<Partial<ReimbursementApplication>>({

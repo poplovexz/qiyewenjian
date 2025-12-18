@@ -290,7 +290,7 @@ const formRules: FormRules = {
 }
 
 // 计算属性
-const isEdit = computed(() => !!route.params.id)
+const isEdit = computed(() => Boolean(route.params.id))
 const templates = computed(() => templateStore.templates)
 const parties = computed(() => contractStore.parties)
 const quotes = computed(() => xiansuoStore.quotes)

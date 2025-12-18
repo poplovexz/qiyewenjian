@@ -165,7 +165,7 @@ const submitting = ref(false)
 const fileList = ref<UploadUserFile[]>([])
 
 const paymentId = computed(() => route.params.id as string)
-const isEdit = computed(() => !!paymentId.value)
+const isEdit = computed(() => Boolean(paymentId.value))
 const pageTitle = computed(() => isEdit.value ? '编辑对外付款申请' : '新建对外付款申请')
 
 const form = reactive<Partial<PaymentApplication>>({

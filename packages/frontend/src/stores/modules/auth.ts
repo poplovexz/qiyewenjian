@@ -14,7 +14,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoading = ref(false)
 
   // 计算属性
-  const isAuthenticated = computed(() => !!accessToken.value && !!userInfo.value)
+  const isAuthenticated = computed(() => Boolean(accessToken.value) && Boolean(userInfo.value))
   const userRoles = computed(() => userInfo.value?.roles || [])
   const userPermissions = computed(() => userInfo.value?.permissions || [])
 
@@ -25,9 +25,9 @@ export const useAuthStore = defineStore('auth', () => {
     const storedUserInfo = localStorage.getItem('user_info')
 
     console.log('恢复认证状态:', {
-      hasAccessToken: !!storedAccessToken,
-      hasRefreshToken: !!storedRefreshToken,
-      hasUserInfo: !!storedUserInfo
+      hasAccessToken: Boolean(storedAccessToken),
+      hasRefreshToken: Boolean(storedRefreshToken),
+      hasUserInfo: Boolean(storedUserInfo)
     })
 
     // 如果没有任何存储的认证信息，直接返回

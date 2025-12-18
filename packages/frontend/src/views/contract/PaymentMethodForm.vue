@@ -129,7 +129,7 @@ const contractParties = ref<ContractParty[]>([])
 const paymentConfigs = ref<ZhifuPeizhi[]>([])
 
 // 是否编辑模式
-const isEdit = computed(() => !!route.params.id)
+const isEdit = computed(() => Boolean(route.params.id))
 
 // 表单数据
 const form = reactive<PaymentMethodCreate & { id?: string }>({

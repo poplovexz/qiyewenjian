@@ -183,7 +183,7 @@ const zhichuLeibieOptions = ref<ZhichuLeibie[]>([])
 const zhichuLeibieLoading = ref(false)
 
 const procurementId = computed(() => route.params.id as string)
-const isEdit = computed(() => !!procurementId.value)
+const isEdit = computed(() => Boolean(procurementId.value))
 const pageTitle = computed(() => isEdit.value ? '编辑采购申请' : '新建采购申请')
 
 const form = reactive<Partial<ProcurementApplication>>({

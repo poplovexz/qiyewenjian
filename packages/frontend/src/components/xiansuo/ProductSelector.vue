@@ -230,7 +230,7 @@ const dailiJizhangPackages = ref<ChanpinXiangmuOption[]>([
 const filteredProducts = computed(() => {
   console.log('🔍 filteredProducts 计算中...')
   console.log('  activeCategory:', activeCategory.value)
-  console.log('  productData 是否存在:', !!productData.value)
+  console.log('  productData 是否存在:', Boolean(productData.value))
 
   let products: ChanpinXiangmuOption[]
   if (!productData.value) {

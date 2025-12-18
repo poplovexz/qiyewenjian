@@ -229,7 +229,7 @@ const dialogVisible = computed({
   set: (value) => emit('update:visible', value)
 })
 
-const isEdit = computed(() => !!props.templateId)
+const isEdit = computed(() => Boolean(props.templateId))
 
 // 表单验证规则
 const formRules: FormRules = {

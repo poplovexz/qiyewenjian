@@ -216,7 +216,7 @@ const formData = reactive<ServiceOrderCreateData>({
 })
 
 // 计算属性
-const isEdit = computed(() => !!props.orderId)
+const isEdit = computed(() => Boolean(props.orderId))
 
 // 表单验证规则
 const formRules: FormRules = {

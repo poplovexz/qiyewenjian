@@ -14,7 +14,7 @@ export const useUserStore = defineStore('user', () => {
   const permissions = ref<string[]>([])
 
   // 计算属性
-  const isLoggedIn = computed(() => !!token.value)
+  const isLoggedIn = computed(() => Boolean(token.value))
   const userName = computed(() => userInfo.value?.name || '')
   const userRole = computed(() => userInfo.value?.role || '')
 

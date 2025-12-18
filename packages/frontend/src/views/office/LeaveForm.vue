@@ -161,7 +161,7 @@ const submitting = ref(false)
 const fileList = ref<UploadUserFile[]>([])
 
 const leaveId = computed(() => route.params.id as string)
-const isEdit = computed(() => !!leaveId.value)
+const isEdit = computed(() => Boolean(leaveId.value))
 const pageTitle = computed(() => isEdit.value ? '编辑请假申请' : '新建请假申请')
 
 const form = reactive<Partial<LeaveApplication>>({

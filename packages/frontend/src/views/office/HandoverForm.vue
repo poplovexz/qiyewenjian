@@ -196,7 +196,7 @@ const fileList = ref<UploadUserFile[]>([])
 const userList = ref<any[]>([])
 
 const handoverId = computed(() => route.params.id as string)
-const isEdit = computed(() => !!handoverId.value)
+const isEdit = computed(() => Boolean(handoverId.value))
 const pageTitle = computed(() => isEdit.value ? '编辑工作交接单' : '新建工作交接单')
 
 const form = reactive<Partial<HandoverApplication>>({

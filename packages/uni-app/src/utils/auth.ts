@@ -8,7 +8,7 @@ const whiteList = ['/pages/login/index']
 // 检查是否已登录
 export const isLoggedIn = (): boolean => {
   const token = uni.getStorageSync('token')
-  return !!token
+  return Boolean(token)
 }
 
 // 路由拦截器
