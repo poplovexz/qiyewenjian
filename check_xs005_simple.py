@@ -13,8 +13,12 @@ from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
 from models.hetong_guanli import Hetong
 
 def main():
-    db = next(get_db())
-    
+    # PTC-W0063: 使用 next() 的默认值防止 StopIteration
+    db = next(get_db(), None)
+    if db is None:
+        print("无法获取数据库连接")
+        return
+
     try:
         print("=== 查找线索XS005 ===")
         

@@ -13,7 +13,8 @@ def run_command(command: str) -> int:
     print(f"运行: {command}")
     # 安全修复：使用 shlex.split 解析命令，避免 shell=True
     args: List[str] = shlex.split(command)
-    result = subprocess.run(args)
+    # PYL-W1510: 这里故意不使用 check=True，因为需要返回退出码给调用者判断
+    result = subprocess.run(args, check=False)
     return result.returncode
 
 def main():

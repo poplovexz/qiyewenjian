@@ -20,10 +20,10 @@ def quick_verify():
         else:
             print(f"   ❌ 后端服务异常 (状态码: {response.status_code})")
             return False
-    except:
+    except (requests.RequestException, OSError):
         print("   ❌ 后端服务未运行")
         return False
-    
+
     # 2. 检查前端服务
     print("2️⃣ 检查前端服务...")
     try:
@@ -33,7 +33,7 @@ def quick_verify():
         else:
             print(f"   ❌ 前端服务异常 (状态码: {response.status_code})")
             return False
-    except:
+    except (requests.RequestException, OSError):
         print("   ❌ 前端服务未运行")
         return False
     
@@ -96,7 +96,7 @@ def quick_verify():
                 print(f"   ✅ {name}可访问")
             else:
                 print(f"   ❌ {name}访问失败 (状态码: {response.status_code})")
-        except:
+        except (requests.RequestException, OSError):
             print(f"   ❌ {name}连接失败")
     
     print("\n" + "=" * 50)

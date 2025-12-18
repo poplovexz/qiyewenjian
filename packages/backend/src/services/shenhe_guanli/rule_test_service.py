@@ -40,7 +40,7 @@ class RuleTestService:
         # 解析触发条件
         try:
             trigger_conditions = json.loads(rule.chufa_tiaojian) if isinstance(rule.chufa_tiaojian, str) else rule.chufa_tiaojian
-        except:
+        except (json.JSONDecodeError, TypeError, ValueError):
             trigger_conditions = {}
 
         # 🔍 调试日志

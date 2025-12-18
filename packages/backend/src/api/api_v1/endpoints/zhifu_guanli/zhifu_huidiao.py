@@ -270,7 +270,7 @@ async def weixin_payment_notify(
                         content=f'<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[{str(e)}]]></return_msg></xml>',
                         media_type='application/xml'
                     )
-            except:
+            except (AttributeError, NameError):
                 pass
 
             return Response(

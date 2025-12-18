@@ -323,11 +323,13 @@ class DeployService:
         try:
             # BAN-B607: 使用 shutil.which 获取完整路径
             git_path = shutil.which("git") or "/usr/bin/git"
+            # PYL-W1510: 故意不使用 check=True，因为需要检查 returncode 判断命令是否成功
             result = subprocess.run(
                 [git_path, "rev-parse", "HEAD"],
                 capture_output=True,
                 text=True,
-                cwd="/var/www"
+                cwd="/var/www",
+                check=False
             )
             if result.returncode == 0:
                 return result.stdout.strip()
@@ -353,11 +355,13 @@ class DeployService:
             git_path = shutil.which("git") or "/usr/bin/git"
 
             # 获取当前分支
+            # PYL-W1510: 故意不使用 check=True，因为需要处理可能的失败情况
             current_result = subprocess.run(
                 [git_path, "rev-parse", "--abbrev-ref", "HEAD"],
                 capture_output=True,
                 text=True,
-                cwd="/var/www"
+                cwd="/var/www",
+                check=False
             )
             current_branch = current_result.stdout.strip()
 
@@ -366,7 +370,8 @@ class DeployService:
                 [git_path, "branch", "--format=%(refname:short)"],
                 capture_output=True,
                 text=True,
-                cwd="/var/www"
+                cwd="/var/www",
+                check=False
             )
 
             local_branches = [
@@ -380,7 +385,8 @@ class DeployService:
                 [git_path, "branch", "-r", "--format=%(refname:short)"],
                 capture_output=True,
                 text=True,
-                cwd="/var/www"
+                cwd="/var/www",
+                check=False
             )
 
             remote_branches = [
@@ -548,12 +554,14 @@ class DeployService:
                 # BAN-B607: 使用 shutil.which 获取完整路径
                 python3_path = shutil.which("python3") or "/usr/bin/python3"
                 # 测试导入主应用
+                # PYL-W1510: 故意不使用 check=True，因为需要检查 returncode 判断导入是否成功
                 result = subprocess.run(
                     [python3_path, "-c", "from src.main import app; print('OK')"],
                     cwd=str(backend_dir),
                     capture_output=True,
                     text=True,
-                    timeout=10
+                    timeout=10,
+                    check=False
                 )
 
                 if result.returncode == 0:
@@ -588,12 +596,14 @@ class DeployService:
                 try:
                     # BAN-B607: 使用 shutil.which 获取完整路径
                     npm_path = shutil.which("npm") or "/usr/bin/npm"
+                    # PYL-W1510: 故意不使用 check=True，因为需要检查 returncode 判断构建是否成功
                     result = subprocess.run(
                         [npm_path, "run", "build:prod"],
                         cwd=str(frontend_dir),
                         capture_output=True,
                         text=True,
-                        timeout=120
+                        timeout=120,
+                        check=False
                     )
 
                     if result.returncode == 0:
@@ -640,11 +650,13 @@ class DeployService:
                         )
 
                         pip_path = os.path.join(venv_path, "bin", "pip")
+                        # PYL-W1510: 故意不使用 check=True，因为需要检查 returncode 判断安装是否成功
                         result = subprocess.run(
                             [pip_path, "install", "-r", str(req_file), "-q"],
                             capture_output=True,
                             text=True,
-                            timeout=180
+                            timeout=180,
+                            check=False
                         )
 
                         if result.returncode == 0:

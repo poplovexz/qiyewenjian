@@ -161,11 +161,13 @@ def check_huikuan_notification():
             log_file = os.path.join(temp_dir, "backend_8000.log")
             # BAN-B607: 使用 shutil.which 获取完整路径
             tail_path = shutil.which("tail") or "/usr/bin/tail"
+            # PYL-W1510: 故意不使用 check=True，因为需要检查 returncode 判断文件是否存在
             log_result = subprocess.run(
                 [tail_path, "-100", log_file],
                 capture_output=True,
                 text=True,
-                timeout=5
+                timeout=5,
+                check=False
             )
             
             if log_result.returncode == 0:

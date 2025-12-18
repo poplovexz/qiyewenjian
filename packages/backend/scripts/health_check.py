@@ -42,9 +42,12 @@ class SystemHealthChecker:
 
         try:
             start_time = time.time()
-            
-            # 测试数据库连接
-            db = next(get_db())
+
+            # 测试数据库连接 (PTC-W0063: 使用 next() 的默认值防止 StopIteration)
+            db = next(get_db(), None)
+            if db is None:
+                result["errors"].append("无法获取数据库连接")
+                return result
             
             # 检查响应时间
             db.execute(text("SELECT 1"))
@@ -213,8 +216,12 @@ class SystemHealthChecker:
         }
 
         try:
-            db = next(get_db())
-            
+            # PTC-W0063: 使用 next() 的默认值防止 StopIteration
+            db = next(get_db(), None)
+            if db is None:
+                result["errors"].append("无法获取数据库连接")
+                return result
+
             # 检查线索服务
             xiansuo_service = XiansuoService(db)
             xiansuo_count = db.execute(text("SELECT COUNT(*) FROM xiansuo WHERE is_deleted = 'N'")).scalar()
@@ -274,8 +281,12 @@ class SystemHealthChecker:
         }
 
         try:
-            db = next(get_db())
-            
+            # PTC-W0063: 使用 next() 的默认值防止 StopIteration
+            db = next(get_db(), None)
+            if db is None:
+                result["errors"].append("无法获取数据库连接")
+                return result
+
             # 检查孤立记录
             integrity_checks = [
                 {

@@ -63,7 +63,7 @@ def fix_workflow_steps():
                     try:
                         trigger_config = json.loads(trigger_str) if trigger_str else {}
                         audit_type = trigger_config.get('audit_type', 'contract')
-                    except:
+                    except (json.JSONDecodeError, TypeError, ValueError):
                         audit_type = 'contract'
                     
                     # 根据审核类型创建默认步骤

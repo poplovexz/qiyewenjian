@@ -152,12 +152,14 @@ def check_frontend_console_errors():
         import subprocess
         # BAN-B607: 使用 shutil.which 获取完整路径
         pnpm_path = shutil.which("pnpm") or "pnpm"
+        # PYL-W1510: 故意不使用 check=True，因为需要检查 returncode 判断编译是否成功
         result = subprocess.run(
             [pnpm_path, "run", "type-check"],
             cwd="/var/www/packages/frontend",
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=30,
+            check=False
         )
         
         if result.returncode == 0:

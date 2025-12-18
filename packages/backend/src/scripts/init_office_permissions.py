@@ -193,7 +193,7 @@ def init_office_permissions():
 def main():
     """主函数"""
     success = init_office_permissions()
-    exit(0 if success else 1)
+    sys.exit(0 if success else 1)
 
 
 if __name__ == "__main__":

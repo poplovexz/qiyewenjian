@@ -2,6 +2,7 @@
 """
 前端问题诊断脚本
 """
+import sys
 import requests
 import time
 import json
@@ -202,4 +203,4 @@ def main():
 
 if __name__ == "__main__":
     success = main()
-    exit(0 if success else 1)
+    sys.exit(0 if success else 1)

@@ -379,7 +379,11 @@ def create_flow_audit_rules(db: Session):
 
 def main():
     """主函数"""
-    db = next(get_db())
+    # PTC-W0063: 使用 next() 的默认值防止 StopIteration
+    db = next(get_db(), None)
+    if db is None:
+        print("无法获取数据库连接")
+        return
     try:
         create_payment_audit_rules(db)
         create_flow_audit_rules(db)

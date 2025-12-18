@@ -2,6 +2,7 @@
 """
 最终验证脚本 - 确保认证问题已完全解决
 """
+import sys
 import requests
 import time
 import json
@@ -203,4 +204,4 @@ def main():
 
 if __name__ == "__main__":
     success = main()
-    exit(0 if success else 1)
+    sys.exit(0 if success else 1)

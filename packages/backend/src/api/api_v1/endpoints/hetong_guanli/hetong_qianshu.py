@@ -17,22 +17,23 @@ router = APIRouter()
 @router.post("/create-link/{hetong_id}", summary="创建合同签署链接")
 async def create_qianshu_link(
     hetong_id: str,
+    request: Request,
     youxiao_tianshu: int = 7,
     db: Session = Depends(get_db),
     current_user: Yonghu = Depends(get_current_user)
 ):
     """
     创建合同签署链接
-    
+
     - **hetong_id**: 合同ID（必填）
     - **youxiao_tianshu**: 有效天数，默认7天
     """
     service = HetongQianshuService(db)
     result = service.create_qianshu_lianjie(hetong_id, youxiao_tianshu)
-    
+
     # 生成完整的签署链接
     result["full_link"] = f"{request.base_url.scheme}://{request.base_url.netloc}{result['qianshu_lianjie']}"
-    
+
     return {
         "success": True,
         "message": "签署链接创建成功",

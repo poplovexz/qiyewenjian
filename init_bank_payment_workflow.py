@@ -78,9 +78,12 @@ def create_users(db, roles):
     print("2. 创建测试用户")
     print("="*60)
     
-    # 获取角色ID
-    salesperson_role = next(r for r in roles if r['jiaose_daima'] == 'salesperson')
-    finance_role = next(r for r in roles if r['jiaose_daima'] == 'finance')
+    # 获取角色ID (PTC-W0063: 使用 next() 的默认值防止 StopIteration)
+    salesperson_role = next((r for r in roles if r['jiaose_daima'] == 'salesperson'), None)
+    finance_role = next((r for r in roles if r['jiaose_daima'] == 'finance'), None)
+
+    if not salesperson_role or not finance_role:
+        raise ValueError("缺少必要的角色: salesperson 或 finance")
     
     users = [
         {
@@ -181,9 +184,12 @@ def create_workflow(db, roles):
     print("4. 创建审批流程配置")
     print("="*60)
 
-    # 获取角色ID
-    salesperson_role = next(r for r in roles if r['jiaose_daima'] == 'salesperson')
-    finance_role = next(r for r in roles if r['jiaose_daima'] == 'finance')
+    # 获取角色ID (PTC-W0063: 使用 next() 的默认值防止 StopIteration)
+    salesperson_role = next((r for r in roles if r['jiaose_daima'] == 'salesperson'), None)
+    finance_role = next((r for r in roles if r['jiaose_daima'] == 'finance'), None)
+
+    if not salesperson_role or not finance_role:
+        raise ValueError("缺少必要的角色: salesperson 或 finance")
 
     # 检查流程是否已存在
     result = db.execute(

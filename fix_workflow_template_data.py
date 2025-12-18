@@ -50,7 +50,7 @@ def fix_workflow_template_data():
                     config = json.loads(config_json)
                 else:
                     config = config_json
-            except:
+            except (json.JSONDecodeError, TypeError, ValueError):
                 print(f"  ❌ 无法解析配置JSON")
                 continue
             

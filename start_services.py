@@ -55,11 +55,13 @@ def start_backend():
     # 检查健康状态
     # BAN-B607: 使用完整路径
     try:
+        # PYL-W1510: 故意不使用 check=True，因为需要检查输出内容判断健康状态
         result = subprocess.run(
             ["/usr/bin/curl", "-s", "http://localhost:8000/health"],
             capture_output=True,
             text=True,
-            timeout=5
+            timeout=5,
+            check=False
         )
         if "healthy" in result.stdout:
             print("✅ 后端启动成功")
@@ -167,10 +169,12 @@ def main():
     print("当前运行的服务进程:")
     # BAN-B602: 使用 Python 实现进程过滤，避免 shell=True
     try:
+        # PYL-W1510: 故意不使用 check=True，因为只是获取进程列表用于显示
         ps_result = subprocess.run(
             ["/bin/ps", "aux"],
             capture_output=True,
-            text=True
+            text=True,
+            check=False
         )
         for line in ps_result.stdout.split('\n'):
             if ('uvicorn' in line or 'vite' in line) and 'grep' not in line:
