@@ -41,27 +41,29 @@
             :label="`${config.peizhi_mingcheng} (${config.peizhi_leixing === 'weixin' ? '微信支付' : '支付宝'})`"
             :value="config.id"
           >
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center">
               <span>{{ config.peizhi_mingcheng }}</span>
-              <el-tag :type="config.peizhi_leixing === 'weixin' ? 'success' : 'primary'" size="small">
+              <el-tag
+                :type="config.peizhi_leixing === 'weixin' ? 'success' : 'primary'"
+                size="small"
+              >
                 {{ config.peizhi_leixing === 'weixin' ? '微信支付' : '支付宝' }}
               </el-tag>
             </div>
           </el-option>
         </el-select>
-        <div v-if="paymentConfigs.length === 0" class="upload-tip" style="color: #f56c6c;">
+        <div v-if="paymentConfigs.length === 0" class="upload-tip" style="color: #f56c6c">
           ⚠️ 暂无可用的支付配置，请先在
-          <router-link to="/finance/payment-configs" style="color: #409eff;">支付配置管理</router-link>
+          <router-link to="/finance/payment-configs" style="color: #409eff"
+            >支付配置管理</router-link
+          >
           中创建微信支付或支付宝配置
         </div>
         <div v-else class="upload-tip">选择已配置的商户支付方式</div>
       </el-form-item>
 
       <el-form-item label="支付名称" prop="zhifu_mingcheng">
-        <el-input
-          v-model="form.zhifu_mingcheng"
-          placeholder="请输入支付方式名称"
-        />
+        <el-input v-model="form.zhifu_mingcheng" placeholder="请输入支付方式名称" />
         <div class="upload-tip">用于在合同中显示的支付方式名称</div>
       </el-form-item>
 
@@ -84,10 +86,7 @@
       </el-form-item>
 
       <el-form-item label="排序">
-        <el-input
-          v-model="form.paixu"
-          placeholder="请输入排序值（数字）"
-        />
+        <el-input v-model="form.paixu" placeholder="请输入排序值（数字）" />
         <div class="upload-tip">数值越小越靠前，默认为0</div>
       </el-form-item>
 
@@ -115,7 +114,11 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { useContractManagementStore } from '@/stores/modules/contractManagement'
-import type { PaymentMethodCreate, PaymentMethodUpdate, ContractParty } from '@/api/modules/contract'
+import type {
+  PaymentMethodCreate,
+  PaymentMethodUpdate,
+  ContractParty,
+} from '@/api/modules/contract'
 import { getZhifuPeizhiList, type ZhifuPeizhi } from '@/api/modules/payment-config'
 
 const route = useRoute()
@@ -139,21 +142,17 @@ const form = reactive<PaymentMethodCreate & { id?: string }>({
   shi_moren: 'N',
   zhifu_zhuangtai: 'active',
   paixu: '0',
-  beizhu: ''
+  beizhu: '',
 })
 
 // 表单验证规则
 const rules: FormRules = {
-  yifang_zhuti_id: [
-    { required: true, message: '请选择乙方主体', trigger: 'change' }
-  ],
-  zhifu_peizhi_id: [
-    { required: true, message: '请选择支付配置', trigger: 'change' }
-  ],
+  yifang_zhuti_id: [{ required: true, message: '请选择乙方主体', trigger: 'change' }],
+  zhifu_peizhi_id: [{ required: true, message: '请选择支付配置', trigger: 'change' }],
   zhifu_mingcheng: [
     { required: true, message: '请输入支付方式名称', trigger: 'blur' },
-    { min: 2, max: 100, message: '支付方式名称长度在 2 到 100 个字符', trigger: 'blur' }
-  ]
+    { min: 2, max: 100, message: '支付方式名称长度在 2 到 100 个字符', trigger: 'blur' },
+  ],
 }
 
 // 加载乙方主体列表
@@ -175,7 +174,7 @@ const loadPaymentConfigs = async () => {
     if (response.items.length === 0) {
       ElMessage.warning({
         message: '暂无可用的支付配置，请先在"支付配置管理"中创建微信支付或支付宝配置',
-        duration: 5000
+        duration: 5000,
       })
     }
   } catch (error) {
@@ -186,7 +185,7 @@ const loadPaymentConfigs = async () => {
 
 // 支付配置变更时自动填充名称
 const handlePaymentConfigChange = (configId: string) => {
-  const config = paymentConfigs.value.find(c => c.id === configId)
+  const config = paymentConfigs.value.find((c) => c.id === configId)
   if (config && !form.zhifu_mingcheng) {
     form.zhifu_mingcheng = config.peizhi_mingcheng
   }
@@ -211,11 +210,11 @@ const loadPaymentMethodDetail = async () => {
 // 提交表单
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     submitting.value = true
-    
+
     if (isEdit.value) {
       // 更新支付方式
       const updateData: PaymentMethodUpdate = { ...form }
@@ -227,10 +226,11 @@ const handleSubmit = async () => {
       await contractStore.createPaymentMethod(form)
       ElMessage.success('创建成功')
     }
-    
+
     router.push('/payment-methods')
   } catch (error) {
-    if (error !== false) { // 表单验证失败时不显示错误消息
+    if (error !== false) {
+      // 表单验证失败时不显示错误消息
       ElMessage.error(isEdit.value ? '更新失败' : '创建失败')
     }
   } finally {
@@ -245,11 +245,7 @@ const handleCancel = () => {
 
 // 初始化
 onMounted(async () => {
-  await Promise.all([
-    loadContractParties(),
-    loadPaymentConfigs(),
-    loadPaymentMethodDetail()
-  ])
+  await Promise.all([loadContractParties(), loadPaymentConfigs(), loadPaymentMethodDetail()])
 })
 </script>
 

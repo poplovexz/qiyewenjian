@@ -3,13 +3,7 @@
     <el-page-header @back="handleBack" :content="pageTitle" />
 
     <el-card class="form-card">
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="120px"
-        v-loading="loading"
-      >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" v-loading="loading">
         <!-- 基本信息 -->
         <el-divider content-position="left">基本信息</el-divider>
 
@@ -131,7 +125,7 @@ import {
   getReimbursementDetail,
   createReimbursement,
   updateReimbursement,
-  type ReimbursementApplication
+  type ReimbursementApplication,
 } from '@/api/office'
 import { getBaoxiaoLeibieList, type BaoxiaoLeibie } from '@/api/modules/finance-settings'
 import { useAuthStore } from '@/stores/modules/auth'
@@ -153,7 +147,7 @@ const baoxiaoLeibieLoading = ref(false)
 
 const reimbursementId = computed(() => route.params.id as string)
 const isEdit = computed(() => Boolean(reimbursementId.value))
-const pageTitle = computed(() => isEdit.value ? '编辑报销申请' : '新建报销申请')
+const pageTitle = computed(() => (isEdit.value ? '编辑报销申请' : '新建报销申请'))
 
 const form = reactive<Partial<ReimbursementApplication>>({
   baoxiao_leixing: '',
@@ -161,30 +155,26 @@ const form = reactive<Partial<ReimbursementApplication>>({
   baoxiao_shijian: '',
   baoxiao_yuanyin: '',
   fujian_lujing: '',
-  beizhu: ''
+  beizhu: '',
 })
 
 const rules: FormRules = {
-  baoxiao_leixing: [
-    { required: true, message: '请选择报销类型', trigger: 'change' }
-  ],
+  baoxiao_leixing: [{ required: true, message: '请选择报销类型', trigger: 'change' }],
   baoxiao_jine: [
     { required: true, message: '请输入报销金额', trigger: 'blur' },
-    { type: 'number', min: 0.01, message: '报销金额必须大于0', trigger: 'blur' }
+    { type: 'number', min: 0.01, message: '报销金额必须大于0', trigger: 'blur' },
   ],
-  baoxiao_shijian: [
-    { required: true, message: '请选择报销事项发生时间', trigger: 'change' }
-  ],
+  baoxiao_shijian: [{ required: true, message: '请选择报销事项发生时间', trigger: 'change' }],
   baoxiao_yuanyin: [
     { required: true, message: '请输入报销原因', trigger: 'blur' },
-    { min: 10, message: '报销原因至少10个字符', trigger: 'blur' }
-  ]
+    { min: 10, message: '报销原因至少10个字符', trigger: 'blur' },
+  ],
 }
 
 // 上传配置
 const uploadAction = computed(() => `${import.meta.env.VITE_API_BASE_URL}/upload/file`)
 const uploadHeaders = computed(() => ({
-  Authorization: `Bearer ${authStore.accessToken}`
+  Authorization: `Bearer ${authStore.accessToken}`,
 }))
 
 // 加载报销类别列表
@@ -194,7 +184,9 @@ const loadBaoxiaoLeibieOptions = async () => {
     const res = await getBaoxiaoLeibieList({ page: 1, size: 100 })
     const allItems = (res as any).items || []
     // 只显示启用状态的类别
-    baoxiaoLeibieOptions.value = allItems.filter((item: BaoxiaoLeibie) => item.zhuangtai === 'active')
+    baoxiaoLeibieOptions.value = allItems.filter(
+      (item: BaoxiaoLeibie) => item.zhuangtai === 'active'
+    )
   } catch (error: any) {
     ElMessage.error(error.message || '加载报销类型失败')
     baoxiaoLeibieOptions.value = []
@@ -211,13 +203,13 @@ const fetchDetail = async () => {
   try {
     const data = await getReimbursementDetail(reimbursementId.value)
     Object.assign(form, data)
-    
+
     // 处理附件列表
     if (data.fujian_lujing) {
       const files = data.fujian_lujing.split(',').filter(Boolean)
       fileList.value = files.map((url, index) => ({
         name: `附件${index + 1}`,
-        url: url
+        url: url,
       }))
     }
   } catch (error) {
@@ -249,7 +241,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
 const handleUploadSuccess: UploadProps['onSuccess'] = (response, file, fileList) => {
   if (response.url) {
     // 更新附件路径
-    const urls = fileList.map(f => f.response?.url || f.url).filter(Boolean)
+    const urls = fileList.map((f) => f.response?.url || f.url).filter(Boolean)
     form.fujian_lujing = urls.join(',')
     ElMessage.success('文件上传成功')
   }
@@ -265,7 +257,7 @@ const handleSaveDraft = async () => {
   saving.value = true
   try {
     const data = { ...form }
-    
+
     if (isEdit.value) {
       await updateReimbursement(reimbursementId.value, data)
       ElMessage.success('草稿保存成功')
@@ -295,7 +287,7 @@ const handleSubmit = async () => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 
@@ -346,4 +338,3 @@ onMounted(() => {
   }
 }
 </style>
-

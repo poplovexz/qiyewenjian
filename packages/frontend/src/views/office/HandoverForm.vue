@@ -3,13 +3,7 @@
     <el-page-header @back="handleBack" :content="pageTitle" />
 
     <el-card class="form-card">
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="120px"
-        v-loading="loading"
-      >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" v-loading="loading">
         <!-- 基本信息 -->
         <el-divider content-position="left">基本信息</el-divider>
 
@@ -49,7 +43,11 @@
         </el-row>
 
         <el-form-item label="交接原因" prop="jiaojie_yuanyin">
-          <el-select v-model="form.jiaojie_yuanyin" placeholder="请选择交接原因" style="width: 100%">
+          <el-select
+            v-model="form.jiaojie_yuanyin"
+            placeholder="请选择交接原因"
+            style="width: 100%"
+          >
             <el-option label="离职" value="lizhi" />
             <el-option label="调岗" value="diaogang" />
             <el-option label="休假" value="xiujia" />
@@ -173,12 +171,12 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules, UploadProps, UploadUserFile } from 'element-plus'
-import { 
-  getHandoverDetail, 
-  createHandover, 
+import {
+  getHandoverDetail,
+  createHandover,
   updateHandover,
   getUserList,
-  type HandoverApplication 
+  type HandoverApplication,
 } from '@/api/office'
 import { useAuthStore } from '@/stores/modules/auth'
 
@@ -197,7 +195,7 @@ const userList = ref<any[]>([])
 
 const handoverId = computed(() => route.params.id as string)
 const isEdit = computed(() => Boolean(handoverId.value))
-const pageTitle = computed(() => isEdit.value ? '编辑工作交接单' : '新建工作交接单')
+const pageTitle = computed(() => (isEdit.value ? '编辑工作交接单' : '新建工作交接单'))
 
 const form = reactive<Partial<HandoverApplication>>({
   jieshou_ren_id: '',
@@ -209,29 +207,23 @@ const form = reactive<Partial<HandoverApplication>>({
   zhanghu_qingdan: '',
   daiban_shixiang: '',
   fujian_lujing: '',
-  beizhu: ''
+  beizhu: '',
 })
 
 const rules: FormRules = {
-  jieshou_ren_id: [
-    { required: true, message: '请选择接收人', trigger: 'change' }
-  ],
-  jiaojie_yuanyin: [
-    { required: true, message: '请选择交接原因', trigger: 'change' }
-  ],
-  jiaojie_shijian: [
-    { required: true, message: '请选择交接时间', trigger: 'change' }
-  ],
+  jieshou_ren_id: [{ required: true, message: '请选择接收人', trigger: 'change' }],
+  jiaojie_yuanyin: [{ required: true, message: '请选择交接原因', trigger: 'change' }],
+  jiaojie_shijian: [{ required: true, message: '请选择交接时间', trigger: 'change' }],
   jiaojie_neirong: [
     { required: true, message: '请输入工作内容', trigger: 'blur' },
-    { min: 20, message: '工作内容至少20个字符', trigger: 'blur' }
-  ]
+    { min: 20, message: '工作内容至少20个字符', trigger: 'blur' },
+  ],
 }
 
 // 上传配置
 const uploadAction = computed(() => `${import.meta.env.VITE_API_BASE_URL}/upload/file`)
 const uploadHeaders = computed(() => ({
-  Authorization: `Bearer ${authStore.accessToken}`
+  Authorization: `Bearer ${authStore.accessToken}`,
 }))
 
 // 搜索用户
@@ -240,7 +232,7 @@ const searchUsers = async (query: string) => {
     userList.value = []
     return
   }
-  
+
   userLoading.value = true
   try {
     const response = await getUserList({ search: query, page_size: 20 })
@@ -260,22 +252,24 @@ const fetchDetail = async () => {
   try {
     const data = await getHandoverDetail(handoverId.value)
     Object.assign(form, data)
-    
+
     // 处理附件列表
     if (data.fujian_lujing) {
       const files = data.fujian_lujing.split(',').filter(Boolean)
       fileList.value = files.map((url, index) => ({
         name: `附件${index + 1}`,
-        url: url
+        url: url,
       }))
     }
-    
+
     // 加载接收人信息
     if (data.jieshou_ren_id) {
-      userList.value = [{
-        id: data.jieshou_ren_id,
-        xing_ming: data.jieshou_ren_xingming
-      }]
+      userList.value = [
+        {
+          id: data.jieshou_ren_id,
+          xing_ming: data.jieshou_ren_xingming,
+        },
+      ]
     }
   } catch (error) {
     ElMessage.error('获取交接单详情失败')
@@ -299,7 +293,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
 // 上传成功
 const handleUploadSuccess: UploadProps['onSuccess'] = (response, file, fileList) => {
   if (response.url) {
-    const urls = fileList.map(f => f.response?.url || f.url).filter(Boolean)
+    const urls = fileList.map((f) => f.response?.url || f.url).filter(Boolean)
     form.fujian_lujing = urls.join(',')
     ElMessage.success('文件上传成功')
   }
@@ -315,7 +309,7 @@ const handleSaveDraft = async () => {
   saving.value = true
   try {
     const data = { ...form }
-    
+
     if (isEdit.value) {
       await updateHandover(handoverId.value, data)
       ElMessage.success('草稿保存成功')
@@ -344,7 +338,7 @@ const handleSubmit = async () => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 
@@ -394,4 +388,3 @@ onMounted(() => {
   }
 }
 </style>
-

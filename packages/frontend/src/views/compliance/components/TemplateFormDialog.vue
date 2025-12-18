@@ -23,7 +23,7 @@
             />
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="事项编码" prop="shixiang_bianma">
             <el-input
@@ -53,7 +53,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="申报周期" prop="shenbao_zhouqi">
             <el-select
@@ -89,7 +89,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="模板状态" prop="moban_zhuangtai">
             <el-select
@@ -161,11 +161,7 @@
       </el-form-item>
 
       <el-form-item label="法规依据">
-        <el-input
-          v-model="formData.fagui_yiju"
-          placeholder="请输入法规依据"
-          maxlength="200"
-        />
+        <el-input v-model="formData.fagui_yiju" placeholder="请输入法规依据" maxlength="200" />
       </el-form-item>
     </el-form>
 
@@ -192,7 +188,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  templateId: ''
+  templateId: '',
 })
 
 // Emits
@@ -220,39 +216,31 @@ const formData = reactive({
   shiyong_qiye_leixing: '',
   shixiang_miaoshu: '',
   suoxu_cailiao: '',
-  fagui_yiju: ''
+  fagui_yiju: '',
 })
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 const isEdit = computed(() => Boolean(props.templateId))
 
 // 表单验证规则
 const formRules: FormRules = {
-  shixiang_mingcheng: [
-    { required: true, message: '请输入事项名称', trigger: 'blur' }
-  ],
+  shixiang_mingcheng: [{ required: true, message: '请输入事项名称', trigger: 'blur' }],
   shixiang_bianma: [
     { required: true, message: '请输入事项编码', trigger: 'blur' },
-    { pattern: /^[A-Z_]+$/, message: '事项编码只能包含大写字母和下划线', trigger: 'blur' }
+    { pattern: /^[A-Z_]+$/, message: '事项编码只能包含大写字母和下划线', trigger: 'blur' },
   ],
-  shixiang_leixing: [
-    { required: true, message: '请选择事项类型', trigger: 'change' }
-  ],
-  shenbao_zhouqi: [
-    { required: true, message: '请选择申报周期', trigger: 'change' }
-  ],
-  fengxian_dengji: [
-    { required: true, message: '请选择风险等级', trigger: 'change' }
-  ],
+  shixiang_leixing: [{ required: true, message: '请选择事项类型', trigger: 'change' }],
+  shenbao_zhouqi: [{ required: true, message: '请选择申报周期', trigger: 'change' }],
+  fengxian_dengji: [{ required: true, message: '请选择风险等级', trigger: 'change' }],
   jiezhi_shijian_guize: [
     { required: true, message: '请输入截止时间规则', trigger: 'blur' },
-    { validator: validateJSON, trigger: 'blur' }
-  ]
+    { validator: validateJSON, trigger: 'blur' },
+  ],
 }
 
 // 验证JSON格式
@@ -261,7 +249,7 @@ function validateJSON(rule: any, value: string, callback: any) {
     callback()
     return
   }
-  
+
   try {
     JSON.parse(value)
     callback()
@@ -273,11 +261,11 @@ function validateJSON(rule: any, value: string, callback: any) {
 // 方法
 const loadTemplateData = async () => {
   if (!props.templateId) return
-  
+
   try {
     loading.value = true
     const template = await complianceStore.fetchTemplateDetail(props.templateId)
-    
+
     Object.assign(formData, {
       shixiang_mingcheng: template.shixiang_mingcheng,
       shixiang_bianma: template.shixiang_bianma,
@@ -290,7 +278,7 @@ const loadTemplateData = async () => {
       shiyong_qiye_leixing: template.shiyong_qiye_leixing || '',
       shixiang_miaoshu: template.shixiang_miaoshu || '',
       suoxu_cailiao: template.suoxu_cailiao || '',
-      fagui_yiju: template.fagui_yiju || ''
+      fagui_yiju: template.fagui_yiju || '',
     })
   } catch (error) {
     console.error('加载模板数据失败:', error)
@@ -312,7 +300,7 @@ const resetForm = () => {
     shiyong_qiye_leixing: '',
     shixiang_miaoshu: '',
     suoxu_cailiao: '',
-    fagui_yiju: ''
+    fagui_yiju: '',
   })
   formRef.value?.clearValidate()
 }
@@ -324,19 +312,19 @@ const handleClose = () => {
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     loading.value = true
-    
+
     const submitData = { ...formData }
-    
+
     if (isEdit.value) {
       await complianceStore.updateTemplate(props.templateId, submitData)
     } else {
       await complianceStore.createTemplate(submitData)
     }
-    
+
     emit('success')
     handleClose()
   } catch (error) {
@@ -347,15 +335,18 @@ const handleSubmit = async () => {
 }
 
 // 监听器
-watch(() => props.visible, (visible) => {
-  if (visible) {
-    if (isEdit.value) {
-      loadTemplateData()
-    } else {
-      resetForm()
+watch(
+  () => props.visible,
+  (visible) => {
+    if (visible) {
+      if (isEdit.value) {
+        loadTemplateData()
+      } else {
+        resetForm()
+      }
     }
   }
-})
+)
 </script>
 
 <style scoped>

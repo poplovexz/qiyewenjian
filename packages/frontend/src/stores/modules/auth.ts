@@ -3,7 +3,13 @@
  */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { authApi, type LoginRequest, type UserInfo, type TokenResponse, type ChangePasswordRequest } from '@/api/auth'
+import {
+  authApi,
+  type LoginRequest,
+  type UserInfo,
+  type TokenResponse,
+  type ChangePasswordRequest,
+} from '@/api/auth'
 import { ElMessage } from 'element-plus'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -27,7 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
     console.log('恢复认证状态:', {
       hasAccessToken: Boolean(storedAccessToken),
       hasRefreshToken: Boolean(storedRefreshToken),
-      hasUserInfo: Boolean(storedUserInfo)
+      hasUserInfo: Boolean(storedUserInfo),
     })
 
     // 如果没有任何存储的认证信息，直接返回
@@ -88,7 +94,7 @@ export const useAuthStore = defineStore('auth', () => {
         access_token: response.access_token || '',
         refresh_token: response.refresh_token || '',
         token_type: response.token_type || 'bearer',
-        expires_in: response.expires_in ?? 0
+        expires_in: response.expires_in ?? 0,
       }
 
       // 验证必须有access_token，refresh_token可选（兼容旧版本）
@@ -123,16 +129,16 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       const response = await authApi.refreshToken({
-        refresh_token: refreshToken.value
+        refresh_token: refreshToken.value,
       })
-      
+
       accessToken.value = response.access_token
       refreshToken.value = response.refresh_token
-      
+
       // 更新本地存储
       localStorage.setItem('access_token', response.access_token)
       localStorage.setItem('refresh_token', response.refresh_token)
-      
+
       return true
     } catch (error) {
       console.error('刷新令牌失败:', error)
@@ -214,12 +220,12 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken,
     userInfo,
     isLoading,
-    
+
     // 计算属性
     isAuthenticated,
     userRoles,
     userPermissions,
-    
+
     // 方法
     login,
     logout,
@@ -228,6 +234,6 @@ export const useAuthStore = defineStore('auth', () => {
     changePassword,
     hasPermission,
     hasRole,
-    restoreFromStorage
+    restoreFromStorage,
   }
 })

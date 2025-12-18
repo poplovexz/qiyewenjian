@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
-    title="选择服务项目"
-    width="800px"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="dialogVisible" title="选择服务项目" width="800px" :before-close="handleClose">
     <div v-loading="loading" class="product-selector">
       <!-- 搜索栏 -->
       <div class="search-bar">
@@ -34,7 +29,7 @@
         <div v-if="filteredProducts.length === 0" class="empty-state">
           <el-empty description="暂无服务项目" />
         </div>
-        
+
         <div v-else class="product-grid">
           <div
             v-for="product in filteredProducts"
@@ -43,7 +38,7 @@
             :class="{
               selected: selectedProducts.has(product.id),
               'already-in-quote': isProductInQuote(product.id),
-              'daili-jizhang': isDailiJizhangProduct(product.id)
+              'daili-jizhang': isDailiJizhangProduct(product.id),
             }"
             @click="toggleProduct(product)"
           >
@@ -107,16 +102,10 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <div class="selected-count">
-          已选择 {{ selectedProducts.size }} 个服务项目
-        </div>
+        <div class="selected-count">已选择 {{ selectedProducts.size }} 个服务项目</div>
         <div class="footer-buttons">
           <el-button @click="handleClose">取消</el-button>
-          <el-button 
-            type="primary" 
-            @click="handleConfirm"
-            :disabled="selectedProducts.size === 0"
-          >
+          <el-button type="primary" @click="handleConfirm" :disabled="selectedProducts.size === 0">
             确定选择
           </el-button>
         </div>
@@ -137,11 +126,11 @@ console.log('🎨 ProductSelector 组件脚本已加载')
 // Props
 interface Props {
   visible: boolean
-  selectedServices?: ChanpinXiangmuOption[]  // 已选择的服务列表
+  selectedServices?: ChanpinXiangmuOption[] // 已选择的服务列表
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  selectedServices: () => []
+  selectedServices: () => [],
 })
 
 // Emits
@@ -162,7 +151,7 @@ const selectedProducts = ref(new Set<string>())
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 const productData = computed(() => xiansuoStore.product_data)
@@ -171,7 +160,7 @@ const allProducts = computed<ChanpinXiangmuOption[]>(() => {
   if (!productData.value) return []
   return [
     ...(productData.value.daili_jizhang_xiangmu || []),
-    ...(productData.value.zengzhi_xiangmu || [])
+    ...(productData.value.zengzhi_xiangmu || []),
   ]
 })
 
@@ -187,7 +176,7 @@ const dailiJizhangPackages = ref<ChanpinXiangmuOption[]>([
     banshi_tianshu: 0,
     xiangmu_beizhu: '为小微企业提供全方位财税服务的完整套餐',
     paixu: 1,
-    zhuangtai: 'active'
+    zhuangtai: 'active',
   },
   {
     id: 'package_2',
@@ -199,7 +188,7 @@ const dailiJizhangPackages = ref<ChanpinXiangmuOption[]>([
     banshi_tianshu: 0,
     xiangmu_beizhu: '专为小微企业设计的基础记账服务套餐',
     paixu: 2,
-    zhuangtai: 'active'
+    zhuangtai: 'active',
   },
   {
     id: 'package_3',
@@ -211,7 +200,7 @@ const dailiJizhangPackages = ref<ChanpinXiangmuOption[]>([
     banshi_tianshu: 0,
     xiangmu_beizhu: '一般纳税人企业专业记账服务套餐',
     paixu: 3,
-    zhuangtai: 'active'
+    zhuangtai: 'active',
   },
   {
     id: 'package_4',
@@ -223,8 +212,8 @@ const dailiJizhangPackages = ref<ChanpinXiangmuOption[]>([
     banshi_tianshu: 0,
     xiangmu_beizhu: '大中型企业全套财务管理服务套餐',
     paixu: 4,
-    zhuangtai: 'active'
-  }
+    zhuangtai: 'active',
+  },
 ])
 
 const filteredProducts = computed(() => {
@@ -252,9 +241,10 @@ const filteredProducts = computed(() => {
 
   if (searchKeyword.value) {
     const keyword = searchKeyword.value.toLowerCase()
-    products = products.filter(product =>
-      product.xiangmu_mingcheng.toLowerCase().includes(keyword) ||
-      product.xiangmu_bianma.toLowerCase().includes(keyword)
+    products = products.filter(
+      (product) =>
+        product.xiangmu_mingcheng.toLowerCase().includes(keyword) ||
+        product.xiangmu_bianma.toLowerCase().includes(keyword)
     )
     console.log('  🔍 搜索后产品数量:', products.length)
   }
@@ -277,7 +267,7 @@ const loadProductData = async () => {
     } else {
       console.log('产品数据加载成功:', {
         代理记账项目: productData.value.daili_jizhang_xiangmu?.length || 0,
-        增值服务项目: productData.value.zengzhi_xiangmu?.length || 0
+        增值服务项目: productData.value.zengzhi_xiangmu?.length || 0,
       })
     }
   } catch (error) {
@@ -298,20 +288,20 @@ const handleSearch = () => {
 
 const isDailiJizhangPackage = (productId: string): boolean => {
   // 检查是否是代理记账套餐
-  return dailiJizhangPackages.value.some(p => p.id === productId)
+  return dailiJizhangPackages.value.some((p) => p.id === productId)
 }
 
 const isDailiJizhangProduct = (productId: string): boolean => {
   // 检查是否是代理记账套餐
-  const isPackage = dailiJizhangPackages.value.some(p => p.id === productId)
+  const isPackage = dailiJizhangPackages.value.some((p) => p.id === productId)
   if (isPackage) return true
 
   // 检查是否是代理记账产品项目
-  return productData.value?.daili_jizhang_xiangmu?.some(p => p.id === productId) || false
+  return productData.value?.daili_jizhang_xiangmu?.some((p) => p.id === productId) || false
 }
 
 const isProductInQuote = (productId: string): boolean => {
-  return props.selectedServices?.some(service => service.id === productId) || false
+  return props.selectedServices?.some((service) => service.id === productId) || false
 }
 
 const toggleProduct = (product: ChanpinXiangmuOption) => {
@@ -319,29 +309,31 @@ const toggleProduct = (product: ChanpinXiangmuOption) => {
     selectedProducts.value.delete(product.id)
   } else {
     // 检查是否是代理记账服务（包括套餐和单项）
-    const isDailiJizhangPackage = dailiJizhangPackages.value.some(p => p.id === product.id)
-    const isDailiJizhangItem = productData.value?.daili_jizhang_xiangmu?.some(p => p.id === product.id)
+    const isDailiJizhangPackage = dailiJizhangPackages.value.some((p) => p.id === product.id)
+    const isDailiJizhangItem = productData.value?.daili_jizhang_xiangmu?.some(
+      (p) => p.id === product.id
+    )
     const isDailiJizhang = isDailiJizhangPackage || isDailiJizhangItem
 
     if (isDailiJizhang) {
       // 检查已选择的服务中是否已经有代理记账服务（套餐或单项）
-      const hasExistingDailiJizhang = Array.from(selectedProducts.value).some(selectedId => {
-        const isPackage = dailiJizhangPackages.value.some(p => p.id === selectedId)
-        const isItem = productData.value?.daili_jizhang_xiangmu?.some(p => p.id === selectedId)
+      const hasExistingDailiJizhang = Array.from(selectedProducts.value).some((selectedId) => {
+        const isPackage = dailiJizhangPackages.value.some((p) => p.id === selectedId)
+        const isItem = productData.value?.daili_jizhang_xiangmu?.some((p) => p.id === selectedId)
         return isPackage || isItem
       })
 
       // 检查已经在报价单中的服务是否包含代理记账
-      const hasExistingDailiJizhangInQuote = props.selectedServices?.some(service => {
-        const isPackage = dailiJizhangPackages.value.some(p => p.id === service.id)
-        const isItem = productData.value?.daili_jizhang_xiangmu?.some(p => p.id === service.id)
+      const hasExistingDailiJizhangInQuote = props.selectedServices?.some((service) => {
+        const isPackage = dailiJizhangPackages.value.some((p) => p.id === service.id)
+        const isItem = productData.value?.daili_jizhang_xiangmu?.some((p) => p.id === service.id)
         return isPackage || isItem
       })
 
       if (hasExistingDailiJizhang || hasExistingDailiJizhangInQuote) {
         ElMessage.warning({
           message: '代理记账套餐只能选择一个，请先取消已选择的代理记账套餐',
-          duration: 3000
+          duration: 3000,
         })
         return
       }
@@ -352,9 +344,7 @@ const toggleProduct = (product: ChanpinXiangmuOption) => {
 }
 
 const handleConfirm = () => {
-  const selected = allProducts.value.filter(product =>
-    selectedProducts.value.has(product.id)
-  )
+  const selected = allProducts.value.filter((product) => selectedProducts.value.has(product.id))
   emit('select', selected)
   handleClose()
 }
@@ -368,13 +358,17 @@ const handleClose = () => {
 }
 
 // 监听器
-watch(() => props.visible, (visible, oldVisible) => {
-  console.log('👁️ ProductSelector visible 变化:', { 新值: visible, 旧值: oldVisible })
-  if (visible) {
-    console.log('📂 对话框打开，开始加载产品数据')
-    void loadProductData()
-  }
-}, { immediate: true })
+watch(
+  () => props.visible,
+  (visible, oldVisible) => {
+    console.log('👁️ ProductSelector visible 变化:', { 新值: visible, 旧值: oldVisible })
+    if (visible) {
+      console.log('📂 对话框打开，开始加载产品数据')
+      void loadProductData()
+    }
+  },
+  { immediate: true }
+)
 
 // 生命周期
 onMounted(() => {
@@ -416,7 +410,7 @@ onMounted(() => {
 }
 
 .product-card {
-  border: 1px solid #EBEEF5;
+  border: 1px solid #ebeef5;
   border-radius: 8px;
   padding: 16px;
   cursor: pointer;
@@ -424,28 +418,28 @@ onMounted(() => {
 }
 
 .product-card:hover {
-  border-color: #409EFF;
+  border-color: #409eff;
   box-shadow: 0 2px 8px rgba(64, 158, 255, 0.1);
 }
 
 .product-card.selected {
-  border-color: #409EFF;
-  background-color: #F0F9FF;
+  border-color: #409eff;
+  background-color: #f0f9ff;
 }
 
 .product-card.already-in-quote {
   opacity: 0.6;
   cursor: not-allowed;
-  background-color: #F5F7FA;
+  background-color: #f5f7fa;
 }
 
 .product-card.already-in-quote:hover {
-  border-color: #DCDFE6;
+  border-color: #dcdfe6;
   box-shadow: none;
 }
 
 .product-card.daili-jizhang {
-  border-left: 3px solid #E6A23C;
+  border-left: 3px solid #e6a23c;
 }
 
 .product-header {
@@ -480,7 +474,7 @@ onMounted(() => {
 }
 
 .price-value {
-  color: #E6A23C;
+  color: #e6a23c;
   font-weight: 600;
   font-size: 16px;
   margin: 0 4px;

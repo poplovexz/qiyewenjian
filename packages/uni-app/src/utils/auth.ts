@@ -3,53 +3,52 @@
  */
 
 // 白名单页面（不需要登录）
-const whiteList = ['/pages/login/index']
+const whiteList = ["/pages/login/index"];
 
 // 检查是否已登录
 export const isLoggedIn = (): boolean => {
-  const token = uni.getStorageSync('token')
-  return Boolean(token)
-}
+  const token = uni.getStorageSync("token");
+  return Boolean(token);
+};
 
 // 路由拦截器
 export const setupRouterGuard = () => {
   // 拦截 uni.switchTab
-  const originalSwitchTab = uni.switchTab
+  const originalSwitchTab = uni.switchTab;
   uni.switchTab = (options: UniApp.SwitchTabOptions) => {
-    const url = String(options.url)
+    const url = String(options.url);
     if (!isLoggedIn() && !whiteList.includes(url)) {
-      return uni.reLaunch({ url: '/pages/login/index' })
+      return uni.reLaunch({ url: "/pages/login/index" });
     }
-    return originalSwitchTab(options)
-  }
+    return originalSwitchTab(options);
+  };
 
   // 拦截 uni.navigateTo
-  const originalNavigateTo = uni.navigateTo
+  const originalNavigateTo = uni.navigateTo;
   uni.navigateTo = (options: UniApp.NavigateToOptions) => {
-    const url = String(options.url).split('?')[0]
+    const url = String(options.url).split("?")[0];
     if (!isLoggedIn() && !whiteList.includes(url)) {
-      return uni.reLaunch({ url: '/pages/login/index' })
+      return uni.reLaunch({ url: "/pages/login/index" });
     }
-    return originalNavigateTo(options)
-  }
+    return originalNavigateTo(options);
+  };
 
   // 拦截 uni.redirectTo
-  const originalRedirectTo = uni.redirectTo
+  const originalRedirectTo = uni.redirectTo;
   uni.redirectTo = (options: UniApp.RedirectToOptions) => {
-    const url = String(options.url).split('?')[0]
+    const url = String(options.url).split("?")[0];
     if (!isLoggedIn() && !whiteList.includes(url)) {
-      return uni.reLaunch({ url: '/pages/login/index' })
+      return uni.reLaunch({ url: "/pages/login/index" });
     }
-    return originalRedirectTo(options)
-  }
-}
+    return originalRedirectTo(options);
+  };
+};
 
 // 检查登录状态并跳转
 export const checkLoginAndRedirect = () => {
   if (!isLoggedIn()) {
-    uni.reLaunch({ url: '/pages/login/index' })
-    return false
+    uni.reLaunch({ url: "/pages/login/index" });
+    return false;
   }
-  return true
-}
-
+  return true;
+};

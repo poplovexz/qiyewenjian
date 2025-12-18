@@ -3,20 +3,18 @@
     <el-page-header @back="handleBack" :content="pageTitle" />
 
     <el-card class="form-card">
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="120px"
-        v-loading="loading"
-      >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" v-loading="loading">
         <!-- 基本信息 -->
         <el-divider content-position="left">基本信息</el-divider>
 
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="请假类型" prop="qingjia_leixing">
-              <el-select v-model="form.qingjia_leixing" placeholder="请选择请假类型" style="width: 100%">
+              <el-select
+                v-model="form.qingjia_leixing"
+                placeholder="请选择请假类型"
+                style="width: 100%"
+              >
                 <el-option label="事假" value="shijia" />
                 <el-option label="病假" value="bingjia" />
                 <el-option label="年假" value="nianjia" />
@@ -141,12 +139,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules, UploadProps, UploadUserFile } from 'element-plus'
-import { 
-  getLeaveDetail, 
-  createLeave, 
-  updateLeave,
-  type LeaveApplication 
-} from '@/api/office'
+import { getLeaveDetail, createLeave, updateLeave, type LeaveApplication } from '@/api/office'
 import { useAuthStore } from '@/stores/modules/auth'
 
 const router = useRouter()
@@ -162,7 +155,7 @@ const fileList = ref<UploadUserFile[]>([])
 
 const leaveId = computed(() => route.params.id as string)
 const isEdit = computed(() => Boolean(leaveId.value))
-const pageTitle = computed(() => isEdit.value ? '编辑请假申请' : '新建请假申请')
+const pageTitle = computed(() => (isEdit.value ? '编辑请假申请' : '新建请假申请'))
 
 const form = reactive<Partial<LeaveApplication>>({
   qingjia_leixing: '',
@@ -171,33 +164,27 @@ const form = reactive<Partial<LeaveApplication>>({
   qingjia_tianshu: 1,
   qingjia_yuanyin: '',
   fujian_lujing: '',
-  beizhu: ''
+  beizhu: '',
 })
 
 const rules: FormRules = {
-  qingjia_leixing: [
-    { required: true, message: '请选择请假类型', trigger: 'change' }
-  ],
-  kaishi_shijian: [
-    { required: true, message: '请选择开始时间', trigger: 'change' }
-  ],
-  jieshu_shijian: [
-    { required: true, message: '请选择结束时间', trigger: 'change' }
-  ],
+  qingjia_leixing: [{ required: true, message: '请选择请假类型', trigger: 'change' }],
+  kaishi_shijian: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
+  jieshu_shijian: [{ required: true, message: '请选择结束时间', trigger: 'change' }],
   qingjia_tianshu: [
     { required: true, message: '请输入请假天数', trigger: 'blur' },
-    { type: 'number', min: 0.5, message: '请假天数至少0.5天', trigger: 'blur' }
+    { type: 'number', min: 0.5, message: '请假天数至少0.5天', trigger: 'blur' },
   ],
   qingjia_yuanyin: [
     { required: true, message: '请输入请假原因', trigger: 'blur' },
-    { min: 10, message: '请假原因至少10个字符', trigger: 'blur' }
-  ]
+    { min: 10, message: '请假原因至少10个字符', trigger: 'blur' },
+  ],
 }
 
 // 上传配置
 const uploadAction = computed(() => `${import.meta.env.VITE_API_BASE_URL}/upload/file`)
 const uploadHeaders = computed(() => ({
-  Authorization: `Bearer ${authStore.accessToken}`
+  Authorization: `Bearer ${authStore.accessToken}`,
 }))
 
 // 计算请假天数
@@ -205,7 +192,7 @@ const calculateDays = () => {
   if (form.kaishi_shijian && form.jieshu_shijian) {
     const start = new Date(form.kaishi_shijian)
     const end = new Date(form.jieshu_shijian)
-    
+
     if (end > start) {
       const diffTime = Math.abs(end.getTime() - start.getTime())
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -224,13 +211,13 @@ const fetchDetail = async () => {
   try {
     const data = await getLeaveDetail(leaveId.value)
     Object.assign(form, data)
-    
+
     // 处理附件列表
     if (data.fujian_lujing) {
       const files = data.fujian_lujing.split(',').filter(Boolean)
       fileList.value = files.map((url, index) => ({
         name: `附件${index + 1}`,
-        url: url
+        url: url,
       }))
     }
   } catch (error) {
@@ -261,7 +248,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
 // 上传成功
 const handleUploadSuccess: UploadProps['onSuccess'] = (response, file, fileList) => {
   if (response.url) {
-    const urls = fileList.map(f => f.response?.url || f.url).filter(Boolean)
+    const urls = fileList.map((f) => f.response?.url || f.url).filter(Boolean)
     form.fujian_lujing = urls.join(',')
     ElMessage.success('文件上传成功')
   }
@@ -277,7 +264,7 @@ const handleSaveDraft = async () => {
   saving.value = true
   try {
     const data = { ...form }
-    
+
     if (isEdit.value) {
       await updateLeave(leaveId.value, data)
       ElMessage.success('草稿保存成功')
@@ -306,7 +293,7 @@ const handleSubmit = async () => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 
@@ -356,4 +343,3 @@ onMounted(() => {
   }
 }
 </style>
-

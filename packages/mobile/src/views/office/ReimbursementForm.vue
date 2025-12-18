@@ -30,7 +30,7 @@
           required
         >
           <template #left-icon>
-            <span style="margin-right: 4px;">¥</span>
+            <span style="margin-right: 4px">¥</span>
           </template>
         </van-field>
 
@@ -90,7 +90,13 @@
         <van-button round block type="default" @click="onSaveDraft">
           保存草稿
         </van-button>
-        <van-button round block type="primary" native-type="submit" :loading="submitting">
+        <van-button
+          round
+          block
+          type="primary"
+          native-type="submit"
+          :loading="submitting"
+        >
           提交申请
         </van-button>
       </div>
@@ -121,110 +127,110 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { showToast, showConfirmDialog } from 'vant'
+import { ref, computed, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { showToast, showConfirmDialog } from "vant";
 import {
   getReimbursementDetail,
   createReimbursement,
   updateReimbursement,
-  type ReimbursementApplication
-} from '@/api/office'
-import dayjs from 'dayjs'
-import type { UploaderFileListItem } from 'vant'
+  type ReimbursementApplication,
+} from "@/api/office";
+import dayjs from "dayjs";
+import type { UploaderFileListItem } from "vant";
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
-const isEdit = computed(() => Boolean(route.params.id))
-const reimbursementId = computed(() => route.params.id as string)
+const isEdit = computed(() => Boolean(route.params.id));
+const reimbursementId = computed(() => route.params.id as string);
 
 const formData = ref({
-  baoxiao_leixing: '',
-  baoxiao_leixing_text: '',
-  baoxiao_jine: '',
-  baoxiao_shijian: '',
-  baoxiao_shijian_text: '',
-  baoxiao_yuanyin: '',
-  fujian_lujing: '',
-  beizhu: ''
-})
+  baoxiao_leixing: "",
+  baoxiao_leixing_text: "",
+  baoxiao_jine: "",
+  baoxiao_shijian: "",
+  baoxiao_shijian_text: "",
+  baoxiao_yuanyin: "",
+  fujian_lujing: "",
+  beizhu: "",
+});
 
-const fileList = ref<UploaderFileListItem[]>([])
-const submitting = ref(false)
-const showReimbursementTypePicker = ref(false)
-const showTimePicker = ref(false)
-const reimbursementTime = ref(new Date())
+const fileList = ref<UploaderFileListItem[]>([]);
+const submitting = ref(false);
+const showReimbursementTypePicker = ref(false);
+const showTimePicker = ref(false);
+const reimbursementTime = ref(new Date());
 
 // 日期范围限制
-const minDate = new Date(2020, 0, 1) // 2020-01-01
-const maxDate = new Date() // 今天
+const minDate = new Date(2020, 0, 1); // 2020-01-01
+const maxDate = new Date(); // 今天
 
 // 报销类型选项
 const reimbursementTypeOptions = [
-  { text: '差旅费', value: 'chailvfei' },
-  { text: '餐饮费', value: 'canyinfei' },
-  { text: '交通费', value: 'jiaotongfei' },
-  { text: '办公用品', value: 'banggongyongpin' },
-  { text: '其他', value: 'qita' }
-]
+  { text: "差旅费", value: "chailvfei" },
+  { text: "餐饮费", value: "canyinfei" },
+  { text: "交通费", value: "jiaotongfei" },
+  { text: "办公用品", value: "banggongyongpin" },
+  { text: "其他", value: "qita" },
+];
 
 // 加载详情（编辑模式）
 const loadDetail = async () => {
   try {
-    const detail = await getReimbursementDetail(reimbursementId.value)
+    const detail = await getReimbursementDetail(reimbursementId.value);
     formData.value = {
       baoxiao_leixing: detail.baoxiao_leixing,
       baoxiao_leixing_text: getReimbursementTypeText(detail.baoxiao_leixing),
       baoxiao_jine: detail.baoxiao_jine.toString(),
       baoxiao_shijian: detail.baoxiao_shijian,
-      baoxiao_shijian_text: dayjs(detail.baoxiao_shijian).format('YYYY-MM-DD'),
+      baoxiao_shijian_text: dayjs(detail.baoxiao_shijian).format("YYYY-MM-DD"),
       baoxiao_yuanyin: detail.baoxiao_yuanyin,
-      fujian_lujing: detail.fujian_lujing || '',
-      beizhu: detail.beizhu || ''
-    }
-    
-    reimbursementTime.value = new Date(detail.baoxiao_shijian)
-    
+      fujian_lujing: detail.fujian_lujing || "",
+      beizhu: detail.beizhu || "",
+    };
+
+    reimbursementTime.value = new Date(detail.baoxiao_shijian);
+
     // 加载附件
     if (detail.fujian_lujing) {
-      const files = detail.fujian_lujing.split(',')
-      fileList.value = files.map(url => ({ url }))
+      const files = detail.fujian_lujing.split(",");
+      fileList.value = files.map((url) => ({ url }));
     }
   } catch (error) {
-    console.error('Load reimbursement detail error:', error)
-    showToast('加载失败')
+    console.error("Load reimbursement detail error:", error);
+    showToast("加载失败");
   }
-}
+};
 
 // 报销类型确认
 const onReimbursementTypeConfirm = ({ selectedOptions }: any) => {
-  formData.value.baoxiao_leixing = selectedOptions[0].value
-  formData.value.baoxiao_leixing_text = selectedOptions[0].text
-  showReimbursementTypePicker.value = false
-}
+  formData.value.baoxiao_leixing = selectedOptions[0].value;
+  formData.value.baoxiao_leixing_text = selectedOptions[0].text;
+  showReimbursementTypePicker.value = false;
+};
 
 // 报销时间确认
 const onTimeConfirm = (value: Date) => {
-  reimbursementTime.value = value
-  formData.value.baoxiao_shijian = dayjs(value).format('YYYY-MM-DD')
-  formData.value.baoxiao_shijian_text = dayjs(value).format('YYYY-MM-DD')
-  showTimePicker.value = false
-}
+  reimbursementTime.value = value;
+  formData.value.baoxiao_shijian = dayjs(value).format("YYYY-MM-DD");
+  formData.value.baoxiao_shijian_text = dayjs(value).format("YYYY-MM-DD");
+  showTimePicker.value = false;
+};
 
 // 文件上传后
 const afterRead = (file: any) => {
   // TODO: 实现文件上传到服务器
-  console.log('File uploaded:', file)
-}
+  console.log("File uploaded:", file);
+};
 
 // 删除文件前
 const beforeDelete = () => {
   return showConfirmDialog({
-    title: '确认删除',
-    message: '确定要删除这个附件吗？'
-  })
-}
+    title: "确认删除",
+    message: "确定要删除这个附件吗？",
+  });
+};
 
 // 保存草稿
 const onSaveDraft = async () => {
@@ -234,83 +240,86 @@ const onSaveDraft = async () => {
       baoxiao_jine: parseFloat(formData.value.baoxiao_jine),
       baoxiao_shijian: formData.value.baoxiao_shijian,
       baoxiao_yuanyin: formData.value.baoxiao_yuanyin,
-      beizhu: formData.value.beizhu
-    }
+      beizhu: formData.value.beizhu,
+    };
 
     if (isEdit.value) {
-      await updateReimbursement(reimbursementId.value, data)
+      await updateReimbursement(reimbursementId.value, data);
     } else {
-      await createReimbursement(data)
+      await createReimbursement(data);
     }
 
-    showToast('保存成功')
-    router.back()
+    showToast("保存成功");
+    router.back();
   } catch (error) {
-    console.error('Save draft error:', error)
+    console.error("Save draft error:", error);
   }
-}
+};
 
 // 提交表单
 const onSubmit = async () => {
   if (!formData.value.baoxiao_leixing) {
-    showToast('请选择报销类型')
-    return
+    showToast("请选择报销类型");
+    return;
   }
-  if (!formData.value.baoxiao_jine || parseFloat(formData.value.baoxiao_jine) <= 0) {
-    showToast('请输入有效的报销金额')
-    return
+  if (
+    !formData.value.baoxiao_jine ||
+    parseFloat(formData.value.baoxiao_jine) <= 0
+  ) {
+    showToast("请输入有效的报销金额");
+    return;
   }
   if (!formData.value.baoxiao_shijian) {
-    showToast('请选择报销时间')
-    return
+    showToast("请选择报销时间");
+    return;
   }
   if (!formData.value.baoxiao_yuanyin) {
-    showToast('请输入报销原因')
-    return
+    showToast("请输入报销原因");
+    return;
   }
 
-  submitting.value = true
+  submitting.value = true;
   try {
     const data: any = {
       baoxiao_leixing: formData.value.baoxiao_leixing,
       baoxiao_jine: parseFloat(formData.value.baoxiao_jine),
       baoxiao_shijian: formData.value.baoxiao_shijian,
       baoxiao_yuanyin: formData.value.baoxiao_yuanyin,
-      beizhu: formData.value.beizhu
-    }
+      beizhu: formData.value.beizhu,
+    };
 
     if (isEdit.value) {
-      await updateReimbursement(reimbursementId.value, data)
-      showToast('更新成功')
+      await updateReimbursement(reimbursementId.value, data);
+      showToast("更新成功");
     } else {
-      await createReimbursement(data)
-      showToast('提交成功')
+      await createReimbursement(data);
+      showToast("提交成功");
     }
 
-    router.back()
+    router.back();
   } catch (error) {
-    console.error('Submit error:', error)
+    console.error("Submit error:", error);
   } finally {
-    submitting.value = false
+    submitting.value = false;
   }
-}
+};
 
 // 返回
 const onBack = () => {
-  router.back()
-}
+  router.back();
+};
 
 // 获取报销类型文本
 const getReimbursementTypeText = (type: string) => {
-  const option = reimbursementTypeOptions.find(o => o.value === type)
-  return option?.text || type
-}
+  const option = reimbursementTypeOptions.find((o) => o.value === type);
+  return option?.text || type;
+};
 
 onMounted(() => {
   if (isEdit.value) {
-    loadDetail()
+    loadDetail();
   }
-})
+});
 </script>
 
 <style scoped>
@@ -349,7 +358,12 @@ onMounted(() => {
   left: 0;
   right: 0;
   padding: 16px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 20%, #ffffff 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.95) 20%,
+    #ffffff 100%
+  );
   backdrop-filter: blur(10px);
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
   display: flex;
@@ -376,4 +390,3 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 </style>
-
