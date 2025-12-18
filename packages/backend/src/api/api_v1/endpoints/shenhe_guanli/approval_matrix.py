@@ -180,7 +180,7 @@ async def get_approval_roles(
             ).count()
             
             service = ApprovalMatrixService(db)
-            authority = service._get_role_approval_authority(role.jiaose_bianma)
+            authority = service.get_role_approval_authority(role.jiaose_bianma)
             
             role_list.append({
                 "id": role.id,
@@ -241,7 +241,7 @@ async def get_approval_levels_by_rule_type(
     """获取指定规则类型的审批级别配置"""
     try:
         service = ApprovalMatrixService(db)
-        levels = service._get_approval_levels()
+        levels = service.get_approval_levels()
         
         rule_config = levels.get(rule_type)
         if not rule_config:

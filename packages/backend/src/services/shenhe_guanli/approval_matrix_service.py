@@ -175,7 +175,7 @@ class ApprovalMatrixService:
             print(f"验证审批权限失败: {str(e)}")
             return False
     
-    def _get_approval_levels(self) -> Dict[str, Any]:
+    def get_approval_levels(self) -> Dict[str, Any]:
         """获取审批级别配置"""
         return {
             "hetong_jine_xiuzheng": {
@@ -251,7 +251,7 @@ class ApprovalMatrixService:
             }
         }
     
-    def _get_role_approval_authority(self, role_code: str) -> Dict[str, Any]:
+    def get_role_approval_authority(self, role_code: str) -> Dict[str, Any]:
         """获取角色审批权限"""
         authorities = {
             "supervisor": {"max_amount": 50000, "description": "主管级别审批权限"},
