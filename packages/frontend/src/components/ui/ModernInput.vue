@@ -75,7 +75,19 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  modelValue: undefined,
   type: 'text',
+  label: undefined,
+  placeholder: undefined,
+  prefixIcon: undefined,
+  suffixIcon: undefined,
+  disabled: false,
+  readonly: false,
+  required: false,
+  clearable: false,
+  maxlength: undefined,
+  error: undefined,
+  helpText: undefined,
   size: 'medium',
   variant: 'outlined'
 })

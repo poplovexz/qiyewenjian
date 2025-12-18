@@ -47,28 +47,28 @@ class WeixinPaySandboxUtil:
         self.sandbox_signkey: Optional[str] = None
         
     @staticmethod
-    def _generate_nonce_str(length: int = 32) -> str:
+    def generate_nonce_str(length: int = 32) -> str:
         """生成随机字符串"""
         return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
-    
+
     @staticmethod
-    def _generate_sign(params: Dict[str, Any], key: str) -> str:
+    def generate_sign(params: Dict[str, Any], key: str) -> str:
         """
         生成签名
-        
+
         Args:
             params: 参数字典
             key: 签名密钥
-            
+
         Returns:
             签名字符串
         """
         # 过滤空值和sign字段
         filtered_params = {k: v for k, v in params.items() if v != "" and v is not None and k != "sign"}
-        
+
         # 按key排序
         sorted_params = sorted(filtered_params.items(), key=lambda x: x[0])
-        
+
         # 拼接字符串
         sign_str = "&".join([f"{k}={v}" for k, v in sorted_params])
         sign_str += f"&key={key}"
@@ -77,9 +77,9 @@ class WeixinPaySandboxUtil:
         # 安全修复：MD5 用于微信支付签名，是协议要求，非安全敏感
         md5 = hashlib.md5(sign_str.encode('utf-8'), usedforsecurity=False)
         return md5.hexdigest().upper()
-    
+
     @staticmethod
-    def _dict_to_xml(data: Dict[str, Any]) -> str:
+    def dict_to_xml(data: Dict[str, Any]) -> str:
         """将字典转换为XML"""
         xml_str = "<xml>"
         for k, v in data.items():
@@ -89,9 +89,9 @@ class WeixinPaySandboxUtil:
                 xml_str += f"<{k}><![CDATA[{v}]]></{k}>"
         xml_str += "</xml>"
         return xml_str
-    
+
     @staticmethod
-    def _xml_to_dict(xml_str: str) -> Dict[str, Any]:
+    def xml_to_dict(xml_str: str) -> Dict[str, Any]:
         """将XML转换为字典"""
         try:
             root = ET.fromstring(xml_str)
@@ -114,15 +114,15 @@ class WeixinPaySandboxUtil:
             # 构建请求参数
             params = {
                 "mch_id": self.mch_id,
-                "nonce_str": self._generate_nonce_str()
+                "nonce_str": self.generate_nonce_str()
             }
-            
+
             # 生成签名(使用正式环境的API密钥)
-            params["sign"] = self._generate_sign(params, self.api_key)
-            
+            params["sign"] = self.generate_sign(params, self.api_key)
+
             # 转换为XML
-            xml_data = self._dict_to_xml(params)
-            
+            xml_data = self.dict_to_xml(params)
+
             # 发送请求
             response = requests.post(
                 self.SANDBOX_KEY_URL,
@@ -130,9 +130,9 @@ class WeixinPaySandboxUtil:
                 headers={'Content-Type': 'application/xml'},
                 timeout=10
             )
-            
+
             # 解析响应
-            result = self._xml_to_dict(response.text)
+            result = self.xml_to_dict(response.text)
             
             if result.get("return_code") == "SUCCESS":
                 self.sandbox_signkey = result.get("sandbox_signkey")
@@ -193,7 +193,7 @@ class WeixinPaySandboxUtil:
             params = {
                 "appid": self.appid,
                 "mch_id": self.mch_id,
-                "nonce_str": self._generate_nonce_str(),
+                "nonce_str": self.generate_nonce_str(),
                 "body": body,
                 "out_trade_no": out_trade_no,
                 "total_fee": total_fee,
@@ -210,10 +210,10 @@ class WeixinPaySandboxUtil:
                     params[field] = kwargs[field]
 
             # 生成签名(使用沙箱密钥)
-            params["sign"] = self._generate_sign(params, self.sandbox_signkey)
+            params["sign"] = self.generate_sign(params, self.sandbox_signkey)
 
             # 转换为XML
-            xml_data = self._dict_to_xml(params)
+            xml_data = self.dict_to_xml(params)
 
             # 发送请求
             url = f"{self.SANDBOX_BASE_URL}/pay/unifiedorder"
@@ -225,11 +225,11 @@ class WeixinPaySandboxUtil:
             )
 
             # 解析响应
-            result = self._xml_to_dict(response.text)
+            result = self.xml_to_dict(response.text)
 
             # 验证签名
             return_sign = result.pop("sign", "")
-            calculated_sign = self._generate_sign(result, self.sandbox_signkey)
+            calculated_sign = self.generate_sign(result, self.sandbox_signkey)
 
             if return_sign != calculated_sign:
                 logger.error("返回签名验证失败")
@@ -301,7 +301,7 @@ class WeixinPaySandboxUtil:
             params = {
                 "appid": self.appid,
                 "mch_id": self.mch_id,
-                "nonce_str": self._generate_nonce_str()
+                "nonce_str": self.generate_nonce_str()
             }
 
             if transaction_id:
@@ -310,10 +310,10 @@ class WeixinPaySandboxUtil:
                 params["out_trade_no"] = out_trade_no
 
             # 生成签名
-            params["sign"] = self._generate_sign(params, self.sandbox_signkey)
+            params["sign"] = self.generate_sign(params, self.sandbox_signkey)
 
             # 转换为XML
-            xml_data = self._dict_to_xml(params)
+            xml_data = self.dict_to_xml(params)
 
             # 发送请求
             url = f"{self.SANDBOX_BASE_URL}/pay/orderquery"
@@ -325,11 +325,11 @@ class WeixinPaySandboxUtil:
             )
 
             # 解析响应
-            result = self._xml_to_dict(response.text)
+            result = self.xml_to_dict(response.text)
 
             # 验证签名
             return_sign = result.pop("sign", "")
-            calculated_sign = self._generate_sign(result, self.sandbox_signkey)
+            calculated_sign = self.generate_sign(result, self.sandbox_signkey)
 
             if return_sign != calculated_sign:
                 logger.error("返回签名验证失败")
@@ -393,14 +393,14 @@ class WeixinPaySandboxUtil:
                 "appid": self.appid,
                 "mch_id": self.mch_id,
                 "out_trade_no": out_trade_no,
-                "nonce_str": self._generate_nonce_str()
+                "nonce_str": self.generate_nonce_str()
             }
 
             # 生成签名
-            params["sign"] = self._generate_sign(params, self.sandbox_signkey)
+            params["sign"] = self.generate_sign(params, self.sandbox_signkey)
 
             # 转换为XML
-            xml_data = self._dict_to_xml(params)
+            xml_data = self.dict_to_xml(params)
 
             # 发送请求
             url = f"{self.SANDBOX_BASE_URL}/pay/closeorder"
@@ -412,11 +412,11 @@ class WeixinPaySandboxUtil:
             )
 
             # 解析响应
-            result = self._xml_to_dict(response.text)
+            result = self.xml_to_dict(response.text)
 
             # 验证签名
             return_sign = result.pop("sign", "")
-            calculated_sign = self._generate_sign(result, self.sandbox_signkey)
+            calculated_sign = self.generate_sign(result, self.sandbox_signkey)
 
             if return_sign != calculated_sign:
                 logger.error("返回签名验证失败")
@@ -463,7 +463,7 @@ class WeixinPaySandboxUtil:
         """
         try:
             # 解析XML
-            result = self._xml_to_dict(xml_data)
+            result = self.xml_to_dict(xml_data)
 
             # 确保已获取沙箱密钥
             if not self.sandbox_signkey:
@@ -473,7 +473,7 @@ class WeixinPaySandboxUtil:
 
             # 验证签名
             return_sign = result.pop("sign", "")
-            calculated_sign = self._generate_sign(result, self.sandbox_signkey)
+            calculated_sign = self.generate_sign(result, self.sandbox_signkey)
 
             if return_sign != calculated_sign:
                 logger.error("回调签名验证失败")

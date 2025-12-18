@@ -99,7 +99,7 @@ def fix_contract_content(contract_id: str):
         # 重新渲染模板
         print("\n=== 重新渲染模板 ===")
         service = HetongGenerateService(session)
-        new_content = service._render_template(
+        new_content = service.render_template(
             template_content=template.moban_neirong,
             customer=customer,
             variables=variables

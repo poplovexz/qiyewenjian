@@ -227,8 +227,17 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  title: undefined,
+  description: undefined,
+  loading: false,
+  selectable: false,
+  searchable: false,
+  filterable: false,
+  pagination: false,
   pageSize: 10,
   rowKey: 'id',
+  rowClickable: false,
+  emptyText: undefined,
   size: 'medium',
   variant: 'default'
 })

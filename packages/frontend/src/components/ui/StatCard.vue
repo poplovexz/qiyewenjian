@@ -64,9 +64,13 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  unit: undefined,
+  description: undefined,
   variant: 'primary',
   size: 'md',
+  trend: undefined,
   trendType: 'neutral',
+  progress: undefined,
   animated: true,
 })
 

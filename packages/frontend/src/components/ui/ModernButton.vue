@@ -69,6 +69,8 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   variant: 'primary',
   size: 'md',
+  icon: undefined,
+  rightIcon: undefined,
   loading: false,
   disabled: false,
   iconOnly: false,

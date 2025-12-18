@@ -73,6 +73,9 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
   size: 'md',
+  title: undefined,
+  subtitle: undefined,
+  icon: undefined,
   hoverable: true,
   clickable: false,
   loading: false,

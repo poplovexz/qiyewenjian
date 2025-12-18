@@ -185,7 +185,7 @@ class HetongGenerateService:
 
             # 渲染模板
             logger.info(f"开始渲染模板，变量: {variables}")
-            content = self._render_template(template.moban_neirong, customer, variables)
+            content = self.render_template(template.moban_neirong, customer, variables)
             logger.info("模板渲染成功")
 
             return content
@@ -350,7 +350,7 @@ class HetongGenerateService:
         }
 
         # 渲染模板
-        return self._render_template(template.moban_neirong, customer, variables)
+        return self.render_template(template.moban_neirong, customer, variables)
     
     @staticmethod
     def _number_to_chinese(num: float) -> str:
@@ -427,7 +427,7 @@ class HetongGenerateService:
 
         return result
 
-    def _render_template(self, template_content: str, customer: Kehu, variables: Dict[str, Any]) -> str:
+    def render_template(self, template_content: str, customer: Kehu, variables: Dict[str, Any]) -> str:
         """
         渲染模板内容
 

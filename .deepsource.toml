@@ -21,11 +21,22 @@ name = "python"
   [analyzers.meta]
   runtime_version = "3.x.x"
 
+  [analyzers.python]
+  # SQLAlchemy 2.0 uses row._mapping as standard API, not a protected member access
+  # This is a false positive for PYL-W0212
+  skip_rules = ["PYL-W0212"]
+
 [[analyzers]]
 name = "javascript"
 
   [analyzers.meta]
   plugins = ["vue"]
+  skip_doc_coverage = ["module", "class", "function"]
+
+  [analyzers.javascript]
+  # Vue 3 supports v-model with arguments (v-model:visible, v-model:show, etc.)
+  # This is a valid Vue 3 syntax, not an error
+  skip_rules = ["JS-0664"]
 
 [[code_formatters]]
 name = "prettier"

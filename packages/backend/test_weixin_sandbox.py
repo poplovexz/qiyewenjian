@@ -27,10 +27,10 @@ def test_sandbox_util():
     print(f"   通知URL: {sandbox_util.notify_url}")
     
     # 测试生成随机字符串
-    nonce_str = sandbox_util._generate_nonce_str()
+    nonce_str = sandbox_util.generate_nonce_str()
     print(f"\n✅ 生成随机字符串: {nonce_str}")
     print(f"   长度: {len(nonce_str)}")
-    
+
     # 测试签名生成
     test_params = {
         "appid": "test_appid",
@@ -38,18 +38,18 @@ def test_sandbox_util():
         "nonce_str": "test_nonce",
         "body": "测试商品"
     }
-    sign = sandbox_util._generate_sign(test_params, "test_key")
+    sign = sandbox_util.generate_sign(test_params, "test_key")
     print(f"\n✅ 生成签名: {sign}")
     print(f"   签名长度: {len(sign)}")
-    
+
     # 测试字典转XML
-    xml_str = sandbox_util._dict_to_xml(test_params)
+    xml_str = sandbox_util.dict_to_xml(test_params)
     print("\n✅ 字典转XML:")
     print(f"   {xml_str[:100]}...")
-    
+
     # 测试XML转字典
     test_xml = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>'
-    result_dict = sandbox_util._xml_to_dict(test_xml)
+    result_dict = sandbox_util.xml_to_dict(test_xml)
     print("\n✅ XML转字典:")
     print(f"   {result_dict}")
     

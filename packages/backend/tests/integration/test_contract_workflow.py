@@ -3,7 +3,6 @@
 """
 import pytest
 from datetime import datetime, timedelta
-from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from src.core.database import get_db
@@ -82,17 +81,15 @@ class TestContractWorkflow:
         
         # 1. 创建线索
         xiansuo_data = XiansuoCreate(
-            xiansuo_bianma="TEST-XS-001",
             gongsi_mingcheng="测试公司",
             lianxi_ren="张三",
             lianxi_dianhua="13800138000",
             lianxi_youxiang="zhangsan@test.com",
             hangye_leixing="IT服务",
             gongsi_guimo="50-100人",
-            yewu_xuqiu="代理记账服务",
-            yuqi_yusuan=Decimal("10000.00"),
-            xiansuo_laiyuan_id="test-source-001",
-            xiansuo_zhuangtai_id="test-status-001"
+            fuwu_leixing="代理记账服务",
+            yusuan_fanwei="10000-50000",
+            laiyuan_id="test-source-001"
         )
         
         xiansuo = xiansuo_service.create_xiansuo(xiansuo_data, test_user_id)
@@ -103,10 +100,9 @@ class TestContractWorkflow:
         baojia_data = XiansuoBaojiaCreate(
             xiansuo_id=xiansuo.id,
             baojia_mingcheng="代理记账服务报价",
-            baojia_jine=Decimal("8000.00"),
-            youxiao_tianshu=30,
-            baojia_neirong="提供专业的代理记账服务",
-            chanpin_xiangmu_ids=["test-product-001"]
+            youxiao_qi=datetime.now() + timedelta(days=30),
+            beizhu="提供专业的代理记账服务",
+            xiangmu_list=[]
         )
         
         baojia = baojia_service.create_baojia(baojia_data, test_user_id)
@@ -142,14 +138,14 @@ class TestContractWorkflow:
 
         # 5. 生成合同（修改金额触发审核）
         hetong_data = HetongCreate(
-            hetong_mingcheng="代理记账服务合同",
-            hetong_leixing="service",
+            kehu_id="test-customer-001",
+            hetong_moban_id="test-template-001",
             baojia_id=baojia.id,
-            hetong_jine=Decimal("7000.00"),  # 低于报价金额，触发审核
+            hetong_bianhao="HT-TEST-001",
+            hetong_mingcheng="代理记账服务合同",
             hetong_neirong="代理记账服务合同内容",
-            qianding_riqi=datetime.now().date(),
-            shengxiao_riqi=datetime.now().date(),
-            jieshu_riqi=(datetime.now() + timedelta(days=365)).date()
+            daoqi_riqi=datetime.now() + timedelta(days=365),
+            shengxiao_riqi=datetime.now()
         )
         
         hetong = hetong_service.create_hetong_from_quote_direct(baojia.id, hetong_data, test_user_id)
