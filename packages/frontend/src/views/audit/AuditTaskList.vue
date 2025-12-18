@@ -73,55 +73,53 @@
             </div>
 
             <div v-else class="task-list">
-          <div
-            v-for="task in pendingAudits"
-            :key="task.step_id"
-            class="task-item"
-            :class="{ 'overdue': isOverdue(task.expected_time) }"
-          >
-            <div class="task-header">
-              <div class="task-title">
-                <el-tag :type="getAuditTypeTagType(task.audit_type)">
-                  {{ getAuditTypeText(task.audit_type) }}
-                </el-tag>
-                <span class="workflow-number">{{ task.workflow_number }}</span>
-                <span v-if="isOverdue(task.expected_time)" class="overdue-badge">
-                  <el-icon><Warning /></el-icon>
-                  超期
-                </span>
-              </div>
-              <div class="task-actions">
-                <el-button type="primary" size="small" @click="handleAudit(task)">
-                  审核
-                </el-button>
-                <el-button size="small" @click="handleViewDetail(task)">
-                  查看详情
-                </el-button>
-              </div>
-            </div>
+              <div
+                v-for="task in pendingAudits"
+                :key="task.step_id"
+                class="task-item"
+                :class="{ overdue: isOverdue(task.expected_time) }"
+              >
+                <div class="task-header">
+                  <div class="task-title">
+                    <el-tag :type="getAuditTypeTagType(task.audit_type)">
+                      {{ getAuditTypeText(task.audit_type) }}
+                    </el-tag>
+                    <span class="workflow-number">{{ task.workflow_number }}</span>
+                    <span v-if="isOverdue(task.expected_time)" class="overdue-badge">
+                      <el-icon><Warning /></el-icon>
+                      超期
+                    </span>
+                  </div>
+                  <div class="task-actions">
+                    <el-button type="primary" size="small" @click="handleAudit(task)">
+                      审核
+                    </el-button>
+                    <el-button size="small" @click="handleViewDetail(task)"> 查看详情 </el-button>
+                  </div>
+                </div>
 
-            <div class="task-content">
-              <div class="task-info">
-                <div class="info-item">
-                  <span class="label">审核步骤：</span>
-                  <span class="value">{{ task.step_name }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">关联对象：</span>
-                  <span class="value">{{ task.related_info?.name || '未知' }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">申请原因：</span>
-                  <span class="value">{{ task.applicant_reason || '无' }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">期望处理时间：</span>
-                  <span class="value">{{ formatDateTime(task.expected_time) }}</span>
+                <div class="task-content">
+                  <div class="task-info">
+                    <div class="info-item">
+                      <span class="label">审核步骤：</span>
+                      <span class="value">{{ task.step_name }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">关联对象：</span>
+                      <span class="value">{{ task.related_info?.name || '未知' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">申请原因：</span>
+                      <span class="value">{{ task.applicant_reason || '无' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">期望处理时间：</span>
+                      <span class="value">{{ formatDateTime(task.expected_time) }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
           </div>
         </el-tab-pane>
 
@@ -132,11 +130,7 @@
             </div>
 
             <div v-else class="task-list">
-              <div
-                v-for="task in processedAudits"
-                :key="task.step_id"
-                class="task-item processed"
-              >
+              <div v-for="task in processedAudits" :key="task.step_id" class="task-item processed">
                 <div class="task-header">
                   <div class="task-title">
                     <el-tag :type="getAuditTypeTagType(task.audit_type)">
@@ -151,9 +145,7 @@
                     </el-tag>
                   </div>
                   <div class="task-actions">
-                    <el-button size="small" @click="handleViewDetail(task)">
-                      查看详情
-                    </el-button>
+                    <el-button size="small" @click="handleViewDetail(task)"> 查看详情 </el-button>
                   </div>
                 </div>
 
@@ -196,23 +188,14 @@
     />
 
     <!-- 详情对话框 -->
-    <AuditDetailDialog
-      v-model:visible="detailDialogVisible"
-      :workflow-id="currentWorkflowId"
-    />
+    <AuditDetailDialog v-model:visible="detailDialogVisible" :workflow-id="currentWorkflowId" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import {
-  Clock,
-  Check,
-  TrendCharts,
-  Warning,
-  Refresh
-} from '@element-plus/icons-vue'
+import { Clock, Check, TrendCharts, Warning, Refresh } from '@element-plus/icons-vue'
 import { useAuditManagementStore } from '@/stores/modules/auditManagement'
 import { storeToRefs } from 'pinia'
 import AuditActionDialog from '@/components/audit/AuditActionDialog.vue'
@@ -274,11 +257,7 @@ const fetchProcessedAudits = async () => {
 
 const handleRefresh = async () => {
   if (activeTab.value === 'pending') {
-    await Promise.all([
-      auditStore.fetchMyPendingAudits(),
-      fetchMyStatistics(),
-      fetchOverdueCount()
-    ])
+    await Promise.all([auditStore.fetchMyPendingAudits(), fetchMyStatistics(), fetchOverdueCount()])
   } else {
     await fetchProcessedAudits()
   }
@@ -311,7 +290,7 @@ const fetchMyStatistics = async () => {
 const fetchOverdueCount = async () => {
   try {
     // 这里应该调用获取超期任务数量的API
-    overdueCount.value = pendingAudits.value.filter(task => isOverdue(task.expected_time)).length
+    overdueCount.value = pendingAudits.value.filter((task) => isOverdue(task.expected_time)).length
   } catch (error) {
     console.error('获取超期任务数量失败:', error)
   }
@@ -323,7 +302,7 @@ const getAuditTypeTagType = (type: string) => {
     hetong: 'primary',
     hetong_jine_xiuzheng: 'warning',
     baojia: 'success',
-    baojia_shenhe: 'success'
+    baojia_shenhe: 'success',
   }
   return types[type] || 'info'
 }
@@ -334,7 +313,7 @@ const getAuditTypeText = (type: string) => {
     hetong: '合同审核',
     hetong_jine_xiuzheng: '合同金额修正',
     baojia: '报价审核',
-    baojia_shenhe: '报价审核'
+    baojia_shenhe: '报价审核',
   }
   return texts[type] || type
 }
@@ -350,7 +329,7 @@ const formatDate = (dateStr: string) => {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
@@ -414,19 +393,19 @@ onMounted(async () => {
 }
 
 .stat-icon.pending {
-  color: #E6A23C;
+  color: #e6a23c;
 }
 
 .stat-icon.processed {
-  color: #67C23A;
+  color: #67c23a;
 }
 
 .stat-icon.rate {
-  color: #409EFF;
+  color: #409eff;
 }
 
 .stat-icon.overdue {
-  color: #F56C6C;
+  color: #f56c6c;
 }
 
 .task-list-card {
@@ -449,7 +428,7 @@ onMounted(async () => {
 }
 
 .task-item {
-  border: 1px solid #EBEEF5;
+  border: 1px solid #ebeef5;
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
@@ -457,13 +436,13 @@ onMounted(async () => {
 }
 
 .task-item:hover {
-  border-color: #409EFF;
+  border-color: #409eff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .task-item.overdue {
-  border-color: #F56C6C;
-  background-color: #FEF0F0;
+  border-color: #f56c6c;
+  background-color: #fef0f0;
 }
 
 .task-header {
@@ -488,7 +467,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #F56C6C;
+  color: #f56c6c;
   font-size: 12px;
 }
 

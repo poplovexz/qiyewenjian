@@ -73,12 +73,7 @@
       </div>
 
       <!-- 表格区域 -->
-      <el-table
-        v-loading="loading"
-        :data="contractList"
-        stripe
-        style="width: 100%"
-      >
+      <el-table v-loading="loading" :data="contractList" stripe style="width: 100%">
         <el-table-column prop="contractNumber" label="合同编号" width="150" />
         <el-table-column prop="customerName" label="客户名称" width="200" />
         <el-table-column prop="contractType" label="合同类型" width="120">
@@ -89,9 +84,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="amount" label="合同金额" width="120">
-          <template #default="{ row }">
-            ¥{{ row.amount?.toLocaleString() || '0' }}
-          </template>
+          <template #default="{ row }"> ¥{{ row.amount?.toLocaleString() || '0' }} </template>
         </el-table-column>
         <el-table-column prop="startDate" label="开始日期" width="120" />
         <el-table-column prop="endDate" label="结束日期" width="120" />
@@ -238,12 +231,7 @@
       width="60%"
       :close-on-click-modal="false"
     >
-      <el-form
-        v-if="currentContract"
-        ref="editFormRef"
-        :model="editForm"
-        label-width="120px"
-      >
+      <el-form v-if="currentContract" ref="editFormRef" :model="editForm" label-width="120px">
         <el-form-item label="合同名称" prop="hetong_mingcheng">
           <el-input v-model="editForm.hetong_mingcheng" />
         </el-form-item>
@@ -271,9 +259,7 @@
       </el-form>
       <template #footer>
         <el-button @click="editDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSaveEdit" :loading="saving">
-          保存
-        </el-button>
+        <el-button type="primary" @click="handleSaveEdit" :loading="saving"> 保存 </el-button>
       </template>
     </el-dialog>
 
@@ -299,10 +285,7 @@
 
         <el-form label-width="100px">
           <el-form-item label="签署链接">
-            <el-input
-              v-model="signLinkInfo.sign_link"
-              readonly
-            >
+            <el-input v-model="signLinkInfo.sign_link" readonly>
               <template #append>
                 <el-button @click="copySignLink">复制</el-button>
               </template>
@@ -315,9 +298,7 @@
       </div>
       <template #footer>
         <el-button @click="signLinkDialogVisible = false">关闭</el-button>
-        <el-button type="primary" @click="openSignLink">
-          在新窗口打开
-        </el-button>
+        <el-button type="primary" @click="openSignLink"> 在新窗口打开 </el-button>
       </template>
     </el-dialog>
 
@@ -328,25 +309,15 @@
       width="600px"
       :close-on-click-modal="false"
     >
-      <el-alert
-        title="作废提示"
-        type="warning"
-        :closable="false"
-        style="margin-bottom: 20px"
-      >
+      <el-alert title="作废提示" type="warning" :closable="false" style="margin-bottom: 20px">
         <template #default>
           <p>作废后的合同将无法编辑、签署和删除</p>
           <p>但会保留在系统中用于历史记录和审计追溯</p>
-          <p style="color: #E6A23C; font-weight: bold;">此操作不可撤销，请谨慎操作！</p>
+          <p style="color: #e6a23c; font-weight: bold">此操作不可撤销，请谨慎操作！</p>
         </template>
       </el-alert>
 
-      <el-form
-        ref="voidFormRef"
-        :model="voidForm"
-        :rules="voidFormRules"
-        label-width="100px"
-      >
+      <el-form ref="voidFormRef" :model="voidForm" :rules="voidFormRules" label-width="100px">
         <el-form-item label="合同编号">
           <el-input :value="currentContract?.contractNumber" disabled />
         </el-form-item>
@@ -367,11 +338,7 @@
 
       <template #footer>
         <el-button @click="voidDialogVisible = false">取消</el-button>
-        <el-button
-          type="danger"
-          @click="handleConfirmVoid"
-          :loading="voiding"
-        >
+        <el-button type="danger" @click="handleConfirmVoid" :loading="voiding">
           确认作废
         </el-button>
       </template>
@@ -382,7 +349,20 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, Refresh, User, ArrowDown, View, Edit, Delete, Link, CircleClose, Document, DocumentAdd } from '@element-plus/icons-vue'
+import {
+  Plus,
+  Search,
+  Refresh,
+  User,
+  ArrowDown,
+  View,
+  Edit,
+  Delete,
+  Link,
+  CircleClose,
+  Document,
+  DocumentAdd,
+} from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { useContractManagementStore } from '@/stores/modules/contractManagement'
 import { contractApi } from '@/api/modules/contract'
@@ -408,32 +388,32 @@ const editForm = reactive({
   hetong_mingcheng: '',
   hetong_zhuangtai: '',
   daoqi_riqi: '',
-  payment_amount: ''
+  payment_amount: '',
 })
 const voidForm = reactive({
-  voidReason: ''
+  voidReason: '',
 })
 
 // 作废表单验证规则
 const voidFormRules = {
   voidReason: [
     { required: true, message: '请输入作废原因', trigger: 'blur' },
-    { min: 10, message: '作废原因至少10个字符', trigger: 'blur' }
-  ]
+    { min: 10, message: '作废原因至少10个字符', trigger: 'blur' },
+  ],
 }
 
 // 搜索表单
 const searchForm = reactive({
   contractNumber: '',
   customerName: '',
-  status: ''
+  status: '',
 })
 
 // 分页
 const pagination = reactive({
   page: 1,
   size: 20,
-  total: 0
+  total: 0,
 })
 
 // 获取合同列表
@@ -446,13 +426,13 @@ const getContractList = async () => {
       size: pagination.size,
       hetong_bianhao: searchForm.contractNumber || undefined,
       kehu_mingcheng: searchForm.customerName || undefined,
-      hetong_zhuangtai: searchForm.status || undefined
+      hetong_zhuangtai: searchForm.status || undefined,
     }
 
     const response = await contractStore.fetchContracts(params)
 
     // 转换数据格式以适配现有的表格结构
-    contractList.value = response.items.map(contract => ({
+    contractList.value = response.items.map((contract) => ({
       id: contract.id,
       contractNumber: contract.hetong_bianhao,
       customerName: contract.kehu?.gongsi_mingcheng || '未知客户',
@@ -465,7 +445,7 @@ const getContractList = async () => {
       has_service_order: contract.has_service_order || false,
       createdAt: contract.created_at ? contract.created_at.replace('T', ' ').split('.')[0] : '',
       // 保留原始数据以便详细查看
-      _original: contract
+      _original: contract,
     }))
 
     pagination.total = response.total
@@ -486,7 +466,7 @@ const getContractTypeTag = (type: string) => {
   const tags = {
     daili_jizhang: 'primary',
     zengzhi_fuwu: 'success',
-    zixun_fuwu: 'warning'
+    zixun_fuwu: 'warning',
   }
   return tags[type] || 'info'
 }
@@ -496,7 +476,7 @@ const getContractTypeText = (type: string) => {
   const texts = {
     daili_jizhang: '代理记账',
     zengzhi_fuwu: '增值服务',
-    zixun_fuwu: '咨询服务'
+    zixun_fuwu: '咨询服务',
   }
   return texts[type] || '未知'
 }
@@ -512,7 +492,7 @@ const getStatusTag = (status: string) => {
     active: 'success',
     completed: 'primary',
     terminated: 'danger',
-    voided: 'warning'
+    voided: 'warning',
   }
   return tags[status] || 'info'
 }
@@ -528,7 +508,7 @@ const getStatusText = (status: string) => {
     active: '生效',
     completed: '完成',
     terminated: '终止',
-    voided: '作废'
+    voided: '作废',
   }
   return texts[status] || '未知'
 }
@@ -544,7 +524,7 @@ const handleReset = () => {
   Object.assign(searchForm, {
     contractNumber: '',
     customerName: '',
-    status: ''
+    status: '',
   })
   pagination.page = 1
   getContractList()
@@ -592,7 +572,7 @@ const handleEdit = async (row: any) => {
       hetong_mingcheng: currentContract.value.hetong_mingcheng,
       hetong_zhuangtai: currentContract.value.hetong_zhuangtai,
       daoqi_riqi: currentContract.value.daoqi_riqi,
-      payment_amount: currentContract.value.payment_amount || ''
+      payment_amount: currentContract.value.payment_amount || '',
     })
 
     editDialogVisible.value = true
@@ -687,7 +667,7 @@ const handleConfirmVoid = async () => {
 
     // 调用作废API
     await contractApi.voidContract(currentContract.value.id, {
-      void_reason: voidForm.voidReason
+      void_reason: voidForm.voidReason,
     })
 
     ElMessage.success('合同已作废')
@@ -706,15 +686,11 @@ const handleConfirmVoid = async () => {
 // 删除
 const handleDelete = async (row: any) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除合同 "${row.hetong_bianhao}" 吗？`,
-      '确认删除',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm(`确定要删除合同 "${row.hetong_bianhao}" 吗？`, '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     await contractApi.delete(row.id)
     ElMessage.success('删除成功')
@@ -733,7 +709,7 @@ const getPaymentStatusTag = (status: string) => {
     pending: 'warning',
     paid: 'success',
     failed: 'danger',
-    refunded: 'info'
+    refunded: 'info',
   }
   return tags[status] || 'info'
 }
@@ -744,7 +720,7 @@ const getPaymentStatusText = (status: string) => {
     pending: '待支付',
     paid: '已支付',
     failed: '支付失败',
-    refunded: '已退款'
+    refunded: '已退款',
   }
   return texts[status] || '未知'
 }
@@ -776,7 +752,7 @@ const handleCreateServiceOrder = async (row: any) => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'info'
+        type: 'info',
       }
     )
 
