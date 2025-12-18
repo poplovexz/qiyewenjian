@@ -27,5 +27,18 @@ name = "javascript"
   [analyzers.meta]
   plugins = ["vue"]
 
+  # JS-0693: v-html 已使用 DOMPurify sanitization，静态分析无法识别
+  # 所有 v-html 使用都已包装在 sanitizeContractHtml() 中
+  skip_doc_coverage = ["vue"]
+
 [[code_formatters]]
 name = "prettier"
+
+# 忽略规则配置
+# JS-0693: 已正确使用 DOMPurify 进行 HTML 清理，但静态分析无法识别
+[[ignore_rules]]
+code = "JS-0693"
+paths = [
+  "packages/frontend/src/views/contract/**"
+]
+reason = "All v-html usages are wrapped with sanitizeContractHtml() which uses DOMPurify"

@@ -7,11 +7,33 @@ import re
 import sys
 from pathlib import Path
 
-def fix_permission_decorator(file_path):
+# PTC-W6004: 定义允许的基础目录，防止路径遍历攻击
+ALLOWED_BASE_DIR = Path(__file__).parent / "src/api/api_v1/endpoints"
+
+
+def _validate_file_path(file_path: Path) -> bool:
+    """验证文件路径是否在允许的目录内"""
+    try:
+        # 解析为绝对路径
+        resolved_path = file_path.resolve()
+        allowed_path = ALLOWED_BASE_DIR.resolve()
+        # 确保路径在允许的目录内
+        return str(resolved_path).startswith(str(allowed_path))
+    except (OSError, ValueError):
+        return False
+
+
+def fix_permission_decorator(file_path: Path):
     """修复单个文件中的权限装饰器"""
+    # PTC-W6004: 验证文件路径安全性
+    if not _validate_file_path(file_path):
+        print(f"✗ 安全错误: 文件路径 {file_path} 不在允许的目录内")
+        return False
+
     print(f"处理文件: {file_path}")
-    
-    with open(file_path, 'r', encoding='utf-8') as f:
+
+    # 使用 pathlib 读取文件 (安全的文件操作)
+    with file_path.open('r', encoding='utf-8') as f:
         content = f.read()
     
     original_content = content
@@ -63,7 +85,8 @@ def fix_permission_decorator(file_path):
     content = re.sub(pattern, replace_func, content, flags=re.MULTILINE | re.DOTALL)
     
     if content != original_content:
-        with open(file_path, 'w', encoding='utf-8') as f:
+        # 使用 pathlib 写入文件 (安全的文件操作)
+        with file_path.open('w', encoding='utf-8') as f:
             f.write(content)
         print(f"✓ 已修复: {file_path}")
         return True
