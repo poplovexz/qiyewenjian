@@ -100,7 +100,7 @@ def migrate_workflow_templates(session, dry_run=False):
         
         # 检查是否有 steps
         if "steps" not in config or not isinstance(config["steps"], list):
-            print(f"  ⏭️  跳过：配置中没有 steps 字段")
+            print("  ⏭️  跳过：配置中没有 steps 字段")
             skipped_count += 1
             continue
         
@@ -112,7 +112,7 @@ def migrate_workflow_templates(session, dry_run=False):
                 break
         
         if not needs_migration:
-            print(f"  ✅ 已是新格式，无需迁移")
+            print("  ✅ 已是新格式，无需迁移")
             skipped_count += 1
             continue
         
@@ -145,7 +145,7 @@ def migrate_workflow_templates(session, dry_run=False):
         
         if migrated_steps > 0:
             if dry_run:
-                print(f"  🔍 [试运行] 将更新配置（实际未执行）")
+                print("  🔍 [试运行] 将更新配置（实际未执行）")
             else:
                 # 更新数据库
                 try:
@@ -162,13 +162,13 @@ def migrate_workflow_templates(session, dry_run=False):
                             "id": workflow_id
                         }
                     )
-                    print(f"  ✅ 已更新配置")
+                    print("  ✅ 已更新配置")
                     migrated_count += 1
                 except Exception as e:
                     print(f"  ❌ 更新失败: {e}")
                     skipped_count += 1
         else:
-            print(f"  ⏭️  没有步骤需要迁移")
+            print("  ⏭️  没有步骤需要迁移")
             skipped_count += 1
     
     if not dry_run:

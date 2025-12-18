@@ -33,7 +33,7 @@ def fix_contract_content(contract_id: str):
     session = Session()
     
     try:
-        print(f"=== 修复合同内容 ===")
+        print("=== 修复合同内容 ===")
         print(f"合同ID: {contract_id}")
         
         # 查询合同
@@ -43,7 +43,7 @@ def fix_contract_content(contract_id: str):
         ).first()
         
         if not contract:
-            print(f"❌ 错误：合同不存在或已删除")
+            print("❌ 错误：合同不存在或已删除")
             return False
         
         print(f"✅ 找到合同: {contract.hetong_mingcheng}")
@@ -57,7 +57,7 @@ def fix_contract_content(contract_id: str):
         ).first()
         
         if not customer:
-            print(f"❌ 错误：客户不存在")
+            print("❌ 错误：客户不存在")
             return False
         
         print(f"✅ 找到客户: {customer.gongsi_mingcheng}")
@@ -69,7 +69,7 @@ def fix_contract_content(contract_id: str):
         ).first()
         
         if not template:
-            print(f"❌ 错误：合同模板不存在")
+            print("❌ 错误：合同模板不存在")
             return False
         
         print(f"✅ 找到模板: {template.moban_mingcheng}")
@@ -111,7 +111,7 @@ def fix_contract_content(contract_id: str):
         session.commit()
         
         print("✅ 合同内容已更新！")
-        print(f"\n预览前100个字符:")
+        print("\n预览前100个字符:")
         print(new_content[:100])
         print("...")
         

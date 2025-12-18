@@ -38,7 +38,7 @@ def test_create_customer():
         db.add(kehu)
         db.flush()
         
-        print(f"✅ 客户创建成功")
+        print("✅ 客户创建成功")
         print(f"   客户ID: {kehu.id}")
         print(f"   公司名称: {kehu.gongsi_mingcheng}")
         

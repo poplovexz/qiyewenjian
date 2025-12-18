@@ -99,7 +99,7 @@ async def main():
         # 刷新产品信息
         db.refresh(xiangmu)
         print(f"  📊 产品办事天数已更新: {xiangmu.banshi_tianshu} 天")
-        print(f"     预期值: 12 + 180 = 192 天")
+        print("     预期值: 12 + 180 = 192 天")
         
         if xiangmu.banshi_tianshu == 192:
             print("  ✅ 办事天数计算正确！")
@@ -122,7 +122,7 @@ async def main():
         # 刷新产品信息
         db.refresh(xiangmu)
         print(f"  📊 产品办事天数已更新: {xiangmu.banshi_tianshu} 天")
-        print(f"     预期值: 3 (24小时÷8) + 180 = 183 天")
+        print("     预期值: 3 (24小时÷8) + 180 = 183 天")
         
         if xiangmu.banshi_tianshu == 183:
             print("  ✅ 办事天数计算正确！")
@@ -138,7 +138,7 @@ async def main():
         # 刷新产品信息
         db.refresh(xiangmu)
         print(f"  📊 产品办事天数已更新: {xiangmu.banshi_tianshu} 天")
-        print(f"     预期值: 180 天（只剩步骤2）")
+        print("     预期值: 180 天（只剩步骤2）")
         
         if xiangmu.banshi_tianshu == 180:
             print("  ✅ 办事天数计算正确！")
@@ -154,7 +154,7 @@ async def main():
         # 刷新产品信息
         db.refresh(xiangmu)
         print(f"  📊 产品办事天数已更新: {xiangmu.banshi_tianshu} 天")
-        print(f"     预期值: 0 天（所有步骤已删除）")
+        print("     预期值: 0 天（所有步骤已删除）")
         
         if xiangmu.banshi_tianshu == 0:
             print("  ✅ 办事天数计算正确！")

@@ -136,7 +136,7 @@ def main():
     
     # 3. 筛选没有客户ID的线索
     leads_without_customer = [lead for lead in leads if not lead.get("kehu_id")]
-    print(f"\n3. 筛选结果：")
+    print("\n3. 筛选结果：")
     print(f"   - 总线索数: {len(leads)}")
     print(f"   - 已有客户: {len(leads) - len(leads_without_customer)}")
     print(f"   - 需要修复: {len(leads_without_customer)}")
@@ -155,7 +155,7 @@ def main():
         return
     
     # 5. 处理每个线索
-    print(f"\n4. 开始处理线索...")
+    print("\n4. 开始处理线索...")
     success_count = 0
     skip_count = 0
     fail_count = 0
@@ -175,23 +175,23 @@ def main():
             customer_id = existing_customer_id
         else:
             # 创建新客户
-            print(f"   📝 创建新客户...")
+            print("   📝 创建新客户...")
             customer_id = create_customer_for_lead(token, lead)
             
             if not customer_id:
-                print(f"   ❌ 创建客户失败")
+                print("   ❌ 创建客户失败")
                 fail_count += 1
                 continue
             
             print(f"   ✅ 客户创建成功: {customer_id}")
         
         # 更新线索
-        print(f"   🔗 关联客户到线索...")
+        print("   🔗 关联客户到线索...")
         if update_lead_customer(token, lead_id, customer_id):
-            print(f"   ✅ 线索更新成功")
+            print("   ✅ 线索更新成功")
             success_count += 1
         else:
-            print(f"   ❌ 线索更新失败")
+            print("   ❌ 线索更新失败")
             fail_count += 1
     
     # 6. 总结
@@ -204,10 +204,10 @@ def main():
     print(f"📊 总计: {len(leads_without_customer)}")
     
     if success_count > 0:
-        print(f"\n⚠️  提醒：")
+        print("\n⚠️  提醒：")
         print(f"   - 已为 {success_count} 个线索创建了客户记录")
-        print(f"   - 这些客户使用临时信用代码（TEMP前缀）")
-        print(f"   - 请提醒用户补充完整的客户信息")
+        print("   - 这些客户使用临时信用代码（TEMP前缀）")
+        print("   - 请提醒用户补充完整的客户信息")
 
 if __name__ == "__main__":
     main()

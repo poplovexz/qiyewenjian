@@ -65,7 +65,7 @@ def check_workflow_steps():
                 
                 for step_idx, step in enumerate(steps, 1):
                     print(f"\n步骤 {step_idx}:")
-                    print(f"  字段结构:")
+                    print("  字段结构:")
                     for key, value in step.items():
                         print(f"    - {key}: {value}")
                     
@@ -75,7 +75,7 @@ def check_workflow_steps():
                     has_role = 'role' in step
                     has_approver_role = 'approver_role' in step
                     
-                    print(f"\n  字段检查:")
+                    print("\n  字段检查:")
                     print(f"    ✅ 'name' 字段: {'存在' if has_name else '❌ 不存在'}")
                     print(f"    {'✅' if has_step_name else '  '} 'step_name' 字段: {'存在' if has_step_name else '不存在'}")
                     print(f"    ✅ 'role' 字段: {'存在' if has_role else '❌ 不存在'}")
@@ -83,11 +83,11 @@ def check_workflow_steps():
                     
                     # 给出建议
                     if has_name and has_role:
-                        print(f"\n  ✅ 数据格式正确（使用 name 和 role）")
+                        print("\n  ✅ 数据格式正确（使用 name 和 role）")
                     elif has_step_name and has_approver_role:
-                        print(f"\n  ⚠️  数据格式使用旧字段名（step_name 和 approver_role）")
+                        print("\n  ⚠️  数据格式使用旧字段名（step_name 和 approver_role）")
                     else:
-                        print(f"\n  ❌ 数据格式异常，字段不完整")
+                        print("\n  ❌ 数据格式异常，字段不完整")
                 
             except json.JSONDecodeError as e:
                 print(f"\n❌ 解析步骤配置失败: {e}")

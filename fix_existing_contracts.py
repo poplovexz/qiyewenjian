@@ -34,7 +34,7 @@ def fix_contracts():
         fixed_count = 0
         skip_count = 0
         
-        print(f"\n=== 开始修复合同变量 ===\n")
+        print("\n=== 开始修复合同变量 ===\n")
         
         for contract in contracts:
             content = contract.hetong_neirong or ""
@@ -57,7 +57,7 @@ def fix_contracts():
                 ).first()
                 
                 if not template:
-                    print(f"❌ 跳过：找不到模板")
+                    print("❌ 跳过：找不到模板")
                     skip_count += 1
                     continue
                 
@@ -67,7 +67,7 @@ def fix_contracts():
                 ).first()
                 
                 if not customer:
-                    print(f"❌ 跳过：找不到客户")
+                    print("❌ 跳过：找不到客户")
                     skip_count += 1
                     continue
                 
@@ -142,7 +142,7 @@ def fix_contracts():
                 contract.hetong_neirong = new_content
                 session.commit()
                 
-                print(f"✅ 修复成功")
+                print("✅ 修复成功")
                 fixed_count += 1
                 
             except Exception as e:
@@ -151,7 +151,7 @@ def fix_contracts():
                 skip_count += 1
                 continue
         
-        print(f"\n=== 修复完成 ===")
+        print("\n=== 修复完成 ===")
         print(f"✅ 成功修复: {fixed_count} 个合同")
         print(f"⏭️  跳过: {skip_count} 个合同")
         

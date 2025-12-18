@@ -71,7 +71,7 @@ def test_service_order_creation():
         
         try:
             gongdan = service.create_gongdan_from_hetong(hetong.id, "test_user")
-            print(f"✅ 服务工单创建成功!")
+            print("✅ 服务工单创建成功!")
             print(f"   工单编号: {gongdan.gongdan_bianhao}")
             print(f"   工单标题: {gongdan.gongdan_biaoti}")
             print(f"   服务类型: {gongdan.fuwu_leixing}")

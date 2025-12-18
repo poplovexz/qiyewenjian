@@ -51,7 +51,7 @@ def fix_workflow_template_data():
                 else:
                     config = config_json
             except:
-                print(f"  ❌ 无法解析配置JSON")
+                print("  ❌ 无法解析配置JSON")
                 continue
             
             # 检查是否有 steps 字段
@@ -59,8 +59,8 @@ def fix_workflow_template_data():
                 print(f"  ✅ 配置完整，包含 {len(config['steps'])} 个步骤")
                 continue
             
-            print(f"  ⚠️  配置不完整，缺少 steps 字段")
-            print(f"  🔧 添加默认步骤配置...")
+            print("  ⚠️  配置不完整，缺少 steps 字段")
+            print("  🔧 添加默认步骤配置...")
             
             # 添加默认的步骤配置
             config["steps"] = [
@@ -90,12 +90,12 @@ def fix_workflow_template_data():
             )
             
             fixed_count += 1
-            print(f"  ✅ 已修复")
+            print("  ✅ 已修复")
         
         session.commit()
         
         print("\n" + "=" * 60)
-        print(f"✅ 修复完成！")
+        print("✅ 修复完成！")
         print(f"   总计: {len(result)} 个配置")
         print(f"   修复: {fixed_count} 个配置")
         print(f"   完整: {len(result) - fixed_count} 个配置")

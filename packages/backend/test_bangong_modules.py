@@ -168,7 +168,7 @@ def test_service_methods():
             print(f"✗ GongzuoJiaojieService: 缺少方法 {', '.join(missing_methods)}")
             fail_count += 1
         else:
-            print(f"✓ GongzuoJiaojieService: 所有必需方法都存在")
+            print("✓ GongzuoJiaojieService: 所有必需方法都存在")
             success_count += 1
     except Exception as e:
         print(f"✗ GongzuoJiaojieService: {str(e)}")

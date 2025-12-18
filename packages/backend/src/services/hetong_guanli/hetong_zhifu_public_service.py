@@ -222,7 +222,7 @@ class HetongZhifuPublicService:
         
         # 这里应该调用微信支付SDK生成二维码
         # 暂时返回模拟数据
-        qr_code = f"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+        qr_code = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
         
         # 更新支付状态
         payment.zhifu_zhuangtai = "paying"

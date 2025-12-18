@@ -29,7 +29,7 @@ def init_sentry() -> bool:
         sentry_sdk.init(
             dsn=dsn,
             environment=settings.SENTRY_ENVIRONMENT,
-            release=f"qiyewenjian-backend@1.0.0",
+            release="qiyewenjian-backend@1.0.0",
             
             # 性能监控
             traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,

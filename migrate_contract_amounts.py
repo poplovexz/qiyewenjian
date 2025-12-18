@@ -79,7 +79,7 @@ def migrate_contract_amounts():
                 print(f"  ✅ 更新金额: ¥{amount} (来源: {source})")
                 updated_count += 1
             else:
-                print(f"  ⚠️  无法确定金额，跳过")
+                print("  ⚠️  无法确定金额，跳过")
                 skipped_count += 1
             
             print()

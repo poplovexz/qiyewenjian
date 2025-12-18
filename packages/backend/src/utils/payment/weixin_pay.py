@@ -434,7 +434,7 @@ class WeixinPayUtil:
         """
         try:
             result = self.wxpay.callback(headers, body)
-            logger.info(f"支付回调处理成功")
+            logger.info("支付回调处理成功")
             return {
                 'success': True,
                 'data': result,

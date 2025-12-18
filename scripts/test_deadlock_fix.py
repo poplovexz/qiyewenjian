@@ -94,7 +94,7 @@ def simulate_expired_token_scenario():
         
         expired_token = f"{header}.{payload}.{signature}"
         
-        print(f"✅ 创建了过期token用于测试")
+        print("✅ 创建了过期token用于测试")
         print(f"   Token前缀: {expired_token[:50]}...")
         
         return expired_token

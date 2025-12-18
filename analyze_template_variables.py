@@ -30,7 +30,7 @@ def analyze_templates():
         ).all()
         
         print(f"\n{'='*80}")
-        print(f"分析所有合同模板中的变量")
+        print("分析所有合同模板中的变量")
         print(f"{'='*80}\n")
         
         all_variables = set()
@@ -116,7 +116,7 @@ def analyze_templates():
         
         # 检查变量格式
         print(f"\n{'='*80}")
-        print(f"检查变量格式")
+        print("检查变量格式")
         print(f"{'='*80}\n")
         
         format_issues = []
@@ -160,27 +160,27 @@ def analyze_templates():
         
         # 总结
         print(f"\n{'='*80}")
-        print(f"总结")
+        print("总结")
         print(f"{'='*80}\n")
         
-        print(f"✅ 代码支持的变量格式:")
-        print(f"  - {{{{key}}}} (没有空格)")
-        print(f"  - {{{{ key }}}} (两侧各一个空格)")
+        print("✅ 代码支持的变量格式:")
+        print("  - {{{{key}}}} (没有空格)")
+        print("  - {{{{ key }}}} (两侧各一个空格)")
         print()
         
         if missing_in_code:
             print(f"❌ 存在风险：{len(missing_in_code)} 个变量在模板中使用但代码中没有定义")
-            print(f"   这些变量在生成合同时不会被替换！")
+            print("   这些变量在生成合同时不会被替换！")
         else:
-            print(f"✅ 无风险：所有模板变量都有代码支持")
+            print("✅ 无风险：所有模板变量都有代码支持")
         
         print()
         
         if format_issues:
             print(f"⚠️  存在格式问题：{len(format_issues)} 个变量占位符格式不规范")
-            print(f"   建议统一使用 {{{{key}}}} 或 {{{{ key }}}} 格式")
+            print("   建议统一使用 {{{{key}}}} 或 {{{{ key }}}} 格式")
         else:
-            print(f"✅ 无格式问题：所有变量占位符格式规范")
+            print("✅ 无格式问题：所有变量占位符格式规范")
         
     except Exception as e:
         print(f"❌ 错误: {e}")

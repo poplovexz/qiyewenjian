@@ -55,7 +55,7 @@ def check_contracts():
                 print("✅ 所有变量已替换")
             
             # 显示内容预览
-            print(f"\n内容预览（前200字符）:")
+            print("\n内容预览（前200字符）:")
             print(content[:200])
             print("...\n")
             print("-" * 80)

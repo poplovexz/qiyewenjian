@@ -271,7 +271,7 @@ class PerformanceOptimizer:
         print("\n5. 生成性能报告...")
         report = self.generate_performance_report()
         
-        print(f"\n性能优化完成!")
+        print("\n性能优化完成!")
         print(f"数据库大小: {report.get('database_size', {}).get('size_mb', 0):.2f} MB")
         print(f"表数量: {len(report.get('table_stats', []))}")
         print(f"索引数量: {len(report.get('index_usage', []))}")

@@ -48,7 +48,7 @@ def find_xiansuo_xs005(headers):
         
         for lead in leads.get('items', []):
             if lead.get('xiansuo_bianhao') == 'XS005':
-                print(f"✅ 找到线索XS005:")
+                print("✅ 找到线索XS005:")
                 print(f"   线索ID: {lead['id']}")
                 print(f"   线索名称: {lead['xiansuo_mingcheng']}")
                 print(f"   线索状态: {lead['xiansuo_zhuangtai']}")
@@ -64,7 +64,7 @@ def find_xiansuo_xs005(headers):
 
 def get_xiansuo_quotes(xiansuo_id, headers):
     """获取线索的报价"""
-    print(f"\n💰 查找线索的报价...")
+    print("\n💰 查找线索的报价...")
     
     try:
         response = requests.get(f"{BASE_URL}/lead-quotes/xiansuo/{xiansuo_id}", headers=headers)
@@ -93,7 +93,7 @@ def get_xiansuo_quotes(xiansuo_id, headers):
 
 def check_quote_contracts(quotes, headers):
     """检查报价关联的合同"""
-    print(f"\n📄 检查报价关联的合同...")
+    print("\n📄 检查报价关联的合同...")
     
     contracts = []
     
@@ -106,7 +106,7 @@ def check_quote_contracts(quotes, headers):
             
             if response.status_code == 200:
                 contract = response.json()
-                print(f"   ✅ 找到关联合同:")
+                print("   ✅ 找到关联合同:")
                 print(f"      合同ID: {contract['id']}")
                 print(f"      合同编号: {contract['hetong_bianhao']}")
                 print(f"      合同名称: {contract['hetong_mingcheng']}")
@@ -114,7 +114,7 @@ def check_quote_contracts(quotes, headers):
                 print(f"      创建时间: {contract['created_at']}")
                 contracts.append(contract)
             elif response.status_code == 404:
-                print(f"   ❌ 该报价没有关联的合同")
+                print("   ❌ 该报价没有关联的合同")
             else:
                 print(f"   ❌ 检查失败: {response.status_code} - {response.text}")
                 
@@ -125,7 +125,7 @@ def check_quote_contracts(quotes, headers):
 
 def get_all_contracts(headers):
     """获取所有合同列表"""
-    print(f"\n📋 获取所有合同列表...")
+    print("\n📋 获取所有合同列表...")
     
     try:
         response = requests.get(f"{BASE_URL}/contracts/", headers=headers)

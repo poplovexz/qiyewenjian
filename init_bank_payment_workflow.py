@@ -261,9 +261,9 @@ def create_workflow(db, roles):
                 }
             )
 
-        print(f"  ✓ 创建审批流程: 银行转账支付审批")
-        print(f"    - 步骤1: 业务员上传汇款单据")
-        print(f"    - 步骤2: 财务审核确认")
+        print("  ✓ 创建审批流程: 银行转账支付审批")
+        print("    - 步骤1: 业务员上传汇款单据")
+        print("    - 步骤2: 财务审核确认")
 
     db.commit()
     return workflow_id

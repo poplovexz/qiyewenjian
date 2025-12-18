@@ -60,7 +60,7 @@ def ensure_admin_role(session):
         """), {"id": admin_role_id})
         
         session.commit()
-        print(f"✅ 已创建系统管理员角色")
+        print("✅ 已创建系统管理员角色")
         print(f"   角色ID: {admin_role_id}")
         return admin_role_id
 
@@ -102,10 +102,10 @@ def ensure_admin_user(session, admin_role_id):
         })
         
         session.commit()
-        print(f"✅ 已创建admin用户")
+        print("✅ 已创建admin用户")
         print(f"   用户ID: {admin_user_id}")
-        print(f"   用户名: admin")
-        print(f"   密码: admin123")
+        print("   用户名: admin")
+        print("   密码: admin123")
     
     # 检查是否已分配角色
     print("\n" + "=" * 60)
@@ -197,11 +197,11 @@ def assign_all_permissions_to_admin_role(session, admin_role_id):
     
     session.commit()
     
-    print(f"\n📊 权限分配统计:")
+    print("\n📊 权限分配统计:")
     print(f"  - 新分配: {assigned_count} 个")
     print(f"  - 已存在: {existing_count} 个")
     print(f"  - 总计: {len(all_permissions)} 个")
-    print(f"\n✅ 系统管理员角色现在拥有所有权限")
+    print("\n✅ 系统管理员角色现在拥有所有权限")
 
 
 def verify_admin_permissions(session, admin_user_id):
@@ -236,7 +236,7 @@ def verify_admin_permissions(session, admin_user_id):
                 modules[module] = []
             modules[module].append((perm_code, perm_name))
         
-        print(f"\n📋 权限模块统计:")
+        print("\n📋 权限模块统计:")
         for module, perms in sorted(modules.items()):
             print(f"  - {module}: {len(perms)} 个权限")
     else:

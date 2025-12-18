@@ -24,7 +24,7 @@ def check_huikuan_notification():
         huikuan_bianhao = "HK202510301443179ED9B3"
         
         print(f"\n{'='*80}")
-        print(f"检查银行汇款通知问题")
+        print("检查银行汇款通知问题")
         print(f"{'='*80}\n")
         
         # 查询汇款记录
@@ -46,7 +46,7 @@ def check_huikuan_notification():
             print(f"❌ 找不到汇款单据: {huikuan_bianhao}")
             return
 
-        print(f"✅ 找到汇款单据:")
+        print("✅ 找到汇款单据:")
         print(f"  ID: {huikuan.id}")
         print(f"  单据编号: {huikuan.danju_bianhao}")
         print(f"  合同支付ID: {huikuan.hetong_zhifu_id}")
@@ -60,7 +60,7 @@ def check_huikuan_notification():
         
         # 查询相关通知
         print(f"\n{'='*80}")
-        print(f"【2】查询相关通知\n")
+        print("【2】查询相关通知\n")
 
         notification_query = text("""
             SELECT
@@ -89,11 +89,11 @@ def check_huikuan_notification():
                 print(f"  通知状态: {notif.tongzhi_zhuangtai}")
                 print(f"  创建时间: {notif.created_at}")
         else:
-            print(f"❌ 没有找到相关通知")
+            print("❌ 没有找到相关通知")
         
         # 查询审核流程
         print(f"\n{'='*80}")
-        print(f"【3】查询审核流程\n")
+        print("【3】查询审核流程\n")
 
         workflow_query = text("""
             SELECT
@@ -142,15 +142,15 @@ def check_huikuan_notification():
                 ).fetchall()
 
                 if steps:
-                    print(f"  审核步骤:")
+                    print("  审核步骤:")
                     for step in steps:
                         print(f"    - 步骤{step.buzhou_bianhao}: {step.buzhou_mingcheng} - {step.jilu_zhuangtai} (审核人: {step.shenhe_ren_id})")
         else:
-            print(f"❌ 没有找到审核流程")
+            print("❌ 没有找到审核流程")
         
         # 检查后端日志
         print(f"\n{'='*80}")
-        print(f"【4】检查后端日志（最近的汇款相关日志）\n")
+        print("【4】检查后端日志（最近的汇款相关日志）\n")
         
         import subprocess
         try:
@@ -178,7 +178,7 @@ def check_huikuan_notification():
         
         # 分析问题
         print(f"\n{'='*80}")
-        print(f"【5】问题分析\n")
+        print("【5】问题分析\n")
         
         if not notifications:
             print("❌ 问题确认：没有发送通知")

@@ -85,7 +85,7 @@ def debug_customer_frontend():
         
         if response.status_code == 200:
             data = response.json()
-            print(f"   ✅ 前端API调用成功")
+            print("   ✅ 前端API调用成功")
             print(f"   📊 返回数据: total={data['total']}, items={len(data['items'])}")
             print(f"   📄 分页信息: page={data['page']}, size={data['size']}")
             

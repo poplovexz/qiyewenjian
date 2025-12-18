@@ -330,7 +330,7 @@ class HetongSignService:
             logger.info(f"找到乙方主体关联的支付配置: {zhifu_peizhi.peizhi_mingcheng}")
         else:
             # 如果没有找到乙方主体关联的支付配置，则查找全局启用的支付配置
-            logger.info(f"未找到乙方主体关联的支付配置，查找全局启用的支付配置")
+            logger.info("未找到乙方主体关联的支付配置，查找全局启用的支付配置")
             zhifu_peizhi = self.db.query(ZhifuPeizhi).filter(
                 ZhifuPeizhi.peizhi_leixing == peizhi_leixing,
                 ZhifuPeizhi.zhuangtai == "qiyong",
@@ -572,7 +572,7 @@ class HetongSignService:
 
         # 如果已经支付成功，直接返回
         if hetong.payment_status == "paid":
-            print(f"✅ 合同已支付，直接返回")
+            print("✅ 合同已支付，直接返回")
             print(f"{'='*60}\n")
             return {
                 "payment_status": "paid",
@@ -600,7 +600,7 @@ class HetongSignService:
 
                     # 如果订单已经是成功状态，直接更新合同
                     if zhifu_dingdan.zhifu_zhuangtai == "success":
-                        print(f"✅ 订单已成功，直接更新合同状态")
+                        print("✅ 订单已成功，直接更新合同状态")
                         hetong.payment_status = "paid"
                         hetong.paid_at = zhifu_dingdan.zhifu_shijian or datetime.now()
                         hetong.updated_at = datetime.now()
@@ -634,7 +634,7 @@ class HetongSignService:
 
                         # 如果查询到支付成功，更新合同状态和支付订单状态
                         if trade_status in ["TRADE_SUCCESS", "TRADE_FINISHED"]:
-                            print(f"✅ 支付宝返回支付成功，更新合同状态和支付订单状态")
+                            print("✅ 支付宝返回支付成功，更新合同状态和支付订单状态")
 
                             # 更新合同状态
                             hetong.payment_status = "paid"
