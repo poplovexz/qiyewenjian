@@ -9,19 +9,11 @@
               <el-icon><ArrowLeft /></el-icon>
               返回
             </el-button>
-            <el-button 
-              v-if="canEdit" 
-              type="primary" 
-              @click="handleEdit"
-            >
+            <el-button v-if="canEdit" type="primary" @click="handleEdit">
               <el-icon><Edit /></el-icon>
               编辑
             </el-button>
-            <el-button 
-              v-if="canSign" 
-              type="success" 
-              @click="handleSign"
-            >
+            <el-button v-if="canSign" type="success" @click="handleSign">
               <el-icon><EditPen /></el-icon>
               签署合同
             </el-button>
@@ -85,8 +77,12 @@
               <div class="audit-content">
                 <p><strong>审核类型：</strong>{{ getAuditTypeText(audit.shenhe_leixing) }}</p>
                 <p><strong>申请人：</strong>{{ audit.shenqing_ren_mingcheng }}</p>
-                <p v-if="audit.shenqing_yuanyin"><strong>申请原因：</strong>{{ audit.shenqing_yuanyin }}</p>
-                <p v-if="audit.wancheng_shijian"><strong>完成时间：</strong>{{ formatDateTime(audit.wancheng_shijian) }}</p>
+                <p v-if="audit.shenqing_yuanyin">
+                  <strong>申请原因：</strong>{{ audit.shenqing_yuanyin }}
+                </p>
+                <p v-if="audit.wancheng_shijian">
+                  <strong>完成时间：</strong>{{ formatDateTime(audit.wancheng_shijian) }}
+                </p>
               </div>
             </el-card>
           </el-timeline-item>
@@ -105,7 +101,12 @@
                 </el-tag>
               </el-descriptions-item>
               <el-descriptions-item label="签署链接" v-if="signingInfo.qianshu_lianjie">
-                <el-link :href="signingInfo.qianshu_lianjie" target="_blank" rel="noopener noreferrer" type="primary">
+                <el-link
+                  :href="signingInfo.qianshu_lianjie"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  type="primary"
+                >
                   查看签署链接
                 </el-link>
               </el-descriptions-item>
@@ -121,19 +122,13 @@
             </el-descriptions>
 
             <div v-if="signingInfo.qianshu_zhuangtai === 'daiqianshu'" class="signing-actions">
-              <el-button type="primary" @click="handleCreateSigningLink">
-                创建签署链接
-              </el-button>
-              <el-button @click="handleCancelSigning">
-                取消签署
-              </el-button>
+              <el-button type="primary" @click="handleCreateSigningLink"> 创建签署链接 </el-button>
+              <el-button @click="handleCancelSigning"> 取消签署 </el-button>
             </div>
           </div>
           <div v-else class="no-signing-info">
             <el-empty description="暂无签署信息">
-              <el-button type="primary" @click="handleCreateSigningLink">
-                创建签署链接
-              </el-button>
+              <el-button type="primary" @click="handleCreateSigningLink"> 创建签署链接 </el-button>
             </el-empty>
           </div>
         </el-card>
@@ -188,16 +183,12 @@
             </el-table>
 
             <div class="payment-actions">
-              <el-button type="primary" @click="handleCreatePayment">
-                创建支付订单
-              </el-button>
+              <el-button type="primary" @click="handleCreatePayment"> 创建支付订单 </el-button>
             </div>
           </div>
           <div v-else class="no-payment-info">
             <el-empty description="暂无支付信息">
-              <el-button type="primary" @click="handleCreatePayment">
-                创建支付订单
-              </el-button>
+              <el-button type="primary" @click="handleCreatePayment"> 创建支付订单 </el-button>
             </el-empty>
           </div>
         </el-card>
@@ -266,15 +257,11 @@
           </el-tab-pane>
         </el-tabs>
       </div>
-      
+
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="signDialogVisible = false">取消</el-button>
-          <el-button 
-            type="primary" 
-            @click="confirmSignature"
-            :loading="signing"
-          >
+          <el-button type="primary" @click="confirmSignature" :loading="signing">
             确认签署
           </el-button>
         </div>
@@ -336,7 +323,7 @@ const fetchContractDetail = async () => {
       await Promise.all([
         fetchAuditHistory(contractId),
         fetchSigningInfo(contractId),
-        fetchPaymentInfo(contractId)
+        fetchPaymentInfo(contractId),
       ])
     } catch (error) {
       console.error('获取合同详情失败:', error)
@@ -400,17 +387,13 @@ const handleCreateSigningLink = async () => {
     await fetchSigningInfo(contract.value.id)
 
     // 显示签署链接
-    await ElMessageBox.alert(
-      `签署链接：${response.data.full_link}`,
-      '签署链接创建成功',
-      {
-        confirmButtonText: '复制链接',
-        callback: () => {
-          navigator.clipboard.writeText(response.data.full_link)
-          ElMessage.success('链接已复制到剪贴板')
-        }
-      }
-    )
+    await ElMessageBox.alert(`签署链接：${response.data.full_link}`, '签署链接创建成功', {
+      confirmButtonText: '复制链接',
+      callback: () => {
+        navigator.clipboard.writeText(response.data.full_link)
+        ElMessage.success('链接已复制到剪贴板')
+      },
+    })
   } catch (error) {
     console.error('创建签署链接失败:', error)
     ElMessage.error('创建签署链接失败')
@@ -421,20 +404,16 @@ const handleCancelSigning = async () => {
   if (!contract.value) return
 
   try {
-    const { value: reason } = await ElMessageBox.prompt(
-      '请输入取消原因',
-      '取消签署',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputValidator: (value) => {
-          if (!value || value.trim().length === 0) {
-            return '请输入取消原因'
-          }
-          return true
+    const { value: reason } = await ElMessageBox.prompt('请输入取消原因', '取消签署', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      inputValidator: (value) => {
+        if (!value || value.trim().length === 0) {
+          return '请输入取消原因'
         }
-      }
-    )
+        return true
+      },
+    })
 
     await contractSignApi.cancel(contract.value.id, reason)
     ElMessage.success('签署已取消')
@@ -470,11 +449,11 @@ const handlePayment = (paymentRecord: any) => {
 // 签名画布相关方法
 const initSignatureCanvas = () => {
   if (!signatureCanvas.value) return
-  
+
   const canvas = signatureCanvas.value
   const ctx = canvas.getContext('2d')
   if (!ctx) return
-  
+
   ctx.strokeStyle = '#000'
   ctx.lineWidth = 2
   ctx.lineCap = 'round'
@@ -483,7 +462,7 @@ const initSignatureCanvas = () => {
 
 const startDrawing = (e: MouseEvent) => {
   if (!signatureCanvas.value) return
-  
+
   isDrawing.value = true
   const rect = signatureCanvas.value.getBoundingClientRect()
   lastX.value = e.clientX - rect.left
@@ -492,20 +471,20 @@ const startDrawing = (e: MouseEvent) => {
 
 const draw = (e: MouseEvent) => {
   if (!isDrawing.value || !signatureCanvas.value) return
-  
+
   const canvas = signatureCanvas.value
   const ctx = canvas.getContext('2d')
   if (!ctx) return
-  
+
   const rect = canvas.getBoundingClientRect()
   const currentX = e.clientX - rect.left
   const currentY = e.clientY - rect.top
-  
+
   ctx.beginPath()
   ctx.moveTo(lastX.value, lastY.value)
   ctx.lineTo(currentX, currentY)
   ctx.stroke()
-  
+
   lastX.value = currentX
   lastY.value = currentY
 }
@@ -516,28 +495,28 @@ const stopDrawing = () => {
 
 const clearSignature = () => {
   if (!signatureCanvas.value) return
-  
+
   const canvas = signatureCanvas.value
   const ctx = canvas.getContext('2d')
   if (!ctx) return
-  
+
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 }
 
 const confirmSignature = async () => {
   if (!contract.value) return
-  
+
   try {
     signing.value = true
-    
+
     let signatureData: any = {}
-    
+
     if (signatureType.value === 'draw') {
       if (!signatureCanvas.value) {
         ElMessage.error('请先绘制签名')
         return
       }
-      
+
       const canvas = signatureCanvas.value
       const dataURL = canvas.toDataURL('image/png')
       signatureData.qianming_tupian = dataURL
@@ -546,15 +525,15 @@ const confirmSignature = async () => {
         ElMessage.error('请输入签名文字')
         return
       }
-      
+
       signatureData.qianming_wenben = textSignature.value.trim()
     }
-    
+
     await contractStore.signContract(contract.value.id, signatureData)
-    
+
     signDialogVisible.value = false
     ElMessage.success('合同签署成功')
-    
+
     // 刷新合同详情
     await fetchContractDetail()
   } catch (error) {
@@ -567,23 +546,23 @@ const confirmSignature = async () => {
 
 // 辅助方法
 const getContractTypeLabel = (type: string) => {
-  const option = contractTypeOptions.find(item => item.value === type)
+  const option = contractTypeOptions.find((item) => item.value === type)
   return option?.label || type
 }
 
 const getContractStatusLabel = (status: string) => {
-  const option = contractStatusOptions.find(item => item.value === status)
+  const option = contractStatusOptions.find((item) => item.value === status)
   return option?.label || status
 }
 
 const getStatusTagType = (status: string) => {
   const typeMap: Record<string, string> = {
-    'draft': 'info',
-    'pending_signature': 'warning',
-    'signed': 'success',
-    'active': 'success',
-    'completed': 'success',
-    'terminated': 'danger'
+    draft: 'info',
+    pending_signature: 'warning',
+    signed: 'success',
+    active: 'success',
+    completed: 'success',
+    terminated: 'danger',
   }
   return typeMap[status] || 'info'
 }
@@ -594,7 +573,7 @@ const getAuditTimelineType = (status: string) => {
     shenhezhong: 'warning',
     tongguo: 'success',
     jujue: 'danger',
-    chexiao: 'info'
+    chexiao: 'info',
   }
   return types[status] || 'info'
 }
@@ -604,7 +583,7 @@ const getAuditTimelineIcon = (status: string) => {
     shenhezhong: Clock,
     tongguo: Check,
     jujue: Close,
-    chexiao: Warning
+    chexiao: Warning,
   }
   return icons[status] || Clock
 }
@@ -614,7 +593,7 @@ const getAuditStatusTagType = (status: string) => {
     shenhezhong: 'warning',
     tongguo: 'success',
     jujue: 'danger',
-    chexiao: 'info'
+    chexiao: 'info',
   }
   return types[status] || 'info'
 }
@@ -624,7 +603,7 @@ const getAuditStatusText = (status: string) => {
     shenhezhong: '审核中',
     tongguo: '已通过',
     jujue: '已拒绝',
-    chexiao: '已取消'
+    chexiao: '已取消',
   }
   return texts[status] || status
 }
@@ -632,7 +611,7 @@ const getAuditStatusText = (status: string) => {
 const getAuditTypeText = (type: string) => {
   const texts: Record<string, string> = {
     hetong: '合同审核',
-    baojia: '报价审核'
+    baojia: '报价审核',
   }
   return texts[type] || type
 }
@@ -643,7 +622,7 @@ const getSigningStatusTagType = (status: string) => {
     daiqianshu: 'warning',
     yiqianshu: 'success',
     guoqi: 'danger',
-    yiquxiao: 'info'
+    yiquxiao: 'info',
   }
   return types[status] || 'info'
 }
@@ -653,7 +632,7 @@ const getSigningStatusText = (status: string) => {
     daiqianshu: '待签署',
     yiqianshu: '已签署',
     guoqi: '已过期',
-    yiquxiao: '已取消'
+    yiquxiao: '已取消',
   }
   return texts[status] || status
 }
@@ -663,7 +642,7 @@ const getPaymentMethodText = (method: string) => {
   const texts: Record<string, string> = {
     alipay: '支付宝',
     wechat: '微信支付',
-    bank: '银行转账'
+    bank: '银行转账',
   }
   return texts[method] || method
 }
@@ -673,7 +652,7 @@ const getPaymentStatusTagType = (status: string) => {
     daizhi: 'warning',
     yizhifu: 'success',
     zhifushibai: 'danger',
-    yituikuan: 'info'
+    yituikuan: 'info',
   }
   return types[status] || 'info'
 }
@@ -683,7 +662,7 @@ const getPaymentStatusText = (status: string) => {
     daizhi: '待支付',
     yizhifu: '已支付',
     zhifushibai: '支付失败',
-    yituikuan: '已退款'
+    yituikuan: '已退款',
   }
   return texts[status] || status
 }

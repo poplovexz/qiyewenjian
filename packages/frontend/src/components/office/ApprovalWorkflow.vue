@@ -16,31 +16,36 @@
                 {{ getStatusLabel(record.jilu_zhuangtai) }}
               </el-tag>
             </div>
-            
+
             <div class="step-content">
               <p class="auditor">
                 <span class="label">审核人：</span>
                 <span>{{ record.shenhe_ren_xingming || '待处理' }}</span>
               </p>
-              
+
               <p v-if="record.shenhe_yijian" class="opinion">
                 <span class="label">审核意见：</span>
                 <span>{{ record.shenhe_yijian }}</span>
               </p>
-              
+
               <p v-if="record.shenhe_shijian" class="time">
                 <span class="label">处理时间：</span>
                 <span>{{ formatDateTime(record.shenhe_shijian) }}</span>
               </p>
-              
+
               <p v-else-if="record.qiwang_shijian" class="time">
                 <span class="label">期望处理时间：</span>
                 <span>{{ formatDateTime(record.qiwang_shijian) }}</span>
               </p>
-              
+
               <div v-if="record.fujian_lujing" class="attachments">
                 <span class="label">附件：</span>
-                <el-link :href="record.fujian_lujing" target="_blank" rel="noopener noreferrer" type="primary">
+                <el-link
+                  :href="record.fujian_lujing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  type="primary"
+                >
                   <el-icon><Document /></el-icon>
                   {{ record.fujian_miaoshu || '查看附件' }}
                 </el-link>
@@ -50,7 +55,7 @@
         </el-timeline-item>
       </el-timeline>
     </div>
-    
+
     <el-empty v-else description="暂无审批流程" :image-size="80" />
   </div>
 </template>
@@ -70,30 +75,38 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   workflowId: '',
   records: () => [],
-  autoFetch: true
+  autoFetch: true,
 })
 
 const loading = ref(false)
 const records = ref<any[]>([])
 
 // 监听 props.records 变化
-watch(() => props.records, (newRecords) => {
-  if (newRecords && newRecords.length > 0) {
-    records.value = newRecords
-  }
-}, { immediate: true })
+watch(
+  () => props.records,
+  (newRecords) => {
+    if (newRecords && newRecords.length > 0) {
+      records.value = newRecords
+    }
+  },
+  { immediate: true }
+)
 
 // 监听 workflowId 变化
-watch(() => props.workflowId, (newId) => {
-  if (newId && props.autoFetch) {
-    fetchRecords()
-  }
-}, { immediate: true })
+watch(
+  () => props.workflowId,
+  (newId) => {
+    if (newId && props.autoFetch) {
+      fetchRecords()
+    }
+  },
+  { immediate: true }
+)
 
 // 获取审批记录
 const fetchRecords = async () => {
   if (!props.workflowId) return
-  
+
   loading.value = true
   try {
     const response = await auditRecordApi.getByWorkflow(props.workflowId)
@@ -114,7 +127,7 @@ const getStatusLabel = (status: string) => {
     tongguo: '已通过',
     jujue: '已拒绝',
     zhuanfa: '已转发',
-    tiaoguo: '已跳过'
+    tiaoguo: '已跳过',
   }
   return map[status] || status
 }
@@ -126,7 +139,7 @@ const getStatusType = (status: string) => {
     tongguo: 'success',
     jujue: 'danger',
     zhuanfa: 'primary',
-    tiaoguo: 'info'
+    tiaoguo: 'info',
   }
   return map[status] || 'info'
 }
@@ -138,7 +151,7 @@ const getTimelineType = (status: string) => {
     tongguo: 'success',
     jujue: 'danger',
     zhuanfa: 'primary',
-    tiaoguo: 'info'
+    tiaoguo: 'info',
   }
   return map[status] || 'primary'
 }
@@ -218,4 +231,3 @@ onMounted(() => {
   }
 }
 </style>
-
