@@ -159,9 +159,9 @@
         <el-form-item label="合同内容" prop="hetong_neirong">
           <div class="content-editor">
             <div class="editor-toolbar">
-              <el-button 
-                v-if="formData.moban_id" 
-                type="primary" 
+              <el-button
+                v-if="formData.moban_id"
+                type="primary"
                 size="small"
                 @click="previewTemplate"
                 :loading="previewing"
@@ -195,19 +195,8 @@
         <el-form-item>
           <div class="form-actions">
             <el-button @click="handleBack">取消</el-button>
-            <el-button 
-              type="primary" 
-              @click="handleSave"
-              :loading="saving"
-            >
-              保存
-            </el-button>
-            <el-button 
-              v-if="!isEdit"
-              type="success" 
-              @click="handleSaveAndSign"
-              :loading="saving"
-            >
+            <el-button type="primary" @click="handleSave" :loading="saving"> 保存 </el-button>
+            <el-button v-if="!isEdit" type="success" @click="handleSaveAndSign" :loading="saving">
               保存并签署
             </el-button>
           </div>
@@ -223,13 +212,11 @@
       :close-on-click-modal="false"
     >
       <div class="template-preview" v-html="sanitizeContractHtml(previewContent)"></div>
-      
+
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="previewDialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="useTemplateContent">
-            使用此内容
-          </el-button>
+          <el-button type="primary" @click="useTemplateContent"> 使用此内容 </el-button>
         </div>
       </template>
     </el-dialog>
@@ -244,7 +231,11 @@ import { ArrowLeft, View } from '@element-plus/icons-vue'
 import { useContractManagementStore } from '@/stores/modules/contractManagement'
 import { useContractStore } from '@/stores/modules/contract'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
-import { contractTypeOptions, type ContractCreate, type ContractUpdate } from '@/api/modules/contract'
+import {
+  contractTypeOptions,
+  type ContractCreate,
+  type ContractUpdate,
+} from '@/api/modules/contract'
 import { sanitizeContractHtml } from '@/utils/sanitize'
 
 const route = useRoute()
@@ -273,24 +264,18 @@ const formData = reactive<ContractCreate>({
   qianding_riqi: '',
   shengxiao_riqi: '',
   jieshu_riqi: '',
-  beizhu: ''
+  beizhu: '',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  hetong_mingcheng: [
-    { required: true, message: '请输入合同名称', trigger: 'blur' }
-  ],
-  hetong_leixing: [
-    { required: true, message: '请选择合同类型', trigger: 'change' }
-  ],
-  hetong_neirong: [
-    { required: true, message: '请输入合同内容', trigger: 'blur' }
-  ]
+  hetong_mingcheng: [{ required: true, message: '请输入合同名称', trigger: 'blur' }],
+  hetong_leixing: [{ required: true, message: '请选择合同类型', trigger: 'change' }],
+  hetong_neirong: [{ required: true, message: '请输入合同内容', trigger: 'blur' }],
 }
 
 // 计算属性
-const isEdit = computed(() => !!route.params.id)
+const isEdit = computed(() => Boolean(route.params.id))
 const templates = computed(() => templateStore.templates)
 const parties = computed(() => contractStore.parties)
 const quotes = computed(() => xiansuoStore.quotes)
@@ -299,16 +284,16 @@ const quotes = computed(() => xiansuoStore.quotes)
 const fetchInitialData = async () => {
   try {
     loading.value = true
-    
+
     // 获取合同模板列表
     await templateStore.fetchTemplates({ moban_zhuangtai: 'active' })
-    
+
     // 获取乙方主体列表
     await contractStore.fetchParties()
-    
+
     // 获取报价列表
     await xiansuoStore.fetchQuotes({ zhuangtai: 'accepted' })
-    
+
     // 如果是编辑模式，获取合同详情
     if (isEdit.value) {
       const contractId = route.params.id as string
@@ -327,7 +312,7 @@ const fetchInitialData = async () => {
           qianding_riqi: contract.qianding_riqi || '',
           shengxiao_riqi: contract.shengxiao_riqi || '',
           jieshu_riqi: contract.jieshu_riqi || '',
-          beizhu: contract.beizhu || ''
+          beizhu: contract.beizhu || '',
         })
       }
     } else {
@@ -337,7 +322,7 @@ const fetchInitialData = async () => {
         formData.baojia_id = baojiaId
 
         // 获取报价详情并自动填充
-        const quote = quotes.value.find(q => q.id === baojiaId)
+        const quote = quotes.value.find((q) => q.id === baojiaId)
         if (quote) {
           formData.hetong_mingcheng = `${quote.baojia_mingcheng} - 服务合同`
           formData.hetong_leixing = 'daili_jizhang' // 默认代理记账
@@ -365,7 +350,7 @@ const fetchInitialData = async () => {
 
 const handleTemplateChange = async (templateId: string) => {
   if (!templateId) return
-  
+
   try {
     // 获取模板变量配置
     const variables = await templateStore.getTemplateVariables(templateId)
@@ -380,40 +365,40 @@ const previewTemplate = async () => {
     ElMessage.warning('请先选择合同模板')
     return
   }
-  
+
   try {
     previewing.value = true
-    
+
     // 构建变量数据
     const variables: Record<string, any> = {}
-    
+
     // 如果有关联报价，从报价中获取变量
     if (formData.baojia_id) {
-      const quote = quotes.value.find(q => q.id === formData.baojia_id)
+      const quote = quotes.value.find((q) => q.id === formData.baojia_id)
       if (quote) {
         variables.baojia_bianhao = quote.baojia_bianhao
         variables.baojia_mingcheng = quote.baojia_mingcheng
         variables.baojia_jine = quote.zongjia
       }
     }
-    
+
     // 如果有乙方主体，从主体中获取变量
     if (formData.yifang_zhuti_id) {
-      const party = parties.value.find(p => p.id === formData.yifang_zhuti_id)
+      const party = parties.value.find((p) => p.id === formData.yifang_zhuti_id)
       if (party) {
         variables.yifang_mingcheng = party.zhuti_mingcheng
         variables.yifang_lianxi_dianhua = party.lianxi_dianhua
         variables.yifang_zhuce_dizhi = party.zhuce_dizhi
       }
     }
-    
+
     // 添加合同基本信息
     variables.hetong_mingcheng = formData.hetong_mingcheng
     variables.hetong_jine = formData.hetong_jine
     variables.qianding_riqi = formData.qianding_riqi
     variables.shengxiao_riqi = formData.shengxiao_riqi
     variables.jieshu_riqi = formData.jieshu_riqi
-    
+
     const content = await templateStore.previewTemplate(formData.moban_id, variables)
     previewContent.value = content
     previewDialogVisible.value = true
@@ -433,11 +418,11 @@ const useTemplateContent = () => {
 
 const handleSave = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     saving.value = true
-    
+
     if (isEdit.value) {
       const contractId = route.params.id as string
       await contractStore.updateContract(contractId, formData as ContractUpdate)
@@ -448,11 +433,12 @@ const handleSave = async () => {
       router.push(`/contracts/${contract.id}`)
       return
     }
-    
+
     handleBack()
   } catch (error) {
     console.error('保存合同失败:', error)
-    if (error !== false) { // 不是表单验证错误
+    if (error !== false) {
+      // 不是表单验证错误
       ElMessage.error('保存合同失败')
     }
   } finally {
@@ -462,21 +448,22 @@ const handleSave = async () => {
 
 const handleSaveAndSign = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     saving.value = true
-    
+
     const contract = await contractStore.createContract({
       ...formData,
-      hetong_zhuangtai: 'pending_signature'
+      hetong_zhuangtai: 'pending_signature',
     })
-    
+
     ElMessage.success('合同创建成功')
     router.push(`/contracts/${contract.id}`)
   } catch (error) {
     console.error('保存合同失败:', error)
-    if (error !== false) { // 不是表单验证错误
+    if (error !== false) {
+      // 不是表单验证错误
       ElMessage.error('保存合同失败')
     }
   } finally {

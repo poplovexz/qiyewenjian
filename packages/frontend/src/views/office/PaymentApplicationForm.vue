@@ -3,13 +3,7 @@
     <el-page-header @back="handleBack" :content="pageTitle" />
 
     <el-card class="form-card">
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="120px"
-        v-loading="loading"
-      >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" v-loading="loading">
         <!-- 基本信息 -->
         <el-divider content-position="left">基本信息</el-divider>
 
@@ -36,7 +30,11 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="付款方式" prop="fukuan_fangshi">
-              <el-select v-model="form.fukuan_fangshi" placeholder="请选择付款方式" style="width: 100%">
+              <el-select
+                v-model="form.fukuan_fangshi"
+                placeholder="请选择付款方式"
+                style="width: 100%"
+              >
                 <el-option label="银行转账" value="yinhang_zhuanzhang" />
                 <el-option label="支票" value="zhipiao" />
                 <el-option label="现金" value="xianjin" />
@@ -145,11 +143,11 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules, UploadProps, UploadUserFile } from 'element-plus'
-import { 
-  getPaymentDetail, 
-  createPayment, 
+import {
+  getPaymentDetail,
+  createPayment,
   updatePayment,
-  type PaymentApplication 
+  type PaymentApplication,
 } from '@/api/office'
 import { useAuthStore } from '@/stores/modules/auth'
 
@@ -165,8 +163,8 @@ const submitting = ref(false)
 const fileList = ref<UploadUserFile[]>([])
 
 const paymentId = computed(() => route.params.id as string)
-const isEdit = computed(() => !!paymentId.value)
-const pageTitle = computed(() => isEdit.value ? '编辑对外付款申请' : '新建对外付款申请')
+const isEdit = computed(() => Boolean(paymentId.value))
+const pageTitle = computed(() => (isEdit.value ? '编辑对外付款申请' : '新建对外付款申请'))
 
 const form = reactive<Partial<PaymentApplication>>({
   fukuan_duixiang: '',
@@ -177,33 +175,27 @@ const form = reactive<Partial<PaymentApplication>>({
   shoukuan_yinhang: '',
   yaoqiu_fukuan_shijian: '',
   fujian_lujing: '',
-  beizhu: ''
+  beizhu: '',
 })
 
 const rules: FormRules = {
-  fukuan_duixiang: [
-    { required: true, message: '请输入付款对象', trigger: 'blur' }
-  ],
+  fukuan_duixiang: [{ required: true, message: '请输入付款对象', trigger: 'blur' }],
   fukuan_jine: [
     { required: true, message: '请输入付款金额', trigger: 'blur' },
-    { type: 'number', min: 0.01, message: '付款金额必须大于0', trigger: 'blur' }
+    { type: 'number', min: 0.01, message: '付款金额必须大于0', trigger: 'blur' },
   ],
-  fukuan_fangshi: [
-    { required: true, message: '请选择付款方式', trigger: 'change' }
-  ],
+  fukuan_fangshi: [{ required: true, message: '请选择付款方式', trigger: 'change' }],
   fukuan_yuanyin: [
     { required: true, message: '请输入付款原因', trigger: 'blur' },
-    { min: 10, message: '付款原因至少10个字符', trigger: 'blur' }
+    { min: 10, message: '付款原因至少10个字符', trigger: 'blur' },
   ],
-  shoukuan_zhanghu: [
-    { required: true, message: '请输入收款账户', trigger: 'blur' }
-  ]
+  shoukuan_zhanghu: [{ required: true, message: '请输入收款账户', trigger: 'blur' }],
 }
 
 // 上传配置
 const uploadAction = computed(() => `${import.meta.env.VITE_API_BASE_URL}/upload/file`)
 const uploadHeaders = computed(() => ({
-  Authorization: `Bearer ${authStore.accessToken}`
+  Authorization: `Bearer ${authStore.accessToken}`,
 }))
 
 // 获取详情（编辑模式）
@@ -214,13 +206,13 @@ const fetchDetail = async () => {
   try {
     const data = await getPaymentDetail(paymentId.value)
     Object.assign(form, data)
-    
+
     // 处理附件列表
     if (data.fujian_lujing) {
       const files = data.fujian_lujing.split(',').filter(Boolean)
       fileList.value = files.map((url, index) => ({
         name: `附件${index + 1}`,
-        url: url
+        url: url,
       }))
     }
   } catch (error) {
@@ -251,7 +243,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
 // 上传成功
 const handleUploadSuccess: UploadProps['onSuccess'] = (response, file, fileList) => {
   if (response.url) {
-    const urls = fileList.map(f => f.response?.url || f.url).filter(Boolean)
+    const urls = fileList.map((f) => f.response?.url || f.url).filter(Boolean)
     form.fujian_lujing = urls.join(',')
     ElMessage.success('文件上传成功')
   }
@@ -267,7 +259,7 @@ const handleSaveDraft = async () => {
   saving.value = true
   try {
     const data = { ...form }
-    
+
     if (isEdit.value) {
       await updatePayment(paymentId.value, data)
       ElMessage.success('草稿保存成功')
@@ -296,7 +288,7 @@ const handleSubmit = async () => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 
@@ -346,4 +338,3 @@ onMounted(() => {
   }
 }
 </style>
-

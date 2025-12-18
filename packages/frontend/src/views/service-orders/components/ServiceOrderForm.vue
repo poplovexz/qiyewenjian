@@ -6,12 +6,7 @@
     @update:model-value="emit('update:visible', $event)"
     @close="handleClose"
   >
-    <el-form
-      ref="formRef"
-      :model="formData"
-      :rules="formRules"
-      label-width="120px"
-    >
+    <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px">
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="合同" prop="hetong_id">
@@ -31,7 +26,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="客户" prop="kehu_id">
             <el-select
@@ -50,17 +45,14 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="工单标题" prop="gongdan_biaoti">
-            <el-input
-              v-model="formData.gongdan_biaoti"
-              placeholder="请输入工单标题"
-            />
+            <el-input v-model="formData.gongdan_biaoti" placeholder="请输入工单标题" />
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="服务类型" prop="fuwu_leixing">
             <el-select
@@ -78,15 +70,11 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="优先级" prop="youxian_ji">
-            <el-select
-              v-model="formData.youxian_ji"
-              placeholder="请选择优先级"
-              style="width: 100%"
-            >
+            <el-select v-model="formData.youxian_ji" placeholder="请选择优先级" style="width: 100%">
               <el-option
                 v-for="(label, value) in serviceOrderStore.priorityMap"
                 :key="value"
@@ -96,7 +84,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="执行人" prop="zhixing_ren_id">
             <el-select
@@ -116,7 +104,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="计划开始时间" prop="jihua_kaishi_shijian">
@@ -128,7 +116,7 @@
             />
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="计划结束时间" prop="jihua_jieshu_shijian">
             <el-date-picker
@@ -140,7 +128,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-form-item label="工单描述" prop="gongdan_miaoshu">
         <el-input
           v-model="formData.gongdan_miaoshu"
@@ -149,7 +137,7 @@
           placeholder="请输入工单描述"
         />
       </el-form-item>
-      
+
       <el-form-item label="分配备注" prop="fenpei_beizhu">
         <el-input
           v-model="formData.fenpei_beizhu"
@@ -174,7 +162,10 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { useServiceOrderStore, type ServiceOrderCreateData } from '@/stores/modules/serviceOrderManagement'
+import {
+  useServiceOrderStore,
+  type ServiceOrderCreateData,
+} from '@/stores/modules/serviceOrderManagement'
 
 // Props
 interface Props {
@@ -183,7 +174,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  orderId: ''
+  orderId: '',
 })
 
 // Emits
@@ -212,33 +203,23 @@ const formData = reactive<ServiceOrderCreateData>({
   youxian_ji: 'medium',
   jihua_kaishi_shijian: '',
   jihua_jieshu_shijian: '',
-  fenpei_beizhu: ''
+  fenpei_beizhu: '',
 })
 
 // 计算属性
-const isEdit = computed(() => !!props.orderId)
+const isEdit = computed(() => Boolean(props.orderId))
 
 // 表单验证规则
 const formRules: FormRules = {
-  hetong_id: [
-    { required: true, message: '请选择合同', trigger: 'change' }
-  ],
-  kehu_id: [
-    { required: true, message: '请选择客户', trigger: 'change' }
-  ],
+  hetong_id: [{ required: true, message: '请选择合同', trigger: 'change' }],
+  kehu_id: [{ required: true, message: '请选择客户', trigger: 'change' }],
   gongdan_biaoti: [
     { required: true, message: '请输入工单标题', trigger: 'blur' },
-    { min: 2, max: 200, message: '工单标题长度在 2 到 200 个字符', trigger: 'blur' }
+    { min: 2, max: 200, message: '工单标题长度在 2 到 200 个字符', trigger: 'blur' },
   ],
-  fuwu_leixing: [
-    { required: true, message: '请选择服务类型', trigger: 'change' }
-  ],
-  youxian_ji: [
-    { required: true, message: '请选择优先级', trigger: 'change' }
-  ],
-  jihua_jieshu_shijian: [
-    { required: true, message: '请选择计划结束时间', trigger: 'change' }
-  ]
+  fuwu_leixing: [{ required: true, message: '请选择服务类型', trigger: 'change' }],
+  youxian_ji: [{ required: true, message: '请选择优先级', trigger: 'change' }],
+  jihua_jieshu_shijian: [{ required: true, message: '请选择计划结束时间', trigger: 'change' }],
 }
 
 // 方法
@@ -246,13 +227,13 @@ const loadData = async () => {
   try {
     // 加载合同列表
     // contracts.value = await contractStore.fetchContracts({ status: 'signed' })
-    
+
     // 加载客户列表
     // customers.value = await customerStore.fetchCustomers()
-    
+
     // 加载用户列表
     // users.value = await userStore.fetchUsers()
-    
+
     // 模拟数据
     contracts.value = []
     customers.value = []
@@ -263,7 +244,7 @@ const loadData = async () => {
 }
 
 const handleContractChange = (contractId: string) => {
-  const contract = contracts.value.find(c => c.id === contractId)
+  const contract = contracts.value.find((c) => c.id === contractId)
   if (contract) {
     formData.kehu_id = contract.kehu_id
     formData.gongdan_biaoti = `${contract.hetong_mingcheng} - 服务工单`
@@ -275,15 +256,15 @@ const handleSubmit = async () => {
 
   try {
     await formRef.value.validate()
-    
+
     loading.value = true
-    
+
     if (isEdit.value) {
       await serviceOrderStore.updateServiceOrder(props.orderId, formData)
     } else {
       await serviceOrderStore.createServiceOrder(formData)
     }
-    
+
     emit('success')
   } catch (error) {
     console.error('提交失败:', error)
@@ -301,7 +282,7 @@ const resetForm = () => {
   if (formRef.value) {
     formRef.value.resetFields()
   }
-  
+
   Object.assign(formData, {
     hetong_id: '',
     kehu_id: '',
@@ -312,23 +293,26 @@ const resetForm = () => {
     youxian_ji: 'medium',
     jihua_kaishi_shijian: '',
     jihua_jieshu_shijian: '',
-    fenpei_beizhu: ''
+    fenpei_beizhu: '',
   })
 }
 
 // 监听
-watch(() => props.visible, (newVal) => {
-  if (newVal) {
-    loadData()
-    
-    if (isEdit.value) {
-      // 加载编辑数据
-      serviceOrderStore.fetchServiceOrderDetail(props.orderId).then(order => {
-        Object.assign(formData, order)
-      })
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      loadData()
+
+      if (isEdit.value) {
+        // 加载编辑数据
+        serviceOrderStore.fetchServiceOrderDetail(props.orderId).then((order) => {
+          Object.assign(formData, order)
+        })
+      }
     }
   }
-})
+)
 
 // 生命周期
 onMounted(() => {

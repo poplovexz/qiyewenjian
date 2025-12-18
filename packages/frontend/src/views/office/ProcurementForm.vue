@@ -3,13 +3,7 @@
     <el-page-header @back="handleBack" :content="pageTitle" />
 
     <el-card class="form-card">
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="120px"
-        v-loading="loading"
-      >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" v-loading="loading">
         <!-- 基本信息 -->
         <el-divider content-position="left">基本信息</el-divider>
 
@@ -119,7 +113,8 @@
             <el-icon><Plus /></el-icon>
             <template #tip>
               <div class="el-upload__tip">
-                支持 PDF、图片、Excel、Word 格式，单个文件不超过 10MB，最多上传5个文件（如报价单、需求说明等）
+                支持 PDF、图片、Excel、Word 格式，单个文件不超过
+                10MB，最多上传5个文件（如报价单、需求说明等）
               </div>
             </template>
           </el-upload>
@@ -162,7 +157,7 @@ import {
   getProcurementDetail,
   createProcurement,
   updateProcurement,
-  type ProcurementApplication
+  type ProcurementApplication,
 } from '@/api/office'
 import { getZhichuLeibieList, type ZhichuLeibie } from '@/api/modules/finance-settings'
 import { useAuthStore } from '@/stores/modules/auth'
@@ -183,8 +178,8 @@ const zhichuLeibieOptions = ref<ZhichuLeibie[]>([])
 const zhichuLeibieLoading = ref(false)
 
 const procurementId = computed(() => route.params.id as string)
-const isEdit = computed(() => !!procurementId.value)
-const pageTitle = computed(() => isEdit.value ? '编辑采购申请' : '新建采购申请')
+const isEdit = computed(() => Boolean(procurementId.value))
+const pageTitle = computed(() => (isEdit.value ? '编辑采购申请' : '新建采购申请'))
 
 const form = reactive<Partial<ProcurementApplication>>({
   caigou_leixing: '',
@@ -196,37 +191,31 @@ const form = reactive<Partial<ProcurementApplication>>({
   yaoqiu_shijian: '',
   gongyingshang_xinxi: '',
   fujian_lujing: '',
-  beizhu: ''
+  beizhu: '',
 })
 
 const rules: FormRules = {
-  caigou_leixing: [
-    { required: true, message: '请选择采购类型', trigger: 'change' }
-  ],
-  caigou_mingcheng: [
-    { required: true, message: '请输入物品名称', trigger: 'blur' }
-  ],
+  caigou_leixing: [{ required: true, message: '请选择采购类型', trigger: 'change' }],
+  caigou_mingcheng: [{ required: true, message: '请输入物品名称', trigger: 'blur' }],
   caigou_shuliang: [
     { required: true, message: '请输入采购数量', trigger: 'blur' },
-    { type: 'number', min: 1, message: '采购数量至少为1', trigger: 'blur' }
+    { type: 'number', min: 1, message: '采购数量至少为1', trigger: 'blur' },
   ],
-  danwei: [
-    { required: true, message: '请输入单位', trigger: 'blur' }
-  ],
+  danwei: [{ required: true, message: '请输入单位', trigger: 'blur' }],
   yugu_jine: [
     { required: true, message: '请输入预估金额', trigger: 'blur' },
-    { type: 'number', min: 0.01, message: '预估金额必须大于0', trigger: 'blur' }
+    { type: 'number', min: 0.01, message: '预估金额必须大于0', trigger: 'blur' },
   ],
   caigou_yuanyin: [
     { required: true, message: '请输入采购原因', trigger: 'blur' },
-    { min: 10, message: '采购原因至少10个字符', trigger: 'blur' }
-  ]
+    { min: 10, message: '采购原因至少10个字符', trigger: 'blur' },
+  ],
 }
 
 // 上传配置
 const uploadAction = computed(() => `${import.meta.env.VITE_API_BASE_URL}/upload/file`)
 const uploadHeaders = computed(() => ({
-  Authorization: `Bearer ${authStore.accessToken}`
+  Authorization: `Bearer ${authStore.accessToken}`,
 }))
 
 // 加载支出类别列表
@@ -253,13 +242,13 @@ const fetchDetail = async () => {
   try {
     const data = await getProcurementDetail(procurementId.value)
     Object.assign(form, data)
-    
+
     // 处理附件列表
     if (data.fujian_lujing) {
       const files = data.fujian_lujing.split(',').filter(Boolean)
       fileList.value = files.map((url, index) => ({
         name: `附件${index + 1}`,
-        url: url
+        url: url,
       }))
     }
   } catch (error) {
@@ -280,7 +269,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   ]
   const isAllowedType = allowedTypes.includes(file.type)
   const isLt10M = file.size / 1024 / 1024 < 10
@@ -299,7 +288,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
 // 上传成功
 const handleUploadSuccess: UploadProps['onSuccess'] = (response, file, fileList) => {
   if (response.url) {
-    const urls = fileList.map(f => f.response?.url || f.url).filter(Boolean)
+    const urls = fileList.map((f) => f.response?.url || f.url).filter(Boolean)
     form.fujian_lujing = urls.join(',')
     ElMessage.success('文件上传成功')
   }
@@ -315,7 +304,7 @@ const handleSaveDraft = async () => {
   saving.value = true
   try {
     const data = { ...form }
-    
+
     if (isEdit.value) {
       await updateProcurement(procurementId.value, data)
       ElMessage.success('草稿保存成功')
@@ -344,7 +333,7 @@ const handleSubmit = async () => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 
@@ -395,4 +384,3 @@ onMounted(() => {
   }
 }
 </style>
-

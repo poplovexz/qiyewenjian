@@ -98,7 +98,13 @@
         <van-button round block type="default" @click="onSaveDraft">
           保存草稿
         </van-button>
-        <van-button round block type="primary" native-type="submit" :loading="submitting">
+        <van-button
+          round
+          block
+          type="primary"
+          native-type="submit"
+          :loading="submitting"
+        >
           提交申请
         </van-button>
       </div>
@@ -139,131 +145,140 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { showToast, showConfirmDialog } from 'vant'
-import { getLeaveDetail, createLeave, updateLeave, type LeaveApplication } from '@/api/office'
-import dayjs from 'dayjs'
-import type { UploaderFileListItem } from 'vant'
+import { ref, computed, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { showToast, showConfirmDialog } from "vant";
+import {
+  getLeaveDetail,
+  createLeave,
+  updateLeave,
+  type LeaveApplication,
+} from "@/api/office";
+import dayjs from "dayjs";
+import type { UploaderFileListItem } from "vant";
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
-const isEdit = computed(() => !!route.params.id)
-const leaveId = computed(() => route.params.id as string)
+const isEdit = computed(() => Boolean(route.params.id));
+const leaveId = computed(() => route.params.id as string);
 
 const formData = ref({
-  qingjia_leixing: '',
-  qingjia_leixing_text: '',
-  kaishi_shijian: '',
-  kaishi_shijian_text: '',
-  jieshu_shijian: '',
-  jieshu_shijian_text: '',
+  qingjia_leixing: "",
+  qingjia_leixing_text: "",
+  kaishi_shijian: "",
+  kaishi_shijian_text: "",
+  jieshu_shijian: "",
+  jieshu_shijian_text: "",
   qingjia_tianshu: 0,
-  qingjia_yuanyin: '',
-  fujian_lujing: '',
-  beizhu: ''
-})
+  qingjia_yuanyin: "",
+  fujian_lujing: "",
+  beizhu: "",
+});
 
-const fileList = ref<UploaderFileListItem[]>([])
-const submitting = ref(false)
-const showLeaveTypePicker = ref(false)
-const showStartTimePicker = ref(false)
-const showEndTimePicker = ref(false)
-const startTime = ref(new Date())
-const endTime = ref(new Date())
+const fileList = ref<UploaderFileListItem[]>([]);
+const submitting = ref(false);
+const showLeaveTypePicker = ref(false);
+const showStartTimePicker = ref(false);
+const showEndTimePicker = ref(false);
+const startTime = ref(new Date());
+const endTime = ref(new Date());
 
 // 请假类型选项
 const leaveTypeOptions = [
-  { text: '事假', value: 'shijia' },
-  { text: '病假', value: 'bingjia' },
-  { text: '年假', value: 'nianjia' },
-  { text: '调休', value: 'tiaoxiu' },
-  { text: '婚假', value: 'hunjia' },
-  { text: '产假', value: 'chanjia' },
-  { text: '陪产假', value: 'peichanjia' },
-  { text: '丧假', value: 'sangjia' }
-]
+  { text: "事假", value: "shijia" },
+  { text: "病假", value: "bingjia" },
+  { text: "年假", value: "nianjia" },
+  { text: "调休", value: "tiaoxiu" },
+  { text: "婚假", value: "hunjia" },
+  { text: "产假", value: "chanjia" },
+  { text: "陪产假", value: "peichanjia" },
+  { text: "丧假", value: "sangjia" },
+];
 
 // 加载详情（编辑模式）
 const loadDetail = async () => {
   try {
-    const detail = await getLeaveDetail(leaveId.value)
+    const detail = await getLeaveDetail(leaveId.value);
     formData.value = {
       qingjia_leixing: detail.qingjia_leixing,
       qingjia_leixing_text: getLeaveTypeText(detail.qingjia_leixing),
       kaishi_shijian: detail.kaishi_shijian,
-      kaishi_shijian_text: dayjs(detail.kaishi_shijian).format('YYYY-MM-DD HH:mm'),
+      kaishi_shijian_text: dayjs(detail.kaishi_shijian).format(
+        "YYYY-MM-DD HH:mm",
+      ),
       jieshu_shijian: detail.jieshu_shijian,
-      jieshu_shijian_text: dayjs(detail.jieshu_shijian).format('YYYY-MM-DD HH:mm'),
+      jieshu_shijian_text: dayjs(detail.jieshu_shijian).format(
+        "YYYY-MM-DD HH:mm",
+      ),
       qingjia_tianshu: detail.qingjia_tianshu,
       qingjia_yuanyin: detail.qingjia_yuanyin,
-      fujian_lujing: detail.fujian_lujing || '',
-      beizhu: detail.beizhu || ''
-    }
-    
-    startTime.value = new Date(detail.kaishi_shijian)
-    endTime.value = new Date(detail.jieshu_shijian)
-    
+      fujian_lujing: detail.fujian_lujing || "",
+      beizhu: detail.beizhu || "",
+    };
+
+    startTime.value = new Date(detail.kaishi_shijian);
+    endTime.value = new Date(detail.jieshu_shijian);
+
     // 加载附件
     if (detail.fujian_lujing) {
-      const files = detail.fujian_lujing.split(',')
-      fileList.value = files.map(url => ({ url }))
+      const files = detail.fujian_lujing.split(",");
+      fileList.value = files.map((url) => ({ url }));
     }
   } catch (error) {
-    console.error('Load leave detail error:', error)
-    showToast('加载失败')
+    console.error("Load leave detail error:", error);
+    showToast("加载失败");
   }
-}
+};
 
 // 请假类型确认
 const onLeaveTypeConfirm = ({ selectedOptions }: any) => {
-  formData.value.qingjia_leixing = selectedOptions[0].value
-  formData.value.qingjia_leixing_text = selectedOptions[0].text
-  showLeaveTypePicker.value = false
-}
+  formData.value.qingjia_leixing = selectedOptions[0].value;
+  formData.value.qingjia_leixing_text = selectedOptions[0].text;
+  showLeaveTypePicker.value = false;
+};
 
 // 开始时间确认
 const onStartTimeConfirm = (value: Date) => {
-  startTime.value = value
-  formData.value.kaishi_shijian = dayjs(value).format('YYYY-MM-DD HH:mm:ss')
-  formData.value.kaishi_shijian_text = dayjs(value).format('YYYY-MM-DD HH:mm')
-  showStartTimePicker.value = false
-  calculateDays()
-}
+  startTime.value = value;
+  formData.value.kaishi_shijian = dayjs(value).format("YYYY-MM-DD HH:mm:ss");
+  formData.value.kaishi_shijian_text = dayjs(value).format("YYYY-MM-DD HH:mm");
+  showStartTimePicker.value = false;
+  calculateDays();
+};
 
 // 结束时间确认
 const onEndTimeConfirm = (value: Date) => {
-  endTime.value = value
-  formData.value.jieshu_shijian = dayjs(value).format('YYYY-MM-DD HH:mm:ss')
-  formData.value.jieshu_shijian_text = dayjs(value).format('YYYY-MM-DD HH:mm')
-  showEndTimePicker.value = false
-  calculateDays()
-}
+  endTime.value = value;
+  formData.value.jieshu_shijian = dayjs(value).format("YYYY-MM-DD HH:mm:ss");
+  formData.value.jieshu_shijian_text = dayjs(value).format("YYYY-MM-DD HH:mm");
+  showEndTimePicker.value = false;
+  calculateDays();
+};
 
 // 计算请假天数
 const calculateDays = () => {
   if (formData.value.kaishi_shijian && formData.value.jieshu_shijian) {
-    const start = dayjs(formData.value.kaishi_shijian)
-    const end = dayjs(formData.value.jieshu_shijian)
-    const days = end.diff(start, 'day', true)
-    formData.value.qingjia_tianshu = Math.ceil(days)
+    const start = dayjs(formData.value.kaishi_shijian);
+    const end = dayjs(formData.value.jieshu_shijian);
+    const days = end.diff(start, "day", true);
+    formData.value.qingjia_tianshu = Math.ceil(days);
   }
-}
+};
 
 // 文件上传后
 const afterRead = (file: any) => {
   // TODO: 实现文件上传到服务器
-  console.log('File uploaded:', file)
-}
+  console.log("File uploaded:", file);
+};
 
 // 删除文件前
 const beforeDelete = () => {
   return showConfirmDialog({
-    title: '确认删除',
-    message: '确定要删除这个附件吗？'
-  })
-}
+    title: "确认删除",
+    message: "确定要删除这个附件吗？",
+  });
+};
 
 // 保存草稿
 const onSaveDraft = async () => {
@@ -274,38 +289,38 @@ const onSaveDraft = async () => {
       jieshu_shijian: formData.value.jieshu_shijian,
       qingjia_tianshu: formData.value.qingjia_tianshu,
       qingjia_yuanyin: formData.value.qingjia_yuanyin,
-      beizhu: formData.value.beizhu
-    }
+      beizhu: formData.value.beizhu,
+    };
 
     if (isEdit.value) {
-      await updateLeave(leaveId.value, data)
+      await updateLeave(leaveId.value, data);
     } else {
-      await createLeave(data)
+      await createLeave(data);
     }
 
-    showToast('保存成功')
-    router.back()
+    showToast("保存成功");
+    router.back();
   } catch (error) {
-    console.error('Save draft error:', error)
+    console.error("Save draft error:", error);
   }
-}
+};
 
 // 提交表单
 const onSubmit = async () => {
   if (!formData.value.qingjia_leixing) {
-    showToast('请选择请假类型')
-    return
+    showToast("请选择请假类型");
+    return;
   }
   if (!formData.value.kaishi_shijian || !formData.value.jieshu_shijian) {
-    showToast('请选择请假时间')
-    return
+    showToast("请选择请假时间");
+    return;
   }
   if (!formData.value.qingjia_yuanyin) {
-    showToast('请输入请假原因')
-    return
+    showToast("请输入请假原因");
+    return;
   }
 
-  submitting.value = true
+  submitting.value = true;
   try {
     const data: any = {
       qingjia_leixing: formData.value.qingjia_leixing,
@@ -313,41 +328,41 @@ const onSubmit = async () => {
       jieshu_shijian: formData.value.jieshu_shijian,
       qingjia_tianshu: formData.value.qingjia_tianshu,
       qingjia_yuanyin: formData.value.qingjia_yuanyin,
-      beizhu: formData.value.beizhu
-    }
+      beizhu: formData.value.beizhu,
+    };
 
     if (isEdit.value) {
-      await updateLeave(leaveId.value, data)
-      showToast('更新成功')
+      await updateLeave(leaveId.value, data);
+      showToast("更新成功");
     } else {
-      await createLeave(data)
-      showToast('提交成功')
+      await createLeave(data);
+      showToast("提交成功");
     }
 
-    router.back()
+    router.back();
   } catch (error) {
-    console.error('Submit error:', error)
+    console.error("Submit error:", error);
   } finally {
-    submitting.value = false
+    submitting.value = false;
   }
-}
+};
 
 // 返回
 const onBack = () => {
-  router.back()
-}
+  router.back();
+};
 
 // 获取请假类型文本
 const getLeaveTypeText = (type: string) => {
-  const option = leaveTypeOptions.find(o => o.value === type)
-  return option?.text || type
-}
+  const option = leaveTypeOptions.find((o) => o.value === type);
+  return option?.text || type;
+};
 
 onMounted(() => {
   if (isEdit.value) {
-    loadDetail()
+    loadDetail();
   }
-})
+});
 </script>
 
 <style scoped>
@@ -386,7 +401,12 @@ onMounted(() => {
   left: 0;
   right: 0;
   padding: 16px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 20%, #ffffff 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.95) 20%,
+    #ffffff 100%
+  );
   backdrop-filter: blur(10px);
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
   display: flex;
@@ -413,4 +433,3 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
 }
 </style>
-

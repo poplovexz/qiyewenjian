@@ -165,13 +165,7 @@
         <el-form-item>
           <div class="form-actions">
             <el-button @click="handleBack">取消</el-button>
-            <el-button 
-              type="primary" 
-              @click="handleSave"
-              :loading="saving"
-            >
-              保存
-            </el-button>
+            <el-button type="primary" @click="handleSave" :loading="saving"> 保存 </el-button>
           </div>
         </el-form-item>
       </el-form>
@@ -185,7 +179,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { useContractManagementStore } from '@/stores/modules/contractManagement'
-import { partyTypeOptions, type ContractPartyCreate, type ContractPartyUpdate } from '@/api/modules/contract'
+import {
+  partyTypeOptions,
+  type ContractPartyCreate,
+  type ContractPartyUpdate,
+} from '@/api/modules/contract'
 
 const route = useRoute()
 const router = useRouter()
@@ -209,30 +207,32 @@ const formData = reactive<ContractPartyCreate>({
   yinhang_mingcheng: '',
   yinhang_zhanghu: '',
   yinhang_kaihuhang: '',
-  beizhu: ''
+  beizhu: '',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  zhuti_mingcheng: [
-    { required: true, message: '请输入主体名称', trigger: 'blur' }
-  ],
-  zhuti_leixing: [
-    { required: true, message: '请选择主体类型', trigger: 'change' }
-  ],
+  zhuti_mingcheng: [{ required: true, message: '请输入主体名称', trigger: 'blur' }],
+  zhuti_leixing: [{ required: true, message: '请选择主体类型', trigger: 'change' }],
   lianxi_dianhua: [
-    { pattern: /^1[3-9]\d{9}$|^0\d{2,3}-?\d{7,8}$/, message: '请输入正确的电话号码', trigger: 'blur' }
+    {
+      pattern: /^1[3-9]\d{9}$|^0\d{2,3}-?\d{7,8}$/,
+      message: '请输入正确的电话号码',
+      trigger: 'blur',
+    },
   ],
-  lianxi_youxiang: [
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-  ],
+  lianxi_youxiang: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }],
   tongyi_shehui_xinyong_daima: [
-    { pattern: /^[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}$/, message: '请输入正确的统一社会信用代码', trigger: 'blur' }
-  ]
+    {
+      pattern: /^[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}$/,
+      message: '请输入正确的统一社会信用代码',
+      trigger: 'blur',
+    },
+  ],
 }
 
 // 计算属性
-const isEdit = computed(() => !!route.params.id)
+const isEdit = computed(() => Boolean(route.params.id))
 
 // 方法
 const fetchPartyDetail = async () => {
@@ -241,7 +241,7 @@ const fetchPartyDetail = async () => {
     try {
       loading.value = true
       await contractStore.fetchPartyDetail(partyId)
-      
+
       const party = contractStore.currentParty
       if (party) {
         Object.assign(formData, {
@@ -256,7 +256,7 @@ const fetchPartyDetail = async () => {
           yinhang_mingcheng: party.yinhang_mingcheng || '',
           yinhang_zhanghu: party.yinhang_zhanghu || '',
           yinhang_kaihuhang: party.yinhang_kaihuhang || '',
-          beizhu: party.beizhu || ''
+          beizhu: party.beizhu || '',
         })
       }
     } catch (error) {
@@ -270,11 +270,11 @@ const fetchPartyDetail = async () => {
 
 const handleSave = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     saving.value = true
-    
+
     if (isEdit.value) {
       const partyId = route.params.id as string
       await contractStore.updateParty(partyId, formData as ContractPartyUpdate)
@@ -283,11 +283,12 @@ const handleSave = async () => {
       await contractStore.createParty(formData)
       ElMessage.success('乙方主体创建成功')
     }
-    
+
     handleBack()
   } catch (error) {
     console.error('保存乙方主体失败:', error)
-    if (error !== false) { // 不是表单验证错误
+    if (error !== false) {
+      // 不是表单验证错误
       ElMessage.error('保存乙方主体失败')
     }
   } finally {
