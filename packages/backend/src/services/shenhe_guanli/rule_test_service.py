@@ -163,13 +163,13 @@ class RuleTestService:
                 threshold_desc = f"{threshold_value} 元"
 
                 # 判断操作符
-                if operator == "gte" or operator == ">=":
+                if operator in ("gte", ">="):
                     triggered = actual_value >= threshold_value
-                elif operator == "gt" or operator == ">":
+                elif operator in ("gt", ">"):
                     triggered = actual_value > threshold_value
-                elif operator == "lte" or operator == "<=":
+                elif operator in ("lte", "<="):
                     triggered = actual_value <= threshold_value
-                elif operator == "lt" or operator == "<":
+                elif operator in ("lt", "<"):
                     triggered = actual_value < threshold_value
 
                 if triggered:
@@ -193,13 +193,13 @@ class RuleTestService:
                 threshold_desc = f"{threshold_value}%"
 
                 # 判断操作符
-                if operator == "gte" or operator == ">=":
+                if operator in ("gte", ">="):
                     triggered = actual_value >= threshold_value
-                elif operator == "gt" or operator == ">":
+                elif operator in ("gt", ">"):
                     triggered = actual_value > threshold_value
-                elif operator == "lte" or operator == "<=":
+                elif operator in ("lte", "<="):
                     triggered = actual_value <= threshold_value
-                elif operator == "lt" or operator == "<":
+                elif operator in ("lt", "<"):
                     triggered = actual_value < threshold_value
 
                 if triggered:
