@@ -186,7 +186,7 @@ class KehuService:
             Kehu.is_deleted == "N"
         ).group_by(Kehu.kehu_zhuangtai).all()
 
-        status_dict = {status: count for status, count in status_stats}
+        status_dict = dict(status_stats)
 
         # 本月新增客户
         from datetime import datetime

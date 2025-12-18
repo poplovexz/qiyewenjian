@@ -234,9 +234,9 @@ class FuwuJiluService:
         return {
             "total_records": total_records,
             "monthly_records": monthly_records,
-            "communication_distribution": {method: count for method, count in communication_stats},
-            "problem_type_distribution": {ptype: count for ptype, count in problem_stats},
-            "status_distribution": {status: count for status, count in status_stats},
+            "communication_distribution": dict(communication_stats),
+            "problem_type_distribution": dict(problem_stats),
+            "status_distribution": dict(status_stats),
             "pending_count": dict(status_stats).get("pending", 0),
             "processing_count": dict(status_stats).get("processing", 0),
             "completed_count": dict(status_stats).get("completed", 0)
