@@ -20,7 +20,6 @@ if __name__ == "__main__":
 
     # 导入uvicorn
     import uvicorn
-    import os
 
     # 安全修复：从环境变量读取 host，默认 127.0.0.1
     host = os.getenv("UVICORN_HOST", "127.0.0.1")

@@ -180,7 +180,6 @@ class HetongService:
     
     def _generate_hetong_bianhao(self) -> str:
         """生成合同编号"""
-        from datetime import datetime
         import random
         import string
         
@@ -402,7 +401,6 @@ class HetongService:
 
     def void_hetong(self, hetong_id: str, void_reason: str, voided_by: str) -> HetongResponse:
         """作废合同"""
-        from sqlalchemy.orm import joinedload
 
         hetong = self.db.query(Hetong).options(
             joinedload(Hetong.kehu),
