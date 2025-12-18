@@ -31,12 +31,16 @@ async def handle_hetong_signed(payload: Dict[str, Any]):
             return
         
         # 获取数据库会话
-        db: Session = next(get_db())
-        
+        # PTC-W0063: 添加默认值防止 StopIteration
+        db: Session = next(get_db(), None)
+        if db is None:
+            logger.error("无法获取数据库连接")
+            return
+
         try:
             # 创建服务工单服务实例
             fuwu_gongdan_service = FuwuGongdanService(db)
-            
+
             # 基于合同创建服务工单
             gongdan = fuwu_gongdan_service.create_gongdan_from_hetong(
                 hetong_id=hetong_id,
@@ -89,12 +93,16 @@ async def handle_hetong_cancelled(payload: Dict[str, Any]):
             return
         
         # 获取数据库会话
-        db: Session = next(get_db())
-        
+        # PTC-W0063: 添加默认值防止 StopIteration
+        db: Session = next(get_db(), None)
+        if db is None:
+            logger.error("无法获取数据库连接")
+            return
+
         try:
             # 创建服务工单服务实例
             fuwu_gongdan_service = FuwuGongdanService(db)
-            
+
             # 查找该合同相关的工单
             from models.fuwu_guanli import FuwuGongdan
             gongdan_list = db.query(FuwuGongdan).filter(
