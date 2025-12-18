@@ -272,40 +272,42 @@ async def get_workflow(
 
         # 获取关联对象信息（复用之前的逻辑）
         related_info = None
-        if workflow.guanlian_id:
-            if workflow.shenhe_leixing == "hetong_jine_xiuzheng":
-                from models.hetong_guanli.hetong import Hetong
-                hetong = db.query(Hetong).filter(
-                    Hetong.id == workflow.guanlian_id,
-                    Hetong.is_deleted == "N"
+        if (
+            workflow.guanlian_id
+            and workflow.shenhe_leixing == "hetong_jine_xiuzheng"
+        ):
+            from models.hetong_guanli.hetong import Hetong
+            hetong = db.query(Hetong).filter(
+                Hetong.id == workflow.guanlian_id,
+                Hetong.is_deleted == "N"
+            ).first()
+
+            if hetong:
+                related_info = {
+                    "id": hetong.id,
+                    "name": hetong.hetong_bianhao or hetong.hetong_mingcheng or "未知合同",
+                    "type": "contract"
+                }
+            else:
+                from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
+                baojia = db.query(XiansuoBaojia).filter(
+                    XiansuoBaojia.id == workflow.guanlian_id,
+                    XiansuoBaojia.is_deleted == "N"
                 ).first()
 
-                if hetong:
-                    related_info = {
-                        "id": hetong.id,
-                        "name": hetong.hetong_bianhao or hetong.hetong_mingcheng or "未知合同",
-                        "type": "contract"
-                    }
-                else:
-                    from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
-                    baojia = db.query(XiansuoBaojia).filter(
-                        XiansuoBaojia.id == workflow.guanlian_id,
-                        XiansuoBaojia.is_deleted == "N"
+                if baojia:
+                    from models.xiansuo_guanli.xiansuo import Xiansuo
+                    xiansuo = db.query(Xiansuo).filter(
+                        Xiansuo.id == baojia.xiansuo_id,
+                        Xiansuo.is_deleted == "N"
                     ).first()
 
-                    if baojia:
-                        from models.xiansuo_guanli.xiansuo import Xiansuo
-                        xiansuo = db.query(Xiansuo).filter(
-                            Xiansuo.id == baojia.xiansuo_id,
-                            Xiansuo.is_deleted == "N"
-                        ).first()
-
-                        company_name = xiansuo.gongsi_mingcheng if xiansuo else "未知公司"
-                        related_info = {
-                            "id": baojia.id,
-                            "name": f"{company_name} - 报价 ¥{baojia.zongji_jine}",
-                            "type": "quote"
-                        }
+                    company_name = xiansuo.gongsi_mingcheng if xiansuo else "未知公司"
+                    related_info = {
+                        "id": baojia.id,
+                        "name": f"{company_name} - 报价 ¥{baojia.zongji_jine}",
+                        "type": "quote"
+                    }
 
         # 返回数据（使用前端期望的字段名）
         return {
