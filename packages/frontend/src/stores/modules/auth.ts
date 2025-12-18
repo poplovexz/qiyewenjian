@@ -30,15 +30,11 @@ export const useAuthStore = defineStore('auth', () => {
     const storedRefreshToken = localStorage.getItem('refresh_token')
     const storedUserInfo = localStorage.getItem('user_info')
 
-    console.log('恢复认证状态:', {
-      hasAccessToken: Boolean(storedAccessToken),
-      hasRefreshToken: Boolean(storedRefreshToken),
-      hasUserInfo: Boolean(storedUserInfo),
-    })
+    
 
     // 如果没有任何存储的认证信息，直接返回
     if (!storedAccessToken && !storedRefreshToken && !storedUserInfo) {
-      console.log('ℹ️ 无存储的认证信息，跳过恢复')
+      
       return
     }
 
@@ -54,7 +50,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (storedUserInfo) {
       try {
         userInfo.value = JSON.parse(storedUserInfo)
-        console.log('✅ 认证状态恢复成功')
+        
       } catch (error) {
         console.error('解析用户信息失败:', error)
         // 只清除用户信息，保留token
@@ -65,7 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     // 如果有token但没有用户信息，静默处理（不进行API调用）
     if (storedAccessToken && !storedUserInfo) {
-      console.log('ℹ️ 有token但无用户信息，将在首次API调用时验证')
+      
     }
   }
 

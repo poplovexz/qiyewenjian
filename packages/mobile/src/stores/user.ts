@@ -84,7 +84,7 @@ export const useUserStore = defineStore(
     // 登录
     async function login(username: string, password: string) {
       // 这里会在后面实现API调用
-      console.log('Login:', username, password)
+      
     }
 
     // 退出登录

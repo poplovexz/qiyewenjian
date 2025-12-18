@@ -67,11 +67,7 @@ const handleSuccess = () => {
 watch(() => props.visible, (newVal) => {
   if (newVal) {
     // 对话框打开时的逻辑
-    console.log('服务记录对话框打开', {
-      customerId: props.customerId,
-      customerName: props.customerName,
-      mode: props.mode
-    })
+    
   }
 })
 </script>

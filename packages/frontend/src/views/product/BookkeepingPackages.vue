@@ -452,7 +452,7 @@ const loadProductItemList = async () => {
       paixu: item.paixu || 0
     }))
 
-    console.log('加载代理记账产品列表成功:', allProductItemList.value.length, '个产品')
+    
   } catch (error) {
     console.error('加载产品列表失败:', error)
     ElMessage.error('加载产品列表失败')

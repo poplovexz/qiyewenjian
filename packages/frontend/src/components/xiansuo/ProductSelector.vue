@@ -121,7 +121,7 @@ import { Search } from '@element-plus/icons-vue'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
 import type { ChanpinXiangmuOption } from '@/types/xiansuo'
 
-console.log('🎨 ProductSelector 组件脚本已加载')
+
 
 // Props
 interface Props {
@@ -217,26 +217,26 @@ const dailiJizhangPackages = ref<ChanpinXiangmuOption[]>([
 ])
 
 const filteredProducts = computed(() => {
-  console.log('🔍 filteredProducts 计算中...')
-  console.log('  activeCategory:', activeCategory.value)
-  console.log('  productData 是否存在:', Boolean(productData.value))
+  
+  
+  
 
   let products: ChanpinXiangmuOption[]
   if (!productData.value) {
-    console.log('  ❌ productData 为 null/undefined')
+    
     products = []
   } else if (activeCategory.value === 'daizang') {
     // 代理记账分类：只显示套餐，不显示单独的产品项目
     products = dailiJizhangPackages.value
-    console.log('  📦 代理记账分类，显示套餐数量:', products.length)
-    console.log('  📦 代理记账套餐列表:', products)
+    
+    
   } else if (activeCategory.value === 'zengzhi') {
     products = productData.value.zengzhi_xiangmu || []
-    console.log('  📦 增值服务分类，产品数量:', products.length)
+    
   } else {
     // 全部服务：显示套餐 + 增值服务
     products = [...dailiJizhangPackages.value, ...(productData.value.zengzhi_xiangmu || [])]
-    console.log('  📦 全部服务分类，产品数量:', products.length)
+    
   }
 
   if (searchKeyword.value) {
@@ -246,10 +246,10 @@ const filteredProducts = computed(() => {
         product.xiangmu_mingcheng.toLowerCase().includes(keyword) ||
         product.xiangmu_bianma.toLowerCase().includes(keyword)
     )
-    console.log('  🔍 搜索后产品数量:', products.length)
+    
   }
 
-  console.log('  ✅ 最终返回产品数量:', products.length)
+  
   return products
 })
 
@@ -265,10 +265,7 @@ const loadProductData = async () => {
       console.error('产品数据加载后仍为空')
       ElMessage.error('产品数据加载失败，请刷新页面重试')
     } else {
-      console.log('产品数据加载成功:', {
-        代理记账项目: productData.value.daili_jizhang_xiangmu?.length || 0,
-        增值服务项目: productData.value.zengzhi_xiangmu?.length || 0,
-      })
+      
     }
   } catch (error) {
     console.error('加载产品数据失败:', error)
@@ -361,9 +358,9 @@ const handleClose = () => {
 watch(
   () => props.visible,
   (visible, oldVisible) => {
-    console.log('👁️ ProductSelector visible 变化:', { 新值: visible, 旧值: oldVisible })
+    
     if (visible) {
-      console.log('📂 对话框打开，开始加载产品数据')
+      
       void loadProductData()
     }
   },
@@ -372,9 +369,9 @@ watch(
 
 // 生命周期
 onMounted(() => {
-  console.log('🎬 ProductSelector 组件已挂载, visible:', props.visible)
+  
   if (props.visible) {
-    console.log('📂 组件挂载时对话框已打开，加载产品数据')
+    
     void loadProductData()
   }
 })

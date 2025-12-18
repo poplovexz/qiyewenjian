@@ -176,22 +176,22 @@ const getResourceTypeText = (type: string) => {
 
 // 事件处理
 const handleSearch = () => {
-  console.log('搜索权限:', searchForm.value)
+  
   ElMessage.info('搜索功能开发中...')
 }
 
 const handleCreate = () => {
-  console.log('创建权限')
+  
   ElMessage.info('创建权限功能开发中...')
 }
 
 const handleView = (permission: any) => {
-  console.log('查看权限:', permission)
+  
   ElMessage.info(`查看权限: ${permission.quanxian_ming}`)
 }
 
 const handleEdit = (permission: any) => {
-  console.log('编辑权限:', permission)
+  
   ElMessage.info(`编辑权限: ${permission.quanxian_ming}`)
 }
 
@@ -207,7 +207,7 @@ const handleDelete = async (permission: any) => {
       }
     )
     
-    console.log('删除权限:', permission)
+    
     ElMessage.success('权限删除成功')
   } catch (error) {
     if (error !== 'cancel') {
@@ -218,7 +218,7 @@ const handleDelete = async (permission: any) => {
 
 // 初始化
 onMounted(() => {
-  console.log('权限管理页面已加载')
+  
 })
 </script>
 

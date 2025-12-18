@@ -21,11 +21,11 @@ class FrontendPerformanceChecker {
    * 检查打包大小
    */
   checkBundleSize() {
-    console.log('📦 检查打包大小...')
+    
     
     try {
       // 运行构建
-      console.log('正在构建项目...')
+      
       execSync('npm run build', { 
         cwd: this.projectRoot,
         stdio: 'pipe'
@@ -37,16 +37,16 @@ class FrontendPerformanceChecker {
         const stats = this.analyzeBuildOutput(distPath)
         this.report.bundleSize = stats
         
-        console.log(`✓ 总大小: ${(stats.totalSize / 1024 / 1024).toFixed(2)} MB`)
-        console.log(`✓ JS文件: ${stats.jsFiles.length} 个`)
-        console.log(`✓ CSS文件: ${stats.cssFiles.length} 个`)
+        
+        
+        
         
         // 检查大文件
         const largeFiles = stats.allFiles.filter(file => file.size > 1024 * 1024) // > 1MB
         if (largeFiles.length > 0) {
-          console.log('⚠️  发现大文件:')
+          
           largeFiles.forEach(file => {
-            console.log(`   ${file.name}: ${(file.size / 1024 / 1024).toFixed(2)} MB`)
+            
           })
         }
       }
@@ -102,7 +102,7 @@ class FrontendPerformanceChecker {
    * 检查依赖项
    */
   checkDependencies() {
-    console.log('📋 检查依赖项...')
+    
     
     try {
       const packageJsonPath = path.join(this.projectRoot, 'package.json')
@@ -117,8 +117,8 @@ class FrontendPerformanceChecker {
         total: Object.keys(dependencies).length + Object.keys(devDependencies).length
       }
       
-      console.log(`✓ 生产依赖: ${this.report.dependencies.production} 个`)
-      console.log(`✓ 开发依赖: ${this.report.dependencies.development} 个`)
+      
+      
       
       // 检查过时的依赖
       try {
@@ -130,7 +130,7 @@ class FrontendPerformanceChecker {
         if (outdated.trim()) {
           const outdatedPackages = JSON.parse(outdated)
           const count = Object.keys(outdatedPackages).length
-          console.log(`⚠️  发现 ${count} 个过时的依赖包`)
+          
           this.report.dependencies.outdated = count
         }
       } catch (error) {
@@ -148,7 +148,7 @@ class FrontendPerformanceChecker {
    * 检查代码质量
    */
   checkCodeQuality() {
-    console.log('🔍 检查代码质量...')
+    
     
     try {
       // 运行ESLint
@@ -157,7 +157,7 @@ class FrontendPerformanceChecker {
           cwd: this.projectRoot,
           stdio: 'pipe'
         })
-        console.log('✓ ESLint检查通过')
+        
         this.report.codeQuality.eslint = 'passed'
       } catch (error) {
         console.log('⚠️  ESLint发现问题')
@@ -170,7 +170,7 @@ class FrontendPerformanceChecker {
           cwd: this.projectRoot,
           stdio: 'pipe'
         })
-        console.log('✓ TypeScript类型检查通过')
+        
         this.report.codeQuality.typescript = 'passed'
       } catch (error) {
         console.log('⚠️  TypeScript类型检查发现问题')
@@ -186,26 +186,26 @@ class FrontendPerformanceChecker {
    * 检查性能指标
    */
   checkPerformanceMetrics() {
-    console.log('⚡ 检查性能指标...')
+    
     
     // 检查Vue组件数量
     const componentCount = this.countVueComponents()
-    console.log(`✓ Vue组件数量: ${componentCount}`)
+    
     this.report.performance.componentCount = componentCount
     
     // 检查路由数量
     const routeCount = this.countRoutes()
-    console.log(`✓ 路由数量: ${routeCount}`)
+    
     this.report.performance.routeCount = routeCount
     
     // 检查Store模块数量
     const storeCount = this.countStoreModules()
-    console.log(`✓ Store模块数量: ${storeCount}`)
+    
     this.report.performance.storeModules = storeCount
     
     // 检查API接口数量
     const apiCount = this.countApiEndpoints()
-    console.log(`✓ API接口数量: ${apiCount}`)
+    
     this.report.performance.apiEndpoints = apiCount
   }
 
@@ -356,34 +356,34 @@ class FrontendPerformanceChecker {
    * 运行完整检查
    */
   async runFullCheck() {
-    console.log('🚀 开始前端性能检查...\n')
+    
     
     this.checkDependencies()
-    console.log('')
+    
     
     this.checkCodeQuality()
-    console.log('')
+    
     
     this.checkPerformanceMetrics()
-    console.log('')
+    
     
     this.checkBundleSize()
-    console.log('')
+    
     
     // 生成建议
     const suggestions = this.generateOptimizationSuggestions()
     if (suggestions.length > 0) {
-      console.log('💡 优化建议:')
+      
       suggestions.forEach((suggestion, index) => {
-        console.log(`   ${index + 1}. ${suggestion}`)
+        
       })
-      console.log('')
+      
     }
     
     // 保存报告
     const reportPath = path.join(this.projectRoot, 'performance-report.json')
     fs.writeFileSync(reportPath, JSON.stringify(this.report, null, 2))
-    console.log(`📊 性能报告已保存到: ${reportPath}`)
+    
     
     return this.report
   }

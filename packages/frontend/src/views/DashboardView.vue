@@ -121,7 +121,7 @@ const handleLogout = () => {
 
 onMounted(() => {
   // 这里可以加载仪表板数据
-  console.log('仪表板已加载')
+  
 })
 </script>
 
