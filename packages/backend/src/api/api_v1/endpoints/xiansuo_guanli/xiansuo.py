@@ -298,7 +298,7 @@ async def get_xiansuo_contract_status(
             if record.jilu_zhuangtai == 'yichuli':
                 if record.shenhe_jieguo == 'tongguo':
                     step_status = 'approved'
-                elif record.shenhe_jieguo == 'jujue' or record.shenhe_jieguo == 'bohui':
+                elif record.shenhe_jieguo in ('jujue', 'bohui'):
                     step_status = 'rejected'
 
             steps.append({
