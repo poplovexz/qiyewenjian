@@ -28,14 +28,14 @@ def main():
         ).first()
         
         if xiansuo:
-            print(f"找到线索XS005:")
+            print("找到线索XS005:")
             print(f"  ID: {xiansuo.id}")
             print(f"  名称: {xiansuo.xiansuo_mingcheng}")
             print(f"  状态: {xiansuo.xiansuo_zhuangtai}")
             print(f"  客户ID: {xiansuo.kehu_id}")
             
             # 查找该线索的报价
-            print(f"\n=== 查找线索的报价 ===")
+            print("\n=== 查找线索的报价 ===")
             baojia_list = db.query(XiansuoBaojia).filter(
                 XiansuoBaojia.xiansuo_id == xiansuo.id,
                 XiansuoBaojia.is_deleted == 'N'
@@ -58,21 +58,21 @@ def main():
                     ).first()
                     
                     if hetong:
-                        print(f"  关联合同:")
+                        print("  关联合同:")
                         print(f"    合同ID: {hetong.id}")
                         print(f"    合同编号: {hetong.hetong_bianhao}")
                         print(f"    合同名称: {hetong.hetong_mingcheng}")
                         print(f"    合同状态: {hetong.hetong_zhuangtai}")
                         print(f"    创建时间: {hetong.created_at}")
                     else:
-                        print(f"  没有关联的合同")
+                        print("  没有关联的合同")
             else:
                 print("该线索没有报价")
         else:
             print("未找到线索XS005")
             
             # 列出所有线索编号
-            print(f"\n=== 系统中的所有线索编号 ===")
+            print("\n=== 系统中的所有线索编号 ===")
             all_xiansuo = db.query(Xiansuo.xiansuo_bianhao, Xiansuo.xiansuo_mingcheng).filter(
                 Xiansuo.is_deleted == 'N'
             ).limit(10).all()
@@ -81,7 +81,7 @@ def main():
                 print(f"  - {xs.xiansuo_bianhao}: {xs.xiansuo_mingcheng}")
         
         # 查看所有合同
-        print(f"\n=== 系统中的所有合同 ===")
+        print("\n=== 系统中的所有合同 ===")
         all_hetong = db.query(Hetong).filter(
             Hetong.is_deleted == 'N'
         ).all()

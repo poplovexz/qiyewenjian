@@ -49,7 +49,7 @@ def check_customer_exists(token, customer_id):
         print(f"  ✅ 客户存在: {data.get('gongsi_mingcheng')}")
         return True
     else:
-        print(f"  ❌ 客户不存在")
+        print("  ❌ 客户不存在")
         print(f"  错误: {response.text}")
         return False
 
@@ -77,7 +77,7 @@ def main():
     if not token:
         print("❌ 登录失败")
         return
-    print(f"✅ 登录成功")
+    print("✅ 登录成功")
     
     # 2. 获取报价列表
     print("\n2. 获取报价列表...")
@@ -112,12 +112,12 @@ def main():
         print("❌ 无法获取报价详情")
         return
     
-    print(f"\n报价详情结构:")
+    print("\n报价详情结构:")
     print(json.dumps(quote_detail, indent=2, ensure_ascii=False, default=str)[:1000])
     
     # 4. 检查线索信息
     xiansuo_info = quote_detail.get("xiansuo_info", {})
-    print(f"\n4. 线索信息:")
+    print("\n4. 线索信息:")
     print(f"   线索ID: {xiansuo_info.get('id')}")
     print(f"   公司名称: {xiansuo_info.get('gongsi_mingcheng')}")
     print(f"   客户ID (kehu_id): {xiansuo_info.get('kehu_id')}")
@@ -131,10 +131,10 @@ def main():
         # 获取线索详情
         lead_id = xiansuo_info.get('id')
         if lead_id:
-            print(f"\n5. 获取线索详细信息...")
+            print("\n5. 获取线索详细信息...")
             lead_detail = get_lead_detail(token, lead_id)
             if lead_detail:
-                print(f"\n线索详细信息:")
+                print("\n线索详细信息:")
                 print(f"   公司名称: {lead_detail.get('gongsi_mingcheng')}")
                 print(f"   联系人: {lead_detail.get('lianxi_ren')}")
                 print(f"   联系电话: {lead_detail.get('lianxi_dianhua')}")
@@ -147,7 +147,7 @@ def main():
                     print("   1. 在创建线索时自动创建对应的客户记录")
                     print("   2. 或者在生成合同前检查并自动创建客户")
     else:
-        print(f"\n5. 检查客户是否真的存在...")
+        print("\n5. 检查客户是否真的存在...")
         exists = check_customer_exists(token, kehu_id)
         
         if not exists:

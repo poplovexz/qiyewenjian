@@ -52,9 +52,9 @@ try:
             if xiangmu.banshi_tianshu != expected_days:
                 print(f'  ⚠️  数据不一致！数据库中是 {xiangmu.banshi_tianshu} 天，应该是 {expected_days} 天')
             else:
-                print(f'  ✅ 数据一致')
+                print('  ✅ 数据一致')
         else:
-            print(f'  ⚠️  没有步骤数据')
+            print('  ⚠️  没有步骤数据')
             if xiangmu.banshi_tianshu != 0:
                 print(f'  ⚠️  数据不一致！没有步骤但办事天数是 {xiangmu.banshi_tianshu} 天')
     

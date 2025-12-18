@@ -99,7 +99,7 @@ def main():
             if isinstance(condition, str):
                 condition = json.loads(condition)
             
-            print(f"\n触发条件:")
+            print("\n触发条件:")
             print(f"  类型: {condition.get('type')}")
             print(f"  审核类型: {condition.get('audit_type')}")
             
@@ -108,7 +108,7 @@ def main():
             if isinstance(config, str):
                 config = json.loads(config)
             
-            print(f"\n审核流程配置:")
+            print("\n审核流程配置:")
             steps = config.get('steps', [])
             print(f"  步骤数: {len(steps)}")
             
@@ -124,11 +124,11 @@ def main():
                 approver_id = step.get('approver_user_id')
                 if approver_id:
                     if approver_id == caiwu_user_id:
-                        print(f"    ✅ 审核人已正确配置（财务用户）")
+                        print("    ✅ 审核人已正确配置（财务用户）")
                     else:
-                        print(f"    ⚠️  审核人ID与财务用户不匹配")
+                        print("    ⚠️  审核人ID与财务用户不匹配")
                 else:
-                    print(f"    ❌ 审核人ID未配置")
+                    print("    ❌ 审核人ID未配置")
         else:
             print("❌ 未找到审核规则")
         
@@ -141,20 +141,20 @@ def main():
         print(f"  财务审核人ID: {caiwu_user_id or '未找到'}")
         
         if caiwu_user_id and yewu_user_id:
-            print(f"\n✅ 配置完整，可以触发审核流程")
-            print(f"\n预期流程:")
+            print("\n✅ 配置完整，可以触发审核流程")
+            print("\n预期流程:")
             print(f"  1. 业务员({yewu_user_id})上传汇款凭证")
-            print(f"  2. 系统触发审核流程（audit_type='yinhang_huikuan'）")
-            print(f"  3. 查找审核规则（规则ID: 6218e1e3-0c1b-459f-8cfa-e7d27a735a4c）")
-            print(f"  4. 创建审核流程实例")
+            print("  2. 系统触发审核流程（audit_type='yinhang_huikuan'）")
+            print("  3. 查找审核规则（规则ID: 6218e1e3-0c1b-459f-8cfa-e7d27a735a4c）")
+            print("  4. 创建审核流程实例")
             print(f"  5. 创建审核步骤（审核人: {caiwu_user_id}）")
             print(f"  6. 发送通知给财务用户({caiwu_user_id})")
         else:
-            print(f"\n❌ 配置不完整，无法触发审核流程")
+            print("\n❌ 配置不完整，无法触发审核流程")
             if not caiwu_user_id:
-                print(f"  - 缺少财务用户")
+                print("  - 缺少财务用户")
             if not yewu_user_id:
-                print(f"  - 缺少业务员用户")
+                print("  - 缺少业务员用户")
         
         # 5. 总结
         print("\n\n" + "="*80)

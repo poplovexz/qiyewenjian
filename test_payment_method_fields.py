@@ -104,7 +104,7 @@ def test_payment_method_fields():
             db.commit()
             
             if result:
-                print(f"  ✓ 插入成功")
+                print("  ✓ 插入成功")
                 print(f"    ID: {result[0]}")
                 print(f"    名称: {result[1]}")
                 print(f"    微信号: {result[2]}")
@@ -115,7 +115,7 @@ def test_payment_method_fields():
                 delete_sql = text("DELETE FROM hetong_zhifu_fangshi WHERE id = :id")
                 db.execute(delete_sql, {'id': result[0]})
                 db.commit()
-                print(f"  ✓ 测试数据已清理")
+                print("  ✓ 测试数据已清理")
             else:
                 print("  ✗ 插入失败")
                 return False
@@ -147,7 +147,7 @@ def test_payment_method_fields():
             db.commit()
             
             if result:
-                print(f"  ✓ 插入成功")
+                print("  ✓ 插入成功")
                 print(f"    ID: {result[0]}")
                 print(f"    名称: {result[1]}")
                 print(f"    支付宝账号: {result[2]}")
@@ -158,7 +158,7 @@ def test_payment_method_fields():
                 delete_sql = text("DELETE FROM hetong_zhifu_fangshi WHERE id = :id")
                 db.execute(delete_sql, {'id': result[0]})
                 db.commit()
-                print(f"  ✓ 测试数据已清理")
+                print("  ✓ 测试数据已清理")
             else:
                 print("  ✗ 插入失败")
                 return False

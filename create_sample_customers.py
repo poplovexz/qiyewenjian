@@ -208,7 +208,7 @@ def create_service_records_for_customer(customer_id, customer_name, headers):
         try:
             response = requests.post(f"{API_BASE}/service-records/", json=record_data, headers=headers)
             if response.status_code == 200:
-                print(f"     ✅ 创建服务记录成功")
+                print("     ✅ 创建服务记录成功")
             else:
                 print(f"     ⚠️ 服务记录创建失败: {response.status_code}")
         except Exception as e:

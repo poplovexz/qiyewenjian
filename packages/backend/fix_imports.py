@@ -59,7 +59,7 @@ def main():
         if fix_imports_in_file(py_file):
             fixed_count += 1
     
-    print(f"\n📊 修复完成:")
+    print("\n📊 修复完成:")
     print(f"  - 总文件数: {total_count}")
     print(f"  - 修复文件数: {fixed_count}")
     print(f"  - 未修改文件数: {total_count - fixed_count}")

@@ -42,7 +42,7 @@ async def test_product_steps():
             print("❌ 未找到产品")
             return
         
-        print(f"✅ 找到产品")
+        print("✅ 找到产品")
         print(f"   产品名称: {product.xiangmu_mingcheng}")
         print(f"   产品编码: {product.xiangmu_bianma}")
         print(f"   产品ID: {product.id}")
@@ -141,7 +141,7 @@ async def test_product_steps():
                     buzou_feiyong=Decimal("200.00")
                 )
                 result = await service.update_buzou(test_id, update_data, 'test_user')
-                print(f"  ✅ 更新成功")
+                print("  ✅ 更新成功")
                 print(f"     新名称: {result.buzou_mingcheng}")
                 print(f"     新费用: ¥{result.buzou_feiyong}")
             except Exception as e:

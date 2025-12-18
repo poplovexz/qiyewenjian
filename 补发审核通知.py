@@ -90,7 +90,7 @@ def send_notification_for_workflow(db, workflow: ShenheLiucheng):
                 )
                 
                 db.add(notification)
-                print(f"  ✅ 已为审核人创建待审核通知")
+                print("  ✅ 已为审核人创建待审核通知")
                 return True
         
         elif workflow.shenhe_zhuangtai == "yitongguo":
@@ -128,7 +128,7 @@ def send_notification_for_workflow(db, workflow: ShenheLiucheng):
                 )
                 
                 db.add(notification)
-                print(f"  ✅ 已为申请人创建审核通过通知")
+                print("  ✅ 已为申请人创建审核通过通知")
                 return True
         
         elif workflow.shenhe_zhuangtai == "jujue":
@@ -177,7 +177,7 @@ def send_notification_for_workflow(db, workflow: ShenheLiucheng):
                 )
                 
                 db.add(notification)
-                print(f"  ✅ 已为申请人创建审核拒绝通知")
+                print("  ✅ 已为申请人创建审核拒绝通知")
                 return True
         
         return False
@@ -221,7 +221,7 @@ def main():
             ).first()
             
             if existing_notif:
-                print(f"  ⏭️  已有通知，跳过")
+                print("  ⏭️  已有通知，跳过")
                 skip_count += 1
             else:
                 if send_notification_for_workflow(db, workflow):
@@ -233,7 +233,7 @@ def main():
         db.commit()
         
         print("=" * 60)
-        print(f"补发完成:")
+        print("补发完成:")
         print(f"  成功: {success_count} 条")
         print(f"  跳过: {skip_count} 条")
         print(f"  总计: {len(workflows)} 条")

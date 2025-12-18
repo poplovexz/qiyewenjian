@@ -57,7 +57,7 @@ def fix_workflow_steps():
                 steps = config.get('steps', [])
                 
                 if not steps:
-                    print(f'  ⚠️  没有步骤数据，需要修复')
+                    print('  ⚠️  没有步骤数据，需要修复')
                     
                     # 解析触发条件获取审核类型
                     try:

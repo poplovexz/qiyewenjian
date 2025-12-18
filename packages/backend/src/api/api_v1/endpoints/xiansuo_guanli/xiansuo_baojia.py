@@ -81,7 +81,7 @@ async def get_product_data_for_baojia(
     result = await service.get_chanpin_data_for_baojia()
 
     # 添加日志
-    logger.error(f"=== API 返回数据 ===")
+    logger.error("=== API 返回数据 ===")
     logger.error(f"代理记账分类数量: {len(result.daili_jizhang_fenlei)}")
     logger.error(f"代理记账项目数量: {len(result.daili_jizhang_xiangmu)}")
     logger.error(f"增值服务分类数量: {len(result.zengzhi_fenlei)}")

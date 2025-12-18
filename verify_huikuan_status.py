@@ -39,7 +39,7 @@ def check_huikuan_status():
         result = session.execute(query, {"bianhao": "HK202510301443179ED9B3"}).fetchone()
         
         if result:
-            print(f"\n✅ 找到汇款单据:\n")
+            print("\n✅ 找到汇款单据:\n")
             print(f"  单据编号: {result.danju_bianhao}")
             print(f"  汇款金额: {result.huikuan_jine}")
             print(f"  汇款人: {result.huikuan_ren}")
@@ -53,16 +53,16 @@ def check_huikuan_status():
             
             # 判断状态变化
             if result.shenhe_zhuangtai == 'waiting_voucher':
-                print(f"\n⚠️  状态未变化：仍在等待业务员上传凭证")
+                print("\n⚠️  状态未变化：仍在等待业务员上传凭证")
                 return 'waiting_voucher', result.id
             elif result.shenhe_zhuangtai == 'pending_audit':
-                print(f"\n✅ 状态已变化：已上传凭证，等待审核")
+                print("\n✅ 状态已变化：已上传凭证，等待审核")
                 return 'pending_audit', result.id
             else:
                 print(f"\n✅ 状态：{result.shenhe_zhuangtai}")
                 return result.shenhe_zhuangtai, result.id
         else:
-            print(f"\n❌ 未找到汇款单据")
+            print("\n❌ 未找到汇款单据")
             return None, None
             
     finally:
@@ -112,13 +112,13 @@ def check_audit_workflow(danju_id):
                 
                 steps = session.execute(step_query, {"liucheng_id": wf.id}).fetchall()
                 if steps:
-                    print(f"  审核步骤:")
+                    print("  审核步骤:")
                     for step in steps:
                         print(f"    - 步骤{step.buzhou_bianhao}: {step.buzhou_mingcheng} - {step.jilu_zhuangtai} (审核人: {step.shenhe_ren_id})")
                 print()
             return True
         else:
-            print(f"\n❌ 未找到审核流程")
+            print("\n❌ 未找到审核流程")
             return False
             
     finally:
@@ -157,7 +157,7 @@ def check_notifications(danju_bianhao):
                 print()
             return True
         else:
-            print(f"\n❌ 未找到通知")
+            print("\n❌ 未找到通知")
             return False
             
     finally:
@@ -202,7 +202,7 @@ def check_audit_rules():
                 
                 if audit_type == 'yinhang_huikuan':
                     yinhang_huikuan_rule = rule
-                    print(f"  ✅ 这是银行汇款审核规则")
+                    print("  ✅ 这是银行汇款审核规则")
                     
                     # 解析审核流程配置
                     flow_config = json.loads(rule.shenhe_liucheng_peizhi) if isinstance(rule.shenhe_liucheng_peizhi, str) else rule.shenhe_liucheng_peizhi
@@ -217,11 +217,11 @@ def check_audit_rules():
                 print()
         
         if yinhang_huikuan_rule:
-            print(f"\n✅ 找到银行汇款审核规则配置")
+            print("\n✅ 找到银行汇款审核规则配置")
             return True
         else:
-            print(f"\n❌ 未找到银行汇款审核规则配置")
-            print(f"\n⚠️  需要创建 audit_type='yinhang_huikuan' 的审核规则")
+            print("\n❌ 未找到银行汇款审核规则配置")
+            print("\n⚠️  需要创建 audit_type='yinhang_huikuan' 的审核规则")
             return False
             
     finally:
@@ -251,14 +251,14 @@ def main():
         print(f"通知: {'✅ 已发送' if has_notification else '❌ 未发送'}")
         
         if status == 'waiting_voucher':
-            print(f"\n⚠️  下一步：业务员需要上传汇款凭证")
+            print("\n⚠️  下一步：业务员需要上传汇款凭证")
         elif status == 'pending_audit':
             if has_workflow and has_notification:
-                print(f"\n✅ 流程正常：已触发审核并发送通知")
+                print("\n✅ 流程正常：已触发审核并发送通知")
             elif has_workflow and not has_notification:
-                print(f"\n⚠️  问题：审核流程已创建，但未发送通知")
+                print("\n⚠️  问题：审核流程已创建，但未发送通知")
             else:
-                print(f"\n⚠️  问题：已上传凭证，但未触发审核流程")
+                print("\n⚠️  问题：已上传凭证，但未触发审核流程")
     
     # 任务2：检查审核规则配置
     has_rule = check_audit_rules()
@@ -268,10 +268,10 @@ def main():
     print("【任务2总结】")
     print("="*80)
     if has_rule:
-        print(f"\n✅ 审核规则配置正常")
+        print("\n✅ 审核规则配置正常")
     else:
-        print(f"\n❌ 缺少银行汇款审核规则配置")
-        print(f"\n建议：创建 audit_type='yinhang_huikuan' 的审核规则")
+        print("\n❌ 缺少银行汇款审核规则配置")
+        print("\n建议：创建 audit_type='yinhang_huikuan' 的审核规则")
     
     print(f"\n{'='*80}")
     print("验证完成")

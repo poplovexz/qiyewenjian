@@ -142,7 +142,7 @@ def init_contract_permissions():
         # 为管理员角色分配权限
         admin_role = db.query(Jiaose).filter(Jiaose.jiaose_bianma == "admin").first()
         if admin_role:
-            print(f"\n为管理员角色分配合同模板管理权限...")
+            print("\n为管理员角色分配合同模板管理权限...")
             
             # 获取所有合同模板相关权限
             contract_permissions_db = db.query(Quanxian).filter(
@@ -170,7 +170,7 @@ def init_contract_permissions():
         else:
             print("警告: 未找到管理员角色")
         
-        print(f"\n合同模板管理权限初始化完成!")
+        print("\n合同模板管理权限初始化完成!")
         print(f"新创建权限数量: {len(created_permissions)}")
         print(f"总权限数量: {len(contract_permissions)}")
         

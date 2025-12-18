@@ -116,7 +116,7 @@ def init_office_permissions():
                     print(f"⚪ 权限已存在: {quanxian_ming} ({quanxian_bianma})")
             
             db.commit()
-            print(f"\n📊 权限创建统计:")
+            print("\n📊 权限创建统计:")
             print(f"  - 新创建: {created_count} 个")
             print(f"  - 已存在: {existing_count} 个")
             print(f"  - 总计: {len(office_permissions)} 个")
@@ -171,7 +171,7 @@ def init_office_permissions():
                         print(f"  ⚪ 管理员已有权限: {perm_name}")
                 
                 db.commit()
-                print(f"\n📊 权限分配统计:")
+                print("\n📊 权限分配统计:")
                 print(f"  - 新分配: {assigned_count} 个")
                 print(f"  - 已分配: {existing_assign_count} 个")
                 print("🎉 管理员办公管理权限分配完成！")

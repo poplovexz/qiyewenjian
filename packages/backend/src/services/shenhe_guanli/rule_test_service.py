@@ -43,7 +43,7 @@ class RuleTestService:
             trigger_conditions = {}
 
         # 🔍 调试日志
-        print(f"\n=== 规则测试调试 ===")
+        print("\n=== 规则测试调试 ===")
         print(f"规则名称: {rule.guize_mingcheng}")
         print(f"规则类型: {rule.guize_leixing}")
         print(f"触发条件: {json.dumps(trigger_conditions, ensure_ascii=False)}")
@@ -53,7 +53,7 @@ class RuleTestService:
         test_result = self._evaluate_trigger_conditions(trigger_conditions, test_data)
 
         print(f"测试结果: {json.dumps(test_result, ensure_ascii=False)}")
-        print(f"===================\n")
+        print("===================\n")
 
         # 如果触发，模拟流程创建
         workflow_preview = None
