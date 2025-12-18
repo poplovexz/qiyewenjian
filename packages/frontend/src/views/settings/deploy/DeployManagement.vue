@@ -7,7 +7,7 @@
       type="warning"
       :closable="false"
       show-icon
-      style="margin-bottom: 20px;"
+      style="margin-bottom: 20px"
     >
       <template #default>
         <p>为了安全起见，部署管理功能只能在开发环境使用。</p>
@@ -25,11 +25,7 @@
               部署管理
             </span>
             <div class="header-actions">
-              <el-button
-                @click="showConfigDialog = true"
-              >
-                配置管理
-              </el-button>
+              <el-button @click="showConfigDialog = true"> 配置管理 </el-button>
               <el-button
                 type="primary"
                 :icon="Upload"
@@ -42,341 +38,343 @@
           </div>
         </template>
 
-      <!-- 当前部署状态 -->
-      <div v-if="currentDeploy" class="current-deploy">
-        <el-alert
-          :title="`正在部署到 ${currentDeploy.environment} 环境...`"
-          type="info"
-          :closable="false"
-        >
-          <template #default>
-            <div class="deploy-info">
-              <p><strong>分支:</strong> {{ currentDeploy.branch }}</p>
-              <p><strong>部署人:</strong> {{ currentDeploy.deployed_by }}</p>
-              <p><strong>开始时间:</strong> {{ formatDateTime(currentDeploy.started_at) }}</p>
-            </div>
-            <el-progress
-              :percentage="deployProgress"
-              :status="deployProgressStatus"
-              :indeterminate="currentDeploy.status === 'running'"
-            />
-            <div class="deploy-actions">
-              <el-button
-                size="small"
-                @click="viewLogs(currentDeploy.deploy_id)"
-              >
-                查看日志
-              </el-button>
-              <el-button
-                size="small"
-                type="danger"
-                @click="handleCancelDeploy"
-                v-if="currentDeploy.status === 'running'"
-              >
-                取消部署
-              </el-button>
-            </div>
-          </template>
-        </el-alert>
-      </div>
-    </el-card>
-
-    <!-- 部署历史 -->
-    <el-card class="history-card">
-      <template #header>
-        <div class="card-header">
-          <span class="title">部署历史</span>
-          <div class="filters">
-            <el-select
-              v-model="filters.environment"
-              placeholder="环境"
-              clearable
-              style="width: 150px; margin-right: 10px"
-              @change="loadHistory"
-            >
-              <el-option label="生产环境" value="production" />
-              <el-option label="预发布环境" value="staging" />
-              <el-option label="开发环境" value="development" />
-            </el-select>
-            <el-select
-              v-model="filters.status"
-              placeholder="状态"
-              clearable
-              style="width: 120px"
-              @change="loadHistory"
-            >
-              <el-option label="成功" value="success" />
-              <el-option label="失败" value="failed" />
-              <el-option label="运行中" value="running" />
-              <el-option label="已取消" value="cancelled" />
-            </el-select>
-          </div>
+        <!-- 当前部署状态 -->
+        <div v-if="currentDeploy" class="current-deploy">
+          <el-alert
+            :title="`正在部署到 ${currentDeploy.environment} 环境...`"
+            type="info"
+            :closable="false"
+          >
+            <template #default>
+              <div class="deploy-info">
+                <p><strong>分支:</strong> {{ currentDeploy.branch }}</p>
+                <p><strong>部署人:</strong> {{ currentDeploy.deployed_by }}</p>
+                <p><strong>开始时间:</strong> {{ formatDateTime(currentDeploy.started_at) }}</p>
+              </div>
+              <el-progress
+                :percentage="deployProgress"
+                :status="deployProgressStatus"
+                :indeterminate="currentDeploy.status === 'running'"
+              />
+              <div class="deploy-actions">
+                <el-button size="small" @click="viewLogs(currentDeploy.deploy_id)">
+                  查看日志
+                </el-button>
+                <el-button
+                  size="small"
+                  type="danger"
+                  @click="handleCancelDeploy"
+                  v-if="currentDeploy.status === 'running'"
+                >
+                  取消部署
+                </el-button>
+              </div>
+            </template>
+          </el-alert>
         </div>
-      </template>
+      </el-card>
 
-      <el-table
-        :data="historyList"
-        v-loading="loading"
-        stripe
-      >
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column label="环境" width="120">
-          <template #default="{ row }">
-            <el-tag :type="getEnvironmentType(row.environment)">
-              {{ getEnvironmentLabel(row.environment) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="branch" label="分支" width="120" />
-        <el-table-column label="状态" width="100">
-          <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)">
-              {{ getStatusLabel(row.status) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="deployed_by" label="部署人" width="120" />
-        <el-table-column label="开始时间" width="180">
-          <template #default="{ row }">
-            {{ formatDateTime(row.started_at) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="耗时" width="100">
-          <template #default="{ row }">
-            {{ formatDuration(row.duration) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="description" label="说明" min-width="200" show-overflow-tooltip />
-        <el-table-column label="操作" width="200" fixed="right">
-          <template #default="{ row }">
-            <el-button
-              link
-              type="primary"
-              size="small"
-              @click="viewLogs(row.id)"
-            >
-              查看日志
-            </el-button>
-            <el-button
-              link
-              type="warning"
-              size="small"
-              @click="handleRollback(row)"
-              v-if="row.status === 'success'"
-            >
-              回滚
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <div class="pagination">
-        <el-pagination
-          v-model:current-page="pagination.page"
-          v-model:page-size="pagination.size"
-          :total="pagination.total"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="loadHistory"
-          @current-change="loadHistory"
-        />
-      </div>
-    </el-card>
-
-    <!-- 部署对话框 -->
-    <el-dialog
-      v-model="showDeployDialog"
-      title="触发部署"
-      width="600px"
-    >
-      <!-- 部署前检查结果 -->
-      <el-alert
-        v-if="preCheckResult"
-        :title="preCheckResult.message"
-        :type="preCheckResult.overall_status === 'success' ? 'success' : preCheckResult.overall_status === 'error' ? 'error' : 'warning'"
-        :closable="false"
-        style="margin-bottom: 20px;"
-        show-icon
-      >
-        <template #default>
-          <div class="check-results">
-            <div v-for="(check, index) in preCheckResult.checks" :key="index" class="check-item">
-              <el-icon v-if="check.status === 'success'" color="#67C23A"><CircleCheck /></el-icon>
-              <el-icon v-else-if="check.status === 'error'" color="#F56C6C"><CircleClose /></el-icon>
-              <el-icon v-else-if="check.status === 'warning'" color="#E6A23C"><Warning /></el-icon>
-              <el-icon v-else color="#909399"><Loading /></el-icon>
-              <span class="check-name">{{ check.name }}:</span>
-              <span class="check-message">{{ check.message }}</span>
+      <!-- 部署历史 -->
+      <el-card class="history-card">
+        <template #header>
+          <div class="card-header">
+            <span class="title">部署历史</span>
+            <div class="filters">
+              <el-select
+                v-model="filters.environment"
+                placeholder="环境"
+                clearable
+                style="width: 150px; margin-right: 10px"
+                @change="loadHistory"
+              >
+                <el-option label="生产环境" value="production" />
+                <el-option label="预发布环境" value="staging" />
+                <el-option label="开发环境" value="development" />
+              </el-select>
+              <el-select
+                v-model="filters.status"
+                placeholder="状态"
+                clearable
+                style="width: 120px"
+                @change="loadHistory"
+              >
+                <el-option label="成功" value="success" />
+                <el-option label="失败" value="failed" />
+                <el-option label="运行中" value="running" />
+                <el-option label="已取消" value="cancelled" />
+              </el-select>
             </div>
           </div>
         </template>
-      </el-alert>
 
-      <el-form :model="deployForm" label-width="100px">
-        <el-form-item label="部署环境">
-          <el-select v-model="deployForm.environment" style="width: 100%">
-            <el-option label="生产环境" value="production" />
-            <el-option label="预发布环境" value="staging" />
-            <el-option label="开发环境" value="development" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Git分支">
-          <el-select
-            v-model="deployForm.branch"
-            placeholder="请选择分支"
-            style="width: 100%"
-            filterable
-            :loading="branchesLoading"
-          >
-            <el-option
-              v-for="branch in gitBranches"
-              :key="branch"
-              :label="branch"
-              :value="branch"
-            >
-              <span>{{ branch }}</span>
-              <el-tag v-if="branch === currentBranch" size="small" type="success" style="margin-left: 8px">
-                当前
-              </el-tag>
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="部署说明">
-          <el-input
-            v-model="deployForm.description"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入部署说明（可选）"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-checkbox v-model="deployForm.skip_build">跳过构建步骤</el-checkbox>
-        </el-form-item>
-        <el-form-item>
-          <el-checkbox v-model="deployForm.skip_migration">跳过数据库迁移</el-checkbox>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="showDeployDialog = false">取消</el-button>
-        <el-button @click="runPreCheck(false)" :loading="preChecking">
-          <el-icon><Search /></el-icon>
-          快速检查
-        </el-button>
-        <el-button @click="runPreCheck(true)" :loading="preChecking">
-          <el-icon><Search /></el-icon>
-          深度检查
-        </el-button>
-        <el-button
-          type="primary"
-          @click="handleDeploy"
-          :loading="deploying"
-          :disabled="preCheckResult && !preCheckResult.can_deploy"
-        >
-          开始部署
-        </el-button>
-      </template>
-    </el-dialog>
-
-    <!-- 日志对话框 -->
-    <el-dialog
-      v-model="showLogsDialog"
-      title="部署日志"
-      width="80%"
-      :close-on-click-modal="false"
-    >
-      <div class="logs-container">
-        <div class="logs-content" ref="logsContentRef">
-          <pre v-for="(log, index) in logs" :key="index">{{ log }}</pre>
-        </div>
-      </div>
-      <template #footer>
-        <el-button @click="showLogsDialog = false">关闭</el-button>
-        <el-button type="primary" @click="refreshLogs" :loading="logsLoading">
-          刷新
-        </el-button>
-      </template>
-    </el-dialog>
-
-    <!-- 配置管理对话框 -->
-    <el-dialog
-      v-model="showConfigDialog"
-      title="部署配置管理"
-      width="900px"
-      :close-on-click-modal="false"
-    >
-      <div class="config-management">
-        <div class="config-actions">
-          <el-button type="primary" @click="showConfigFormDialog = true">
-            添加配置
-          </el-button>
-        </div>
-
-        <el-table :data="configList" v-loading="configLoading" stripe style="margin-top: 20px">
-          <el-table-column prop="environment" label="环境" width="120" />
-          <el-table-column prop="host" label="服务器IP" width="150" />
-          <el-table-column prop="port" label="SSH端口" width="100" />
-          <el-table-column prop="username" label="用户名" width="120" />
-          <el-table-column prop="deploy_path" label="部署目录" min-width="200" />
-          <el-table-column prop="backend_port" label="后端端口" width="100" />
-          <el-table-column label="操作" width="150" fixed="right">
+        <el-table :data="historyList" v-loading="loading" stripe>
+          <el-table-column prop="id" label="ID" width="80" />
+          <el-table-column label="环境" width="120">
             <template #default="{ row }">
-              <el-button link type="primary" size="small" @click="editConfig(row)">
-                编辑
+              <el-tag :type="getEnvironmentType(row.environment)">
+                {{ getEnvironmentLabel(row.environment) }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="branch" label="分支" width="120" />
+          <el-table-column label="状态" width="100">
+            <template #default="{ row }">
+              <el-tag :type="getStatusType(row.status)">
+                {{ getStatusLabel(row.status) }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="deployed_by" label="部署人" width="120" />
+          <el-table-column label="开始时间" width="180">
+            <template #default="{ row }">
+              {{ formatDateTime(row.started_at) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="耗时" width="100">
+            <template #default="{ row }">
+              {{ formatDuration(row.duration) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="description" label="说明" min-width="200" show-overflow-tooltip />
+          <el-table-column label="操作" width="200" fixed="right">
+            <template #default="{ row }">
+              <el-button link type="primary" size="small" @click="viewLogs(row.id)">
+                查看日志
               </el-button>
-              <el-button link type="danger" size="small" @click="deleteConfig(row)">
-                删除
+              <el-button
+                link
+                type="warning"
+                size="small"
+                @click="handleRollback(row)"
+                v-if="row.status === 'success'"
+              >
+                回滚
               </el-button>
             </template>
           </el-table-column>
         </el-table>
-      </div>
-    </el-dialog>
 
-    <!-- 配置表单对话框 -->
-    <el-dialog
-      v-model="showConfigFormDialog"
-      :title="configFormMode === 'create' ? '添加配置' : '编辑配置'"
-      width="600px"
-    >
-      <el-form :model="configForm" label-width="120px">
-        <el-form-item label="环境名称" required>
-          <el-input v-model="configForm.environment" :disabled="configFormMode === 'edit'" placeholder="如: production" />
-        </el-form-item>
-        <el-form-item label="服务器IP" required>
-          <el-input v-model="configForm.host" placeholder="如: 172.16.2.221" />
-        </el-form-item>
-        <el-form-item label="SSH端口">
-          <el-input-number v-model="configForm.port" :min="1" :max="65535" />
-        </el-form-item>
-        <el-form-item label="SSH用户名" required>
-          <el-input v-model="configForm.username" placeholder="如: saas" />
-        </el-form-item>
-        <el-form-item label="SSH密码">
-          <el-input v-model="configForm.password" type="password" show-password placeholder="留空则不修改" />
-        </el-form-item>
-        <el-form-item label="部署目录" required>
-          <el-input v-model="configForm.deploy_path" placeholder="如: /home/saas/proxy-system" />
-        </el-form-item>
-        <el-form-item label="备份目录">
-          <el-input v-model="configForm.backup_path" placeholder="可选" />
-        </el-form-item>
-        <el-form-item label="后端端口">
-          <el-input-number v-model="configForm.backend_port" :min="1" :max="65535" />
-        </el-form-item>
-        <el-form-item label="前端端口">
-          <el-input-number v-model="configForm.frontend_port" :min="1" :max="65535" />
-        </el-form-item>
-        <el-form-item label="说明">
-          <el-input v-model="configForm.description" type="textarea" :rows="3" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="showConfigFormDialog = false">取消</el-button>
-        <el-button type="primary" @click="saveConfig" :loading="configSaving">
-          保存
-        </el-button>
-      </template>
-    </el-dialog>
+        <div class="pagination">
+          <el-pagination
+            v-model:current-page="pagination.page"
+            v-model:page-size="pagination.size"
+            :total="pagination.total"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="loadHistory"
+            @current-change="loadHistory"
+          />
+        </div>
+      </el-card>
+
+      <!-- 部署对话框 -->
+      <el-dialog v-model="showDeployDialog" title="触发部署" width="600px">
+        <!-- 部署前检查结果 -->
+        <el-alert
+          v-if="preCheckResult"
+          :title="preCheckResult.message"
+          :type="
+            preCheckResult.overall_status === 'success'
+              ? 'success'
+              : preCheckResult.overall_status === 'error'
+                ? 'error'
+                : 'warning'
+          "
+          :closable="false"
+          style="margin-bottom: 20px"
+          show-icon
+        >
+          <template #default>
+            <div class="check-results">
+              <div v-for="(check, index) in preCheckResult.checks" :key="index" class="check-item">
+                <el-icon v-if="check.status === 'success'" color="#67C23A"><CircleCheck /></el-icon>
+                <el-icon v-else-if="check.status === 'error'" color="#F56C6C"
+                  ><CircleClose
+                /></el-icon>
+                <el-icon v-else-if="check.status === 'warning'" color="#E6A23C"
+                  ><Warning
+                /></el-icon>
+                <el-icon v-else color="#909399"><Loading /></el-icon>
+                <span class="check-name">{{ check.name }}:</span>
+                <span class="check-message">{{ check.message }}</span>
+              </div>
+            </div>
+          </template>
+        </el-alert>
+
+        <el-form :model="deployForm" label-width="100px">
+          <el-form-item label="部署环境">
+            <el-select v-model="deployForm.environment" style="width: 100%">
+              <el-option label="生产环境" value="production" />
+              <el-option label="预发布环境" value="staging" />
+              <el-option label="开发环境" value="development" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Git分支">
+            <el-select
+              v-model="deployForm.branch"
+              placeholder="请选择分支"
+              style="width: 100%"
+              filterable
+              :loading="branchesLoading"
+            >
+              <el-option
+                v-for="branch in gitBranches"
+                :key="branch"
+                :label="branch"
+                :value="branch"
+              >
+                <span>{{ branch }}</span>
+                <el-tag
+                  v-if="branch === currentBranch"
+                  size="small"
+                  type="success"
+                  style="margin-left: 8px"
+                >
+                  当前
+                </el-tag>
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="部署说明">
+            <el-input
+              v-model="deployForm.description"
+              type="textarea"
+              :rows="3"
+              placeholder="请输入部署说明（可选）"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-checkbox v-model="deployForm.skip_build">跳过构建步骤</el-checkbox>
+          </el-form-item>
+          <el-form-item>
+            <el-checkbox v-model="deployForm.skip_migration">跳过数据库迁移</el-checkbox>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <el-button @click="showDeployDialog = false">取消</el-button>
+          <el-button @click="runPreCheck(false)" :loading="preChecking">
+            <el-icon><Search /></el-icon>
+            快速检查
+          </el-button>
+          <el-button @click="runPreCheck(true)" :loading="preChecking">
+            <el-icon><Search /></el-icon>
+            深度检查
+          </el-button>
+          <el-button
+            type="primary"
+            @click="handleDeploy"
+            :loading="deploying"
+            :disabled="preCheckResult && !preCheckResult.can_deploy"
+          >
+            开始部署
+          </el-button>
+        </template>
+      </el-dialog>
+
+      <!-- 日志对话框 -->
+      <el-dialog
+        v-model="showLogsDialog"
+        title="部署日志"
+        width="80%"
+        :close-on-click-modal="false"
+      >
+        <div class="logs-container">
+          <div class="logs-content" ref="logsContentRef">
+            <pre v-for="(log, index) in logs" :key="index">{{ log }}</pre>
+          </div>
+        </div>
+        <template #footer>
+          <el-button @click="showLogsDialog = false">关闭</el-button>
+          <el-button type="primary" @click="refreshLogs" :loading="logsLoading"> 刷新 </el-button>
+        </template>
+      </el-dialog>
+
+      <!-- 配置管理对话框 -->
+      <el-dialog
+        v-model="showConfigDialog"
+        title="部署配置管理"
+        width="900px"
+        :close-on-click-modal="false"
+      >
+        <div class="config-management">
+          <div class="config-actions">
+            <el-button type="primary" @click="showConfigFormDialog = true"> 添加配置 </el-button>
+          </div>
+
+          <el-table :data="configList" v-loading="configLoading" stripe style="margin-top: 20px">
+            <el-table-column prop="environment" label="环境" width="120" />
+            <el-table-column prop="host" label="服务器IP" width="150" />
+            <el-table-column prop="port" label="SSH端口" width="100" />
+            <el-table-column prop="username" label="用户名" width="120" />
+            <el-table-column prop="deploy_path" label="部署目录" min-width="200" />
+            <el-table-column prop="backend_port" label="后端端口" width="100" />
+            <el-table-column label="操作" width="150" fixed="right">
+              <template #default="{ row }">
+                <el-button link type="primary" size="small" @click="editConfig(row)">
+                  编辑
+                </el-button>
+                <el-button link type="danger" size="small" @click="deleteConfig(row)">
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-dialog>
+
+      <!-- 配置表单对话框 -->
+      <el-dialog
+        v-model="showConfigFormDialog"
+        :title="configFormMode === 'create' ? '添加配置' : '编辑配置'"
+        width="600px"
+      >
+        <el-form :model="configForm" label-width="120px">
+          <el-form-item label="环境名称" required>
+            <el-input
+              v-model="configForm.environment"
+              :disabled="configFormMode === 'edit'"
+              placeholder="如: production"
+            />
+          </el-form-item>
+          <el-form-item label="服务器IP" required>
+            <el-input v-model="configForm.host" placeholder="如: 172.16.2.221" />
+          </el-form-item>
+          <el-form-item label="SSH端口">
+            <el-input-number v-model="configForm.port" :min="1" :max="65535" />
+          </el-form-item>
+          <el-form-item label="SSH用户名" required>
+            <el-input v-model="configForm.username" placeholder="如: saas" />
+          </el-form-item>
+          <el-form-item label="SSH密码">
+            <el-input
+              v-model="configForm.password"
+              type="password"
+              show-password
+              placeholder="留空则不修改"
+            />
+          </el-form-item>
+          <el-form-item label="部署目录" required>
+            <el-input v-model="configForm.deploy_path" placeholder="如: /home/saas/proxy-system" />
+          </el-form-item>
+          <el-form-item label="备份目录">
+            <el-input v-model="configForm.backup_path" placeholder="可选" />
+          </el-form-item>
+          <el-form-item label="后端端口">
+            <el-input-number v-model="configForm.backend_port" :min="1" :max="65535" />
+          </el-form-item>
+          <el-form-item label="前端端口">
+            <el-input-number v-model="configForm.frontend_port" :min="1" :max="65535" />
+          </el-form-item>
+          <el-form-item label="说明">
+            <el-input v-model="configForm.description" type="textarea" :rows="3" />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <el-button @click="showConfigFormDialog = false">取消</el-button>
+          <el-button type="primary" @click="saveConfig" :loading="configSaving"> 保存 </el-button>
+        </template>
+      </el-dialog>
     </template>
   </div>
 </template>
@@ -404,7 +402,7 @@ import {
   type DeployConfig,
   type DeployConfigCreate,
   type PreDeployCheckResult,
-  type DeployConfigUpdate
+  type DeployConfigUpdate,
 } from '@/api/modules/deploy'
 
 // 环境检测：判断是否是生产环境
@@ -428,7 +426,7 @@ const deployForm = ref<DeployTriggerRequest>({
   branch: 'main',
   description: '',
   skip_build: false,
-  skip_migration: false
+  skip_migration: false,
 })
 
 // 部署前检查
@@ -445,12 +443,12 @@ const loading = ref(false)
 const historyList = ref<DeployHistoryItem[]>([])
 const filters = ref({
   environment: '',
-  status: ''
+  status: '',
 })
 const pagination = ref({
   page: 1,
   size: 20,
-  total: 0
+  total: 0,
 })
 
 // 日志
@@ -477,7 +475,7 @@ const configForm = ref<DeployConfigCreate & { id?: number }>({
   backup_path: '',
   backend_port: 8000,
   frontend_port: undefined,
-  description: ''
+  description: '',
 })
 
 // 轮询定时器
@@ -512,7 +510,7 @@ const loadHistory = async () => {
       page: pagination.value.page,
       size: pagination.value.size,
       environment: filters.value.environment || undefined,
-      status: filters.value.status || undefined
+      status: filters.value.status || undefined,
     })
     historyList.value = res.items
     pagination.value.total = res.total
@@ -524,7 +522,7 @@ const loadHistory = async () => {
 }
 
 // 运行部署前检查
-const runPreCheck = async (deepCheck: boolean = false) => {
+const runPreCheck = async (deepCheck = false) => {
   try {
     preChecking.value = true
     preCheckResult.value = null
@@ -556,7 +554,7 @@ const handleDeploy = async () => {
     const res = await triggerDeploy(deployForm.value)
     currentDeploy.value = res
     showDeployDialog.value = false
-    preCheckResult.value = null  // 清空检查结果
+    preCheckResult.value = null // 清空检查结果
     ElMessage.success('部署已启动')
 
     // 开始轮询状态
@@ -576,17 +574,17 @@ const startPolling = () => {
   if (pollingTimer) {
     clearInterval(pollingTimer)
   }
-  
+
   pollingTimer = window.setInterval(async () => {
     if (!currentDeploy.value) {
       stopPolling()
       return
     }
-    
+
     try {
       const status = await getDeployStatus(currentDeploy.value.deploy_id)
       currentDeploy.value = status
-      
+
       // 更新进度
       if (status.status === 'running') {
         deployProgress.value = 50
@@ -627,12 +625,12 @@ const stopPolling = () => {
 // 取消部署
 const handleCancelDeploy = async () => {
   if (!currentDeploy.value) return
-  
+
   try {
     await ElMessageBox.confirm('确定要取消当前部署吗？', '提示', {
-      type: 'warning'
+      type: 'warning',
     })
-    
+
     await cancelDeploy(currentDeploy.value.deploy_id)
     ElMessage.success('部署已取消')
     currentDeploy.value = null
@@ -655,12 +653,12 @@ const viewLogs = async (deployId: number) => {
 // 刷新日志
 const refreshLogs = async () => {
   if (!currentLogDeployId.value) return
-  
+
   logsLoading.value = true
   try {
     const res = await getDeployLogs(currentLogDeployId.value)
     logs.value = res.logs
-    
+
     // 滚动到底部
     await nextTick()
     if (logsContentRef.value) {
@@ -676,21 +674,17 @@ const refreshLogs = async () => {
 // 回滚
 const handleRollback = async (deploy: DeployHistoryItem) => {
   try {
-    const { value } = await ElMessageBox.prompt(
-      `确定要回滚到部署 #${deploy.id} 吗？`,
-      '回滚确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputPlaceholder: '请输入回滚说明（可选）'
-      }
-    )
-    
+    const { value } = await ElMessageBox.prompt(`确定要回滚到部署 #${deploy.id} 吗？`, '回滚确认', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      inputPlaceholder: '请输入回滚说明（可选）',
+    })
+
     const res = await rollbackDeploy({
       deploy_id: deploy.id,
-      description: value || undefined
+      description: value || undefined,
     })
-    
+
     currentDeploy.value = res
     ElMessage.success('回滚已启动')
     startPolling()
@@ -721,7 +715,7 @@ const getEnvironmentLabel = (env: string) => {
   const labels: Record<string, string> = {
     production: '生产环境',
     staging: '预发布',
-    development: '开发环境'
+    development: '开发环境',
   }
   return labels[env] || env
 }
@@ -731,7 +725,7 @@ const getEnvironmentType = (env: string) => {
   const types: Record<string, any> = {
     production: 'danger',
     staging: 'warning',
-    development: 'info'
+    development: 'info',
   }
   return types[env] || ''
 }
@@ -743,7 +737,7 @@ const getStatusLabel = (status: string) => {
     running: '运行中',
     success: '成功',
     failed: '失败',
-    cancelled: '已取消'
+    cancelled: '已取消',
   }
   return labels[status] || status
 }
@@ -755,7 +749,7 @@ const getStatusType = (status: string) => {
     running: 'warning',
     success: 'success',
     failed: 'danger',
-    cancelled: ''
+    cancelled: '',
   }
   return types[status] || ''
 }
@@ -786,7 +780,7 @@ const editConfig = (config: DeployConfig) => {
     backup_path: config.backup_path,
     backend_port: config.backend_port,
     frontend_port: config.frontend_port,
-    description: config.description
+    description: config.description,
   }
   showConfigFormDialog.value = true
 }
@@ -815,15 +809,11 @@ const saveConfig = async () => {
 // 删除配置
 const deleteConfig = async (config: DeployConfig) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除环境 "${config.environment}" 的配置吗？`,
-      '确认删除',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm(`确定要删除环境 "${config.environment}" 的配置吗？`, '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     await deleteDeployConfigApi(config.environment)
     ElMessage.success('配置已删除')
@@ -856,7 +846,7 @@ watch(showConfigFormDialog, (newVal) => {
       backup_path: '',
       backend_port: 8000,
       frontend_port: undefined,
-      description: ''
+      description: '',
     }
   }
 })
@@ -975,4 +965,3 @@ onUnmounted(() => {
   }
 }
 </style>
-

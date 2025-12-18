@@ -8,20 +8,23 @@
  * @param format 格式化模式，默认为 'YYYY-MM-DD HH:mm:ss'
  * @returns 格式化后的日期字符串
  */
-export function formatDateTime(date: string | Date | null | undefined, format: string = 'YYYY-MM-DD HH:mm:ss'): string {
+export function formatDateTime(
+  date: string | Date | null | undefined,
+  format = 'YYYY-MM-DD HH:mm:ss'
+): string {
   if (!date) return '-'
-  
+
   const d = typeof date === 'string' ? new Date(date) : date
-  
+
   if (isNaN(d.getTime())) return '-'
-  
+
   const year = d.getFullYear()
   const month = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
   const hours = String(d.getHours()).padStart(2, '0')
   const minutes = String(d.getMinutes()).padStart(2, '0')
   const seconds = String(d.getSeconds()).padStart(2, '0')
-  
+
   return format
     .replace('YYYY', String(year))
     .replace('MM', month)
@@ -56,16 +59,20 @@ export function formatTime(date: string | Date | null | undefined): string {
  * @param decimals 小数位数，默认为 2
  * @returns 格式化后的金额字符串
  */
-export function formatCurrency(amount: number | string | null | undefined, currency: string = '¥', decimals: number = 2): string {
+export function formatCurrency(
+  amount: number | string | null | undefined,
+  currency = '¥',
+  decimals = 2
+): string {
   if (amount === null || amount === undefined || amount === '') return '-'
-  
+
   const num = typeof amount === 'string' ? parseFloat(amount) : amount
-  
+
   if (isNaN(num)) return '-'
-  
+
   return `${currency}${num.toLocaleString('zh-CN', {
     minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
+    maximumFractionDigits: decimals,
   })}`
 }
 
@@ -75,7 +82,7 @@ export function formatCurrency(amount: number | string | null | undefined, curre
  * @param decimals 小数位数，默认为 2
  * @returns 格式化后的金额字符串
  */
-export function formatAmount(amount: number | string | null | undefined, decimals: number = 2): string {
+export function formatAmount(amount: number | string | null | undefined, decimals = 2): string {
   return formatCurrency(amount, '¥', decimals)
 }
 
@@ -86,11 +93,11 @@ export function formatAmount(amount: number | string | null | undefined, decimal
  */
 export function formatFileSize(bytes: number | null | undefined): string {
   if (!bytes || bytes === 0) return '0 B'
-  
+
   const k = 1024
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  
+
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
 }
 
@@ -101,11 +108,11 @@ export function formatFileSize(bytes: number | null | undefined): string {
  */
 export function formatPhone(phone: string | null | undefined): string {
   if (!phone) return '-'
-  
+
   if (phone.length === 11) {
     return `${phone.slice(0, 3)}****${phone.slice(7)}`
   }
-  
+
   return phone
 }
 
@@ -116,11 +123,11 @@ export function formatPhone(phone: string | null | undefined): string {
  */
 export function formatIdCard(idCard: string | null | undefined): string {
   if (!idCard) return '-'
-  
+
   if (idCard.length === 18) {
     return `${idCard.slice(0, 6)}********${idCard.slice(14)}`
   }
-  
+
   return idCard
 }
 
@@ -131,14 +138,14 @@ export function formatIdCard(idCard: string | null | undefined): string {
  */
 export function formatBankCard(cardNumber: string | null | undefined): string {
   if (!cardNumber) return '-'
-  
+
   if (cardNumber.length >= 8) {
     const start = cardNumber.slice(0, 4)
     const end = cardNumber.slice(-4)
     const middle = '*'.repeat(Math.max(4, cardNumber.length - 8))
     return `${start}${middle}${end}`
   }
-  
+
   return cardNumber
 }
 
@@ -149,11 +156,15 @@ export function formatBankCard(cardNumber: string | null | undefined): string {
  * @param decimals 小数位数，默认为 2
  * @returns 格式化后的百分比字符串
  */
-export function formatPercentage(value: number | null | undefined, isDecimal: boolean = true, decimals: number = 2): string {
+export function formatPercentage(
+  value: number | null | undefined,
+  isDecimal = true,
+  decimals = 2
+): string {
   if (value === null || value === undefined) return '-'
-  
+
   const percentage = isDecimal ? value * 100 : value
-  
+
   return `${percentage.toFixed(decimals)}%`
 }
 
@@ -164,20 +175,20 @@ export function formatPercentage(value: number | null | undefined, isDecimal: bo
  */
 export function formatRelativeTime(date: string | Date | null | undefined): string {
   if (!date) return '-'
-  
+
   const d = typeof date === 'string' ? new Date(date) : date
   const now = new Date()
   const diff = now.getTime() - d.getTime()
-  
+
   if (diff < 0) return '未来时间'
-  
+
   const seconds = Math.floor(diff / 1000)
   const minutes = Math.floor(seconds / 60)
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(hours / 24)
   const months = Math.floor(days / 30)
   const years = Math.floor(days / 365)
-  
+
   if (seconds < 60) return '刚刚'
   if (minutes < 60) return `${minutes}分钟前`
   if (hours < 24) return `${hours}小时前`

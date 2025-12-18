@@ -115,31 +115,33 @@ export const useComplianceStore = defineStore('compliance', () => {
     shuiwu_shenbao: '税务申报',
     nianbao_shenbao: '年报申报',
     zhizhao_nianjian: '执照年检',
-    qita_heguishixiang: '其他合规事项'
+    qita_heguishixiang: '其他合规事项',
   }))
 
   const reportCycleMap = computed(() => ({
     monthly: '月度',
     quarterly: '季度',
     annually: '年度',
-    custom: '自定义'
+    custom: '自定义',
   }))
 
   const riskLevelMap = computed(() => ({
     low: '低',
     medium: '中',
     high: '高',
-    critical: '严重'
+    critical: '严重',
   }))
 
   const templateStatusMap = computed(() => ({
     active: '启用',
     inactive: '停用',
-    draft: '草稿'
+    draft: '草稿',
   }))
 
   // 方法
-  const fetchTemplates = async (params: ComplianceTemplateListParams): Promise<ComplianceTemplateListResponse> => {
+  const fetchTemplates = async (
+    params: ComplianceTemplateListParams
+  ): Promise<ComplianceTemplateListResponse> => {
     try {
       loading.value = true
       const response = await request.get('/compliance/templates', { params })
@@ -167,7 +169,9 @@ export const useComplianceStore = defineStore('compliance', () => {
     }
   }
 
-  const createTemplate = async (data: ComplianceTemplateCreateData): Promise<ComplianceTemplate> => {
+  const createTemplate = async (
+    data: ComplianceTemplateCreateData
+  ): Promise<ComplianceTemplate> => {
     try {
       loading.value = true
       const response = await request.post('/compliance/templates', data)
@@ -181,7 +185,10 @@ export const useComplianceStore = defineStore('compliance', () => {
     }
   }
 
-  const updateTemplate = async (templateId: string, data: Partial<ComplianceTemplateCreateData>): Promise<ComplianceTemplate> => {
+  const updateTemplate = async (
+    templateId: string,
+    data: Partial<ComplianceTemplateCreateData>
+  ): Promise<ComplianceTemplate> => {
     try {
       loading.value = true
       const response = await request.put(`/compliance/templates/${templateId}`, data)
@@ -229,7 +236,12 @@ export const useComplianceStore = defineStore('compliance', () => {
     }
   }
 
-  const fetchCalendarData = async (year: number, month?: number, kehu_id?: string, shixiang_leixing?: string): Promise<ComplianceCalendarData> => {
+  const fetchCalendarData = async (
+    year: number,
+    month?: number,
+    kehu_id?: string,
+    shixiang_leixing?: string
+  ): Promise<ComplianceCalendarData> => {
     try {
       loading.value = true
       const params: any = { year }
@@ -248,7 +260,7 @@ export const useComplianceStore = defineStore('compliance', () => {
     }
   }
 
-  const fetchUpcomingItems = async (days: number = 7, kehu_id?: string): Promise<any[]> => {
+  const fetchUpcomingItems = async (days = 7, kehu_id?: string): Promise<any[]> => {
     try {
       const params: any = { days }
       if (kehu_id) params.kehu_id = kehu_id
@@ -274,7 +286,11 @@ export const useComplianceStore = defineStore('compliance', () => {
     }
   }
 
-  const fetchStatistics = async (year: number, month?: number, kehu_id?: string): Promise<ComplianceStatistics> => {
+  const fetchStatistics = async (
+    year: number,
+    month?: number,
+    kehu_id?: string
+  ): Promise<ComplianceStatistics> => {
     try {
       const params: any = { year }
       if (month) params.month = month
@@ -315,6 +331,6 @@ export const useComplianceStore = defineStore('compliance', () => {
     fetchCalendarData,
     fetchUpcomingItems,
     fetchOverdueItems,
-    fetchStatistics
+    fetchStatistics,
   }
 })

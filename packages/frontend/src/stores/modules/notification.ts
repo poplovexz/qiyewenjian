@@ -15,8 +15,8 @@ export const useNotificationStore = defineStore('notification', () => {
 
   // 计算属性
   const hasUnread = computed(() => unreadCount.value > 0)
-  const unreadNotifications = computed(() => 
-    notifications.value.filter(n => n.tongzhi_zhuangtai === 'unread')
+  const unreadNotifications = computed(() =>
+    notifications.value.filter((n) => n.tongzhi_zhuangtai === 'unread')
   )
 
   // 获取未读通知数量
@@ -52,14 +52,14 @@ export const useNotificationStore = defineStore('notification', () => {
   const markAsRead = async (id: string) => {
     try {
       await notificationApi.markAsRead(id)
-      
+
       // 更新本地状态
-      const notification = notifications.value.find(n => n.id === id)
+      const notification = notifications.value.find((n) => n.id === id)
       if (notification && notification.tongzhi_zhuangtai === 'unread') {
         notification.tongzhi_zhuangtai = 'read'
         unreadCount.value = Math.max(0, unreadCount.value - 1)
       }
-      
+
       return true
     } catch (error) {
       console.error('标记通知为已读失败:', error)
@@ -73,15 +73,15 @@ export const useNotificationStore = defineStore('notification', () => {
     try {
       loading.value = true
       await notificationApi.markAllAsRead()
-      
+
       // 更新本地状态
-      notifications.value.forEach(n => {
+      notifications.value.forEach((n) => {
         if (n.tongzhi_zhuangtai === 'unread') {
           n.tongzhi_zhuangtai = 'read'
         }
       })
       unreadCount.value = 0
-      
+
       ElMessage.success('已标记所有通知为已读')
       return true
     } catch (error) {
@@ -95,7 +95,7 @@ export const useNotificationStore = defineStore('notification', () => {
 
   // 定时刷新未读数量
   let refreshTimer: any = null
-  const startAutoRefresh = (interval: number = 30000) => {
+  const startAutoRefresh = (interval = 30000) => {
     stopAutoRefresh()
     fetchUnreadCount() // 立即执行一次
     refreshTimer = setInterval(() => {
@@ -116,18 +116,17 @@ export const useNotificationStore = defineStore('notification', () => {
     unreadCount,
     loading,
     total,
-    
+
     // 计算属性
     hasUnread,
     unreadNotifications,
-    
+
     // 方法
     fetchUnreadCount,
     fetchNotifications,
     markAsRead,
     markAllAsRead,
     startAutoRefresh,
-    stopAutoRefresh
+    stopAutoRefresh,
   }
 })
-
