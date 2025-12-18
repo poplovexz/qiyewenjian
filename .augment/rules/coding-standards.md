@@ -5,6 +5,7 @@
 ## 一、Python 代码规范
 
 ### 1.1 异常处理 (FLK-E722)
+
 ```python
 # ❌ 错误：裸 except
 try:
@@ -20,6 +21,7 @@ except (ValueError, TypeError, KeyError) as e:
 ```
 
 ### 1.2 生成器默认值 (PTC-W0063)
+
 ```python
 # ❌ 错误：next() 无默认值
 db = next(get_db())
@@ -31,6 +33,7 @@ if db is None:
 ```
 
 ### 1.3 导入规范 (PYL-W0404)
+
 ```python
 # ❌ 错误：重复导入
 from sqlalchemy import Column, String, String
@@ -40,6 +43,7 @@ from sqlalchemy import Column, String
 ```
 
 ### 1.4 subprocess 调用 (PYL-W1510)
+
 ```python
 # ❌ 错误：缺少 check 参数
 subprocess.run(["ls", "-la"])
@@ -49,6 +53,7 @@ subprocess.run(["ls", "-la"], check=False, capture_output=True)
 ```
 
 ### 1.5 退出函数 (PYL-R1722)
+
 ```python
 # ❌ 错误：使用 exit()
 exit(1)
@@ -59,6 +64,7 @@ sys.exit(1)
 ```
 
 ### 1.6 循环变量命名 (FLK-F402)
+
 ```python
 # ❌ 错误：循环变量覆盖导入
 from fastapi import status
@@ -71,6 +77,7 @@ for item_status in statuses:
 ```
 
 ### 1.7 受保护成员 (PYL-W0212)
+
 ```python
 # ❌ 错误：外部访问受保护方法
 result = service._internal_method()
@@ -82,17 +89,19 @@ result = service.public_method()
 ## 二、JavaScript/Vue 代码规范
 
 ### 2.1 console 调用 (JS-0002)
+
 ```javascript
 // ❌ 错误：生产代码中使用 console
-console.log('调试信息')
+console.log("调试信息");
 
 // ✅ 正确：使用日志服务或移除
-logger.debug('调试信息')
+logger.debug("调试信息");
 // 或者在开发环境中条件输出
-if (import.meta.env.DEV) console.log('调试信息')
+if (import.meta.env.DEV) console.log("调试信息");
 ```
 
 ### 2.2 XSS 防护 (JS-0693)
+
 ```vue
 <!-- ❌ 错误：直接使用 v-html -->
 <div v-html="userContent"></div>
@@ -101,29 +110,31 @@ if (import.meta.env.DEV) console.log('调试信息')
 <div v-html="sanitizeHtml(userContent)"></div>
 
 <script>
-import DOMPurify from 'dompurify'
-const sanitizeHtml = (html) => DOMPurify.sanitize(html)
+import DOMPurify from "dompurify";
+const sanitizeHtml = (html) => DOMPurify.sanitize(html);
 </script>
 ```
 
 ### 2.3 Props 默认值 (JS-0682)
+
 ```javascript
 // ❌ 错误：Props 无默认值
 defineProps({
   title: String,
-  count: Number
-})
+  count: Number,
+});
 
 // ✅ 正确：提供默认值
 defineProps({
-  title: { type: String, default: '' },
-  count: { type: Number, default: 0 }
-})
+  title: { type: String, default: "" },
+  count: { type: Number, default: 0 },
+});
 ```
 
 ## 三、安全规范
 
 ### 3.1 路径验证 (PTC-W6004)
+
 ```python
 # ❌ 错误：直接使用用户输入的路径
 file_path = user_input
@@ -138,6 +149,7 @@ if not file_path.startswith(base_dir):
 ```
 
 ### 3.2 XML 解析 (BAN-B314)
+
 ```python
 # ❌ 错误：使用不安全的 XML 解析
 from xml.etree import ElementTree
@@ -147,6 +159,7 @@ from defusedxml.ElementTree import parse, fromstring
 ```
 
 ### 3.3 Shell 命令 (BAN-B602)
+
 ```python
 # ❌ 错误：shell=True
 subprocess.run(command, shell=True)
@@ -172,4 +185,3 @@ subprocess.run(["git", "status"], check=False)
 - [ ] 文件路径已验证防止遍历攻击
 - [ ] XML 使用 defusedxml 解析
 - [ ] 不使用 `shell=True`
-
