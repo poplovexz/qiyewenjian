@@ -1,12 +1,5 @@
 <template>
-  <div 
-    class="stat-card" 
-    :class="[
-      `variant-${variant}`,
-      `size-${size}`,
-      { 'animated': animated }
-    ]"
-  >
+  <div class="stat-card" :class="[`variant-${variant}`, `size-${size}`, { animated: animated }]">
     <!-- 背景装饰 -->
     <div class="card-background">
       <div class="bg-pattern"></div>
@@ -29,7 +22,7 @@
       <!-- 数据区域 -->
       <div class="data-section">
         <div class="value-container">
-          <span class="value" :class="{ 'counting': animated }">
+          <span class="value" :class="{ counting: animated }">
             {{ displayValue }}
           </span>
           <span v-if="unit" class="unit">{{ unit }}</span>
@@ -41,10 +34,7 @@
       <!-- 进度条（可选） -->
       <div v-if="progress !== undefined" class="progress-section">
         <div class="progress-bar">
-          <div 
-            class="progress-fill" 
-            :style="{ width: `${progress}%` }"
-          ></div>
+          <div class="progress-fill" :style="{ width: `${progress}%` }"></div>
         </div>
         <span class="progress-text">{{ progress }}%</span>
       </div>
@@ -77,7 +67,7 @@ const props = withDefaults(defineProps<Props>(), {
   variant: 'primary',
   size: 'md',
   trendType: 'neutral',
-  animated: true
+  animated: true,
 })
 
 const displayValue = ref<number | string>(0)
@@ -85,17 +75,23 @@ const displayValue = ref<number | string>(0)
 // 计算属性
 const trendClass = computed(() => {
   switch (props.trendType) {
-    case 'up': return 'trend-up'
-    case 'down': return 'trend-down'
-    default: return 'trend-neutral'
+    case 'up':
+      return 'trend-up'
+    case 'down':
+      return 'trend-down'
+    default:
+      return 'trend-neutral'
   }
 })
 
 const trendIcon = computed(() => {
   switch (props.trendType) {
-    case 'up': return ArrowUp
-    case 'down': return ArrowDown
-    default: return Minus
+    case 'up':
+      return ArrowUp
+    case 'down':
+      return ArrowDown
+    default:
+      return Minus
   }
 })
 
@@ -111,26 +107,30 @@ const animateValue = (start: number, end: number, duration = 1000) => {
     const now = Date.now()
     const progress = Math.min((now - startTime) / duration, 1)
     const easeOutQuart = 1 - Math.pow(1 - progress, 4)
-    
+
     displayValue.value = Math.floor(start + (end - start) * easeOutQuart)
-    
+
     if (progress < 1) {
       requestAnimationFrame(animate)
     }
   }
-  
+
   requestAnimationFrame(animate)
 }
 
 // 监听值变化
-watch(() => props.value, (newValue) => {
-  if (typeof newValue === 'number') {
-    const currentValue = typeof displayValue.value === 'number' ? displayValue.value : 0
-    animateValue(currentValue, newValue)
-  } else {
-    displayValue.value = newValue
-  }
-}, { immediate: true })
+watch(
+  () => props.value,
+  (newValue) => {
+    if (typeof newValue === 'number') {
+      const currentValue = typeof displayValue.value === 'number' ? displayValue.value : 0
+      animateValue(currentValue, newValue)
+    } else {
+      displayValue.value = newValue
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   if (typeof props.value === 'number') {
@@ -230,7 +230,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
 }
@@ -318,8 +318,13 @@ onMounted(() => {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .unit {
@@ -423,11 +428,11 @@ onMounted(() => {
     padding: 20px;
     min-height: 140px;
   }
-  
+
   .value {
     font-size: 28px;
   }
-  
+
   .icon-container {
     width: 40px;
     height: 40px;
@@ -440,17 +445,17 @@ onMounted(() => {
     padding: 16px;
     min-height: 120px;
   }
-  
+
   .value {
     font-size: 24px;
   }
-  
+
   .icon-container {
     width: 36px;
     height: 36px;
     font-size: 18px;
   }
-  
+
   .trend-indicator {
     font-size: 10px;
     padding: 2px 6px;

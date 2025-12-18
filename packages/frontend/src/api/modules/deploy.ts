@@ -150,7 +150,7 @@ export function triggerDeploy(data: DeployTriggerRequest) {
   return request<DeployStatusResponse>({
     url: '/deploy/trigger',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -160,7 +160,7 @@ export function triggerDeploy(data: DeployTriggerRequest) {
 export function getDeployStatus(deployId: number) {
   return request<DeployStatusResponse>({
     url: `/deploy/status/${deployId}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -170,7 +170,7 @@ export function getDeployStatus(deployId: number) {
 export function getDeployLogs(deployId: number) {
   return request<DeployLogResponse>({
     url: `/deploy/logs/${deployId}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -186,7 +186,7 @@ export function getDeployHistory(params: {
   return request<DeployHistoryListResponse>({
     url: '/deploy/history',
     method: 'get',
-    params
+    params,
   })
 }
 
@@ -196,7 +196,7 @@ export function getDeployHistory(params: {
 export function getDeployDetail(deployId: number) {
   return request<DeployHistoryResponse>({
     url: `/deploy/history/${deployId}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -206,7 +206,7 @@ export function getDeployDetail(deployId: number) {
 export function cancelDeploy(deployId: number) {
   return request({
     url: `/deploy/cancel/${deployId}`,
-    method: 'post'
+    method: 'post',
   })
 }
 
@@ -217,7 +217,7 @@ export function rollbackDeploy(data: RollbackRequest) {
   return request<DeployStatusResponse>({
     url: '/deploy/rollback',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -227,7 +227,7 @@ export function rollbackDeploy(data: RollbackRequest) {
 export function getAllDeployConfigs() {
   return request<DeployConfig[]>({
     url: '/deploy/configs',
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -237,7 +237,7 @@ export function getAllDeployConfigs() {
 export function getDeployConfig(environment: string) {
   return request<DeployConfig>({
     url: `/deploy/configs/${environment}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -248,7 +248,7 @@ export function createDeployConfig(data: DeployConfigCreate) {
   return request<DeployConfig>({
     url: '/deploy/configs',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -259,7 +259,7 @@ export function updateDeployConfig(environment: string, data: DeployConfigUpdate
   return request<DeployConfig>({
     url: `/deploy/configs/${environment}`,
     method: 'put',
-    data
+    data,
   })
 }
 
@@ -269,7 +269,7 @@ export function updateDeployConfig(environment: string, data: DeployConfigUpdate
 export function deleteDeployConfig(environment: string) {
   return request({
     url: `/deploy/configs/${environment}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -287,7 +287,7 @@ export interface GitBranchesResponse {
 export function getGitBranches() {
   return request<GitBranchesResponse>({
     url: '/deploy/branches',
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -316,7 +316,6 @@ export function preDeployCheck(deepCheck = false) {
   return request<PreDeployCheckResult>({
     url: '/deploy/pre-check',
     method: 'get',
-    params: { deep_check: deepCheck }
+    params: { deep_check: deepCheck },
   })
 }
-

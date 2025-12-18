@@ -9,7 +9,7 @@ import type {
   PermissionCreateRequest,
   PermissionUpdateRequest,
   PermissionTreeNode,
-  PermissionStatistics
+  PermissionStatistics,
 } from '@/api/modules/permission'
 import { permissionAPI } from '@/api/modules/permission'
 import { ElMessage } from 'element-plus'
@@ -25,16 +25,16 @@ export const usePermissionStore = defineStore('permission', () => {
   const pageSize = ref(20)
 
   // 计算属性
-  const menuPermissions = computed(() => 
-    permissions.value.filter(perm => perm.ziyuan_leixing === 'menu').length
+  const menuPermissions = computed(
+    () => permissions.value.filter((perm) => perm.ziyuan_leixing === 'menu').length
   )
 
-  const buttonPermissions = computed(() => 
-    permissions.value.filter(perm => perm.ziyuan_leixing === 'button').length
+  const buttonPermissions = computed(
+    () => permissions.value.filter((perm) => perm.ziyuan_leixing === 'button').length
   )
 
-  const apiPermissions = computed(() => 
-    permissions.value.filter(perm => perm.ziyuan_leixing === 'api').length
+  const apiPermissions = computed(
+    () => permissions.value.filter((perm) => perm.ziyuan_leixing === 'api').length
   )
 
   // 获取权限列表
@@ -45,7 +45,7 @@ export const usePermissionStore = defineStore('permission', () => {
       const response = await permissionAPI.getPermissionList({
         page: currentPage.value,
         size: pageSize.value,
-        ...params
+        ...params,
       })
 
       permissions.value = response.items
@@ -146,7 +146,10 @@ export const usePermissionStore = defineStore('permission', () => {
   // 按资源类型获取权限
   const getPermissionsByResourceType = async (ziyuan_leixing: string, zhuangtai = 'active') => {
     try {
-      const permissions = await permissionAPI.getPermissionsByResourceType(ziyuan_leixing, zhuangtai)
+      const permissions = await permissionAPI.getPermissionsByResourceType(
+        ziyuan_leixing,
+        zhuangtai
+      )
       return permissions
     } catch (error) {
       console.error('获取权限失败:', error)
@@ -210,6 +213,6 @@ export const usePermissionStore = defineStore('permission', () => {
     },
     updatePageSize: (size: number) => {
       pageSize.value = size
-    }
+    },
   }
 })
