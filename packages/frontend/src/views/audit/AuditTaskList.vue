@@ -235,8 +235,6 @@ const fetchProcessedAudits = async () => {
     const { auditRecordApi } = await import('@/api/modules/audit')
     const response = await auditRecordApi.getMyProcessed()
 
-    
-
     // 处理响应数据
     if (response?.data) {
       processedAudits.value = response.data.items || response.data || []
@@ -245,8 +243,6 @@ const fetchProcessedAudits = async () => {
     } else {
       processedAudits.value = []
     }
-
-    
   } catch (error) {
     console.error('获取已处理任务失败:', error)
     ElMessage.error('获取已处理任务失败')

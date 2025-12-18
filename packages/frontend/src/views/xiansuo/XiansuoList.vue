@@ -612,7 +612,6 @@ const handleReset = async () => {
 }
 
 const handleRefresh = async () => {
-  
   ElMessage.info('正在刷新数据...')
 
   // 强制刷新所有数据，清除缓存
@@ -957,11 +956,8 @@ const getStatusText = (status: string) => {
 // 获取线索的最新报价状态
 const getBaojiaStatus = (xiansuoId: string) => {
   const baojiaList = xiansuoStore.getBaojiaListByXiansuo(xiansuoId)
-  
-  
 
   if (!baojiaList || baojiaList.length === 0) {
-    
     return null
   }
 
@@ -970,13 +966,11 @@ const getBaojiaStatus = (xiansuoId: string) => {
     .filter((baojia) => !baojia.is_expired && baojia.baojia_zhuangtai !== 'rejected')
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-  
   if (validBaojia.length > 0) {
-    
   }
 
   const result = validBaojia.length > 0 ? validBaojia[0].baojia_zhuangtai : null
-  
+
   return result
 }
 
@@ -1010,8 +1004,6 @@ const formatDate = (dateStr: string) => {
 
 // 生命周期
 onMounted(async () => {
-  
-
   // 检查认证状态
   const authStore = useAuthStore()
   if (!authStore.isAuthenticated) {
@@ -1036,8 +1028,6 @@ onMounted(async () => {
 
     // 加载合同状态
     await loadContractStatuses()
-
-    
   } catch (error) {
     console.error('线索列表页面初始化失败:', error)
 
