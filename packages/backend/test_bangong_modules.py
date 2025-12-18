@@ -235,13 +235,7 @@ def main():
     print("办公管理模块完整性测试")
     print("=" * 60 + "\n")
     
-    results = []
-    
-    # 运行所有测试
-    results.append(("模块导入", test_imports()))
-    results.append(("API端点", test_api_endpoints()))
-    results.append(("Service方法", test_service_methods()))
-    results.append(("Schema字段", test_schema_fields()))
+    results = [("模块导入", test_imports()), ("API端点", test_api_endpoints()), ("Service方法", test_service_methods()), ("Schema字段", test_schema_fields())]
     
     # 总结
     print("\n" + "=" * 60)
