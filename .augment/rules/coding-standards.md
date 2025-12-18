@@ -1,3 +1,7 @@
+---
+type: "always_apply"
+---
+
 # AI 代码规范 (Augment Agent 自律准则)
 
 > 此规范用于约束 AI 在本项目中生成的代码质量，避免产生 DeepSource 等静态分析工具报告的问题。
