@@ -99,7 +99,6 @@ class XiansuoBaojia(BaseModel):
     @classmethod
     def generate_baojia_bianma(cls) -> str:
         """生成报价编码（包含微秒和随机后缀避免重复）"""
-        from datetime import datetime
         import random
         import string
 
