@@ -198,7 +198,8 @@ class HeguishixiangMobanService:
             pages=(total + params.size - 1) // params.size
         )
 
-    def get_moban_options(self) -> HeguishixiangMobanOptionsResponse:
+    @staticmethod
+    def get_moban_options() -> HeguishixiangMobanOptionsResponse:
         """获取合规事项模板选项"""
         return HeguishixiangMobanOptionsResponse(
             shixiang_leixing_options=[

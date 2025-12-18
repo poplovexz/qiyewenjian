@@ -141,7 +141,8 @@ class SystemConfigService:
             uptime=uptime
         )
     
-    async def clear_cache(self, pattern: Optional[str] = None) -> CacheClearResponse:
+    @staticmethod
+    async def clear_cache(pattern: Optional[str] = None) -> CacheClearResponse:
         """清除缓存"""
         try:
             cleared = 0
@@ -166,7 +167,8 @@ class SystemConfigService:
                 detail=f"清除缓存失败: {str(e)}"
             )
     
-    def _validate_value_type(self, value_type: Optional[str], value: str):
+    @staticmethod
+    def _validate_value_type(value_type: Optional[str], value: str):
         """验证值类型"""
         if not value_type:
             return

@@ -22,7 +22,8 @@ def db_session():
 class TestKehuModel:
     """客户模型测试"""
     
-    def test_create_kehu(self, db_session):
+    @staticmethod
+    def test_create_kehu(db_session):
         """测试创建客户"""
         kehu = Kehu(
             gongsi_mingcheng="测试科技有限公司",
@@ -44,7 +45,8 @@ class TestKehuModel:
         assert saved_kehu.faren_xingming == "张三"
         assert saved_kehu.kehu_zhuangtai == "active"
     
-    def test_kehu_repr(self, db_session):
+    @staticmethod
+    def test_kehu_repr(db_session):
         """测试客户字符串表示"""
         kehu = Kehu(
             gongsi_mingcheng="测试科技有限公司",
@@ -60,7 +62,8 @@ class TestKehuModel:
 class TestFuwuJiluModel:
     """服务记录模型测试"""
     
-    def test_create_fuwu_jilu(self, db_session):
+    @staticmethod
+    def test_create_fuwu_jilu(db_session):
         """测试创建服务记录"""
         # 先创建客户
         kehu = Kehu(
@@ -95,7 +98,8 @@ class TestFuwuJiluModel:
 class TestKehuFuwuJiluRelation:
     """客户服务记录关联测试"""
     
-    def test_kehu_fuwu_jilu_relation(self, db_session):
+    @staticmethod
+    def test_kehu_fuwu_jilu_relation(db_session):
         """测试客户与服务记录的关联关系"""
         # 创建客户
         kehu = Kehu(

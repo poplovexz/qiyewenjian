@@ -22,7 +22,8 @@ def db_session():
 class TestYonghuModel:
     """用户模型测试"""
     
-    def test_create_yonghu(self, db_session):
+    @staticmethod
+    def test_create_yonghu(db_session):
         """测试创建用户"""
         yonghu = Yonghu(
             yonghu_ming="test_user",
@@ -42,7 +43,8 @@ class TestYonghuModel:
         assert saved_yonghu.xingming == "测试用户"
         assert saved_yonghu.zhuangtai == "active"
     
-    def test_yonghu_repr(self, db_session):
+    @staticmethod
+    def test_yonghu_repr(db_session):
         """测试用户字符串表示"""
         yonghu = Yonghu(
             yonghu_ming="test_user",
@@ -58,7 +60,8 @@ class TestYonghuModel:
 class TestJiaoseModel:
     """角色模型测试"""
     
-    def test_create_jiaose(self, db_session):
+    @staticmethod
+    def test_create_jiaose(db_session):
         """测试创建角色"""
         jiaose = Jiaose(
             jiaose_ming="管理员",
@@ -79,7 +82,8 @@ class TestJiaoseModel:
 class TestQuanxianModel:
     """权限模型测试"""
     
-    def test_create_quanxian(self, db_session):
+    @staticmethod
+    def test_create_quanxian(db_session):
         """测试创建权限"""
         quanxian = Quanxian(
             quanxian_ming="用户管理",
@@ -101,7 +105,8 @@ class TestQuanxianModel:
 class TestYonghuJiaoseRelation:
     """用户角色关联测试"""
     
-    def test_yonghu_jiaose_relation(self, db_session):
+    @staticmethod
+    def test_yonghu_jiaose_relation(db_session):
         """测试用户角色关联关系"""
         # 创建用户
         yonghu = Yonghu(

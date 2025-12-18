@@ -122,7 +122,8 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             # 清除请求上下文
             clear_request_context()
 
-    def _get_client_ip(self, request: Request) -> str:
+    @staticmethod
+    def _get_client_ip(request: Request) -> str:
         """获取客户端真实 IP"""
         # 优先从代理头获取
         forwarded = request.headers.get("X-Forwarded-For")

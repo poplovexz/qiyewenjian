@@ -33,7 +33,8 @@ def test_customer_data():
 class TestKehuAPI:
     """客户管理 API 测试类"""
     
-    def test_create_customer_success(self, test_customer_data):
+    @staticmethod
+    def test_create_customer_success(test_customer_data):
         """测试创建客户成功"""
         # 创建测试用户并获取token
         user_data, token = create_test_user()
@@ -54,7 +55,8 @@ class TestKehuAPI:
         assert "id" in data
         assert "created_at" in data
     
-    def test_create_customer_duplicate_credit_code(self, test_customer_data):
+    @staticmethod
+    def test_create_customer_duplicate_credit_code(test_customer_data):
         """测试创建客户时统一社会信用代码重复"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -76,7 +78,8 @@ class TestKehuAPI:
         assert response2.status_code == 400
         assert "统一社会信用代码已存在" in response2.json()["detail"]
     
-    def test_create_customer_invalid_data(self):
+    @staticmethod
+    def test_create_customer_invalid_data():
         """测试创建客户时数据验证失败"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -96,7 +99,8 @@ class TestKehuAPI:
         
         assert response.status_code == 422
     
-    def test_get_customer_list(self, test_customer_data):
+    @staticmethod
+    def test_get_customer_list(test_customer_data):
         """测试获取客户列表"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -119,7 +123,8 @@ class TestKehuAPI:
         assert "size" in data
         assert len(data["items"]) >= 1
     
-    def test_get_customer_list_with_search(self, test_customer_data):
+    @staticmethod
+    def test_get_customer_list_with_search(test_customer_data):
         """测试搜索客户列表"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -143,7 +148,8 @@ class TestKehuAPI:
         assert len(data["items"]) >= 1
         assert "测试科技" in data["items"][0]["gongsi_mingcheng"]
     
-    def test_get_customer_detail(self, test_customer_data):
+    @staticmethod
+    def test_get_customer_detail(test_customer_data):
         """测试获取客户详情"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -164,7 +170,8 @@ class TestKehuAPI:
         assert data["id"] == customer_id
         assert data["gongsi_mingcheng"] == test_customer_data["gongsi_mingcheng"]
     
-    def test_get_customer_detail_not_found(self):
+    @staticmethod
+    def test_get_customer_detail_not_found():
         """测试获取不存在的客户详情"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -174,7 +181,8 @@ class TestKehuAPI:
         assert response.status_code == 404
         assert "客户不存在" in response.json()["detail"]
     
-    def test_update_customer(self, test_customer_data):
+    @staticmethod
+    def test_update_customer(test_customer_data):
         """测试更新客户信息"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -204,7 +212,8 @@ class TestKehuAPI:
         assert data["gongsi_mingcheng"] == update_data["gongsi_mingcheng"]
         assert data["lianxi_dianhua"] == update_data["lianxi_dianhua"]
     
-    def test_update_customer_status(self, test_customer_data):
+    @staticmethod
+    def test_update_customer_status(test_customer_data):
         """测试更新客户状态"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -228,7 +237,8 @@ class TestKehuAPI:
         data = response.json()
         assert data["kehu_zhuangtai"] == "renewing"
     
-    def test_delete_customer(self, test_customer_data):
+    @staticmethod
+    def test_delete_customer(test_customer_data):
         """测试删除客户"""
         user_data, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
@@ -251,7 +261,8 @@ class TestKehuAPI:
         get_response = client.get(f"/api/v1/customers/{customer_id}", headers=headers)
         assert get_response.status_code == 404
     
-    def test_unauthorized_access(self, test_customer_data):
+    @staticmethod
+    def test_unauthorized_access(test_customer_data):
         """测试未授权访问"""
         # 不提供token
         response = client.post("/api/v1/customers/", json=test_customer_data)

@@ -210,7 +210,8 @@ class ShenheGuizeService:
         
         return [self._to_response(rule) for rule in rules]
     
-    def _to_response(self, guize: ShenheGuize) -> ShenheGuizeResponse:
+    @staticmethod
+    def _to_response(guize: ShenheGuize) -> ShenheGuizeResponse:
         """转换为响应模型"""
         # 解析JSON字段
         try:

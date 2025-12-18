@@ -253,7 +253,8 @@ class ZhifuDingdanService:
             pending_amount=pending_amount
         )
     
-    def _generate_dingdan_bianhao(self) -> str:
+    @staticmethod
+    def _generate_dingdan_bianhao() -> str:
         """生成订单编号"""
         # 格式：ZF + YYYYMMDD + 4位随机数
         today = datetime.now().strftime("%Y%m%d")

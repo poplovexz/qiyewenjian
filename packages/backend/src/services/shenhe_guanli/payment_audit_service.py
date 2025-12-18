@@ -251,7 +251,8 @@ class PaymentAuditService:
         
         return applicable_rules
     
-    def _check_rule_conditions(self, rule: ShenheGuize, payment_order: ZhifuDingdan) -> bool:
+    @staticmethod
+    def _check_rule_conditions(rule: ShenheGuize, payment_order: ZhifuDingdan) -> bool:
         """检查规则条件是否满足"""
         try:
             conditions = json.loads(rule.chufa_tiaojian) if isinstance(rule.chufa_tiaojian, str) else rule.chufa_tiaojian
@@ -559,7 +560,8 @@ class PaymentAuditService:
 
         return applicable_rules
 
-    def _check_flow_rule_conditions(self, rule: ShenheGuize, payment_flow: ZhifuLiushui) -> bool:
+    @staticmethod
+    def _check_flow_rule_conditions(rule: ShenheGuize, payment_flow: ZhifuLiushui) -> bool:
         """检查支付流水规则条件是否满足"""
         try:
             conditions = json.loads(rule.chufa_tiaojian) if isinstance(rule.chufa_tiaojian, str) else rule.chufa_tiaojian

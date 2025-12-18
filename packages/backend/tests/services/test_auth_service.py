@@ -62,7 +62,8 @@ def test_user(db_session):
 class TestAuthService:
     """认证服务测试类"""
     
-    def test_authenticate_user_success(self, db_session, test_user):
+    @staticmethod
+    def test_authenticate_user_success(db_session, test_user):
         """测试用户认证成功"""
         auth_service = AuthService(db_session)
         
@@ -72,7 +73,8 @@ class TestAuthService:
         assert authenticated_user.yonghu_ming == "testuser"
         assert authenticated_user.youxiang == "test@example.com"
     
-    def test_authenticate_user_wrong_password(self, db_session, test_user):
+    @staticmethod
+    def test_authenticate_user_wrong_password(db_session, test_user):
         """测试用户认证失败 - 密码错误"""
         auth_service = AuthService(db_session)
         
@@ -80,7 +82,8 @@ class TestAuthService:
         
         assert authenticated_user is None
     
-    def test_authenticate_user_not_exist(self, db_session):
+    @staticmethod
+    def test_authenticate_user_not_exist(db_session):
         """测试用户认证失败 - 用户不存在"""
         auth_service = AuthService(db_session)
         
@@ -88,7 +91,8 @@ class TestAuthService:
         
         assert authenticated_user is None
     
-    def test_login_success(self, db_session, test_user):
+    @staticmethod
+    def test_login_success(db_session, test_user):
         """测试登录成功"""
         auth_service = AuthService(db_session)
         login_data = LoginRequest(yonghu_ming="testuser", mima="testpassword")
@@ -109,7 +113,8 @@ class TestAuthService:
         assert int(updated_user.denglu_cishu) == original_count + 1
         assert updated_user.zuihou_denglu is not None
     
-    def test_login_wrong_credentials(self, db_session, test_user):
+    @staticmethod
+    def test_login_wrong_credentials(db_session, test_user):
         """测试登录失败 - 错误凭据"""
         auth_service = AuthService(db_session)
         login_data = LoginRequest(yonghu_ming="testuser", mima="wrongpassword")
@@ -120,7 +125,8 @@ class TestAuthService:
         assert exc_info.value.status_code == 401
         assert "用户名或密码错误" in str(exc_info.value.detail)
     
-    def test_login_inactive_user(self, db_session, test_user):
+    @staticmethod
+    def test_login_inactive_user(db_session, test_user):
         """测试登录失败 - 用户已禁用"""
         # 禁用用户
         test_user.zhuangtai = "inactive"
@@ -135,7 +141,8 @@ class TestAuthService:
         assert exc_info.value.status_code == 401
         assert "用户账户已被禁用" in str(exc_info.value.detail)
     
-    def test_get_user_roles(self, db_session, test_user):
+    @staticmethod
+    def test_get_user_roles(db_session, test_user):
         """测试获取用户角色"""
         auth_service = AuthService(db_session)
         
@@ -144,7 +151,8 @@ class TestAuthService:
         assert len(roles) == 1
         assert "test_role" in roles
     
-    def test_change_password_success(self, db_session, test_user):
+    @staticmethod
+    def test_change_password_success(db_session, test_user):
         """测试修改密码成功"""
         auth_service = AuthService(db_session)
         
@@ -160,7 +168,8 @@ class TestAuthService:
         authenticated_user = auth_service.authenticate_user("testuser", "testpassword")
         assert authenticated_user is None
     
-    def test_change_password_wrong_old_password(self, db_session, test_user):
+    @staticmethod
+    def test_change_password_wrong_old_password(db_session, test_user):
         """测试修改密码失败 - 旧密码错误"""
         auth_service = AuthService(db_session)
         

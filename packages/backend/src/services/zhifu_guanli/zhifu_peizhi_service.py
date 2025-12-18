@@ -56,7 +56,8 @@ class ZhifuPeizhiService:
                     pass
         return decrypted_data
     
-    def _mask_sensitive_data(self, value: Optional[str]) -> Optional[str]:
+    @staticmethod
+    def _mask_sensitive_data(value: Optional[str]) -> Optional[str]:
         """脱敏显示敏感数据"""
         if not value:
             return None
@@ -321,7 +322,8 @@ class ZhifuPeizhiService:
 
         return ZhifuPeizhiResponse(**peizhi_dict)
     
-    def _to_detail(self, peizhi: ZhifuPeizhi) -> ZhifuPeizhiDetail:
+    @staticmethod
+    def _to_detail(peizhi: ZhifuPeizhi) -> ZhifuPeizhiDetail:
         """转换为详情模型（解密，不脱敏）"""
         print(f"🔍 _to_detail 开始处理配置: {peizhi.peizhi_mingcheng}, 类型: {peizhi.peizhi_leixing}")
         print("🔍 数据库中的支付宝字段:")

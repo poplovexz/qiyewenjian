@@ -352,7 +352,8 @@ class HetongGenerateService:
         # 渲染模板
         return self._render_template(template.moban_neirong, customer, variables)
     
-    def _number_to_chinese(self, num: float) -> str:
+    @staticmethod
+    def _number_to_chinese(num: float) -> str:
         """
         将数字转换为中文大写金额
 

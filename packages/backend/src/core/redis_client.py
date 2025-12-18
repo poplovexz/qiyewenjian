@@ -209,7 +209,8 @@ class RedisClient:
             logger.warning("Redis INFO failed: %s", e)
             return {}
     
-    def generate_cache_key(self, prefix: str, *args, **kwargs) -> str:
+    @staticmethod
+    def generate_cache_key(prefix: str, *args, **kwargs) -> str:
         """生成缓存键"""
         if args or kwargs:
             # 将参数转换为字符串并生成哈希
@@ -291,7 +292,8 @@ class CacheManager:
         except Exception as e:
             return {"status": "error", "error": str(e)}
     
-    def _calculate_hit_rate(self, hits: int, misses: int) -> str:
+    @staticmethod
+    def _calculate_hit_rate(hits: int, misses: int) -> str:
         """计算缓存命中率"""
         total = hits + misses
         if total == 0:

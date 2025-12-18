@@ -37,7 +37,8 @@ class TestXiansuoPermissionsAPI:
         yield client
         app.dependency_overrides.clear()
 
-    def _create_user(self, db_session: Session, username: str) -> Yonghu:
+    @staticmethod
+    def _create_user(db_session: Session, username: str) -> Yonghu:
         user = Yonghu(
             yonghu_ming=username,
             mima=get_password_hash("testpassword"),
@@ -52,7 +53,8 @@ class TestXiansuoPermissionsAPI:
         db_session.refresh(user)
         return user
 
-    def _attach_permission(self, db_session: Session, user: Yonghu, permission_code: str) -> None:
+    @staticmethod
+    def _attach_permission(db_session: Session, user: Yonghu, permission_code: str) -> None:
         role = Jiaose(
             jiaose_ming=f"角色-{permission_code}",
             jiaose_bianma=f"role_{uuid.uuid4().hex[:6]}",
@@ -74,7 +76,8 @@ class TestXiansuoPermissionsAPI:
         db_session.add(role_permission)
         db_session.commit()
 
-    def _login(self, client: TestClient, username: str) -> dict:
+    @staticmethod
+    def _login(client: TestClient, username: str) -> dict:
         response = client.post(
             "/api/v1/auth/login",
             json={"yonghu_ming": username, "mima": "testpassword"},
