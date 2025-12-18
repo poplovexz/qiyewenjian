@@ -2,7 +2,7 @@
 用户个人设置API端点
 """
 from typing import Dict
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from core.database import get_db

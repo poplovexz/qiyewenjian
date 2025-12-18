@@ -3,7 +3,7 @@
 """
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_
+from sqlalchemy import or_
 from fastapi import HTTPException
 
 from models.kehu_guanli import FuwuJilu, Kehu
@@ -225,7 +225,7 @@ class FuwuJiluService:
         ).group_by(FuwuJilu.chuli_zhuangtai).all()
 
         # 本月记录数
-        from datetime import datetime, timedelta
+        from datetime import datetime
         current_month_start = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         monthly_records = query.filter(
             FuwuJilu.created_at >= current_month_start

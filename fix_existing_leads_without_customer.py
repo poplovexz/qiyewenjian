@@ -3,7 +3,6 @@
 数据修复脚本：为现有的没有客户ID的线索创建客户记录
 """
 import requests
-import json
 
 BASE_URL = "http://localhost:8000/api/v1"
 

@@ -6,7 +6,6 @@
 """
 import sys
 import re
-import json
 sys.path.insert(0, '/var/www/packages/backend/src')
 
 from sqlalchemy.orm import Session

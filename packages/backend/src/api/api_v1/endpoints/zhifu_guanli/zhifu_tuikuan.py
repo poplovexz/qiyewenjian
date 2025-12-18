@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from typing import Optional
 
 from core.database import get_db
-from core.security.jwt_handler import get_current_user
 from core.security.permissions import require_permission
 from models.yonghu_guanli import Yonghu
 from services.zhifu_guanli.zhifu_tuikuan_service import ZhifuTuikuanService

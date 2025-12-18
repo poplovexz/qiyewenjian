@@ -1,7 +1,7 @@
 """
 客户表模型
 """
-from sqlalchemy import Column, String, Text, DateTime
+from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import relationship
 
 from ..base import BaseModel

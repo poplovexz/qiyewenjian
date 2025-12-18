@@ -1,7 +1,6 @@
 """
 线索主表模型
 """
-from datetime import datetime
 from sqlalchemy import Column, String, DateTime, Text, Integer, ForeignKey
 from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship

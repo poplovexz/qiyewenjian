@@ -5,9 +5,7 @@
 """
 
 import requests
-import json
 import sys
-import time
 
 # 配置
 BACKEND_URL = "http://localhost:8000"

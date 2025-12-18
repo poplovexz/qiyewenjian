@@ -2,7 +2,6 @@
 """
 数据库初始化脚本
 """
-import asyncio
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 
@@ -61,7 +60,7 @@ def create_tables():
 def init_basic_data():
     """初始化基础数据"""
     from sqlalchemy.orm import sessionmaker
-    from models import Jiaose, Quanxian, JiaoseQuanxian
+    from models import Jiaose, Quanxian
     
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     

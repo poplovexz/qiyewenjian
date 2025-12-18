@@ -4,17 +4,16 @@
 from typing import Optional, List, Dict, Any
 from decimal import Decimal
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import and_, or_, func, desc
-from fastapi import HTTPException, status
+from sqlalchemy import or_, func, desc
+from fastapi import HTTPException
 from datetime import datetime, timedelta
-import json
 
 from models.fuwu_guanli import FuwuGongdan, FuwuGongdanXiangmu, FuwuGongdanRizhi
-from models.hetong_guanli import Hetong, HetongMoban
+from models.hetong_guanli import Hetong
 from models.kehu_guanli import Kehu
 from models.yonghu_guanli import Yonghu
-from models.xiansuo_guanli import XiansuoBaojia, XiansuoBaojiaXiangmu
-from models.chanpin_guanli import ChanpinXiangmu, ChanpinBuzou
+from models.xiansuo_guanli import XiansuoBaojia
+from models.chanpin_guanli import ChanpinXiangmu
 from schemas.fuwu_guanli.fuwu_gongdan_schemas import (
     FuwuGongdanCreate,
     FuwuGongdanUpdate,
@@ -24,9 +23,7 @@ from schemas.fuwu_guanli.fuwu_gongdan_schemas import (
     FuwuGongdanListParams,
     FuwuGongdanStatistics,
     FuwuGongdanXiangmuCreate,
-    FuwuGongdanXiangmuUpdate,
     FuwuGongdanXiangmuResponse,
-    FuwuGongdanRizhiCreate,
     FuwuGongdanRizhiResponse
 )
 

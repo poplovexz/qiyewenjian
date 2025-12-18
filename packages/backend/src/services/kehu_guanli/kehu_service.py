@@ -3,7 +3,7 @@
 """
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_
+from sqlalchemy import or_
 from fastapi import HTTPException
 
 from models.kehu_guanli import Kehu
@@ -189,7 +189,7 @@ class KehuService:
         status_dict = {status: count for status, count in status_stats}
 
         # 本月新增客户
-        from datetime import datetime, timedelta
+        from datetime import datetime
         current_month_start = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         monthly_new = self.db.query(func.count(Kehu.id)).filter(
             Kehu.is_deleted == "N",

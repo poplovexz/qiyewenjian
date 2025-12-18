@@ -4,7 +4,6 @@
 """
 import sys
 import requests
-import time
 
 def test_frontend_access():
     """测试前端访问"""

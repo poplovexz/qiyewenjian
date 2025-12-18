@@ -7,11 +7,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
 from models.hetong_guanli import HetongQianshu, Hetong
-from schemas.hetong_guanli import HetongQianshuCreate, HetongQianshuUpdate
+from schemas.hetong_guanli import HetongQianshuCreate
 from core.exceptions import BusinessException
 import uuid
-import base64
-import hashlib
 
 
 class HetongQianshuService:

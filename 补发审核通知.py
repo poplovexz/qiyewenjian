@@ -3,7 +3,6 @@
 为现有的审核流程补发通知
 """
 import sys
-import os
 from pathlib import Path
 
 # 添加src目录到Python路径

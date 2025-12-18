@@ -4,16 +4,14 @@
 from typing import Optional, List
 from decimal import Decimal
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, func
+from sqlalchemy import and_
 from fastapi import HTTPException, status
 
 from models.chanpin_guanli import ChanpinXiangmu, ChanpinBuzou
 from schemas.chanpin_guanli import (
     ChanpinBuzouCreate,
     ChanpinBuzouUpdate,
-    ChanpinBuzouResponse,
-    ChanpinBuzouBatchCreate,
-    ChanpinBuzouBatchUpdate
+    ChanpinBuzouResponse
 )
 
 

@@ -7,8 +7,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import text
-from core.database import engine, SessionLocal
-from models import Base
+from core.database import engine
 import logging
 
 # 配置日志

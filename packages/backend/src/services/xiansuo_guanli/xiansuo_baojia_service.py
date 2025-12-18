@@ -5,7 +5,7 @@ from typing import Optional, List, Tuple
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, or_, func, desc
 from fastapi import HTTPException, status
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 
 from models.xiansuo_guanli import XiansuoBaojia, XiansuoBaojiaXiangmu, Xiansuo
@@ -184,7 +184,7 @@ class XiansuoBaojiaService:
     async def get_baojia_detail_with_xiansuo(self, baojia_id: str) -> "XiansuoBaojiaDetailResponse":
         """获取包含线索信息的报价详情"""
         from models.xiansuo_guanli.xiansuo import Xiansuo
-        from schemas.xiansuo_guanli.xiansuo_baojia_schemas import XiansuoBaojiaDetailResponse, XiansuoInfoForBaojia
+        from schemas.xiansuo_guanli.xiansuo_baojia_schemas import XiansuoBaojiaDetailResponse
 
         baojia = self.db.query(XiansuoBaojia).options(
             joinedload(XiansuoBaojia.xiangmu_list)

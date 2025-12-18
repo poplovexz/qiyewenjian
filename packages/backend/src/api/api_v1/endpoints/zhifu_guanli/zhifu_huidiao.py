@@ -11,9 +11,7 @@ from core.database import get_db
 from services.zhifu_guanli.zhifu_huidiao_service import ZhifuHuidiaoService
 from services.zhifu_guanli.zhifu_peizhi_service import ZhifuPeizhiService
 from services.zhifu_guanli.zhifu_dingdan_service import ZhifuDingdanService
-from services.zhifu_guanli.zhifu_tuikuan_service import ZhifuTuikuanService
 from services.zhifu_guanli.zhifu_liushui_service import ZhifuLiushuiService
-from models.zhifu_guanli.zhifu_tuikuan import ZhifuTuikuan
 from models.zhifu_guanli.zhifu_liushui import ZhifuLiushui
 from schemas.zhifu_guanli.zhifu_liushui_schemas import ZhifuLiushuiCreate
 from utils.payment.weixin_pay import WeixinPayUtil

@@ -4,7 +4,7 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 from datetime import datetime
 
 from models.caiwu_guanli import (

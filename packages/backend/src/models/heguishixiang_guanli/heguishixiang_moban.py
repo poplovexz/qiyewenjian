@@ -1,7 +1,7 @@
 """
 合规事项模板表
 """
-from sqlalchemy import Column, String, Text, Integer, DateTime, Boolean
+from sqlalchemy import Column, String, Text, Integer
 from sqlalchemy.orm import relationship
 from models.base import BaseModel
 

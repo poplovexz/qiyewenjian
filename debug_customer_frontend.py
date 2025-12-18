@@ -4,8 +4,6 @@
 """
 
 import requests
-import json
-import time
 import shutil
 
 def debug_customer_frontend():

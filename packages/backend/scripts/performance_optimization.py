@@ -4,11 +4,10 @@
 import asyncio
 import time
 from typing import List, Dict, Any
-from sqlalchemy import text, create_engine
+from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 
-from src.core.database import get_db, engine
-from src.core.config import settings
+from src.core.database import engine
 
 
 class PerformanceOptimizer:

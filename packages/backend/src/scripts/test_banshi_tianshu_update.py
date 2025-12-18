@@ -18,7 +18,7 @@ sys.path.insert(0, str(project_root))
 from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker
 from core.config import settings
-from models.chanpin_guanli import ChanpinXiangmu, ChanpinBuzou, ChanpinFenlei
+from models.chanpin_guanli import ChanpinXiangmu
 from services.chanpin_guanli import ChanpinBuzouService
 from schemas.chanpin_guanli import ChanpinBuzouCreate, ChanpinBuzouUpdate
 

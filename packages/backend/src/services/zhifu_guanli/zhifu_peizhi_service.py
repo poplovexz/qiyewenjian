@@ -3,7 +3,7 @@
 """
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func, desc
+from sqlalchemy import or_, desc
 from fastapi import HTTPException, status
 from datetime import datetime
 

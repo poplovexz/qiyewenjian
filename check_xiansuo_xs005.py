@@ -3,7 +3,6 @@
 检查线索XS005的合同生成情况
 """
 import requests
-import json
 import sys
 
 # API基础URL

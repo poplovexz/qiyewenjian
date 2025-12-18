@@ -5,9 +5,8 @@ import pytest
 import uuid
 from typing import Tuple
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-from fastapi.testclient import TestClient
 
 from src.models.yonghu_guanli import Yonghu, Jiaose, Quanxian
 from src.core.security import get_password_hash, create_access_token

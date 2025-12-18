@@ -1,7 +1,7 @@
 """
 退款记录表模型
 """
-from sqlalchemy import Column, String, Numeric, DateTime, Text, ForeignKey, Integer
+from sqlalchemy import Column, String, Numeric, DateTime, Text, ForeignKey
 from ..base import BaseModel
 
 

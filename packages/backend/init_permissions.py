@@ -2,7 +2,6 @@
 初始化客户管理模块权限
 """
 import uuid
-import asyncio
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

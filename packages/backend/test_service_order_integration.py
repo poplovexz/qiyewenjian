@@ -7,8 +7,8 @@ sys.path.insert(0, 'src')
 from sqlalchemy.orm import Session
 from core.database import SessionLocal
 from models.hetong_guanli import Hetong
-from models.xiansuo_guanli import XiansuoBaojia, XiansuoBaojiaXiangmu
-from models.chanpin_guanli import ChanpinXiangmu, ChanpinBuzou
+from models.xiansuo_guanli import XiansuoBaojia
+from models.chanpin_guanli import ChanpinXiangmu
 from services.fuwu_guanli.fuwu_gongdan_service import FuwuGongdanService
 
 def test_service_order_creation():

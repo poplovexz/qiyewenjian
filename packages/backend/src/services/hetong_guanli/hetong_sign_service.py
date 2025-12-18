@@ -6,7 +6,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Optional
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 
 from models.hetong_guanli.hetong import Hetong
 from models.zhifu_guanli.hetong_zhifu import HetongZhifu
@@ -22,7 +22,6 @@ from schemas.hetong_guanli.hetong_schemas import (
     BankPaymentInfoRequest,
     BankPaymentInfoResponse
 )
-from schemas.zhifu_guanli import ZhifuTongzhiCreate
 
 logger = logging.getLogger(__name__)
 

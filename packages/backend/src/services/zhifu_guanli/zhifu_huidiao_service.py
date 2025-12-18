@@ -9,7 +9,6 @@ import json
 
 from models.zhifu_guanli.zhifu_huidiao_rizhi import ZhifuHuidiaoRizhi
 from schemas.zhifu_guanli.zhifu_huidiao_schemas import (
-    ZhifuHuidiaoRizhiCreate,
     ZhifuHuidiaoRizhiResponse,
     ZhifuHuidiaoRizhiListResponse
 )

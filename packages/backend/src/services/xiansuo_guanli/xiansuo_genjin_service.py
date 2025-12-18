@@ -4,7 +4,6 @@
 from typing import Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_
 from fastapi import HTTPException
 
 from models.xiansuo_guanli import XiansuoGenjin, Xiansuo

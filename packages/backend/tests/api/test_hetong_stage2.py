@@ -1,14 +1,11 @@
 """
 阶段2：合同生成与电子签署 - API测试
 """
-import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
 from src.main import app
 from src.core.database import get_db
 from src.models.yonghu_guanli import Yonghu
-from src.models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
 from src.models.hetong_guanli.hetong import Hetong
 from src.models.hetong_guanli.hetong_yifang_zhuti import HetongYifangZhuti
 from src.models.hetong_guanli.hetong_zhifu_fangshi import HetongZhifuFangshi

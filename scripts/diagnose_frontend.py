@@ -4,8 +4,6 @@
 """
 import sys
 import requests
-import time
-import json
 
 def test_static_pages():
     """测试静态页面"""

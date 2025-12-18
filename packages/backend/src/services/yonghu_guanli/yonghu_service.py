@@ -10,10 +10,10 @@ from fastapi import HTTPException, status
 from models.yonghu_guanli import Yonghu, Jiaose, Quanxian, YonghuJiaose, JiaoseQuanxian
 from schemas.yonghu_guanli import (
     YonghuCreate, YonghuUpdate, YonghuResponse, YonghuList,
-    JiaoseCreate, JiaoseUpdate, JiaoseResponse,
-    QuanxianCreate, QuanxianUpdate, QuanxianResponse
+    JiaoseResponse,
+    QuanxianResponse
 )
-from core.security import get_password_hash, verify_password
+from core.security import get_password_hash
 
 
 class YonghuService:

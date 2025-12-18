@@ -1,12 +1,12 @@
 """
 认证服务
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional, List, Set
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from models import Yonghu, Jiaose, YonghuJiaose, JiaoseQuanxian, Quanxian
+from models import Yonghu, Jiaose, YonghuJiaose
 from core.security import (
     verify_password, 
     get_password_hash, 

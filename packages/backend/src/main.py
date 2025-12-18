@@ -2,9 +2,8 @@
 代理记账营运内部系统 - 主应用入口
 """
 import os
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
@@ -12,7 +11,7 @@ from contextlib import asynccontextmanager
 from core.config import settings
 from api.api_v1.api import api_router
 from core.redis_client import redis_client
-from core.cache_decorator import warm_up_cache, cache_health_check
+from core.cache_decorator import warm_up_cache
 from core.logging import setup_logging, get_logger
 from core.middleware import RequestLoggingMiddleware, RateLimitMiddleware
 from core.exceptions import BaseCustomException

@@ -12,7 +12,6 @@
 """
 
 import sys
-import os
 from pathlib import Path
 
 # 添加src目录到Python路径
@@ -24,7 +23,6 @@ from sqlalchemy.orm import sessionmaker
 from core.config import settings
 from core.security import get_password_hash
 import uuid
-from datetime import datetime
 
 
 def ensure_admin_role(session):

@@ -2,14 +2,10 @@
 审核权限验证中间件
 专门用于审核模块的权限验证和安全控制
 """
-import json
 from typing import Dict, Any, List, Optional, Callable
 from functools import wraps
-from fastapi import HTTPException, Depends, Request
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
-from core.database import get_db
-from core.security.jwt_handler import get_current_user
 from models.yonghu_guanli import Yonghu, Jiaose, YonghuJiaose
 from models.shenhe_guanli import ShenheGuize, ShenheJilu
 

@@ -4,7 +4,6 @@
 """
 from typing import Dict, Any, Optional
 from wechatpayv3 import WeChatPay, WeChatPayType
-from datetime import datetime
 import logging
 
 logger = logging.getLogger(__name__)

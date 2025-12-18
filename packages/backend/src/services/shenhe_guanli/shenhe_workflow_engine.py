@@ -9,8 +9,6 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
 from models.shenhe_guanli import ShenheGuize, ShenheLiucheng, ShenheJilu
-from models.hetong_guanli import Hetong, HetongJineBiangeng
-from models.xiansuo_guanli import XiansuoBaojia
 from models.zhifu_guanli import ZhifuTongzhi
 from models.yonghu_guanli import Yonghu
 

@@ -2,7 +2,6 @@
 合同工作流集成测试
 """
 import pytest
-import asyncio
 from datetime import datetime, timedelta
 from decimal import Decimal
 from sqlalchemy.orm import Session
@@ -14,9 +13,7 @@ from src.services.hetong_guanli.hetong_service import HetongService
 from src.services.shenhe_guanli.shenhe_workflow_engine import ShenheWorkflowEngine
 from src.services.hetong_guanli.hetong_qianshu_service import HetongQianshuService
 from src.services.zhifu_guanli.hetong_zhifu_service import HetongZhifuService
-from src.models.xiansuo_guanli import Xiansuo, XiansuoBaojia
-from src.models.hetong_guanli import Hetong
-from src.models.shenhe_guanli import ShenheGuize, ShenheLiucheng
+from src.models.shenhe_guanli import ShenheLiucheng
 from src.schemas.xiansuo_guanli import XiansuoCreate, XiansuoBaojiaCreate
 from src.schemas.hetong_guanli import HetongCreate
 from src.schemas.shenhe_guanli import ShenheGuizeCreate

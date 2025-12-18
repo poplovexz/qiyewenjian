@@ -5,7 +5,6 @@
 import sys
 import os
 import re
-from collections import defaultdict
 
 # 添加项目路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'packages/backend/src'))

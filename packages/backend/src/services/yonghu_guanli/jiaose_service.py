@@ -5,19 +5,13 @@ import uuid
 from typing import List, Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import text, func
-
-from models.yonghu_guanli.jiaose import Jiaose
-from models.yonghu_guanli.quanxian import Quanxian
-from models.yonghu_guanli.jiaose_quanxian import JiaoseQuanxian
-from models.yonghu_guanli.yonghu_jiaose import YonghuJiaose
+from sqlalchemy import text
 from schemas.yonghu_guanli.jiaose_schemas import (
     JiaoseCreate,
     JiaoseUpdate,
     JiaoseResponse,
     JiaoseListResponse,
-    JiaoseListItem,
-    JiaoseStatistics
+    JiaoseListItem
 )
 
 

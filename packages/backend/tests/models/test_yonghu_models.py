@@ -2,11 +2,10 @@
 用户管理模块数据模型测试
 """
 import pytest
-from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.models import Base, Yonghu, Jiaose, Quanxian, YonghuJiaose, JiaoseQuanxian
+from src.models import Base, Yonghu, Jiaose, Quanxian, YonghuJiaose
 
 
 @pytest.fixture

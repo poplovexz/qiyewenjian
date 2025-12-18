@@ -4,9 +4,6 @@
 """
 
 import requests
-import json
-from datetime import datetime, timedelta
-import random
 
 # 配置
 BASE_URL = "http://localhost:8000"

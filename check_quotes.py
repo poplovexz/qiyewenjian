@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 import sys
-import os
 sys.path.append('/var/www/packages/backend/src')
-
-from sqlalchemy.orm import Session
 from core.database import get_db
 from models.xiansuo_guanli import XiansuoBaojia, Xiansuo
 from models.kehu_guanli import Kehu
