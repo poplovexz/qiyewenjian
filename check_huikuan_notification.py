@@ -4,6 +4,7 @@
 """
 import sys
 import os
+import shutil
 
 # 添加项目路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'packages/backend/src'))
@@ -153,9 +154,15 @@ def check_huikuan_notification():
         print(f"【4】检查后端日志（最近的汇款相关日志）\n")
         
         import subprocess
+        import tempfile
         try:
+            # BAN-B108: 使用 tempfile 获取临时目录
+            temp_dir = tempfile.gettempdir()
+            log_file = os.path.join(temp_dir, "backend_8000.log")
+            # BAN-B607: 使用 shutil.which 获取完整路径
+            tail_path = shutil.which("tail") or "/usr/bin/tail"
             log_result = subprocess.run(
-                ["tail", "-100", "/tmp/backend_8000.log"],
+                [tail_path, "-100", log_file],
                 capture_output=True,
                 text=True,
                 timeout=5

@@ -5,6 +5,7 @@
 import sys
 import os
 import time
+import importlib
 
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +29,8 @@ def test_import_with_timeout(module_name, timeout=10):
         elif module_name == "src.services.xiansuo_guanli.baojia_event_handlers":
             from src.services.xiansuo_guanli.baojia_event_handlers import register_baojia_event_handlers
         else:
-            exec(f"import {module_name}")
+            # PYL-W0122: 使用 importlib 替代 exec
+            importlib.import_module(module_name)
         
         elapsed = time.time() - start_time
         print(f"✅ {module_name} 导入成功 ({elapsed:.2f}s)")

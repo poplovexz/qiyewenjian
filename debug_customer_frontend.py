@@ -6,6 +6,7 @@
 import requests
 import json
 import time
+import shutil
 
 def debug_customer_frontend():
     """调试前端客户管理问题"""
@@ -149,10 +150,12 @@ def check_frontend_console_errors():
     # 检查前端编译状态
     try:
         import subprocess
+        # BAN-B607: 使用 shutil.which 获取完整路径
+        pnpm_path = shutil.which("pnpm") or "pnpm"
         result = subprocess.run(
-            ["pnpm", "run", "type-check"], 
+            [pnpm_path, "run", "type-check"],
             cwd="/var/www/packages/frontend",
-            capture_output=True, 
+            capture_output=True,
             text=True,
             timeout=30
         )

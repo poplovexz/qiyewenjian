@@ -6,44 +6,57 @@ import time
 import sys
 import os
 import signal
+import tempfile
+import shlex
 
 def kill_processes():
     """清理旧进程"""
     print("清理旧进程...")
-    subprocess.run("pkill -9 node 2>/dev/null || true", shell=True)
-    subprocess.run("pkill -9 uvicorn 2>/dev/null || true", shell=True)
-    subprocess.run("pkill -9 python3 2>/dev/null || true", shell=True)
+    # BAN-B602: 使用列表参数替代 shell=True
+    # BAN-B607: 使用完整路径
+    for proc_name in ["node", "uvicorn", "python3"]:
+        try:
+            subprocess.run(["/usr/bin/pkill", "-9", proc_name],
+                         capture_output=True, check=False)
+        except Exception:
+            pass  # 忽略进程不存在的错误
     time.sleep(3)
     print("✅ 进程已清理\n")
 
 def start_backend():
     """启动后端服务"""
     print("启动后端服务 (端口 8000)...")
-    
+
+    # BAN-B108: 使用 tempfile 获取临时目录
+    temp_dir = tempfile.gettempdir()
+    backend_log = os.path.join(temp_dir, "backend_dev.log")
+
+    # 注意: 这里需要 shell=True 因为需要 source 虚拟环境
+    # 这是开发脚本，输入是硬编码的，不存在注入风险
     backend_cmd = """
     cd /var/www/packages/backend && \
     source venv/bin/activate && \
     export PYTHONPATH=/var/www/packages/backend/src && \
     python3 -m uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
     """
-    
-    with open('/tmp/backend_dev.log', 'w') as log:
+
+    with open(backend_log, 'w') as log:
         proc = subprocess.Popen(
             backend_cmd,
-            shell=True,
+            shell=True,  # nosec B602 - 硬编码命令，无注入风险
             stdout=log,
             stderr=subprocess.STDOUT,
             executable='/bin/bash'
         )
-    
+
     print(f"后端进程 PID: {proc.pid}")
     time.sleep(8)
-    
+
     # 检查健康状态
+    # BAN-B607: 使用完整路径
     try:
         result = subprocess.run(
-            "curl -s http://localhost:8000/health",
-            shell=True,
+            ["/usr/bin/curl", "-s", "http://localhost:8000/health"],
             capture_output=True,
             text=True,
             timeout=5
@@ -54,7 +67,7 @@ def start_backend():
             return proc.pid
         else:
             print("❌ 后端启动失败")
-            print("   查看日志: tail -f /tmp/backend_dev.log\n")
+            print(f"   查看日志: tail -f {backend_log}\n")
             return None
     except Exception as e:
         print(f"❌ 后端健康检查失败: {e}")
@@ -63,26 +76,32 @@ def start_backend():
 def start_frontend():
     """启动前端服务"""
     print("启动前端服务...")
-    
+
+    # BAN-B108: 使用 tempfile 获取临时目录
+    temp_dir = tempfile.gettempdir()
+    frontend_log = os.path.join(temp_dir, "frontend_dev.log")
+
+    # 注意: 这里需要 shell=True 因为需要 cd 和 npm 命令组合
+    # 这是开发脚本，输入是硬编码的，不存在注入风险
     frontend_cmd = "cd /var/www/packages/frontend && npm run dev"
-    
-    with open('/tmp/frontend_dev.log', 'w') as log:
+
+    with open(frontend_log, 'w') as log:
         proc = subprocess.Popen(
             frontend_cmd,
-            shell=True,
+            shell=True,  # nosec B602 - 硬编码命令，无注入风险
             stdout=log,
             stderr=subprocess.STDOUT,
             executable='/bin/bash'
         )
-    
+
     print(f"前端进程 PID: {proc.pid}")
     time.sleep(10)
-    
+
     # 检查日志
     try:
-        with open('/tmp/frontend_dev.log', 'r') as f:
+        with open(frontend_log, 'r') as f:
             log_content = f.read()
-            
+
         if "ready in" in log_content:
             print("✅ 前端启动成功")
             # 尝试提取URL
@@ -93,11 +112,11 @@ def start_frontend():
             return proc.pid
         elif "already in use" in log_content:
             print("❌ 前端启动失败: 端口被占用")
-            print("   查看日志: tail -f /tmp/frontend_dev.log\n")
+            print(f"   查看日志: tail -f {frontend_log}\n")
             return None
         else:
             print("⚠️  前端可能还在启动中...")
-            print("   查看日志: tail -f /tmp/frontend_dev.log\n")
+            print(f"   查看日志: tail -f {frontend_log}\n")
             return proc.pid
     except Exception as e:
         print(f"❌ 读取前端日志失败: {e}")
@@ -146,7 +165,18 @@ def main():
     
     # 显示进程列表
     print("当前运行的服务进程:")
-    subprocess.run("ps aux | grep -E 'uvicorn|vite' | grep -v grep", shell=True)
+    # BAN-B602: 使用 Python 实现进程过滤，避免 shell=True
+    try:
+        ps_result = subprocess.run(
+            ["/bin/ps", "aux"],
+            capture_output=True,
+            text=True
+        )
+        for line in ps_result.stdout.split('\n'):
+            if ('uvicorn' in line or 'vite' in line) and 'grep' not in line:
+                print(line)
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()

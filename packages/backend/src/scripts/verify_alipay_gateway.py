@@ -18,7 +18,9 @@ ALIPAY_PATH = Path(__file__).parent.parent / 'utils' / 'payment' / 'alipay.py'
 spec = importlib.util.spec_from_file_location('alipay_util_module', ALIPAY_PATH)
 alipay_module = importlib.util.module_from_spec(spec)
 sys.modules['alipay_util_module'] = alipay_module
-assert spec and spec.loader
+# BAN-B101: 使用显式检查替代 assert
+if not spec or not spec.loader:
+    raise ImportError(f"无法加载模块 spec: {ALIPAY_PATH}")
 spec.loader.exec_module(alipay_module)
 
 # 关闭真实SDK初始化，避免对环境和密钥的依赖

@@ -12,15 +12,8 @@ import requests
 import logging
 
 # 安全修复：使用 defusedxml 防止 XXE 攻击
-try:
-    import defusedxml.ElementTree as ET
-except ImportError:
-    import xml.etree.ElementTree as ET
-    warnings.warn(
-        "defusedxml 未安装，使用标准库 xml.etree.ElementTree。"
-        "建议安装 defusedxml 以防止 XXE 攻击：pip install defusedxml",
-        SecurityWarning
-    )
+# BAN-B314/B405: 必须使用 defusedxml，不再 fallback 到标准库
+import defusedxml.ElementTree as ET
 
 logger = logging.getLogger(__name__)
 

@@ -3,6 +3,7 @@ import os
 import subprocess
 import threading
 import tempfile
+import shutil
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
@@ -320,8 +321,10 @@ class DeployService:
     def _get_current_commit_hash(self) -> Optional[str]:
         """获取当前Git提交哈希"""
         try:
+            # BAN-B607: 使用 shutil.which 获取完整路径
+            git_path = shutil.which("git") or "/usr/bin/git"
             result = subprocess.run(
-                ["git", "rev-parse", "HEAD"],
+                [git_path, "rev-parse", "HEAD"],
                 capture_output=True,
                 text=True,
                 cwd="/var/www"
@@ -346,9 +349,12 @@ class DeployService:
             Dict: 包含当前分支和所有分支列表
         """
         try:
+            # BAN-B607: 使用 shutil.which 获取完整路径
+            git_path = shutil.which("git") or "/usr/bin/git"
+
             # 获取当前分支
             current_result = subprocess.run(
-                ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                [git_path, "rev-parse", "--abbrev-ref", "HEAD"],
                 capture_output=True,
                 text=True,
                 cwd="/var/www"
@@ -357,7 +363,7 @@ class DeployService:
 
             # 获取所有本地分支
             branches_result = subprocess.run(
-                ["git", "branch", "--format=%(refname:short)"],
+                [git_path, "branch", "--format=%(refname:short)"],
                 capture_output=True,
                 text=True,
                 cwd="/var/www"
@@ -371,7 +377,7 @@ class DeployService:
 
             # 获取所有远程分支
             remote_result = subprocess.run(
-                ["git", "branch", "-r", "--format=%(refname:short)"],
+                [git_path, "branch", "-r", "--format=%(refname:short)"],
                 capture_output=True,
                 text=True,
                 cwd="/var/www"
@@ -539,9 +545,11 @@ class DeployService:
             errors += 1
         else:
             try:
+                # BAN-B607: 使用 shutil.which 获取完整路径
+                python3_path = shutil.which("python3") or "/usr/bin/python3"
                 # 测试导入主应用
                 result = subprocess.run(
-                    ["python3", "-c", "from src.main import app; print('OK')"],
+                    [python3_path, "-c", "from src.main import app; print('OK')"],
                     cwd=str(backend_dir),
                     capture_output=True,
                     text=True,
@@ -578,8 +586,10 @@ class DeployService:
                 errors += 1
             else:
                 try:
+                    # BAN-B607: 使用 shutil.which 获取完整路径
+                    npm_path = shutil.which("npm") or "/usr/bin/npm"
                     result = subprocess.run(
-                        ["npm", "run", "build:prod"],
+                        [npm_path, "run", "build:prod"],
                         cwd=str(frontend_dir),
                         capture_output=True,
                         text=True,
@@ -620,9 +630,10 @@ class DeployService:
                 try:
                     with tempfile.TemporaryDirectory() as temp_dir:
                         venv_path = os.path.join(temp_dir, "test_venv")
-
+                        # BAN-B607: 使用 shutil.which 获取完整路径
+                        python3_path = shutil.which("python3") or "/usr/bin/python3"
                         subprocess.run(
-                            ["python3", "-m", "venv", venv_path],
+                            [python3_path, "-m", "venv", venv_path],
                             check=True,
                             capture_output=True,
                             timeout=30
