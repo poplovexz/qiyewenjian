@@ -51,7 +51,7 @@ export function initSentry(dsn?: string): void {
   }
   
   if (!config.dsn) {
-    console.log('[Sentry] DSN not configured, error reporting disabled')
+    
     return
   }
 
@@ -66,7 +66,7 @@ export function initSentry(dsn?: string): void {
     captureException(error)
   })
 
-  console.log(`[Sentry] Initialized for ${config.environment} environment`)
+  
 }
 
 /**

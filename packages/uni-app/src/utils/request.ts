@@ -110,7 +110,7 @@ const executeRequest = <T>(config: RequestConfig, retryCount: number): Promise<T
       fail: (err) => {
         // 网络错误，尝试重试
         if (retryCount < (config.retry || 0)) {
-          console.log(`请求失败，正在重试 (${retryCount + 1}/${config.retry})`)
+          
           setTimeout(() => {
             executeRequest<T>(config, retryCount + 1)
               .then(resolve)

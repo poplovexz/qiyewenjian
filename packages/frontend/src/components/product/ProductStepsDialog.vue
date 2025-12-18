@@ -403,9 +403,9 @@ const handleSaveStep = async (step: any, index: number) => {
         zhuangtai: step.zhuangtai
       }
 
-      console.log('创建步骤数据:', createData)
+      
       const result = await productStepApi.create(createData)
-      console.log('创建步骤成功:', result)
+      
       Object.assign(step, result, { editing: false, isNew: false })
       ElMessage.success('步骤创建成功')
     } else {
@@ -421,9 +421,9 @@ const handleSaveStep = async (step: any, index: number) => {
         zhuangtai: step.zhuangtai
       }
 
-      console.log('更新步骤数据:', updateData)
+      
       const result = await productStepApi.update(step.id, updateData)
-      console.log('更新步骤成功:', result)
+      
       Object.assign(step, result, { editing: false })
       ElMessage.success('步骤更新成功')
     }
@@ -491,7 +491,7 @@ const handleBatchSave = async () => {
       return
     }
 
-    console.log(`批量保存 ${stepsToSave.length} 个步骤`)
+    
 
     let successCount = 0
     let failCount = 0
@@ -538,7 +538,7 @@ const handleBatchSave = async () => {
             zhuangtai: step.zhuangtai
           }
 
-          console.log(`创建步骤 ${i + 1}:`, createData)
+          
           const result = await productStepApi.create(createData)
           Object.assign(step, result, { editing: false, isNew: false })
           successCount++
@@ -555,7 +555,7 @@ const handleBatchSave = async () => {
             zhuangtai: step.zhuangtai
           }
 
-          console.log(`更新步骤 ${i + 1}:`, updateData)
+          
           const result = await productStepApi.update(step.id, updateData)
           Object.assign(step, result, { editing: false })
           successCount++

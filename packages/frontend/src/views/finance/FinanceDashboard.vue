@@ -219,7 +219,7 @@ const getStatusText = (status: string) => {
 // 查看订单详情
 const viewOrder = (id: string) => {
   // TODO: 跳转到订单详情页面
-  console.log('查看订单:', id)
+  
 }
 
 // 页面加载时获取数据

@@ -152,19 +152,19 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
     try {
       loading.value = true
 
-      console.log('审核操作参数:', { taskId, action, data })
+      
 
       // 使用axios实例（包含认证token）
       let result
       if (action === 'approve') {
-        console.log('发送审核通过请求:', `/audit-records/${taskId}/approve`)
+        
         result = await auditRecordApi.approve(taskId, data)
       } else if (action === 'reject') {
-        console.log('发送审核拒绝请求:', `/audit-records/${taskId}/reject`)
+        
         result = await auditRecordApi.reject(taskId, data)
       }
 
-      console.log('审核操作响应:', result)
+      
 
       // 更新待审核任务列表
       await fetchMyPendingAudits()

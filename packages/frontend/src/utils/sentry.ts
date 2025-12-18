@@ -33,7 +33,7 @@ export function initSentry(app: App, router: Router): void {
 
   // 如果没有配置 DSN，跳过初始化
   if (!dsn) {
-    console.log('[Sentry] DSN not configured, skipping initialization')
+    
     return
   }
 
@@ -100,7 +100,7 @@ export function initSentry(app: App, router: Router): void {
       ],
     })
 
-    console.log(`[Sentry] Initialized for ${environment} environment`)
+    
   } catch (error) {
     console.error('[Sentry] Failed to initialize:', error)
   }
