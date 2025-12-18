@@ -200,7 +200,8 @@ class AuditWorkflowService:
         self.db.commit()
         return True
     
-    def _to_workflow_response(self, workflow: ShenheGuize, workflow_name: str = None) -> AuditWorkflowResponse:
+    @staticmethod
+    def _to_workflow_response(workflow: ShenheGuize, workflow_name: str = None) -> AuditWorkflowResponse:
         """转换为工作流响应模型"""
         # 解析流程配置
         try:

@@ -172,7 +172,8 @@ class AuditPermissionChecker:
         
         return False
     
-    def _role_has_permission(self, role_code: str, permission: str) -> bool:
+    @staticmethod
+    def _role_has_permission(role_code: str, permission: str) -> bool:
         """检查角色是否有指定权限"""
         # 角色权限映射
         role_permissions = {
@@ -210,7 +211,8 @@ class AuditPermissionChecker:
         
         return False
     
-    def _get_role_approval_authority(self, role_code: str, rule_type: str) -> Dict[str, Any]:
+    @staticmethod
+    def _get_role_approval_authority(role_code: str, rule_type: str) -> Dict[str, Any]:
         """获取角色在特定规则类型下的审批权限"""
         # 角色审批权限配置
         approval_authorities = {

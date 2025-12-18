@@ -309,7 +309,8 @@ class DeployService:
         
         return False
     
-    def _get_deploy_script_path(self, environment: str) -> str:
+    @staticmethod
+    def _get_deploy_script_path(environment: str) -> str:
         """获取部署脚本路径"""
         if environment == "production":
             return "/var/www/quick-deploy.sh"
@@ -318,7 +319,8 @@ class DeployService:
         else:
             return "/var/www/deploy-to-development.sh"
     
-    def _get_current_commit_hash(self) -> Optional[str]:
+    @staticmethod
+    def _get_current_commit_hash() -> Optional[str]:
         """获取当前Git提交哈希"""
         try:
             # BAN-B607: 使用 shutil.which 获取完整路径
@@ -343,7 +345,8 @@ class DeployService:
             self._deploy_logs[deploy_id] = []
         self._deploy_logs[deploy_id].append(message)
 
-    def get_git_branches(self) -> Dict[str, Any]:
+    @staticmethod
+    def get_git_branches() -> Dict[str, Any]:
         """
         获取Git分支列表
 

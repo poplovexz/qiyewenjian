@@ -120,7 +120,8 @@ class RuleTestService:
             "detailed_results": test_results
         }
     
-    def _evaluate_trigger_conditions(self, conditions: Dict[str, Any], test_data: Dict[str, Any]) -> Dict[str, Any]:
+    @staticmethod
+    def _evaluate_trigger_conditions(conditions: Dict[str, Any], test_data: Dict[str, Any]) -> Dict[str, Any]:
         """评估触发条件"""
         if not conditions:
             return {
@@ -345,7 +346,8 @@ class RuleTestService:
             "conditions_met": conditions_met
         }
     
-    def _generate_workflow_preview(self, rule: ShenheGuize, test_data: Dict[str, Any]) -> Dict[str, Any]:
+    @staticmethod
+    def _generate_workflow_preview(rule: ShenheGuize, test_data: Dict[str, Any]) -> Dict[str, Any]:
         """生成工作流预览"""
         try:
             workflow_config = json.loads(rule.shenhe_liucheng_peizhi) if isinstance(rule.shenhe_liucheng_peizhi, str) else rule.shenhe_liucheng_peizhi
@@ -396,7 +398,8 @@ class RuleTestService:
                 "steps": []
             }
     
-    def get_test_templates(self) -> List[Dict[str, Any]]:
+    @staticmethod
+    def get_test_templates() -> List[Dict[str, Any]]:
         """获取测试模板"""
         return [
             {

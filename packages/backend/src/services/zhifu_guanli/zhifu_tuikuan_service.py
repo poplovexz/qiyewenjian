@@ -301,7 +301,8 @@ class ZhifuTuikuanService:
         
         return ZhifuTuikuanResponse.from_orm(tuikuan)
     
-    def _generate_tuikuan_danhao(self) -> str:
+    @staticmethod
+    def _generate_tuikuan_danhao() -> str:
         """生成退款单号"""
         # 格式：TK + YYYYMMDD + 6位随机数
         today = datetime.now().strftime("%Y%m%d")

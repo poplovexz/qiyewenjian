@@ -46,11 +46,13 @@ class WeixinPaySandboxUtil:
         self.notify_url = notify_url
         self.sandbox_signkey: Optional[str] = None
         
-    def _generate_nonce_str(self, length: int = 32) -> str:
+    @staticmethod
+    def _generate_nonce_str(length: int = 32) -> str:
         """生成随机字符串"""
         return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
     
-    def _generate_sign(self, params: Dict[str, Any], key: str) -> str:
+    @staticmethod
+    def _generate_sign(params: Dict[str, Any], key: str) -> str:
         """
         生成签名
         
@@ -76,7 +78,8 @@ class WeixinPaySandboxUtil:
         md5 = hashlib.md5(sign_str.encode('utf-8'), usedforsecurity=False)
         return md5.hexdigest().upper()
     
-    def _dict_to_xml(self, data: Dict[str, Any]) -> str:
+    @staticmethod
+    def _dict_to_xml(data: Dict[str, Any]) -> str:
         """将字典转换为XML"""
         xml_str = "<xml>"
         for k, v in data.items():
@@ -87,7 +90,8 @@ class WeixinPaySandboxUtil:
         xml_str += "</xml>"
         return xml_str
     
-    def _xml_to_dict(self, xml_str: str) -> Dict[str, Any]:
+    @staticmethod
+    def _xml_to_dict(xml_str: str) -> Dict[str, Any]:
         """将XML转换为字典"""
         try:
             root = ET.fromstring(xml_str)

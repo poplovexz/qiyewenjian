@@ -127,7 +127,8 @@ class EventBus:
         # 保存事件历史
         self._add_event_history(event_record)
     
-    async def _handle_async_event(self, handler: Callable, payload: Dict[str, Any], event_record: Dict[str, Any]) -> None:
+    @staticmethod
+    async def _handle_async_event(handler: Callable, payload: Dict[str, Any], event_record: Dict[str, Any]) -> None:
         """处理异步事件"""
         try:
             await handler(payload)
@@ -140,7 +141,8 @@ class EventBus:
             logger.error(f"异步事件处理失败: {error_info}")
             logger.error(traceback.format_exc())
     
-    async def _handle_sync_event_async(self, handler: Callable, payload: Dict[str, Any], event_record: Dict[str, Any]) -> None:
+    @staticmethod
+    async def _handle_sync_event_async(handler: Callable, payload: Dict[str, Any], event_record: Dict[str, Any]) -> None:
         """在线程池中处理同步事件"""
         try:
             loop = asyncio.get_event_loop()
