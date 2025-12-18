@@ -354,7 +354,6 @@ const handleTemplateChange = async (templateId: string) => {
   try {
     // 获取模板变量配置
     const variables = await templateStore.getTemplateVariables(templateId)
-    
   } catch (error) {
     console.error('获取模板变量失败:', error)
   }

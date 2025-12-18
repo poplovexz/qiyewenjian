@@ -121,8 +121,6 @@ import { Search } from '@element-plus/icons-vue'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
 import type { ChanpinXiangmuOption } from '@/types/xiansuo'
 
-
-
 // Props
 interface Props {
   visible: boolean
@@ -217,26 +215,17 @@ const dailiJizhangPackages = ref<ChanpinXiangmuOption[]>([
 ])
 
 const filteredProducts = computed(() => {
-  
-  
-  
-
   let products: ChanpinXiangmuOption[]
   if (!productData.value) {
-    
     products = []
   } else if (activeCategory.value === 'daizang') {
     // 代理记账分类：只显示套餐，不显示单独的产品项目
     products = dailiJizhangPackages.value
-    
-    
   } else if (activeCategory.value === 'zengzhi') {
     products = productData.value.zengzhi_xiangmu || []
-    
   } else {
     // 全部服务：显示套餐 + 增值服务
     products = [...dailiJizhangPackages.value, ...(productData.value.zengzhi_xiangmu || [])]
-    
   }
 
   if (searchKeyword.value) {
@@ -246,10 +235,8 @@ const filteredProducts = computed(() => {
         product.xiangmu_mingcheng.toLowerCase().includes(keyword) ||
         product.xiangmu_bianma.toLowerCase().includes(keyword)
     )
-    
   }
 
-  
   return products
 })
 
@@ -265,7 +252,6 @@ const loadProductData = async () => {
       console.error('产品数据加载后仍为空')
       ElMessage.error('产品数据加载失败，请刷新页面重试')
     } else {
-      
     }
   } catch (error) {
     console.error('加载产品数据失败:', error)
@@ -358,9 +344,7 @@ const handleClose = () => {
 watch(
   () => props.visible,
   (visible, oldVisible) => {
-    
     if (visible) {
-      
       void loadProductData()
     }
   },
@@ -369,9 +353,7 @@ watch(
 
 // 生命周期
 onMounted(() => {
-  
   if (props.visible) {
-    
     void loadProductData()
   }
 })

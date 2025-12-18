@@ -32,18 +32,12 @@ export default defineConfig(({ mode }) => {
           secure: false,
           ws: true,
           configure: (proxy, _options) => {
-            proxy.on('error', (err, _req, _res) => {
-              
-            });
-            proxy.on('proxyReq', (proxyReq, req, _res) => {
-              
-            });
-            proxy.on('proxyRes', (proxyRes, req, _res) => {
-              
-            });
+            proxy.on('error', (err, _req, _res) => {})
+            proxy.on('proxyReq', (proxyReq, req, _res) => {})
+            proxy.on('proxyRes', (proxyRes, req, _res) => {})
           },
-        }
-      }
+        },
+      },
     },
     test: {
       globals: true,

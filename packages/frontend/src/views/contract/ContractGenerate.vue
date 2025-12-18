@@ -520,8 +520,6 @@ const analyzeQuoteServices = (quote: XiansuoBaojiaDetail) => {
     generateForm.contractTypes = ['daili_jizhang']
     generateForm.daliJizhangPrice = quote.zongji_jine
   }
-
-  
 }
 
 const fetchContractParties = async () => {
@@ -608,9 +606,7 @@ const handlePreview = async () => {
         },
       }
 
-      
       const response = await contractApi.previewContract(previewData)
-      
 
       // 处理响应数据结构
       const content = response?.data?.content || response?.content || ''
@@ -638,9 +634,7 @@ const handlePreview = async () => {
         },
       }
 
-      
       const response = await contractApi.previewContract(previewData)
-      
 
       // 处理响应数据结构
       const content = response?.data?.content || response?.content || ''
@@ -760,8 +754,6 @@ const generateContracts = async () => {
     }
 
     // 调试：打印发送的数据
-    
-    
 
     // 调用新的合同生成API
     const response = await contractApi.generateContracts(generateData)

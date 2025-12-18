@@ -9,7 +9,7 @@ import {
   xiansuoLaiyuanApi,
   xiansuoZhuangtaiApi,
   xiansuoGenjinApi,
-  xiansuoBaojiaApi
+  xiansuoBaojiaApi,
 } from '@/api/modules/xiansuo'
 import type {
   Xiansuo,
@@ -31,7 +31,7 @@ import type {
   XiansuoBaojiaCreate,
   XiansuoBaojiaUpdate,
   XiansuoBaojiaDetail,
-  ChanpinDataForBaojia
+  ChanpinDataForBaojia,
 } from '@/types/xiansuo'
 
 export const useXiansuoStore = defineStore('xiansuo', () => {
@@ -69,27 +69,27 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     zhuangtai_timestamp: 0,
     statistics_loaded: false,
     statistics_timestamp: 0,
-    xiansuo_cache: new Map<string, { data: Xiansuo[], total: number, timestamp: number }>()
+    xiansuo_cache: new Map<string, { data: Xiansuo[]; total: number; timestamp: number }>(),
   })
 
   // 缓存过期时间（5分钟）
   const CACHE_EXPIRE_TIME = 5 * 60 * 1000
-  
+
   // 计算属性
-  const newXiansuo = computed(() => 
-    xiansuo_list.value.filter(x => x.xiansuo_zhuangtai === 'new').length
+  const newXiansuo = computed(
+    () => xiansuo_list.value.filter((x) => x.xiansuo_zhuangtai === 'new').length
   )
-  
-  const followingXiansuo = computed(() => 
-    xiansuo_list.value.filter(x => x.xiansuo_zhuangtai === 'following').length
+
+  const followingXiansuo = computed(
+    () => xiansuo_list.value.filter((x) => x.xiansuo_zhuangtai === 'following').length
   )
-  
-  const interestedXiansuo = computed(() => 
-    xiansuo_list.value.filter(x => x.xiansuo_zhuangtai === 'interested').length
+
+  const interestedXiansuo = computed(
+    () => xiansuo_list.value.filter((x) => x.xiansuo_zhuangtai === 'interested').length
   )
-  
-  const wonXiansuo = computed(() => 
-    xiansuo_list.value.filter(x => x.xiansuo_zhuangtai === 'won').length
+
+  const wonXiansuo = computed(
+    () => xiansuo_list.value.filter((x) => x.xiansuo_zhuangtai === 'won').length
   )
 
   // 线索管理方法
@@ -104,7 +104,7 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
         search: params.search || '',
         xiansuo_zhuangtai: params.xiansuo_zhuangtai || '',
         laiyuan_id: params.laiyuan_id || '',
-        zhiliang_pinggu: params.zhiliang_pinggu || ''
+        zhiliang_pinggu: params.zhiliang_pinggu || '',
       })
 
       // 检查缓存
@@ -113,27 +113,25 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       const isExpired = cachedData ? now - cachedData.timestamp > CACHE_EXPIRE_TIME : true
 
       if (!forceRefresh && cachedData && !isExpired) {
-        
         xiansuo_list.value = cachedData.data
         total.value = cachedData.total
         currentPage.value = params.page || currentPage.value
         pageSize.value = params.size || pageSize.value
-        
+
         // 即使使用缓存数据，也要预取报价信息以确保按钮状态正确
-        
+
         await prefetchBaojiaForLeads(cachedData.data)
-        
+
         return
       }
 
-      
       const requestParams = {
         page: params.page || currentPage.value,
         size: params.size || pageSize.value,
         search: params.search || '',
         xiansuo_zhuangtai: params.xiansuo_zhuangtai || '',
         laiyuan_id: params.laiyuan_id || '',
-        zhiliang_pinggu: params.zhiliang_pinggu || ''
+        zhiliang_pinggu: params.zhiliang_pinggu || '',
       }
       const response = await xiansuoApi.getList(requestParams)
 
@@ -146,14 +144,12 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       cache.value.xiansuo_cache.set(cacheKey, {
         data: response.items,
         total: response.total,
-        timestamp: now
+        timestamp: now,
       })
 
       // 预取报价信息，保证按钮状态准确
-      
-      await prefetchBaojiaForLeads(response.items)
-      
 
+      await prefetchBaojiaForLeads(response.items)
     } catch (error) {
       console.error('获取线索列表失败:', error)
       ElMessage.error('获取线索列表失败')
@@ -257,7 +253,9 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     }
   }
 
-  const fetchStatistics = async (params: { start_date?: string; end_date?: string; fenpei_ren_id?: string } = {}) => {
+  const fetchStatistics = async (
+    params: { start_date?: string; end_date?: string; fenpei_ren_id?: string } = {}
+  ) => {
     try {
       const response = await xiansuoApi.getStatistics(params)
       statistics.value = response
@@ -289,13 +287,16 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     const now = Date.now()
     const isExpired = now - cache.value.laiyuan_timestamp > CACHE_EXPIRE_TIME
 
-    if (!forceRefresh && cache.value.laiyuan_loaded && !isExpired && active_laiyuan_list.value.length > 0) {
-      
+    if (
+      !forceRefresh &&
+      cache.value.laiyuan_loaded &&
+      !isExpired &&
+      active_laiyuan_list.value.length > 0
+    ) {
       return
     }
 
     try {
-      
       const response = await xiansuoLaiyuanApi.getActiveList()
       active_laiyuan_list.value = response
 
@@ -332,13 +333,16 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     const now = Date.now()
     const isExpired = now - cache.value.zhuangtai_timestamp > CACHE_EXPIRE_TIME
 
-    if (!forceRefresh && cache.value.zhuangtai_loaded && !isExpired && active_zhuangtai_list.value.length > 0) {
-      
+    if (
+      !forceRefresh &&
+      cache.value.zhuangtai_loaded &&
+      !isExpired &&
+      active_zhuangtai_list.value.length > 0
+    ) {
       return
     }
 
     try {
-      
       const response = await xiansuoZhuangtaiApi.getActiveList()
       active_zhuangtai_list.value = response
 
@@ -351,7 +355,15 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     }
   }
 
-  const fetchZhuangtaiList = async (params: { page?: number; size?: number; search?: string; zhuangtai_leixing?: string; zhuangtai?: string } = {}) => {
+  const fetchZhuangtaiList = async (
+    params: {
+      page?: number
+      size?: number
+      search?: string
+      zhuangtai_leixing?: string
+      zhuangtai?: string
+    } = {}
+  ) => {
     try {
       loading.value = true
       const response = await xiansuoZhuangtaiApi.getList(params)
@@ -407,7 +419,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
   // 缓存管理方法
   const clearCache = () => {
-    
     cache.value.laiyuan_loaded = false
     cache.value.laiyuan_timestamp = 0
     cache.value.zhuangtai_loaded = false
@@ -418,27 +429,21 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
   }
 
   const clearXiansuoCache = () => {
-    
     cache.value.xiansuo_cache.clear()
   }
 
   const refreshAllData = async () => {
-    
     clearCache()
     await Promise.all([
       fetchActiveLaiyuanList(true),
       fetchActiveZhuangtaiList(true),
-      fetchXiansuoList({}, true)
+      fetchXiansuoList({}, true),
     ])
   }
 
   // 初始化数据（带缓存）
   const initializeData = async () => {
-    
-    await Promise.all([
-      fetchActiveLaiyuanList(),
-      fetchActiveZhuangtaiList()
-    ])
+    await Promise.all([fetchActiveLaiyuanList(), fetchActiveZhuangtaiList()])
   }
 
   // 报价相关方法
@@ -447,39 +452,28 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
   const setBaojiaList = (xiansuoId: string, list: XiansuoBaojia[]) => {
     baojiaMap.value = {
       ...baojiaMap.value,
-      [xiansuoId]: list
+      [xiansuoId]: list,
     }
   }
 
   const prefetchBaojiaForLeads = async (leads: Xiansuo[]) => {
-    
-    
-    
-    
-    const ids = leads
-      .filter(lead => !baojiaMap.value[lead.id])
-      .map(lead => lead.id)
-
-    
-    
+    const ids = leads.filter((lead) => !baojiaMap.value[lead.id]).map((lead) => lead.id)
 
     if (!ids.length) {
-      
       return
     }
 
-    await Promise.all(ids.map(async (id) => {
-      try {
-        
-        const list = await xiansuoBaojiaApi.getByXiansuo(id)
-        
-        setBaojiaList(id, list)
-      } catch (error) {
-        console.warn('❌ 预取线索报价失败:', id, error)
-      }
-    }))
-    
-    
+    await Promise.all(
+      ids.map(async (id) => {
+        try {
+          const list = await xiansuoBaojiaApi.getByXiansuo(id)
+
+          setBaojiaList(id, list)
+        } catch (error) {
+          console.warn('❌ 预取线索报价失败:', id, error)
+        }
+      })
+    )
   }
 
   const fetchBaojiaByXiansuo = async (xiansuoId: string, forceRefresh = false) => {
@@ -528,7 +522,7 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       current_baojia.value = response
 
       const list = baojiaMap.value[response.xiansuo_id] || []
-      const updatedList = list.map(item => (item.id === id ? response : item))
+      const updatedList = list.map((item) => (item.id === id ? response : item))
       setBaojiaList(response.xiansuo_id, updatedList)
 
       ElMessage.success('报价更新成功')
@@ -548,7 +542,7 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       await xiansuoBaojiaApi.delete(baojiaId)
 
       const list = baojiaMap.value[xiansuoId] || []
-      const updatedList = list.filter(item => item.id !== baojiaId)
+      const updatedList = list.filter((item) => item.id !== baojiaId)
       setBaojiaList(xiansuoId, updatedList)
       if (current_baojia.value?.id === baojiaId) {
         current_baojia.value = null
@@ -572,7 +566,7 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
       // 更新缓存中的报价状态
       const list = baojiaMap.value[response.xiansuo_id] || []
-      const updatedList = list.map(item => (item.id === id ? response : item))
+      const updatedList = list.map((item) => (item.id === id ? response : item))
       setBaojiaList(response.xiansuo_id, updatedList)
 
       return response
@@ -592,7 +586,7 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
       // 更新缓存中的报价状态
       const list = baojiaMap.value[response.xiansuo_id] || []
-      const updatedList = list.map(item => (item.id === id ? response : item))
+      const updatedList = list.map((item) => (item.id === id ? response : item))
       setBaojiaList(response.xiansuo_id, updatedList)
 
       return response
@@ -606,11 +600,10 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
   const fetchProductData = async () => {
     try {
-      
       const response = await xiansuoBaojiaApi.getProductData()
-      
+
       product_data.value = response
-      
+
       return response
     } catch (error) {
       console.error('❌ 获取产品数据失败:', error)
@@ -622,20 +615,13 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
   // 辅助方法：检查特定线索是否有有效报价
   const hasValidBaojia = (xiansuoId: string): boolean => {
     const baojiaList = baojiaMap.value[xiansuoId] || []
-    
-    
-    
+
     if (baojiaList.length > 0) {
-      baojiaList.forEach((b, index) => {
-        
-      })
+      baojiaList.forEach((b, index) => {})
     }
-    
-    const hasValid = baojiaList.some(
-      b => !b.is_expired && b.baojia_zhuangtai !== 'rejected'
-    )
-    
-    
+
+    const hasValid = baojiaList.some((b) => !b.is_expired && b.baojia_zhuangtai !== 'rejected')
+
     return hasValid
   }
 
@@ -725,6 +711,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     clearCache,
     clearXiansuoCache,
     refreshAllData,
-    initializeData
+    initializeData,
   }
 })
