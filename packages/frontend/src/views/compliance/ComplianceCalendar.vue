@@ -28,7 +28,7 @@
             @change="handleYearChange"
           />
         </div>
-        
+
         <div class="filter-item">
           <label>月份：</label>
           <el-select
@@ -103,7 +103,7 @@
             <el-icon class="stat-icon total"><Calendar /></el-icon>
           </el-card>
         </el-col>
-        
+
         <el-col :span="6">
           <el-card class="stat-card">
             <div class="stat-content">
@@ -113,7 +113,7 @@
             <el-icon class="stat-icon completed"><CircleCheck /></el-icon>
           </el-card>
         </el-col>
-        
+
         <el-col :span="6">
           <el-card class="stat-card">
             <div class="stat-content">
@@ -123,7 +123,7 @@
             <el-icon class="stat-icon overdue"><Warning /></el-icon>
           </el-card>
         </el-col>
-        
+
         <el-col :span="6">
           <el-card class="stat-card">
             <div class="stat-content">
@@ -182,12 +182,7 @@
       <!-- 年视图 -->
       <div v-if="viewMode === 'year' && calendarData" class="year-view">
         <div class="year-grid">
-          <div
-            v-for="month in 12"
-            :key="month"
-            class="month-card"
-            @click="selectMonth(month)"
-          >
+          <div v-for="month in 12" :key="month" class="month-card" @click="selectMonth(month)">
             <div class="month-header">
               <h4>{{ month }}月</h4>
               <span class="month-stats">{{ getMonthStats(month) }}</span>
@@ -201,10 +196,7 @@
                 <span class="item-date">{{ formatDate(item.jihua_jieshu_shijian) }}</span>
                 <span class="item-name">{{ item.shili_mingcheng }}</span>
               </div>
-              <div
-                v-if="getMonthItems(month).length > 5"
-                class="more-month-items"
-              >
+              <div v-if="getMonthItems(month).length > 5" class="more-month-items">
                 +{{ getMonthItems(month).length - 5 }} 更多
               </div>
             </div>
@@ -277,7 +269,7 @@ const customers = ref([])
 const monthOptions = computed(() => {
   return Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,
-    label: `${i + 1}月`
+    label: `${i + 1}月`,
   }))
 })
 
@@ -299,10 +291,7 @@ const loadCalendarData = async () => {
 
 const loadUpcomingItems = async () => {
   try {
-    const items = await complianceStore.fetchUpcomingItems(
-      7,
-      selectedCustomer.value || undefined
-    )
+    const items = await complianceStore.fetchUpcomingItems(7, selectedCustomer.value || undefined)
     upcomingItems.value = items
   } catch (error) {
     console.error('加载即将到期事项失败:', error)
@@ -336,37 +325,40 @@ const getStatusTagType = (urgency: string) => {
     high: 'warning',
     medium: 'primary',
     low: 'info',
-    none: 'success'
+    none: 'success',
   }
   return typeMap[urgency] || 'info'
 }
 
 const getMonthStats = (month: number) => {
   if (!calendarData.value?.calendar_data) return '0项'
-  
+
   let count = 0
-  Object.keys(calendarData.value.calendar_data).forEach(date => {
+  Object.keys(calendarData.value.calendar_data).forEach((date) => {
     const dateObj = new Date(date)
     if (dateObj.getMonth() + 1 === month) {
       count += calendarData.value.calendar_data[date].length
     }
   })
-  
+
   return `${count}项`
 }
 
 const getMonthItems = (month: number) => {
   if (!calendarData.value?.calendar_data) return []
-  
+
   const items = []
-  Object.keys(calendarData.value.calendar_data).forEach(date => {
+  Object.keys(calendarData.value.calendar_data).forEach((date) => {
     const dateObj = new Date(date)
     if (dateObj.getMonth() + 1 === month) {
       items.push(...calendarData.value.calendar_data[date])
     }
   })
-  
-  return items.sort((a, b) => new Date(a.jihua_jieshu_shijian).getTime() - new Date(b.jihua_jieshu_shijian).getTime())
+
+  return items.sort(
+    (a, b) =>
+      new Date(a.jihua_jieshu_shijian).getTime() - new Date(b.jihua_jieshu_shijian).getTime()
+  )
 }
 
 const formatDate = (dateString: string) => {
@@ -421,12 +413,10 @@ const resetFilters = () => {
 
 const showItemDetail = (item: any) => {
   // 显示合规事项详情
-  
 }
 
 const showMoreItems = (date: string) => {
   // 显示更多事项
-  
 }
 
 // 生命周期

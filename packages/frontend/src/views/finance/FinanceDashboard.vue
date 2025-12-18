@@ -23,7 +23,7 @@
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :span="6">
         <el-card class="stat-card">
           <div class="stat-content">
@@ -39,7 +39,7 @@
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :span="6">
         <el-card class="stat-card">
           <div class="stat-content">
@@ -55,7 +55,7 @@
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :span="6">
         <el-card class="stat-card">
           <div class="stat-content">
@@ -77,25 +77,45 @@
     <el-card class="quick-actions" header="快速操作">
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-button type="primary" size="large" @click="$router.push('/finance/payment-orders')" block>
+          <el-button
+            type="primary"
+            size="large"
+            @click="$router.push('/finance/payment-orders')"
+            block
+          >
             <el-icon><Money /></el-icon>
             支付订单管理
           </el-button>
         </el-col>
         <el-col :span="6">
-          <el-button type="success" size="large" @click="$router.push('/finance/payment-records')" block>
+          <el-button
+            type="success"
+            size="large"
+            @click="$router.push('/finance/payment-records')"
+            block
+          >
             <el-icon><Document /></el-icon>
             支付流水管理
           </el-button>
         </el-col>
         <el-col :span="6">
-          <el-button type="info" size="large" @click="$router.push('/finance/contract-parties')" block>
+          <el-button
+            type="info"
+            size="large"
+            @click="$router.push('/finance/contract-parties')"
+            block
+          >
             <el-icon><User /></el-icon>
             乙方主体管理
           </el-button>
         </el-col>
         <el-col :span="6">
-          <el-button type="warning" size="large" @click="$router.push('/finance/payment-methods')" block>
+          <el-button
+            type="warning"
+            size="large"
+            @click="$router.push('/finance/payment-methods')"
+            block
+          >
             <el-icon><CreditCard /></el-icon>
             支付方式管理
           </el-button>
@@ -127,13 +147,11 @@
         </el-table-column>
         <el-table-column label="操作" width="120">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="viewOrder(row.id)">
-              查看
-            </el-button>
+            <el-button type="primary" size="small" @click="viewOrder(row.id)"> 查看 </el-button>
           </template>
         </el-table-column>
       </el-table>
-      
+
       <div class="table-footer">
         <el-button type="primary" @click="$router.push('/finance/payment-orders')">
           查看全部订单
@@ -159,7 +177,7 @@ const statistics = ref({
   failed_count: 0,
   total_amount: 0,
   paid_amount: 0,
-  pending_amount: 0
+  pending_amount: 0,
 })
 const recentOrders = ref([])
 
@@ -179,7 +197,7 @@ const fetchRecentOrders = async () => {
   loading.value = true
   try {
     const response = await request.get('/payment-orders/', {
-      params: { page: 1, size: 10 }
+      params: { page: 1, size: 10 },
     })
     recentOrders.value = response.items || []
   } catch (error) {
@@ -198,7 +216,7 @@ const getStatusType = (status: string) => {
     paid: 'success',
     failed: 'danger',
     cancelled: 'info',
-    refunded: 'warning'
+    refunded: 'warning',
   }
   return statusMap[status] || 'info'
 }
@@ -211,7 +229,7 @@ const getStatusText = (status: string) => {
     paid: '已支付',
     failed: '支付失败',
     cancelled: '已取消',
-    refunded: '已退款'
+    refunded: '已退款',
   }
   return statusMap[status] || status
 }
@@ -219,7 +237,6 @@ const getStatusText = (status: string) => {
 // 查看订单详情
 const viewOrder = (id: string) => {
   // TODO: 跳转到订单详情页面
-  
 }
 
 // 页面加载时获取数据

@@ -13,9 +13,9 @@
         <div class="packages-sidebar">
           <div class="sidebar-header">
             <h3>代理记账套餐</h3>
-            <el-button 
-              type="primary" 
-              size="small" 
+            <el-button
+              type="primary"
+              size="small"
               @click="handleAddPackage"
               v-if="hasPermission('product:create')"
             >
@@ -23,10 +23,10 @@
               新增套餐
             </el-button>
           </div>
-          
+
           <div class="packages-list">
-            <div 
-              v-for="pkg in packageList" 
+            <div
+              v-for="pkg in packageList"
               :key="pkg.id"
               class="package-item"
               :class="{ active: selectedPackage?.id === pkg.id }"
@@ -41,9 +41,9 @@
                 </div>
               </div>
               <div class="package-actions">
-                <el-button 
-                  type="text" 
-                  size="small" 
+                <el-button
+                  type="text"
+                  size="small"
                   @click.stop="handleEditPackage(pkg)"
                   v-if="hasPermission('product:update')"
                 >
@@ -62,9 +62,7 @@
               <span v-if="selectedPackage" class="selected-package">
                 当前套餐：{{ selectedPackage.taocan_mingcheng }} - 通过勾选管理套餐包含的产品项目
               </span>
-              <span v-else class="selected-package">
-                请选择左侧套餐查看和管理产品项目
-              </span>
+              <span v-else class="selected-package"> 请选择左侧套餐查看和管理产品项目 </span>
             </div>
             <div class="header-right">
               <el-button
@@ -85,7 +83,13 @@
             class="services-table"
             border
           >
-            <el-table-column v-if="selectedPackage" label="包含" width="80" align="center" fixed="left">
+            <el-table-column
+              v-if="selectedPackage"
+              label="包含"
+              width="80"
+              align="center"
+              fixed="left"
+            >
               <template #default="{ row }">
                 <el-checkbox
                   :model-value="isProductInPackage(row.id, selectedPackage.id)"
@@ -119,8 +123,20 @@
               <template #default="{ row }">
                 <div class="service-attributes">
                   <el-tag v-if="row.shi_jiben_chanpin" type="primary" size="small">基础产品</el-tag>
-                  <el-tag v-if="row.shi_keyi_goumai" type="success" size="small" style="margin-left: 4px;">可购买</el-tag>
-                  <el-tag v-if="row.shi_baohan_taocan" type="info" size="small" style="margin-left: 4px;">套餐包含</el-tag>
+                  <el-tag
+                    v-if="row.shi_keyi_goumai"
+                    type="success"
+                    size="small"
+                    style="margin-left: 4px"
+                    >可购买</el-tag
+                  >
+                  <el-tag
+                    v-if="row.shi_baohan_taocan"
+                    type="info"
+                    size="small"
+                    style="margin-left: 4px"
+                    >套餐包含</el-tag
+                  >
                 </div>
               </template>
             </el-table-column>
@@ -180,21 +196,21 @@
           <el-input v-model="packageFormData.taocan_mingcheng" placeholder="请输入套餐名称" />
         </el-form-item>
         <el-form-item label="套餐描述" prop="taocan_miaoshu">
-          <el-input 
-            v-model="packageFormData.taocan_miaoshu" 
-            type="textarea" 
+          <el-input
+            v-model="packageFormData.taocan_miaoshu"
+            type="textarea"
             :rows="3"
             placeholder="请输入套餐描述"
           />
         </el-form-item>
         <el-form-item label="基础价格" prop="jichu_jiage">
-          <el-input-number 
-            v-model="packageFormData.jichu_jiage" 
-            :min="0" 
+          <el-input-number
+            v-model="packageFormData.jichu_jiage"
+            :min="0"
             :precision="2"
             placeholder="请输入基础价格"
           />
-          <span style="margin-left: 10px;">元/月</span>
+          <span style="margin-left: 10px">元/月</span>
         </el-form-item>
         <el-form-item label="排序" prop="paixu">
           <el-input-number v-model="packageFormData.paixu" :min="0" />
@@ -228,7 +244,10 @@
         label-width="120px"
       >
         <el-form-item label="产品项目名称" prop="chanpin_mingcheng">
-          <el-input v-model="productItemFormData.chanpin_mingcheng" placeholder="请输入产品项目名称" />
+          <el-input
+            v-model="productItemFormData.chanpin_mingcheng"
+            placeholder="请输入产品项目名称"
+          />
         </el-form-item>
         <el-form-item label="产品项目说明" prop="chanpin_miaoshu">
           <el-input
@@ -249,7 +268,7 @@
           />
           <el-select
             v-model="productItemFormData.jiage_danwei"
-            style="width: 100px; margin-left: 10px;"
+            style="width: 100px; margin-left: 10px"
           >
             <el-option label="元/月" value="元/月" />
             <el-option label="元/年" value="元/年" />
@@ -259,8 +278,12 @@
         </el-form-item>
         <el-form-item label="产品属性">
           <el-checkbox v-model="productItemFormData.shi_jiben_chanpin">是否为基础产品</el-checkbox>
-          <el-checkbox v-model="productItemFormData.shi_keyi_goumai" style="margin-left: 20px;">是否可以购买</el-checkbox>
-          <el-checkbox v-model="productItemFormData.shi_baohan_taocan" style="margin-left: 20px;">是否包含在套餐中</el-checkbox>
+          <el-checkbox v-model="productItemFormData.shi_keyi_goumai" style="margin-left: 20px"
+            >是否可以购买</el-checkbox
+          >
+          <el-checkbox v-model="productItemFormData.shi_baohan_taocan" style="margin-left: 20px"
+            >是否包含在套餐中</el-checkbox
+          >
         </el-form-item>
         <el-form-item label="排序" prop="paixu">
           <el-input-number v-model="productItemFormData.paixu" :min="0" />
@@ -286,42 +309,42 @@ import { productApi } from '@/api/modules/product'
 // 接口类型定义
 interface BookkeepingPackage {
   id: string
-  taocan_mingcheng: string  // 套餐名称，如"财税服务套餐"
-  taocan_miaoshu: string    // 套餐描述
-  jichu_jiage: number       // 套餐基础价格
+  taocan_mingcheng: string // 套餐名称，如"财税服务套餐"
+  taocan_miaoshu: string // 套餐描述
+  jichu_jiage: number // 套餐基础价格
   paixu: number
   zhuangtai: string
-  chanpin_xiangmu_count: number  // 包含的产品项目数量
+  chanpin_xiangmu_count: number // 包含的产品项目数量
 }
 
 interface BookkeepingProductItem {
   id: string
   chanpin_mingcheng: string // 产品项目名称，如"内账凭证/账簿"
-  chanpin_miaoshu: string   // 产品项目描述
-  chanpin_jiage: number     // 产品项目价格
-  jiage_danwei: string      // 价格单位
+  chanpin_miaoshu: string // 产品项目描述
+  chanpin_jiage: number // 产品项目价格
+  jiage_danwei: string // 价格单位
   shi_jiben_chanpin: boolean // 是否为基础产品
-  shi_keyi_goumai: boolean   // 是否可以购买
+  shi_keyi_goumai: boolean // 是否可以购买
   shi_baohan_taocan: boolean // 是否包含在套餐中
   paixu: number
 }
 
 interface PackageProductRelation {
-  taocan_id: string         // 套餐ID
+  taocan_id: string // 套餐ID
   chanpin_xiangmu_id: string // 产品项目ID
 }
 
 // 响应式数据
 const packageList = ref<BookkeepingPackage[]>([])
-const allProductItemList = ref<BookkeepingProductItem[]>([])  // 所有产品项目列表
-const packageProductRelations = ref<PackageProductRelation[]>([])  // 套餐产品关联关系
+const allProductItemList = ref<BookkeepingProductItem[]>([]) // 所有产品项目列表
+const packageProductRelations = ref<PackageProductRelation[]>([]) // 套餐产品关联关系
 const selectedPackage = ref<BookkeepingPackage | null>(null)
 const productItemsLoading = ref(false)
 
 // 计算属性：判断产品项目是否属于当前套餐
 const isProductInPackage = (productId: string, packageId: string): boolean => {
   return packageProductRelations.value.some(
-    rel => rel.taocan_id === packageId && rel.chanpin_xiangmu_id === productId
+    (rel) => rel.taocan_id === packageId && rel.chanpin_xiangmu_id === productId
   )
 }
 
@@ -337,16 +360,12 @@ const packageFormData = reactive({
   taocan_miaoshu: '',
   jichu_jiage: 0,
   paixu: 0,
-  zhuangtai: 'active'
+  zhuangtai: 'active',
 })
 
 const packageFormRules = {
-  taocan_mingcheng: [
-    { required: true, message: '请输入套餐名称', trigger: 'blur' }
-  ],
-  jichu_jiage: [
-    { required: true, message: '请输入基础价格', trigger: 'blur' }
-  ]
+  taocan_mingcheng: [{ required: true, message: '请输入套餐名称', trigger: 'blur' }],
+  jichu_jiage: [{ required: true, message: '请输入基础价格', trigger: 'blur' }],
 }
 
 // 产品项目表单
@@ -357,23 +376,19 @@ const productItemSubmitting = ref(false)
 const currentProductItem = ref<BookkeepingProductItem | null>(null)
 
 const productItemFormData = reactive({
-  chanpin_mingcheng: '',      // 产品项目名称
-  chanpin_miaoshu: '',        // 产品项目描述
-  chanpin_jiage: 0,           // 产品项目价格
-  jiage_danwei: '元/月',      // 价格单位
-  shi_jiben_chanpin: false,   // 是否为基础产品
-  shi_keyi_goumai: true,      // 是否可以购买
-  shi_baohan_taocan: true,    // 是否包含在套餐中
-  paixu: 0
+  chanpin_mingcheng: '', // 产品项目名称
+  chanpin_miaoshu: '', // 产品项目描述
+  chanpin_jiage: 0, // 产品项目价格
+  jiage_danwei: '元/月', // 价格单位
+  shi_jiben_chanpin: false, // 是否为基础产品
+  shi_keyi_goumai: true, // 是否可以购买
+  shi_baohan_taocan: true, // 是否包含在套餐中
+  paixu: 0,
 })
 
 const productItemFormRules = {
-  chanpin_mingcheng: [
-    { required: true, message: '请输入产品项目名称', trigger: 'blur' }
-  ],
-  chanpin_jiage: [
-    { required: true, message: '请输入产品项目价格', trigger: 'blur' }
-  ]
+  chanpin_mingcheng: [{ required: true, message: '请输入产品项目名称', trigger: 'blur' }],
+  chanpin_jiage: [{ required: true, message: '请输入产品项目价格', trigger: 'blur' }],
 }
 
 // 方法
@@ -389,7 +404,7 @@ const loadPackageList = async () => {
         jichu_jiage: 2000,
         paixu: 1,
         zhuangtai: '启用',
-        chanpin_xiangmu_count: 4
+        chanpin_xiangmu_count: 4,
       },
       {
         id: '2',
@@ -398,7 +413,7 @@ const loadPackageList = async () => {
         jichu_jiage: 800,
         paixu: 2,
         zhuangtai: '启用',
-        chanpin_xiangmu_count: 3
+        chanpin_xiangmu_count: 3,
       },
       {
         id: '3',
@@ -407,7 +422,7 @@ const loadPackageList = async () => {
         jichu_jiage: 1500,
         paixu: 3,
         zhuangtai: '启用',
-        chanpin_xiangmu_count: 3
+        chanpin_xiangmu_count: 3,
       },
       {
         id: '4',
@@ -416,8 +431,8 @@ const loadPackageList = async () => {
         jichu_jiage: 3000,
         paixu: 4,
         zhuangtai: '启用',
-        chanpin_xiangmu_count: 3
-      }
+        chanpin_xiangmu_count: 3,
+      },
     ]
 
     // 默认选择第一个套餐
@@ -436,7 +451,7 @@ const loadProductItemList = async () => {
     const response = await productApi.getList({
       chanpin_leixing: 'daili_jizhang',
       page: 1,
-      size: 100
+      size: 100,
     })
 
     // 将API返回的数据转换为页面需要的格式
@@ -449,10 +464,8 @@ const loadProductItemList = async () => {
       shi_jiben_chanpin: true,
       shi_keyi_goumai: item.zhuangtai === 'active',
       shi_baohan_taocan: true,
-      paixu: item.paixu || 0
+      paixu: item.paixu || 0,
     }))
-
-    
   } catch (error) {
     console.error('加载产品列表失败:', error)
     ElMessage.error('加载产品列表失败')
@@ -500,8 +513,10 @@ const loadPackageProductRelations = async () => {
 
 // 更新套餐的产品项目数量
 const updatePackageProductItemCount = () => {
-  packageList.value.forEach(pkg => {
-    pkg.chanpin_xiangmu_count = packageProductRelations.value.filter(rel => rel.taocan_id === pkg.id).length
+  packageList.value.forEach((pkg) => {
+    pkg.chanpin_xiangmu_count = packageProductRelations.value.filter(
+      (rel) => rel.taocan_id === pkg.id
+    ).length
   })
 }
 
@@ -518,7 +533,7 @@ const handleAddPackage = () => {
     taocan_miaoshu: '',
     jichu_jiage: 0,
     paixu: 0,
-    zhuangtai: 'active'
+    zhuangtai: 'active',
   })
   packageFormVisible.value = true
 }
@@ -534,14 +549,14 @@ const handlePackageSubmit = async () => {
   try {
     await packageFormRef.value?.validate()
     packageSubmitting.value = true
-    
+
     // TODO: 调用API保存套餐
     if (packageFormMode.value === 'create') {
       ElMessage.success('套餐创建成功')
     } else {
       ElMessage.success('套餐更新成功')
     }
-    
+
     packageFormVisible.value = false
     loadPackageList()
   } catch (error) {
@@ -563,7 +578,7 @@ const handleAddProductItem = () => {
     shi_jiben_chanpin: false,
     shi_keyi_goumai: true,
     shi_baohan_taocan: true,
-    paixu: 0
+    paixu: 0,
   })
   productItemFormVisible.value = true
 }
@@ -583,17 +598,17 @@ const handleDeleteProductItem = async (item: BookkeepingProductItem) => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 
     // TODO: 调用API删除产品项目
-    const index = allProductItemList.value.findIndex(p => p.id === item.id)
+    const index = allProductItemList.value.findIndex((p) => p.id === item.id)
     if (index > -1) {
       allProductItemList.value.splice(index, 1)
       // 同时删除所有相关的套餐产品关联关系
       packageProductRelations.value = packageProductRelations.value.filter(
-        rel => rel.chanpin_xiangmu_id !== item.id
+        (rel) => rel.chanpin_xiangmu_id !== item.id
       )
       // 更新套餐产品项目数量
       updatePackageProductItemCount()
@@ -616,15 +631,18 @@ const handleProductItemSubmit = async () => {
       // 创建新产品项目
       const newProductItem: BookkeepingProductItem = {
         id: Date.now().toString(), // 临时ID
-        ...productItemFormData
+        ...productItemFormData,
       }
       allProductItemList.value.push(newProductItem)
       ElMessage.success('产品项目创建成功')
     } else {
       // 更新现有产品项目
-      const index = allProductItemList.value.findIndex(p => p.id === currentProductItem.value?.id)
+      const index = allProductItemList.value.findIndex((p) => p.id === currentProductItem.value?.id)
       if (index > -1) {
-        allProductItemList.value[index] = { ...allProductItemList.value[index], ...productItemFormData }
+        allProductItemList.value[index] = {
+          ...allProductItemList.value[index],
+          ...productItemFormData,
+        }
       }
       ElMessage.success('产品项目更新成功')
     }
@@ -644,13 +662,13 @@ const handleProductToggle = async (productId: string, packageId: string, include
       // 添加关联
       packageProductRelations.value.push({
         taocan_id: packageId,
-        chanpin_xiangmu_id: productId
+        chanpin_xiangmu_id: productId,
       })
       // TODO: 调用API添加关联
     } else {
       // 移除关联
       const index = packageProductRelations.value.findIndex(
-        rel => rel.taocan_id === packageId && rel.chanpin_xiangmu_id === productId
+        (rel) => rel.taocan_id === packageId && rel.chanpin_xiangmu_id === productId
       )
       if (index > -1) {
         packageProductRelations.value.splice(index, 1)
@@ -661,7 +679,7 @@ const handleProductToggle = async (productId: string, packageId: string, include
     // 更新套餐产品项目数量
     updatePackageProductItemCount()
 
-    const productName = allProductItemList.value.find(p => p.id === productId)?.chanpin_mingcheng
+    const productName = allProductItemList.value.find((p) => p.id === productId)?.chanpin_mingcheng
     const packageName = selectedPackage.value?.taocan_mingcheng
 
     if (included) {

@@ -8,11 +8,7 @@
 
     <!-- 错误状态 -->
     <div v-else-if="error" class="error-container">
-      <el-result
-        icon="error"
-        title="签署链接无效"
-        :sub-title="error"
-      >
+      <el-result icon="error" title="签署链接无效" :sub-title="error">
         <template #extra>
           <el-button type="primary" @click="goHome">返回首页</el-button>
         </template>
@@ -49,7 +45,10 @@
           </el-descriptions>
 
           <el-divider content-position="left">合同内容</el-divider>
-          <div class="contract-content" v-html="sanitizeContractHtml(contractInfo.hetong_neirong)"></div>
+          <div
+            class="contract-content"
+            v-html="sanitizeContractHtml(contractInfo.hetong_neirong)"
+          ></div>
 
           <div class="step-actions">
             <el-button type="primary" size="large" @click="nextStep">
@@ -66,12 +65,7 @@
             <h3>电子签名</h3>
           </template>
 
-          <el-form
-            ref="signFormRef"
-            :model="signForm"
-            :rules="signFormRules"
-            label-width="120px"
-          >
+          <el-form ref="signFormRef" :model="signForm" :rules="signFormRules" label-width="120px">
             <el-form-item label="签署人姓名" prop="signer_name">
               <el-input
                 v-model="signForm.signer_name"
@@ -125,12 +119,7 @@
 
           <div class="step-actions">
             <el-button size="large" @click="prevStep">上一步</el-button>
-            <el-button
-              type="primary"
-              size="large"
-              @click="submitSignature"
-              :loading="submitting"
-            >
+            <el-button type="primary" size="large" @click="submitSignature" :loading="submitting">
               确认签名
             </el-button>
           </div>
@@ -144,12 +133,7 @@
             <h3>支付</h3>
           </template>
 
-          <el-alert
-            title="签署成功"
-            type="success"
-            :closable="false"
-            style="margin-bottom: 20px"
-          >
+          <el-alert title="签署成功" type="success" :closable="false" style="margin-bottom: 20px">
             您已成功签署合同，请完成支付
           </el-alert>
 
@@ -174,7 +158,10 @@
                     <span class="payment-method-desc">{{ method.description }}</span>
                   </el-radio>
                 </el-radio-group>
-                <div v-if="availablePaymentMethods.length === 0 && !loadingPaymentMethods" class="no-payment-methods">
+                <div
+                  v-if="availablePaymentMethods.length === 0 && !loadingPaymentMethods"
+                  class="no-payment-methods"
+                >
                   <el-alert type="warning" :closable="false">
                     暂无可用的在线支付方式，请选择银行转账
                   </el-alert>
@@ -192,7 +179,10 @@
                   <p><strong>收款单位：</strong>XX代理记账服务有限公司</p>
                   <p><strong>开户银行：</strong>中国工商银行北京分行</p>
                   <p><strong>银行账号：</strong>1234 5678 9012 3456 789</p>
-                  <p><strong>应付金额：</strong><span class="amount-highlight">¥{{ contractInfo.payment_amount }}</span></p>
+                  <p>
+                    <strong>应付金额：</strong
+                    ><span class="amount-highlight">¥{{ contractInfo.payment_amount }}</span>
+                  </p>
                 </div>
               </el-alert>
 
@@ -219,12 +209,7 @@
 
           <div class="step-actions">
             <el-button size="large" @click="skipPayment">稍后支付</el-button>
-            <el-button
-              type="primary"
-              size="large"
-              @click="initiatePayment"
-              :loading="paying"
-            >
+            <el-button type="primary" size="large" @click="initiatePayment" :loading="paying">
               {{ paymentMethod === 'bank' ? '确认使用银行转账' : '立即支付' }}
             </el-button>
           </div>
@@ -281,19 +266,13 @@ const signForm = reactive({
   signer_name: '',
   signer_phone: '',
   signer_email: '',
-  signature_data: ''
+  signature_data: '',
 })
 
 const signFormRules = {
-  signer_name: [
-    { required: true, message: '请输入签署人姓名', trigger: 'blur' }
-  ],
-  signer_phone: [
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
-  ],
-  signer_email: [
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-  ]
+  signer_name: [{ required: true, message: '请输入签署人姓名', trigger: 'blur' }],
+  signer_phone: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }],
+  signer_email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }],
 }
 
 // 银行支付不需要表单，客户只需要确认
@@ -311,14 +290,14 @@ const loadAvailablePaymentMethods = async () => {
 
     // 设置默认支付方式为第一个可用的在线支付方式
     if (availablePaymentMethods.value.length > 0) {
-      const firstOnlineMethod = availablePaymentMethods.value.find(m => m.method !== 'bank')
+      const firstOnlineMethod = availablePaymentMethods.value.find((m) => m.method !== 'bank')
       paymentMethod.value = firstOnlineMethod ? firstOnlineMethod.method : 'bank'
     }
   } catch (err: any) {
     console.error('加载支付方式失败:', err)
     // 如果加载失败，使用默认支付方式
     availablePaymentMethods.value = [
-      { method: 'bank', label: '银行转账', icon: 'bank', description: '通过银行转账支付' }
+      { method: 'bank', label: '银行转账', icon: 'bank', description: '通过银行转账支付' },
     ]
     paymentMethod.value = 'bank'
   } finally {
@@ -359,10 +338,10 @@ const initCanvas = () => {
   nextTick(() => {
     const canvas = signatureCanvas.value
     if (!canvas) return
-    
+
     canvas.width = canvas.offsetWidth
     canvas.height = 200
-    
+
     const ctx = canvas.getContext('2d')
     if (ctx) {
       ctx.strokeStyle = '#000'
@@ -380,13 +359,13 @@ const getPosition = (e: MouseEvent | TouchEvent, canvas: HTMLCanvasElement) => {
     // 触摸事件
     return {
       x: e.touches[0].clientX - rect.left,
-      y: e.touches[0].clientY - rect.top
+      y: e.touches[0].clientY - rect.top,
     }
   } else {
     // 鼠标事件
     return {
       x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      y: e.clientY - rect.top,
     }
   }
 }
@@ -435,10 +414,10 @@ const stopDrawing = () => {
 const clearSignature = () => {
   const canvas = signatureCanvas.value
   if (!canvas) return
-  
+
   const ctx = canvas.getContext('2d')
   if (!ctx) return
-  
+
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   signForm.signature_data = ''
 }
@@ -447,22 +426,22 @@ const clearSignature = () => {
 const submitSignature = async () => {
   try {
     await signFormRef.value.validate()
-    
+
     const canvas = signatureCanvas.value
     if (!canvas) return
-    
+
     // 获取签名数据
     signForm.signature_data = canvas.toDataURL('image/png')
-    
+
     if (!signForm.signature_data || signForm.signature_data === 'data:,') {
       ElMessage.warning('请先签名')
       return
     }
-    
+
     submitting.value = true
-    
+
     await request.post(`/contract-sign/sign/${signToken}/sign`, signForm)
-    
+
     ElMessage.success('签署成功')
     nextStep()
   } catch (error: any) {
@@ -492,7 +471,7 @@ const initiatePayment = async () => {
       // 银行转账：客户只需要确认
       const response = await request.post(
         `/contract-sign/sign/${signToken}/bank-payment`,
-        {}  // 空请求体，客户只需确认
+        {} // 空请求体，客户只需确认
       )
 
       const result = response.data || response
@@ -503,7 +482,7 @@ const initiatePayment = async () => {
       // 微信/支付宝：生成二维码
       const response = await request.post(`/contract-sign/sign/${signToken}/pay`, {
         payment_method: paymentMethod.value,
-        payment_amount: contractInfo.value.payment_amount
+        payment_amount: contractInfo.value.payment_amount,
       })
 
       const paymentInfo = response.data || response
@@ -524,8 +503,6 @@ const initiatePayment = async () => {
 
 // 开始轮询支付状态
 const startPaymentStatusPolling = () => {
-  
-
   // 清除之前的定时器
   if (paymentStatusTimer) {
     clearInterval(paymentStatusTimer)
@@ -534,28 +511,20 @@ const startPaymentStatusPolling = () => {
   // 每3秒查询一次支付状态
   paymentStatusTimer = window.setInterval(async () => {
     try {
-      
       const response = await request.get(`/contract-sign/sign/${signToken}/payment-status`, {
-        timeout: 30000  // 增加超时时间到30秒
+        timeout: 30000, // 增加超时时间到30秒
       })
-      
 
       const status = response.data || response
-      
-      
 
       if (status.payment_status === 'paid') {
-        
         // 支付成功
         stopPaymentStatusPolling()
         paymentCompleted.value = true
         paymentQrCode.value = ''
-        currentStep.value = 3  // 直接设置为完成步骤
+        currentStep.value = 3 // 直接设置为完成步骤
         ElMessage.success('支付成功！')
-
-        
       } else {
-        
       }
     } catch (error) {
       console.error('❌ 查询支付状态失败:', error)
@@ -616,7 +585,7 @@ const getPaymentMethodText = (method: string) => {
   const texts: Record<string, string> = {
     wechat: '微信支付',
     alipay: '支付宝',
-    bank: '银行转账'
+    bank: '银行转账',
   }
   return texts[method] || method
 }
@@ -948,7 +917,8 @@ onUnmounted(() => {
 
 <style>
 /* 全局样式：确保页面可以滚动 */
-html, body {
+html,
+body {
   overflow-y: auto !important;
   height: auto !important;
   min-height: 100vh !important;
@@ -960,4 +930,3 @@ html, body {
   overflow-y: auto;
 }
 </style>
-

@@ -18,7 +18,7 @@
             @keyup.enter="handleSearch"
           />
         </el-form-item>
-        
+
         <el-form-item label="线索状态">
           <el-select
             v-model="searchForm.xiansuo_zhuangtai"
@@ -34,7 +34,7 @@
             />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item label="线索来源">
           <el-select
             v-model="searchForm.laiyuan_id"
@@ -50,7 +50,7 @@
             />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item label="质量评估">
           <el-select
             v-model="searchForm.zhiliang_pinggu"
@@ -63,7 +63,7 @@
             <el-option label="低质量" value="low" />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
             <el-icon><Search /></el-icon>
@@ -85,12 +85,16 @@
             <el-icon><Plus /></el-icon>
             新增线索
           </el-button>
-          <el-button type="success" @click="handleBatchAssign" :disabled="selectedXiansuo.length === 0">
+          <el-button
+            type="success"
+            @click="handleBatchAssign"
+            :disabled="selectedXiansuo.length === 0"
+          >
             <el-icon><User /></el-icon>
             批量分配
           </el-button>
         </div>
-        
+
         <div class="action-right">
           <el-tooltip content="强制刷新所有数据，清除缓存" placement="top">
             <el-button @click="handleRefresh">
@@ -100,12 +104,7 @@
           </el-tooltip>
 
           <!-- 缓存状态指示器 -->
-          <el-tag
-            v-if="cacheStatus.hasCache"
-            type="success"
-            size="small"
-            style="margin-left: 8px"
-          >
+          <el-tag v-if="cacheStatus.hasCache" type="success" size="small" style="margin-left: 8px">
             <el-icon><Clock /></el-icon>
             已缓存
           </el-tag>
@@ -124,7 +123,7 @@
           <el-icon><Plus /></el-icon>
         </div>
       </el-card>
-      
+
       <el-card class="stat-card">
         <div class="stat-content">
           <div class="stat-number">{{ followingXiansuo }}</div>
@@ -134,7 +133,7 @@
           <el-icon><Phone /></el-icon>
         </div>
       </el-card>
-      
+
       <el-card class="stat-card">
         <div class="stat-content">
           <div class="stat-number">{{ interestedXiansuo }}</div>
@@ -144,7 +143,7 @@
           <el-icon><Star /></el-icon>
         </div>
       </el-card>
-      
+
       <el-card class="stat-card">
         <div class="stat-content">
           <div class="stat-number">{{ wonXiansuo }}</div>
@@ -154,7 +153,7 @@
           <el-icon><Check /></el-icon>
         </div>
       </el-card>
-      
+
       <el-card class="stat-card">
         <div class="stat-content">
           <div class="stat-number">{{ total }}</div>
@@ -175,9 +174,9 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        
+
         <el-table-column prop="xiansuo_bianma" label="线索编码" width="120" />
-        
+
         <el-table-column prop="gongsi_mingcheng" label="公司信息" min-width="200">
           <template #default="{ row }">
             <div class="company-info">
@@ -186,26 +185,20 @@
             </div>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="hangye_leixing" label="行业类型" width="120" />
-        
+
         <el-table-column prop="zhiliang_pinggu" label="质量评估" width="100">
           <template #default="{ row }">
-            <el-tag
-              :type="getQualityTagType(row.zhiliang_pinggu)"
-              size="small"
-            >
+            <el-tag :type="getQualityTagType(row.zhiliang_pinggu)" size="small">
               {{ getQualityText(row.zhiliang_pinggu) }}
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="xiansuo_zhuangtai" label="线索状态" width="100">
           <template #default="{ row }">
-            <el-tag
-              :type="getStatusTagType(row.xiansuo_zhuangtai)"
-              size="small"
-            >
+            <el-tag :type="getStatusTagType(row.xiansuo_zhuangtai)" size="small">
               {{ getStatusText(row.xiansuo_zhuangtai) }}
             </el-tag>
           </template>
@@ -225,39 +218,28 @@
         </el-table-column>
 
         <el-table-column prop="genjin_cishu" label="跟进次数" width="80" />
-        
+
         <el-table-column prop="zuijin_genjin_shijian" label="最近跟进" width="120">
           <template #default="{ row }">
             {{ row.zuijin_genjin_shijian ? formatDate(row.zuijin_genjin_shijian) : '-' }}
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="created_at" label="创建时间" width="120">
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" width="320" fixed="right" align="center">
           <template #default="{ row }">
             <div class="action-buttons">
               <!-- 第一行：主要操作按钮 -->
               <div class="action-row primary-actions">
-                <el-button
-                  type="primary"
-                  size="small"
-                  link
-                  @click="handleView(row)"
-                >
+                <el-button type="primary" size="small" link @click="handleView(row)">
                   查看
                 </el-button>
-                <el-button
-                  type="success"
-                  size="small"
-                  @click="handleEdit(row)"
-                >
-                  编辑
-                </el-button>
+                <el-button type="success" size="small" @click="handleEdit(row)"> 编辑 </el-button>
 
                 <!-- 动态报价按钮 -->
                 <el-button
@@ -268,12 +250,7 @@
                 >
                   报价
                 </el-button>
-                <el-button
-                  v-else
-                  type="info"
-                  size="small"
-                  @click="handleViewBaojia(row)"
-                >
+                <el-button v-else type="info" size="small" @click="handleViewBaojia(row)">
                   查看报价
                 </el-button>
 
@@ -286,10 +263,7 @@
                       <el-dropdown-item command="assign">分配</el-dropdown-item>
                       <el-dropdown-item command="status">状态</el-dropdown-item>
                       <el-dropdown-item command="followup">跟进</el-dropdown-item>
-                      <el-dropdown-item
-                        v-if="hasValidBaojia(row)"
-                        command="edit_baojia"
-                      >
+                      <el-dropdown-item v-if="hasValidBaojia(row)" command="edit_baojia">
                         编辑报价
                       </el-dropdown-item>
                       <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
@@ -374,10 +348,7 @@
     />
 
     <!-- 线索详情弹窗 -->
-    <XiansuoDetail
-      v-model:visible="detailVisible"
-      :xiansuo-id="currentXiansuoId"
-    />
+    <XiansuoDetail v-model:visible="detailVisible" :xiansuo-id="currentXiansuoId" />
 
     <!-- 报价表单弹窗 -->
     <XiansuoBaojiaForm
@@ -418,30 +389,56 @@
               {{ currentAuditDetails.current_step }} / {{ currentAuditDetails.total_steps }}
             </el-descriptions-item>
             <el-descriptions-item label="创建时间">
-              {{ currentAuditDetails.created_at ? new Date(currentAuditDetails.created_at).toLocaleString() : '-' }}
+              {{
+                currentAuditDetails.created_at
+                  ? new Date(currentAuditDetails.created_at).toLocaleString()
+                  : '-'
+              }}
             </el-descriptions-item>
             <el-descriptions-item label="完成时间">
-              {{ currentAuditDetails.completed_at ? new Date(currentAuditDetails.completed_at).toLocaleString() : '审核中' }}
+              {{
+                currentAuditDetails.completed_at
+                  ? new Date(currentAuditDetails.completed_at).toLocaleString()
+                  : '审核中'
+              }}
             </el-descriptions-item>
           </el-descriptions>
         </div>
 
-        <div class="audit-steps" style="margin-top: 20px;">
+        <div class="audit-steps" style="margin-top: 20px">
           <el-timeline>
             <el-timeline-item
               v-for="step in currentAuditDetails.steps"
               :key="step.step_number"
-              :type="step.status === 'approved' ? 'success' : step.status === 'rejected' ? 'danger' : 'primary'"
+              :type="
+                step.status === 'approved'
+                  ? 'success'
+                  : step.status === 'rejected'
+                    ? 'danger'
+                    : 'primary'
+              "
               :hollow="step.status === 'pending'"
             >
               <div class="step-content">
                 <div class="step-header">
                   <span class="step-name">{{ step.step_name }}</span>
                   <el-tag
-                    :type="step.status === 'approved' ? 'success' : step.status === 'rejected' ? 'danger' : 'info'"
+                    :type="
+                      step.status === 'approved'
+                        ? 'success'
+                        : step.status === 'rejected'
+                          ? 'danger'
+                          : 'info'
+                    "
                     size="small"
                   >
-                    {{ step.status === 'approved' ? '已通过' : step.status === 'rejected' ? '已拒绝' : '待审核' }}
+                    {{
+                      step.status === 'approved'
+                        ? '已通过'
+                        : step.status === 'rejected'
+                          ? '已拒绝'
+                          : '待审核'
+                    }}
                   </el-tag>
                 </div>
                 <div class="step-info">
@@ -449,9 +446,7 @@
                   <div v-if="step.audit_time">
                     审核时间：{{ new Date(step.audit_time).toLocaleString() }}
                   </div>
-                  <div v-if="step.comment" class="step-comment">
-                    审核意见：{{ step.comment }}
-                  </div>
+                  <div v-if="step.comment" class="step-comment">审核意见：{{ step.comment }}</div>
                 </div>
               </div>
             </el-timeline-item>
@@ -479,7 +474,7 @@ import {
   Star,
   Check,
   DataAnalysis,
-  ArrowDown
+  ArrowDown,
 } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
@@ -502,7 +497,7 @@ const searchForm = ref({
   search: '',
   xiansuo_zhuangtai: '',
   laiyuan_id: '',
-  zhiliang_pinggu: ''
+  zhiliang_pinggu: '',
 })
 
 const formVisible = ref(false)
@@ -547,7 +542,7 @@ const {
   followingXiansuo,
   interestedXiansuo,
   wonXiansuo,
-  cache
+  cache,
 } = storeToRefs(xiansuoStore)
 
 // 缓存状态
@@ -556,17 +551,17 @@ const cacheStatus = computed(() => {
   const now = Date.now()
   const CACHE_EXPIRE_TIME = 5 * 60 * 1000 // 5分钟
 
-  const hasLaiyuanCache = cacheState.laiyuan_loaded &&
-    (now - cacheState.laiyuan_timestamp) < CACHE_EXPIRE_TIME
-  const hasZhuangtaiCache = cacheState.zhuangtai_loaded &&
-    (now - cacheState.zhuangtai_timestamp) < CACHE_EXPIRE_TIME
+  const hasLaiyuanCache =
+    cacheState.laiyuan_loaded && now - cacheState.laiyuan_timestamp < CACHE_EXPIRE_TIME
+  const hasZhuangtaiCache =
+    cacheState.zhuangtai_loaded && now - cacheState.zhuangtai_timestamp < CACHE_EXPIRE_TIME
   const hasXiansuoCache = cacheState.xiansuo_cache && cacheState.xiansuo_cache.size > 0
 
   return {
     hasCache: hasLaiyuanCache || hasZhuangtaiCache || hasXiansuoCache,
     laiyuanCached: hasLaiyuanCache,
     zhuangtaiCached: hasZhuangtaiCache,
-    xiansuoCached: hasXiansuoCache
+    xiansuoCached: hasXiansuoCache,
   }
 })
 
@@ -584,7 +579,7 @@ const loadContractStatuses = async () => {
 
     // 批量加载合同状态（只加载有已确认报价的线索）
     const promises = leads
-      .filter(lead => {
+      .filter((lead) => {
         const baojiaStatus = getBaojiaStatus(lead.id)
         return baojiaStatus === 'accepted' && hasValidBaojia(lead)
       })
@@ -611,13 +606,12 @@ const handleReset = async () => {
     search: '',
     xiansuo_zhuangtai: '',
     laiyuan_id: '',
-    zhiliang_pinggu: ''
+    zhiliang_pinggu: '',
   }
   await xiansuoStore.fetchXiansuoList()
 }
 
 const handleRefresh = async () => {
-  
   ElMessage.info('正在刷新数据...')
 
   // 强制刷新所有数据，清除缓存
@@ -674,10 +668,10 @@ const handleDelete = async (xiansuo: Xiansuo) => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
-    
+
     await xiansuoStore.deleteXiansuo(xiansuo.id)
     await handleSearch()
   } catch (error) {
@@ -716,7 +710,6 @@ const hasValidBaojia = (xiansuo: Xiansuo) => {
   return ['quoted', 'won'].includes(xiansuo.xiansuo_zhuangtai)
 }
 
-
 const handleCreateBaojia = async (xiansuo: Xiansuo) => {
   try {
     // 先加载该线索的报价列表
@@ -745,7 +738,8 @@ const handleViewBaojia = async (xiansuo: Xiansuo) => {
       ElMessage.warning('该线索尚未创建报价')
       return
     }
-    const target = list.find(item => !item.is_expired && item.baojia_zhuangtai !== 'rejected') || list[0]
+    const target =
+      list.find((item) => !item.is_expired && item.baojia_zhuangtai !== 'rejected') || list[0]
     router.push({ name: 'QuotePreview', params: { id: target.id } })
   } catch (error) {
     console.error('查看报价失败:', error)
@@ -755,7 +749,8 @@ const handleViewBaojia = async (xiansuo: Xiansuo) => {
 const handleCopyQuoteLink = async (xiansuo: Xiansuo) => {
   try {
     const list = await xiansuoStore.fetchBaojiaByXiansuo(xiansuo.id)
-    const target = list.find(item => !item.is_expired && item.baojia_zhuangtai !== 'rejected') || list[0]
+    const target =
+      list.find((item) => !item.is_expired && item.baojia_zhuangtai !== 'rejected') || list[0]
 
     if (!target) {
       ElMessage.warning('该线索尚未创建报价')
@@ -778,9 +773,9 @@ const handleEditBaojia = async (xiansuo: Xiansuo) => {
     // 加载报价列表
     await xiansuoStore.fetchBaojiaByXiansuo(xiansuo.id)
 
-    const validBaojia = xiansuoStore.getBaojiaListByXiansuo(xiansuo.id).find(
-      b => !b.is_expired && b.baojia_zhuangtai !== 'rejected'
-    )
+    const validBaojia = xiansuoStore
+      .getBaojiaListByXiansuo(xiansuo.id)
+      .find((b) => !b.is_expired && b.baojia_zhuangtai !== 'rejected')
 
     if (!validBaojia) {
       ElMessage.warning('未找到有效的报价')
@@ -834,9 +829,11 @@ const getLeadActionType = (xiansuo: Xiansuo) => {
   if (contractInfo.audit_status === 'pending') {
     // 合同待审核或审核中
     return 'view_audit'
-  } else if (contractInfo.contract_status === 'active' ||
-             contractInfo.contract_status === 'signed' ||
-             contractInfo.contract_status === 'approved') {
+  } else if (
+    contractInfo.contract_status === 'active' ||
+    contractInfo.contract_status === 'signed' ||
+    contractInfo.contract_status === 'approved'
+  ) {
     // 合同已生效或已签署
     return 'view_contract'
   } else if (contractInfo.contract_status === 'pending') {
@@ -891,7 +888,9 @@ const handleGenerateContract = async (xiansuo: Xiansuo) => {
 
     // 获取已确认的报价
     const baojiaList = await xiansuoStore.fetchBaojiaByXiansuo(xiansuo.id)
-    const acceptedBaojia = baojiaList.find(b => b.baojia_zhuangtai === 'accepted' && !b.is_expired)
+    const acceptedBaojia = baojiaList.find(
+      (b) => b.baojia_zhuangtai === 'accepted' && !b.is_expired
+    )
 
     if (!acceptedBaojia) {
       ElMessage.warning('未找到已确认的报价')
@@ -901,9 +900,8 @@ const handleGenerateContract = async (xiansuo: Xiansuo) => {
     // 直接跳转到合同生成页面，预填报价信息
     router.push({
       path: '/contracts/generate',
-      query: { baojia_id: acceptedBaojia.id }
+      query: { baojia_id: acceptedBaojia.id },
     })
-
   } catch (error: any) {
     console.error('跳转到合同生成页面失败:', error)
     ElMessage.error('跳转失败: ' + (error?.message || '未知错误'))
@@ -917,7 +915,7 @@ const getQualityTagType = (quality: string) => {
   const types: Record<string, string> = {
     high: 'success',
     medium: 'warning',
-    low: 'danger'
+    low: 'danger',
   }
   return types[quality] || ''
 }
@@ -926,7 +924,7 @@ const getQualityText = (quality: string) => {
   const texts: Record<string, string> = {
     high: '高质量',
     medium: '中等质量',
-    low: '低质量'
+    low: '低质量',
   }
   return texts[quality] || quality
 }
@@ -938,7 +936,7 @@ const getStatusTagType = (status: string) => {
     interested: 'warning',
     quoted: 'danger',
     won: 'success',
-    lost: 'info'
+    lost: 'info',
   }
   return types[status] || ''
 }
@@ -950,7 +948,7 @@ const getStatusText = (status: string) => {
     interested: '有意向',
     quoted: '已报价',
     won: '成交',
-    lost: '无效'
+    lost: '无效',
   }
   return texts[status] || status
 }
@@ -958,26 +956,21 @@ const getStatusText = (status: string) => {
 // 获取线索的最新报价状态
 const getBaojiaStatus = (xiansuoId: string) => {
   const baojiaList = xiansuoStore.getBaojiaListByXiansuo(xiansuoId)
-  
-  
-  
+
   if (!baojiaList || baojiaList.length === 0) {
-    
     return null
   }
 
   // 获取最新的非过期、非拒绝的报价
   const validBaojia = baojiaList
-    .filter(baojia => !baojia.is_expired && baojia.baojia_zhuangtai !== 'rejected')
+    .filter((baojia) => !baojia.is_expired && baojia.baojia_zhuangtai !== 'rejected')
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-  
   if (validBaojia.length > 0) {
-    
   }
 
   const result = validBaojia.length > 0 ? validBaojia[0].baojia_zhuangtai : null
-  
+
   return result
 }
 
@@ -988,7 +981,7 @@ const getBaojiaStatusTagType = (status: string) => {
     sent: 'warning',
     accepted: 'success',
     rejected: 'danger',
-    expired: 'danger'
+    expired: 'danger',
   }
   return types[status] || 'info'
 }
@@ -1000,7 +993,7 @@ const getBaojiaStatusText = (status: string) => {
     sent: '已发送',
     accepted: '已确认',
     rejected: '已拒绝',
-    expired: '已过期'
+    expired: '已过期',
   }
   return texts[status] || status
 }
@@ -1011,8 +1004,6 @@ const formatDate = (dateStr: string) => {
 
 // 生命周期
 onMounted(async () => {
-  
-
   // 检查认证状态
   const authStore = useAuthStore()
   if (!authStore.isAuthenticated) {
@@ -1032,13 +1023,11 @@ onMounted(async () => {
     // 再加载线索列表，确保使用正确的分页参数
     await xiansuoStore.fetchXiansuoList({
       page: 1,
-      size: 20
+      size: 20,
     })
 
     // 加载合同状态
     await loadContractStatuses()
-
-    
   } catch (error) {
     console.error('线索列表页面初始化失败:', error)
 
@@ -1051,8 +1040,6 @@ onMounted(async () => {
     }
   }
 })
-
-
 </script>
 
 <style scoped>

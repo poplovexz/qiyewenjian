@@ -13,12 +13,19 @@
           round
           width="60"
           height="60"
-          :src="userStore.userInfo?.avatar || 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'"
+          :src="
+            userStore.userInfo?.avatar ||
+            'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
+          "
         />
       </div>
       <div class="user-details">
-        <div class="user-name">{{ userStore.userInfo?.xingming || '未登录' }}</div>
-        <div class="user-role">{{ userStore.userInfo?.yonghu_ming || '员工' }}</div>
+        <div class="user-name">
+          {{ userStore.userInfo?.xingming || "未登录" }}
+        </div>
+        <div class="user-role">
+          {{ userStore.userInfo?.yonghu_ming || "员工" }}
+        </div>
       </div>
       <van-icon name="arrow" color="#999" />
     </div>
@@ -53,26 +60,49 @@
     <div class="action-section">
       <div class="section-title">快捷操作</div>
       <div class="action-grid">
-        <div class="action-item" @click="router.push('/office/reimbursement/create')">
-          <div class="action-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div
+          class="action-item"
+          @click="router.push('/office/reimbursement/create')"
+        >
+          <div
+            class="action-icon"
+            style="
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            "
+          >
             <van-icon name="balance-list-o" size="24" color="#fff" />
           </div>
           <div class="action-label">申请报销</div>
         </div>
         <div class="action-item" @click="router.push('/office/leave/create')">
-          <div class="action-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <div
+            class="action-icon"
+            style="
+              background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            "
+          >
             <van-icon name="calendar-o" size="24" color="#fff" />
           </div>
           <div class="action-label">申请请假</div>
         </div>
         <div class="action-item" @click="router.push('/tasks')">
-          <div class="action-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <div
+            class="action-icon"
+            style="
+              background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            "
+          >
             <van-icon name="todo-list-o" size="24" color="#fff" />
           </div>
           <div class="action-label">我的任务</div>
         </div>
         <div class="action-item" @click="router.push('/orders')">
-          <div class="action-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+          <div
+            class="action-icon"
+            style="
+              background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            "
+          >
             <van-icon name="orders-o" size="24" color="#fff" />
           </div>
           <div class="action-label">工单列表</div>
@@ -118,15 +148,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-import { getTaskItemStatistics } from '@/api/task'
-import type { TaskItemStatistics } from '@/types/task'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
+import { getTaskItemStatistics } from "@/api/task";
+import type { TaskItemStatistics } from "@/types/task";
 
-const router = useRouter()
-const userStore = useUserStore()
-const active = ref(0)
+const router = useRouter();
+const userStore = useUserStore();
+const active = ref(0);
 
 const statistics = ref<TaskItemStatistics>({
   total_count: 0,
@@ -136,30 +166,27 @@ const statistics = ref<TaskItemStatistics>({
   skipped_count: 0,
   total_jihua_gongshi: 0,
   total_shiji_gongshi: 0,
-  avg_completion_rate: 0
-})
+  avg_completion_rate: 0,
+});
 
 const loadStatistics = async () => {
   try {
-    
-    
-    
-    const res = await getTaskItemStatistics()
-    
-    statistics.value = res
+    const res = await getTaskItemStatistics();
+
+    statistics.value = res;
   } catch (error) {
-    console.error('❌ Load statistics error:', error)
-    console.error('Error details:', {
+    console.error("❌ Load statistics error:", error);
+    console.error("Error details:", {
       message: error.message,
       response: error.response?.data,
-      status: error.response?.status
-    })
+      status: error.response?.status,
+    });
   }
-}
+};
 
 onMounted(() => {
-  loadStatistics()
-})
+  loadStatistics();
+});
 </script>
 
 <style scoped>
@@ -364,7 +391,10 @@ onMounted(() => {
 }
 
 :deep(.van-tabbar-item--active) {
-  background: linear-gradient(180deg, rgba(102, 126, 234, 0.05) 0%, transparent 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(102, 126, 234, 0.05) 0%,
+    transparent 100%
+  );
 }
 </style>
-

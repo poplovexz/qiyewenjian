@@ -43,33 +43,27 @@ class TokenManager {
   }
 
   private async _doInitialize(): Promise<void> {
-    
-
     const storedAccessToken = localStorage.getItem('access_token')
     const storedRefreshToken = localStorage.getItem('refresh_token')
     const storedUserInfo = localStorage.getItem('user_info')
 
     // 如果没有任何认证信息，直接完成初始化
     if (!storedAccessToken && !storedRefreshToken && !storedUserInfo) {
-      
       this.authInitialized = true
       return
     }
 
     // 如果没有access token，直接完成初始化
     if (!storedAccessToken) {
-      
       this.authInitialized = true
       return
     }
 
     // 检查token是否明显过期（避免不必要的API调用）
     if (this._isTokenExpired(storedAccessToken)) {
-      
       try {
         const refreshSuccess = await this._refreshTokenInternal(storedRefreshToken)
         if (!refreshSuccess) {
-          
           this._clearAuth(true) // 静默清除
         }
       } catch (error) {
@@ -81,7 +75,7 @@ class TokenManager {
     }
 
     // 如果token看起来有效，延迟验证到实际需要时
-    
+
     this.authInitialized = true
   }
 
@@ -186,7 +180,6 @@ class TokenManager {
       localStorage.setItem('access_token', response.access_token)
       localStorage.setItem('refresh_token', response.refresh_token)
 
-      
       return true
     } catch (error) {
       console.error('❌ Token刷新失败:', error)
@@ -211,8 +204,8 @@ class TokenManager {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        refresh_token: refreshToken
-      })
+        refresh_token: refreshToken,
+      }),
     })
 
     if (!response.ok) {
@@ -236,8 +229,7 @@ class TokenManager {
    */
   private _retryAllPendingRequests() {
     const requests = this.pendingRequests.splice(0)
-    
-    
+
     requests.forEach(({ resolve, config }) => {
       // 更新Authorization头
       const newToken = localStorage.getItem('access_token')
@@ -253,8 +245,7 @@ class TokenManager {
    */
   private _failAllPendingRequests(error: any) {
     const requests = this.pendingRequests.splice(0)
-    
-    
+
     requests.forEach(({ reject }) => {
       reject(error)
     })
@@ -264,7 +255,6 @@ class TokenManager {
    * 清除认证状态
    */
   private _clearAuth(silent: boolean = false) {
-    
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
     localStorage.removeItem('user_info')
@@ -298,7 +288,6 @@ class TokenManager {
       const shouldRefresh = remaining < thirtyMinutes
 
       if (shouldRefresh) {
-        
       }
 
       return shouldRefresh
@@ -314,7 +303,6 @@ class TokenManager {
   async preventiveRefresh(): Promise<void> {
     // 如果已经在刷新中，跳过
     if (this._isRefreshing) {
-      
       return
     }
 
@@ -322,13 +310,11 @@ class TokenManager {
     const now = Date.now()
     const oneMinute = 60 * 1000
     if (now - this.lastRefreshTime < oneMinute) {
-      
       return
     }
 
     // 检查是否需要刷新
     if (this.shouldRefreshToken()) {
-      
       this.lastRefreshTime = now
       await this.refreshToken()
     }

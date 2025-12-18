@@ -13,7 +13,7 @@ class FrontendPerformanceChecker {
       bundleSize: {},
       dependencies: {},
       codeQuality: {},
-      performance: {}
+      performance: {},
     }
   }
 
@@ -21,14 +21,12 @@ class FrontendPerformanceChecker {
    * 检查打包大小
    */
   checkBundleSize() {
-    
-    
     try {
       // 运行构建
-      
-      execSync('npm run build', { 
+
+      execSync('npm run build', {
         cwd: this.projectRoot,
-        stdio: 'pipe'
+        stdio: 'pipe',
       })
 
       // 分析dist目录
@@ -36,18 +34,11 @@ class FrontendPerformanceChecker {
       if (fs.existsSync(distPath)) {
         const stats = this.analyzeBuildOutput(distPath)
         this.report.bundleSize = stats
-        
-        
-        
-        
-        
+
         // 检查大文件
-        const largeFiles = stats.allFiles.filter(file => file.size > 1024 * 1024) // > 1MB
+        const largeFiles = stats.allFiles.filter((file) => file.size > 1024 * 1024) // > 1MB
         if (largeFiles.length > 0) {
-          
-          largeFiles.forEach(file => {
-            
-          })
+          largeFiles.forEach((file) => {})
         }
       }
     } catch (error) {
@@ -63,28 +54,28 @@ class FrontendPerformanceChecker {
       totalSize: 0,
       jsFiles: [],
       cssFiles: [],
-      allFiles: []
+      allFiles: [],
     }
 
     const analyzeDir = (dirPath) => {
       const items = fs.readdirSync(dirPath)
-      
-      items.forEach(item => {
+
+      items.forEach((item) => {
         const itemPath = path.join(dirPath, item)
         const stat = fs.statSync(itemPath)
-        
+
         if (stat.isDirectory()) {
           analyzeDir(itemPath)
         } else {
           const fileInfo = {
             name: path.relative(distPath, itemPath),
             size: stat.size,
-            ext: path.extname(item)
+            ext: path.extname(item),
           }
-          
+
           stats.totalSize += stat.size
           stats.allFiles.push(fileInfo)
-          
+
           if (fileInfo.ext === '.js') {
             stats.jsFiles.push(fileInfo)
           } else if (fileInfo.ext === '.css') {
@@ -102,35 +93,30 @@ class FrontendPerformanceChecker {
    * 检查依赖项
    */
   checkDependencies() {
-    
-    
     try {
       const packageJsonPath = path.join(this.projectRoot, 'package.json')
       const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
-      
+
       const dependencies = packageJson.dependencies || {}
       const devDependencies = packageJson.devDependencies || {}
-      
+
       this.report.dependencies = {
         production: Object.keys(dependencies).length,
         development: Object.keys(devDependencies).length,
-        total: Object.keys(dependencies).length + Object.keys(devDependencies).length
+        total: Object.keys(dependencies).length + Object.keys(devDependencies).length,
       }
-      
-      
-      
-      
+
       // 检查过时的依赖
       try {
-        const outdated = execSync('npm outdated --json', { 
+        const outdated = execSync('npm outdated --json', {
           cwd: this.projectRoot,
-          stdio: 'pipe'
+          stdio: 'pipe',
         }).toString()
-        
+
         if (outdated.trim()) {
           const outdatedPackages = JSON.parse(outdated)
           const count = Object.keys(outdatedPackages).length
-          
+
           this.report.dependencies.outdated = count
         }
       } catch (error) {
@@ -138,7 +124,6 @@ class FrontendPerformanceChecker {
         console.log('✓ 所有依赖都是最新的')
         this.report.dependencies.outdated = 0
       }
-      
     } catch (error) {
       console.error('检查依赖失败:', error.message)
     }
@@ -148,35 +133,32 @@ class FrontendPerformanceChecker {
    * 检查代码质量
    */
   checkCodeQuality() {
-    
-    
     try {
       // 运行ESLint
       try {
-        execSync('npm run lint', { 
+        execSync('npm run lint', {
           cwd: this.projectRoot,
-          stdio: 'pipe'
+          stdio: 'pipe',
         })
-        
+
         this.report.codeQuality.eslint = 'passed'
       } catch (error) {
         console.log('⚠️  ESLint发现问题')
         this.report.codeQuality.eslint = 'failed'
       }
-      
+
       // 检查TypeScript类型
       try {
-        execSync('npx vue-tsc --noEmit', { 
+        execSync('npx vue-tsc --noEmit', {
           cwd: this.projectRoot,
-          stdio: 'pipe'
+          stdio: 'pipe',
         })
-        
+
         this.report.codeQuality.typescript = 'passed'
       } catch (error) {
         console.log('⚠️  TypeScript类型检查发现问题')
         this.report.codeQuality.typescript = 'failed'
       }
-      
     } catch (error) {
       console.error('代码质量检查失败:', error.message)
     }
@@ -186,26 +168,24 @@ class FrontendPerformanceChecker {
    * 检查性能指标
    */
   checkPerformanceMetrics() {
-    
-    
     // 检查Vue组件数量
     const componentCount = this.countVueComponents()
-    
+
     this.report.performance.componentCount = componentCount
-    
+
     // 检查路由数量
     const routeCount = this.countRoutes()
-    
+
     this.report.performance.routeCount = routeCount
-    
+
     // 检查Store模块数量
     const storeCount = this.countStoreModules()
-    
+
     this.report.performance.storeModules = storeCount
-    
+
     // 检查API接口数量
     const apiCount = this.countApiEndpoints()
-    
+
     this.report.performance.apiEndpoints = apiCount
   }
 
@@ -216,12 +196,12 @@ class FrontendPerformanceChecker {
     let count = 0
     const countInDir = (dirPath) => {
       if (!fs.existsSync(dirPath)) return
-      
+
       const items = fs.readdirSync(dirPath)
-      items.forEach(item => {
+      items.forEach((item) => {
         const itemPath = path.join(dirPath, item)
         const stat = fs.statSync(itemPath)
-        
+
         if (stat.isDirectory()) {
           countInDir(itemPath)
         } else if (item.endsWith('.vue')) {
@@ -229,7 +209,7 @@ class FrontendPerformanceChecker {
         }
       })
     }
-    
+
     countInDir(path.join(this.projectRoot, 'src'))
     return count
   }
@@ -241,7 +221,7 @@ class FrontendPerformanceChecker {
     try {
       const routerPath = path.join(this.projectRoot, 'src/router')
       if (!fs.existsSync(routerPath)) return 0
-      
+
       let routeCount = 0
       const countInFile = (filePath) => {
         const content = fs.readFileSync(filePath, 'utf8')
@@ -250,13 +230,13 @@ class FrontendPerformanceChecker {
           routeCount += matches.length
         }
       }
-      
+
       const processDir = (dirPath) => {
         const items = fs.readdirSync(dirPath)
-        items.forEach(item => {
+        items.forEach((item) => {
           const itemPath = path.join(dirPath, item)
           const stat = fs.statSync(itemPath)
-          
+
           if (stat.isDirectory()) {
             processDir(itemPath)
           } else if (item.endsWith('.ts') || item.endsWith('.js')) {
@@ -264,7 +244,7 @@ class FrontendPerformanceChecker {
           }
         })
       }
-      
+
       processDir(routerPath)
       return routeCount
     } catch (error) {
@@ -279,11 +259,9 @@ class FrontendPerformanceChecker {
     try {
       const storePath = path.join(this.projectRoot, 'src/stores/modules')
       if (!fs.existsSync(storePath)) return 0
-      
+
       const items = fs.readdirSync(storePath)
-      return items.filter(item => 
-        item.endsWith('.ts') || item.endsWith('.js')
-      ).length
+      return items.filter((item) => item.endsWith('.ts') || item.endsWith('.js')).length
     } catch (error) {
       return 0
     }
@@ -296,7 +274,7 @@ class FrontendPerformanceChecker {
     try {
       const apiPath = path.join(this.projectRoot, 'src/api')
       if (!fs.existsSync(apiPath)) return 0
-      
+
       let endpointCount = 0
       const countInFile = (filePath) => {
         const content = fs.readFileSync(filePath, 'utf8')
@@ -306,13 +284,13 @@ class FrontendPerformanceChecker {
           endpointCount += matches.length
         }
       }
-      
+
       const processDir = (dirPath) => {
         const items = fs.readdirSync(dirPath)
-        items.forEach(item => {
+        items.forEach((item) => {
           const itemPath = path.join(dirPath, item)
           const stat = fs.statSync(itemPath)
-          
+
           if (stat.isDirectory()) {
             processDir(itemPath)
           } else if (item.endsWith('.ts') || item.endsWith('.js')) {
@@ -320,7 +298,7 @@ class FrontendPerformanceChecker {
           }
         })
       }
-      
+
       processDir(apiPath)
       return endpointCount
     } catch (error) {
@@ -333,22 +311,23 @@ class FrontendPerformanceChecker {
    */
   generateOptimizationSuggestions() {
     const suggestions = []
-    
+
     // 打包大小建议
-    if (this.report.bundleSize.totalSize > 5 * 1024 * 1024) { // > 5MB
+    if (this.report.bundleSize.totalSize > 5 * 1024 * 1024) {
+      // > 5MB
       suggestions.push('考虑使用代码分割和懒加载来减少初始包大小')
     }
-    
+
     // 依赖建议
     if (this.report.dependencies.outdated > 5) {
       suggestions.push('建议更新过时的依赖包以获得性能改进和安全修复')
     }
-    
+
     // 组件数量建议
     if (this.report.performance.componentCount > 100) {
       suggestions.push('组件数量较多，考虑使用组件懒加载和虚拟滚动')
     }
-    
+
     return suggestions
   }
 
@@ -356,35 +335,24 @@ class FrontendPerformanceChecker {
    * 运行完整检查
    */
   async runFullCheck() {
-    
-    
     this.checkDependencies()
-    
-    
+
     this.checkCodeQuality()
-    
-    
+
     this.checkPerformanceMetrics()
-    
-    
+
     this.checkBundleSize()
-    
-    
+
     // 生成建议
     const suggestions = this.generateOptimizationSuggestions()
     if (suggestions.length > 0) {
-      
-      suggestions.forEach((suggestion, index) => {
-        
-      })
-      
+      suggestions.forEach((suggestion, index) => {})
     }
-    
+
     // 保存报告
     const reportPath = path.join(this.projectRoot, 'performance-report.json')
     fs.writeFileSync(reportPath, JSON.stringify(this.report, null, 2))
-    
-    
+
     return this.report
   }
 }

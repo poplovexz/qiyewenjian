@@ -3,26 +3,22 @@
     <div class="auth-fix-modal">
       <h3>认证已过期</h3>
       <p>您的登录状态已过期，请重新登录以继续使用系统。</p>
-      
+
       <el-form @submit.prevent="quickLogin" :loading="isLoading">
         <el-form-item label="用户名">
           <el-input v-model="loginForm.yonghu_ming" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="密码">
-          <el-input 
-            v-model="loginForm.mima" 
-            type="password" 
+          <el-input
+            v-model="loginForm.mima"
+            type="password"
             placeholder="请输入密码"
             @keyup.enter="quickLogin"
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="quickLogin" :loading="isLoading">
-            重新登录
-          </el-button>
-          <el-button @click="goToLoginPage">
-            前往登录页
-          </el-button>
+          <el-button type="primary" @click="quickLogin" :loading="isLoading"> 重新登录 </el-button>
+          <el-button @click="goToLoginPage"> 前往登录页 </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -40,15 +36,16 @@ const router = useRouter()
 
 const showAuthFix = computed(() => {
   // 如果没有token或用户信息，显示修复界面
-  return !authStore.isAuthenticated && 
-         (localStorage.getItem('access_token') || 
-          window.location.pathname !== '/login')
+  return (
+    !authStore.isAuthenticated &&
+    (localStorage.getItem('access_token') || window.location.pathname !== '/login')
+  )
 })
 
 const isLoading = ref(false)
 const loginForm = ref({
   yonghu_ming: 'admin',
-  mima: 'admin123'
+  mima: 'admin123',
 })
 
 const quickLogin = async () => {
@@ -80,7 +77,6 @@ const goToLoginPage = () => {
 
 onMounted(() => {
   // 检查是否需要显示认证修复界面
-  
 })
 </script>
 

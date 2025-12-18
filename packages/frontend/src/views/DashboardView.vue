@@ -7,30 +7,30 @@
         <button @click="handleLogout" class="btn btn-outline">退出</button>
       </div>
     </header>
-    
+
     <div class="dashboard-content">
       <div class="stats-grid">
         <div class="stat-card">
           <h3>总客户数</h3>
           <div class="stat-number">{{ stats.totalCustomers }}</div>
         </div>
-        
+
         <div class="stat-card">
           <h3>活跃客户</h3>
           <div class="stat-number">{{ stats.activeCustomers }}</div>
         </div>
-        
+
         <div class="stat-card">
           <h3>待处理任务</h3>
           <div class="stat-number">{{ stats.pendingTasks }}</div>
         </div>
-        
+
         <div class="stat-card">
           <h3>本月收入</h3>
           <div class="stat-number">¥{{ stats.monthlyRevenue.toLocaleString() }}</div>
         </div>
       </div>
-      
+
       <div class="dashboard-sections">
         <section class="recent-tasks">
           <h2>最近任务</h2>
@@ -46,7 +46,7 @@
             </div>
           </div>
         </section>
-        
+
         <section class="quick-actions">
           <h2>快速操作</h2>
           <div class="action-buttons">
@@ -121,7 +121,6 @@ const handleLogout = () => {
 
 onMounted(() => {
   // 这里可以加载仪表板数据
-  
 })
 </script>
 
