@@ -5,11 +5,7 @@
     </div>
 
     <div v-else-if="error" class="error-container">
-      <el-result
-        icon="error"
-        title="签署链接无效"
-        :sub-title="error"
-      >
+      <el-result icon="error" title="签署链接无效" :sub-title="error">
         <template #extra>
           <el-button type="primary" @click="$router.push('/')">返回首页</el-button>
         </template>
@@ -58,7 +54,10 @@
         <template #header>
           <h3>合同内容</h3>
         </template>
-        <div class="contract-content" v-html="sanitizeContractHtml(contractInfo.hetong_neirong)"></div>
+        <div
+          class="contract-content"
+          v-html="sanitizeContractHtml(contractInfo.hetong_neirong)"
+        ></div>
       </el-card>
 
       <!-- 签署表单 -->
@@ -67,12 +66,7 @@
           <h3>电子签署</h3>
         </template>
 
-        <el-form
-          ref="signFormRef"
-          :model="signForm"
-          :rules="signFormRules"
-          label-width="120px"
-        >
+        <el-form ref="signFormRef" :model="signForm" :rules="signFormRules" label-width="120px">
           <el-form-item label="签署人姓名" prop="qianshu_ren_mingcheng">
             <el-input
               v-model="signForm.qianshu_ren_mingcheng"
@@ -144,12 +138,8 @@
         <template #header>
           <h3>签署信息</h3>
         </template>
-        
-        <el-result
-          icon="success"
-          title="合同签署成功"
-          sub-title="您已成功完成合同的电子签署"
-        >
+
+        <el-result icon="success" title="合同签署成功" sub-title="您已成功完成合同的电子签署">
           <template #extra>
             <div class="signed-details">
               <p><strong>签署人：</strong>{{ contractInfo.qianshu_ren_mingcheng }}</p>
@@ -201,7 +191,7 @@ const signForm = ref({
   qianshu_ren_mingcheng: '',
   qianshu_ren_dianhua: '',
   qianshu_ren_youxiang: '',
-  qianming_tupian: ''
+  qianming_tupian: '',
 })
 
 // 签名画布相关
@@ -212,26 +202,22 @@ const lastY = ref(0)
 
 // 表单验证规则
 const signFormRules: FormRules = {
-  qianshu_ren_mingcheng: [
-    { required: true, message: '请输入签署人姓名', trigger: 'blur' }
-  ],
+  qianshu_ren_mingcheng: [{ required: true, message: '请输入签署人姓名', trigger: 'blur' }],
   qianshu_ren_dianhua: [
     { required: true, message: '请输入联系电话', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' },
   ],
   qianshu_ren_youxiang: [
     { required: true, message: '请输入电子邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
   ],
-  qianming_tupian: [
-    { required: true, message: '请完成电子签名', trigger: 'change' }
-  ]
+  qianming_tupian: [{ required: true, message: '请完成电子签名', trigger: 'change' }],
 }
 
 // 方法
 const fetchContractInfo = async () => {
   const token = route.params.token as string
-  
+
   if (!token) {
     error.value = '签署令牌无效'
     loading.value = false
@@ -256,7 +242,7 @@ const initSignatureCanvas = () => {
 
     canvas.width = 400
     canvas.height = 200
-    
+
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
@@ -342,15 +328,11 @@ const handleSubmitSign = async () => {
       return
     }
 
-    await ElMessageBox.confirm(
-      '确认提交电子签署？提交后将无法修改。',
-      '确认签署',
-      {
-        confirmButtonText: '确认签署',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm('确认提交电子签署？提交后将无法修改。', '确认签署', {
+      confirmButtonText: '确认签署',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     submitting.value = true
 
@@ -358,10 +340,9 @@ const handleSubmitSign = async () => {
     await contractSignApi.submitSign(token, signForm.value)
 
     ElMessage.success('合同签署成功！')
-    
+
     // 重新获取合同信息
     await fetchContractInfo()
-
   } catch (error: any) {
     if (error !== 'cancel') {
       console.error('合同签署失败:', error)
@@ -381,7 +362,7 @@ const getStatusTagType = (status: string) => {
   const types: Record<string, string> = {
     daiqianshu: 'warning',
     yiqianshu: 'success',
-    guoqi: 'danger'
+    guoqi: 'danger',
   }
   return types[status] || 'info'
 }
@@ -390,7 +371,7 @@ const getStatusText = (status: string) => {
   const texts: Record<string, string> = {
     daiqianshu: '待签署',
     yiqianshu: '已签署',
-    guoqi: '已过期'
+    guoqi: '已过期',
   }
   return texts[status] || status
 }
@@ -448,23 +429,23 @@ onMounted(async () => {
 .contract-content {
   /* 🔧 修复：移除最大高度限制，让内容完整显示 */
   padding: 16px;
-  border: 1px solid #EBEEF5;
+  border: 1px solid #ebeef5;
   border-radius: 4px;
-  background-color: #FAFAFA;
+  background-color: #fafafa;
   line-height: 1.6;
   white-space: pre-wrap; /* 保留换行符 */
   word-wrap: break-word; /* 自动换行 */
 }
 
 .signature-container {
-  border: 1px solid #DCDFE6;
+  border: 1px solid #dcdfe6;
   border-radius: 4px;
   padding: 16px;
-  background-color: #FAFAFA;
+  background-color: #fafafa;
 }
 
 .signature-canvas {
-  border: 1px dashed #DCDFE6;
+  border: 1px dashed #dcdfe6;
   border-radius: 4px;
   background-color: white;
   cursor: crosshair;
@@ -484,7 +465,7 @@ onMounted(async () => {
 .signature-preview img {
   max-width: 200px;
   max-height: 100px;
-  border: 1px solid #DCDFE6;
+  border: 1px solid #dcdfe6;
   border-radius: 4px;
 }
 
@@ -512,11 +493,11 @@ onMounted(async () => {
   .contract-sign-page {
     padding: 10px;
   }
-  
+
   .sign-container {
     max-width: 100%;
   }
-  
+
   .signature-canvas {
     width: 100%;
     max-width: 350px;

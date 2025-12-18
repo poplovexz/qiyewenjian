@@ -86,34 +86,12 @@
       <el-divider />
       <div class="action-buttons">
         <el-button @click="handleBack">返回</el-button>
-        <el-button 
-          v-if="canEdit" 
-          type="primary" 
-          @click="handleEdit"
-        >
-          编辑
-        </el-button>
-        <el-button 
-          v-if="canSubmit" 
-          type="success" 
-          @click="handleSubmitApproval"
-        >
+        <el-button v-if="canEdit" type="primary" @click="handleEdit"> 编辑 </el-button>
+        <el-button v-if="canSubmit" type="success" @click="handleSubmitApproval">
           提交审批
         </el-button>
-        <el-button 
-          v-if="canApprove" 
-          type="success" 
-          @click="handleApprove"
-        >
-          审批通过
-        </el-button>
-        <el-button 
-          v-if="canApprove" 
-          type="danger" 
-          @click="handleReject"
-        >
-          审批拒绝
-        </el-button>
+        <el-button v-if="canApprove" type="success" @click="handleApprove"> 审批通过 </el-button>
+        <el-button v-if="canApprove" type="danger" @click="handleReject"> 审批拒绝 </el-button>
       </div>
     </el-card>
 
@@ -136,7 +114,7 @@ import {
   submitProcurementForApproval,
   approveProcurement,
   rejectProcurement,
-  type ProcurementApplication
+  type ProcurementApplication,
 } from '@/api/office'
 import { useAuthStore } from '@/stores/modules/auth'
 import ApprovalWorkflow from '@/components/office/ApprovalWorkflow.vue'
@@ -177,7 +155,7 @@ const fetchDetail = async () => {
   try {
     const data = await getProcurementDetail(procurementId.value)
     detail.value = data
-    
+
     // TODO: 获取审批记录
     // if (data.shenhe_liucheng_id) {
     //   auditRecords.value = await getAuditRecords(data.shenhe_liucheng_id)
@@ -199,9 +177,9 @@ const handleEdit = () => {
 const handleSubmitApproval = async () => {
   try {
     await ElMessageBox.confirm('确定要提交审批吗？', '确认操作', {
-      type: 'warning'
+      type: 'warning',
     })
-    
+
     await submitProcurementForApproval(procurementId.value)
     ElMessage.success('提交成功')
     fetchDetail()
@@ -258,7 +236,7 @@ const getStatusLabel = (status: string) => {
     daishehe: '待审核',
     shenhezhong: '审核中',
     tongguo: '已通过',
-    jujue: '已拒绝'
+    jujue: '已拒绝',
   }
   return map[status] || status
 }
@@ -268,7 +246,7 @@ const getStatusType = (status: string) => {
     daishehe: 'info',
     shenhezhong: 'warning',
     tongguo: 'success',
-    jujue: 'danger'
+    jujue: 'danger',
   }
   return map[status] || 'info'
 }
@@ -278,7 +256,7 @@ const getProcurementStatusLabel = (status: string) => {
     daicaigou: '待采购',
     caigouzhong: '采购中',
     yiwancheng: '已完成',
-    yiquxiao: '已取消'
+    yiquxiao: '已取消',
   }
   return map[status] || status
 }
@@ -288,7 +266,7 @@ const getProcurementStatusType = (status: string) => {
     daicaigou: 'info',
     caigouzhong: 'warning',
     yiwancheng: 'success',
-    yiquxiao: 'info'
+    yiquxiao: 'info',
   }
   return map[status] || 'info'
 }
@@ -297,7 +275,7 @@ const getAuditStatusLabel = (status: string) => {
   const map: Record<string, string> = {
     daichuli: '待处理',
     tongguo: '已通过',
-    jujue: '已拒绝'
+    jujue: '已拒绝',
   }
   return map[status] || status
 }
@@ -306,7 +284,7 @@ const getAuditStatusType = (status: string) => {
   const map: Record<string, any> = {
     daichuli: 'info',
     tongguo: 'success',
-    jujue: 'danger'
+    jujue: 'danger',
   }
   return map[status] || 'info'
 }
@@ -315,7 +293,7 @@ const getAuditTimelineType = (status: string) => {
   const map: Record<string, any> = {
     daichuli: 'primary',
     tongguo: 'success',
-    jujue: 'danger'
+    jujue: 'danger',
   }
   return map[status] || 'primary'
 }
@@ -379,4 +357,3 @@ onMounted(() => {
   }
 }
 </style>
-

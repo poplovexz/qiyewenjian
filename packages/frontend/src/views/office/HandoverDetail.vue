@@ -88,34 +88,12 @@
       <el-divider />
       <div class="action-buttons">
         <el-button @click="handleBack">返回</el-button>
-        <el-button 
-          v-if="canEdit" 
-          type="primary" 
-          @click="handleEdit"
-        >
-          编辑
-        </el-button>
-        <el-button 
-          v-if="canSubmit" 
-          type="success" 
-          @click="handleSubmitConfirm"
-        >
+        <el-button v-if="canEdit" type="primary" @click="handleEdit"> 编辑 </el-button>
+        <el-button v-if="canSubmit" type="success" @click="handleSubmitConfirm">
           提交确认
         </el-button>
-        <el-button 
-          v-if="canConfirm" 
-          type="success" 
-          @click="handleConfirm"
-        >
-          确认接收
-        </el-button>
-        <el-button 
-          v-if="canConfirm" 
-          type="danger" 
-          @click="handleReject"
-        >
-          拒绝接收
-        </el-button>
+        <el-button v-if="canConfirm" type="success" @click="handleConfirm"> 确认接收 </el-button>
+        <el-button v-if="canConfirm" type="danger" @click="handleReject"> 拒绝接收 </el-button>
       </div>
     </el-card>
 
@@ -139,9 +117,7 @@
       </el-form>
       <template #footer>
         <el-button @click="confirmDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitConfirm" :loading="confirming">
-          确定
-        </el-button>
+        <el-button type="primary" @click="submitConfirm" :loading="confirming"> 确定 </el-button>
       </template>
     </el-dialog>
   </div>
@@ -157,7 +133,7 @@ import {
   submitHandoverForConfirm,
   confirmHandover,
   rejectHandover,
-  type HandoverApplication
+  type HandoverApplication,
 } from '@/api/office'
 import { useAuthStore } from '@/stores/modules/auth'
 
@@ -186,13 +162,15 @@ const canSubmit = computed(() => {
 
 const canConfirm = computed(() => {
   // TODO: 根据实际权限判断（是否为接收人）
-  return detail.value.jiaojie_zhuangtai === 'daiqueren' && 
-         detail.value.jieshou_ren_id === authStore.user?.id
+  return (
+    detail.value.jiaojie_zhuangtai === 'daiqueren' &&
+    detail.value.jieshou_ren_id === authStore.user?.id
+  )
 })
 
 const confirmForm = reactive({
   jieguo: 'queren',
-  beizhu: ''
+  beizhu: '',
 })
 
 // 获取详情
@@ -218,9 +196,9 @@ const handleEdit = () => {
 const handleSubmitConfirm = async () => {
   try {
     await ElMessageBox.confirm('确定要提交确认吗？', '确认操作', {
-      type: 'warning'
+      type: 'warning',
     })
-    
+
     await submitHandoverForConfirm(handoverId.value)
     ElMessage.success('提交成功')
     fetchDetail()
@@ -261,7 +239,7 @@ const submitConfirm = async () => {
       await rejectHandover(handoverId.value, confirmForm.beizhu)
       ElMessage.success('已拒绝接收')
     }
-    
+
     confirmDialogVisible.value = false
     fetchDetail()
   } catch (error) {
@@ -282,7 +260,7 @@ const getReasonLabel = (reason: string) => {
     lizhi: '离职',
     diaogang: '调岗',
     xiujia: '休假',
-    qita: '其他'
+    qita: '其他',
   }
   return map[reason] || reason
 }
@@ -291,7 +269,7 @@ const getStatusLabel = (status: string) => {
   const map: Record<string, string> = {
     daiqueren: '待确认',
     yiqueren: '已确认',
-    yijujue: '已拒绝'
+    yijujue: '已拒绝',
   }
   return map[status] || status
 }
@@ -300,7 +278,7 @@ const getStatusType = (status: string) => {
   const map: Record<string, any> = {
     daiqueren: 'warning',
     yiqueren: 'success',
-    yijujue: 'danger'
+    yijujue: 'danger',
   }
   return map[status] || 'info'
 }
@@ -354,4 +332,3 @@ onMounted(() => {
   }
 }
 </style>
-

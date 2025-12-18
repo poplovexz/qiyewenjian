@@ -12,11 +12,9 @@
       <div class="variables-panel">
         <div class="panel-header">
           <h4>变量设置</h4>
-          <el-button size="small" @click="loadDefaultVariables">
-            加载默认值
-          </el-button>
+          <el-button size="small" @click="loadDefaultVariables"> 加载默认值 </el-button>
         </div>
-        
+
         <div class="variables-form">
           <el-form label-width="120px" size="small">
             <el-form-item
@@ -45,7 +43,7 @@
                 value-format="YYYY-MM-DD"
               />
             </el-form-item>
-            
+
             <!-- 如果没有配置变量，显示通用变量输入 -->
             <template v-if="Object.keys(availableVariables).length === 0">
               <el-form-item
@@ -61,7 +59,7 @@
             </template>
           </el-form>
         </div>
-        
+
         <div class="panel-actions">
           <el-button type="primary" @click="handlePreview">
             <el-icon><View /></el-icon>
@@ -73,7 +71,7 @@
           </el-button>
         </div>
       </div>
-      
+
       <!-- 预览区域 -->
       <div class="preview-panel">
         <div class="panel-header">
@@ -89,23 +87,21 @@
             </el-button>
           </div>
         </div>
-        
-        <div 
+
+        <div
           class="preview-content"
-          :class="{ 'fullscreen': isFullscreen }"
+          :class="{ fullscreen: isFullscreen }"
           v-loading="previewLoading"
         >
           <div class="content-wrapper" v-html="sanitizeContractHtml(previewContent)"></div>
         </div>
       </div>
     </div>
-    
+
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">关闭</el-button>
-        <el-button type="primary" @click="handleSaveAsTemplate">
-          另存为模板
-        </el-button>
+        <el-button type="primary" @click="handleSaveAsTemplate"> 另存为模板 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -126,7 +122,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  template: null
+  template: null,
 })
 
 // Emits
@@ -153,42 +149,45 @@ const commonVariables = [
   { name: 'fuwu_jiage', desc: '服务价格' },
   { name: 'hetong_qixian', desc: '合同期限' },
   { name: 'qianyue_riqi', desc: '签约日期' },
-  { name: 'shengxiao_riqi', desc: '生效日期' }
+  { name: 'shengxiao_riqi', desc: '生效日期' },
 ]
 
 // 监听器
-watch(() => props.visible, async (visible) => {
-  if (visible && props.template) {
-    await loadTemplateVariables()
-    await handlePreview()
+watch(
+  () => props.visible,
+  async (visible) => {
+    if (visible && props.template) {
+      await loadTemplateVariables()
+      await handlePreview()
+    }
   }
-})
+)
 
 // 方法
 const loadTemplateVariables = async () => {
   if (!props.template) return
-  
+
   try {
     // 获取模板变量配置
     const variables = await contractStore.getTemplateVariables(props.template.id)
     availableVariables.value = variables
-    
+
     // 初始化变量值
-    Object.keys(variables).forEach(key => {
+    Object.keys(variables).forEach((key) => {
       const variable = variables[key]
       variableValues[key] = variable.default || ''
     })
-    
+
     // 如果没有配置变量，使用通用变量
     if (Object.keys(variables).length === 0) {
-      commonVariables.forEach(variable => {
+      commonVariables.forEach((variable) => {
         variableValues[variable.name] = ''
       })
     }
   } catch (error) {
     console.error('加载模板变量失败:', error)
     // 使用通用变量作为备选
-    commonVariables.forEach(variable => {
+    commonVariables.forEach((variable) => {
       variableValues[variable.name] = ''
     })
   }
@@ -196,11 +195,11 @@ const loadTemplateVariables = async () => {
 
 const loadDefaultVariables = () => {
   // 加载默认变量值
-  Object.keys(availableVariables.value).forEach(key => {
+  Object.keys(availableVariables.value).forEach((key) => {
     const variable = availableVariables.value[key]
     variableValues[key] = variable.default || ''
   })
-  
+
   // 如果没有配置变量，使用示例值
   if (Object.keys(availableVariables.value).length === 0) {
     Object.assign(variableValues, {
@@ -211,20 +210,20 @@ const loadDefaultVariables = () => {
       fuwu_jiage: '2000.00',
       hetong_qixian: '12个月',
       qianyue_riqi: new Date().toISOString().split('T')[0],
-      shengxiao_riqi: new Date().toISOString().split('T')[0]
+      shengxiao_riqi: new Date().toISOString().split('T')[0],
     })
   }
 }
 
 const handlePreview = async () => {
   if (!props.template) return
-  
+
   try {
     previewLoading.value = true
-    
+
     // 调用预览API
     const content = await contractStore.previewTemplate(props.template.id, variableValues)
-    
+
     // 处理内容格式
     previewContent.value = formatPreviewContent(content)
   } catch (error) {
@@ -238,7 +237,7 @@ const handlePreview = async () => {
 const formatPreviewContent = (content: string) => {
   // 将换行符转换为HTML换行
   let formatted = content.replace(/\n/g, '<br>')
-  
+
   // 添加基本样式
   formatted = `
     <div style="
@@ -252,7 +251,7 @@ const formatPreviewContent = (content: string) => {
       ${formatted}
     </div>
   `
-  
+
   return formatted
 }
 
@@ -261,7 +260,7 @@ const handleExport = () => {
     ElMessage.warning('请先预览内容')
     return
   }
-  
+
   // 创建下载链接
   const blob = new Blob([previewContent.value], { type: 'text/html;charset=utf-8' })
   const url = URL.createObjectURL(blob)
@@ -272,7 +271,7 @@ const handleExport = () => {
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
-  
+
   ElMessage.success('导出成功')
 }
 
@@ -281,7 +280,7 @@ const handlePrint = () => {
     ElMessage.warning('请先预览内容')
     return
   }
-  
+
   // 打开新窗口进行打印
   const printWindow = window.open('', '_blank')
   if (printWindow) {

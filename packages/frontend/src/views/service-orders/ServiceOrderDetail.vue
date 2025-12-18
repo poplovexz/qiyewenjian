@@ -52,7 +52,7 @@
             <template #header>
               <span>基本信息</span>
             </template>
-            
+
             <el-descriptions :column="2" border>
               <el-descriptions-item label="工单编号">
                 {{ serviceOrder.gongdan_bianhao }}
@@ -103,13 +103,10 @@
 
             <div v-if="serviceOrder.kehu_pingjia" class="evaluation-section">
               <h4>客户评价</h4>
-              <el-rate
-                v-model="evaluationRating"
-                disabled
-                show-text
-                text-color="#ff9900"
-              />
-              <p v-if="serviceOrder.kehu_pingjia_neirong">{{ serviceOrder.kehu_pingjia_neirong }}</p>
+              <el-rate v-model="evaluationRating" disabled show-text text-color="#ff9900" />
+              <p v-if="serviceOrder.kehu_pingjia_neirong">
+                {{ serviceOrder.kehu_pingjia_neirong }}
+              </p>
             </div>
           </el-card>
 
@@ -118,7 +115,7 @@
             <template #header>
               <span>工单项目</span>
             </template>
-            
+
             <el-table :data="serviceOrder.xiangmu_list" stripe>
               <el-table-column prop="paixu" label="序号" width="80" />
               <el-table-column prop="xiangmu_mingcheng" label="项目名称" min-width="200" />
@@ -136,23 +133,14 @@
                 </template>
               </el-table-column>
               <el-table-column prop="jihua_gongshi" label="计划工时" width="100">
-                <template #default="{ row }">
-                  {{ row.jihua_gongshi || '-' }}h
-                </template>
+                <template #default="{ row }"> {{ row.jihua_gongshi || '-' }}h </template>
               </el-table-column>
               <el-table-column prop="shiji_gongshi" label="实际工时" width="100">
-                <template #default="{ row }">
-                  {{ row.shiji_gongshi || '-' }}h
-                </template>
+                <template #default="{ row }"> {{ row.shiji_gongshi || '-' }}h </template>
               </el-table-column>
               <el-table-column label="操作" width="100" fixed="right">
                 <template #default="{ row }">
-                  <el-button
-                    type="primary"
-                    size="small"
-                    link
-                    @click="handleAssignTaskItem(row)"
-                  >
+                  <el-button type="primary" size="small" link @click="handleAssignTaskItem(row)">
                     {{ row.zhixing_ren ? '重新分配' : '分配' }}
                   </el-button>
                 </template>
@@ -168,7 +156,7 @@
             <template #header>
               <span>操作日志</span>
             </template>
-            
+
             <el-timeline>
               <el-timeline-item
                 v-for="log in serviceOrder.rizhi_list"
@@ -195,7 +183,7 @@
             <template #header>
               <span>添加评论</span>
             </template>
-            
+
             <el-form @submit.prevent="addComment">
               <el-form-item>
                 <el-input
@@ -252,7 +240,10 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowLeft, Warning, Paperclip } from '@element-plus/icons-vue'
-import { useServiceOrderStore, type ServiceOrderItem } from '@/stores/modules/serviceOrderManagement'
+import {
+  useServiceOrderStore,
+  type ServiceOrderItem,
+} from '@/stores/modules/serviceOrderManagement'
 import AssignOrderDialog from './components/AssignOrderDialog.vue'
 import CompleteOrderDialog from './components/CompleteOrderDialog.vue'
 import CancelOrderDialog from './components/CancelOrderDialog.vue'
@@ -272,7 +263,7 @@ const currentTaskItem = ref<ServiceOrderItem | null>(null)
 const commentLoading = ref(false)
 
 const commentForm = reactive({
-  content: ''
+  content: '',
 })
 
 // 计算属性
@@ -283,7 +274,7 @@ const evaluationRating = computed(() => {
     excellent: 5,
     good: 4,
     average: 3,
-    poor: 2
+    poor: 2,
   }
   return ratingMap[serviceOrder.value?.kehu_pingjia || ''] || 0
 })
@@ -306,9 +297,9 @@ const goBack = () => {
 const startOrder = async () => {
   try {
     await ElMessageBox.confirm('确认开始执行此工单？', '确认操作', {
-      type: 'warning'
+      type: 'warning',
     })
-    
+
     await serviceOrderStore.startServiceOrder(serviceOrder.value!.id)
     loadData()
   } catch (error) {
@@ -326,10 +317,7 @@ const addComment = async () => {
 
   commentLoading.value = true
   try {
-    await serviceOrderStore.addServiceOrderComment(
-      serviceOrder.value!.id,
-      commentForm.content
-    )
+    await serviceOrderStore.addServiceOrderComment(serviceOrder.value!.id, commentForm.content)
     commentForm.content = ''
     loadData()
   } catch (error) {
@@ -362,7 +350,7 @@ const getStatusType = (status: string) => {
     in_progress: 'primary',
     pending_review: 'warning',
     completed: 'success',
-    cancelled: 'danger'
+    cancelled: 'danger',
   }
   return typeMap[status] || 'info'
 }
@@ -372,7 +360,7 @@ const getPriorityType = (priority: string) => {
     low: 'info',
     medium: 'warning',
     high: 'danger',
-    urgent: 'danger'
+    urgent: 'danger',
   }
   return typeMap[priority] || 'info'
 }
@@ -388,7 +376,7 @@ const getItemStatusType = (status: string) => {
     pending: 'info',
     in_progress: 'warning',
     completed: 'success',
-    skipped: 'info'
+    skipped: 'info',
   }
   return typeMap[status] || 'info'
 }
@@ -398,7 +386,7 @@ const getItemStatusText = (status: string) => {
     pending: '待处理',
     in_progress: '进行中',
     completed: '已完成',
-    skipped: '已跳过'
+    skipped: '已跳过',
   }
   return textMap[status] || status
 }
@@ -413,7 +401,7 @@ const getLogTypeText = (type: string) => {
     cancelled: '取消',
     commented: '评论',
     status_changed: '状态变更',
-    task_assign: '任务分配'
+    task_assign: '任务分配',
   }
   return textMap[type] || type
 }
