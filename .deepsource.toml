@@ -31,7 +31,7 @@ name = "javascript"
 
   [analyzers.meta]
   plugins = ["vue"]
-  skip_doc_coverage = ["module", "class", "function"]
+  skip_doc_coverage = ["class-declaration", "class-expression", "function-declaration", "function-expression", "method-definition"]
 
   [analyzers.javascript]
   # Vue 3 supports v-model with arguments (v-model:visible, v-model:show, etc.)
