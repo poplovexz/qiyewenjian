@@ -503,8 +503,6 @@ const initiatePayment = async () => {
 
 // 开始轮询支付状态
 const startPaymentStatusPolling = () => {
-  console.log('🔍 开始轮询支付状态...')
-
   // 清除之前的定时器
   if (paymentStatusTimer) {
     clearInterval(paymentStatusTimer)
@@ -513,28 +511,20 @@ const startPaymentStatusPolling = () => {
   // 每3秒查询一次支付状态
   paymentStatusTimer = window.setInterval(async () => {
     try {
-      console.log('🔍 发送支付状态查询请求...')
       const response = await request.get(`/contract-sign/sign/${signToken}/payment-status`, {
         timeout: 30000, // 增加超时时间到30秒
       })
-      console.log('🔍 收到支付状态响应:', response)
 
       const status = response.data || response
-      console.log('🔍 解析后的状态:', status)
-      console.log('🔍 payment_status 值:', status.payment_status)
 
       if (status.payment_status === 'paid') {
-        console.log('✅ 检测到支付成功！')
         // 支付成功
         stopPaymentStatusPolling()
         paymentCompleted.value = true
         paymentQrCode.value = ''
         currentStep.value = 3 // 直接设置为完成步骤
         ElMessage.success('支付成功！')
-
-        console.log('🔄 已跳转到完成步骤，当前步骤:', currentStep.value)
       } else {
-        console.log('⏳ 支付状态:', status.payment_status, '继续轮询...')
       }
     } catch (error) {
       console.error('❌ 查询支付状态失败:', error)

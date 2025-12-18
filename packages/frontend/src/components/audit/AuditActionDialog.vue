@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
-    title="审核操作"
-    width="600px"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="dialogVisible" title="审核操作" width="600px" :before-close="handleClose">
     <div v-if="task" class="audit-action-dialog">
       <!-- 任务信息 -->
       <div class="task-info-section">
@@ -33,12 +28,7 @@
       <!-- 审核表单 -->
       <div class="audit-form-section">
         <h4>审核操作</h4>
-        <el-form
-          ref="formRef"
-          :model="formData"
-          :rules="formRules"
-          label-width="100px"
-        >
+        <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
           <el-form-item label="审核结果" prop="shenhe_jieguo">
             <el-radio-group v-model="formData.shenhe_jieguo">
               <el-radio value="tongguo">
@@ -84,9 +74,7 @@
                 上传附件
               </el-button>
               <template #tip>
-                <div class="el-upload__tip">
-                  支持 PDF、Word、图片格式，文件大小不超过 10MB
-                </div>
+                <div class="el-upload__tip">支持 PDF、Word、图片格式，文件大小不超过 10MB</div>
               </template>
             </el-upload>
           </el-form-item>
@@ -105,13 +93,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button
-          type="primary"
-          :loading="submitting"
-          @click="handleSubmit"
-        >
-          提交审核
-        </el-button>
+        <el-button type="primary" :loading="submitting" @click="handleSubmit"> 提交审核 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -121,12 +103,7 @@
 import { ref, computed, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules, UploadProps } from 'element-plus'
-import {
-  Check,
-  Close,
-  Share,
-  Upload
-} from '@element-plus/icons-vue'
+import { Check, Close, Share, Upload } from '@element-plus/icons-vue'
 import { useAuditManagementStore } from '@/stores/modules/auditManagement'
 import { useAuthStore } from '@/stores/modules/auth'
 
@@ -138,13 +115,13 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   visible: false,
-  task: null
+  task: null,
 })
 
 // Emits
 const emit = defineEmits<{
   'update:visible': [value: boolean]
-  'success': []
+  success: []
 }>()
 
 // 使用store
@@ -161,13 +138,13 @@ const formData = ref({
   shenhe_jieguo: '',
   shenhe_yijian: '',
   fujian_lujing: '',
-  fujian_miaoshu: ''
+  fujian_miaoshu: '',
 })
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 const uploadAction = computed(() => {
@@ -178,19 +155,15 @@ const uploadHeaders = computed(() => {
   const token = authStore.accessToken || localStorage.getItem('access_token') || ''
   return token
     ? {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       }
     : {}
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  shenhe_jieguo: [
-    { required: true, message: '请选择审核结果', trigger: 'change' }
-  ],
-  shenhe_yijian: [
-    { required: true, message: '请输入审核意见', trigger: 'blur' }
-  ]
+  shenhe_jieguo: [{ required: true, message: '请选择审核结果', trigger: 'change' }],
+  shenhe_yijian: [{ required: true, message: '请输入审核意见', trigger: 'blur' }],
 }
 
 // 方法
@@ -204,7 +177,7 @@ const resetForm = () => {
     shenhe_jieguo: '',
     shenhe_yijian: '',
     fujian_lujing: '',
-    fujian_miaoshu: ''
+    fujian_miaoshu: '',
   }
   fileList.value = []
   formRef.value?.resetFields()
@@ -216,41 +189,25 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate()
 
-    await ElMessageBox.confirm(
-      '确定要提交此审核结果吗？提交后将无法修改。',
-      '确认提交',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm('确定要提交此审核结果吗？提交后将无法修改。', '确认提交', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     submitting.value = true
 
     // 根据审核结果确定操作类型
     const action = formData.value.shenhe_jieguo === 'tongguo' ? 'approve' : 'reject'
 
-    console.log('提交审核:', {
-      taskId: props.task.id,
-      action,
-      shenhe_jieguo: formData.value.shenhe_jieguo,
-      shenhe_yijian: formData.value.shenhe_yijian
-    })
-
     // 调用审核操作
-    await auditStore.processAuditAction(
-      props.task.id,
-      action,
-      {
-        comment: formData.value.shenhe_yijian,
-        approver: authStore.userInfo?.yonghu_ming || 'admin'
-      }
-    )
+    await auditStore.processAuditAction(props.task.id, action, {
+      comment: formData.value.shenhe_yijian,
+      approver: authStore.userInfo?.yonghu_ming || 'admin',
+    })
 
     emit('success')
     ElMessage.success('审核操作提交成功')
-
   } catch (error: any) {
     if (error !== 'cancel') {
       console.error('提交审核失败:', error)
@@ -268,7 +225,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'image/jpeg',
     'image/jpg',
-    'image/png'
+    'image/png',
   ].includes(file.type)
 
   const isLt10M = file.size / 1024 / 1024 < 10
@@ -303,7 +260,7 @@ const getAuditTypeTagType = (type: string) => {
     hetong: 'primary',
     hetong_jine_xiuzheng: 'warning',
     baojia: 'success',
-    baojia_shenhe: 'success'
+    baojia_shenhe: 'success',
   }
   return types[type] || 'info'
 }
@@ -314,17 +271,20 @@ const getAuditTypeText = (type: string) => {
     hetong: '合同审核',
     hetong_jine_xiuzheng: '合同金额修正',
     baojia: '报价审核',
-    baojia_shenhe: '报价审核'
+    baojia_shenhe: '报价审核',
   }
   return texts[type] || type
 }
 
 // 监听对话框显示状态
-watch(() => props.visible, (newVal) => {
-  if (newVal) {
-    resetForm()
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      resetForm()
+    }
   }
-})
+)
 </script>
 
 <style scoped>

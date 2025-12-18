@@ -33,7 +33,6 @@ export function initSentry(app: App, router: Router): void {
 
   // 如果没有配置 DSN，跳过初始化
   if (!dsn) {
-    console.log('[Sentry] DSN not configured, skipping initialization')
     return
   }
 
@@ -43,10 +42,10 @@ export function initSentry(app: App, router: Router): void {
       dsn,
       environment,
       release: `qiyewenjian-frontend@${release}`,
-      
+
       // 性能监控
       tracesSampleRate: defaultConfig.tracesSampleRate,
-      
+
       // 路由追踪
       integrations: [
         Sentry.browserTracingIntegration({ router }),
@@ -55,7 +54,7 @@ export function initSentry(app: App, router: Router): void {
           blockAllMedia: false,
         }),
       ],
-      
+
       // 会话回放
       replaysSessionSampleRate: defaultConfig.replaysSessionSampleRate,
       replaysOnErrorSampleRate: defaultConfig.replaysOnErrorSampleRate,
@@ -66,9 +65,11 @@ export function initSentry(app: App, router: Router): void {
 
         // 过滤掉网络错误（通常是用户网络问题）
         if (error instanceof Error) {
-          if (error.message.includes('Network Error') ||
-              error.message.includes('Failed to fetch') ||
-              error.message.includes('Load failed')) {
+          if (
+            error.message.includes('Network Error') ||
+            error.message.includes('Failed to fetch') ||
+            error.message.includes('Load failed')
+          ) {
             return null
           }
         }
@@ -99,8 +100,6 @@ export function initSentry(app: App, router: Router): void {
         /https?:\/\/127\.0\.0\.1/,
       ],
     })
-
-    console.log(`[Sentry] Initialized for ${environment} environment`)
   } catch (error) {
     console.error('[Sentry] Failed to initialize:', error)
   }
@@ -109,7 +108,12 @@ export function initSentry(app: App, router: Router): void {
 /**
  * 设置用户上下文
  */
-export function setUser(user: { id: string | number; username?: string; email?: string; role?: string }): void {
+export function setUser(user: {
+  id: string | number
+  username?: string
+  email?: string
+  role?: string
+}): void {
   Sentry.setUser({
     id: String(user.id),
     username: user.username,
@@ -128,7 +132,11 @@ export function clearUser(): void {
 /**
  * 添加面包屑
  */
-export function addBreadcrumb(message: string, category?: string, data?: Record<string, unknown>): void {
+export function addBreadcrumb(
+  message: string,
+  category?: string,
+  data?: Record<string, unknown>
+): void {
   Sentry.addBreadcrumb({
     message,
     category: category || 'custom',
@@ -149,7 +157,10 @@ export function captureException(error: Error, context?: Record<string, unknown>
 /**
  * 手动捕获消息
  */
-export function captureMessage(message: string, level: 'info' | 'warning' | 'error' = 'info'): void {
+export function captureMessage(
+  message: string,
+  level: 'info' | 'warning' | 'error' = 'info'
+): void {
   Sentry.captureMessage(message, level)
 }
 
@@ -169,4 +180,3 @@ export function setExtra(key: string, value: unknown): void {
 
 // 导出 Sentry 实例供高级用法
 export { Sentry }
-

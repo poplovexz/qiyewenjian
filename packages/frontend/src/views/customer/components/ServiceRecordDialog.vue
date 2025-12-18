@@ -38,7 +38,7 @@ const props = withDefaults(defineProps<Props>(), {
   customerId: '',
   customerName: '',
   record: null,
-  mode: 'view'
+  mode: 'view',
 })
 
 // Emits
@@ -50,7 +50,7 @@ const emit = defineEmits<{
 // 响应式数据
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 // 方法
@@ -64,16 +64,14 @@ const handleSuccess = () => {
 }
 
 // 监听props变化
-watch(() => props.visible, (newVal) => {
-  if (newVal) {
-    // 对话框打开时的逻辑
-    console.log('服务记录对话框打开', {
-      customerId: props.customerId,
-      customerName: props.customerName,
-      mode: props.mode
-    })
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      // 对话框打开时的逻辑
+    }
   }
-})
+)
 </script>
 
 <style scoped>

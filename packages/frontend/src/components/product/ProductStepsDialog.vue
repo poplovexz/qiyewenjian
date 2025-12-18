@@ -14,9 +14,7 @@
           <p class="description">管理产品的具体执行步骤和费用</p>
         </div>
         <div class="header-right">
-          <el-button type="primary" :icon="Plus" @click="handleAddStep">
-            添加步骤
-          </el-button>
+          <el-button type="primary" :icon="Plus" @click="handleAddStep"> 添加步骤 </el-button>
         </div>
       </div>
 
@@ -38,7 +36,7 @@
             <span v-else>{{ row.buzou_mingcheng }}</span>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="yugu_shichang" label="预估时长" width="120" align="center">
           <template #default="{ row }">
             <el-input-number
@@ -96,11 +94,7 @@
               inactive-value="N"
               size="small"
             />
-            <el-tag
-              v-else
-              :type="row.shi_bixu === 'Y' ? 'danger' : 'info'"
-              size="small"
-            >
+            <el-tag v-else :type="row.shi_bixu === 'Y' ? 'danger' : 'info'" size="small">
               {{ row.shi_bixu === 'Y' ? '必须' : '可选' }}
             </el-tag>
           </template>
@@ -145,11 +139,7 @@
               >
                 保存
               </el-button>
-              <el-button
-                size="small"
-                :icon="Close"
-                @click="handleCancelEdit(row, $index)"
-              >
+              <el-button size="small" :icon="Close" @click="handleCancelEdit(row, $index)">
                 取消
               </el-button>
             </template>
@@ -215,12 +205,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">关闭</el-button>
-        <el-button
-          type="primary"
-          :loading="saving"
-          @click="handleBatchSave"
-          v-if="hasChanges"
-        >
+        <el-button type="primary" :loading="saving" @click="handleBatchSave" v-if="hasChanges">
           批量保存
         </el-button>
       </div>
@@ -242,7 +227,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  product: null
+  product: null,
 })
 
 // Emits
@@ -260,14 +245,16 @@ const hasChanges = ref(false)
 
 // 计算属性
 const requiredStepsCount = computed(() => {
-  return stepsList.value.filter(step => step.shi_bixu === 'Y').length
+  return stepsList.value.filter((step) => step.shi_bixu === 'Y').length
 })
 
 const totalTime = computed(() => {
-  return stepsList.value.reduce((total, step) => {
-    const timeInHours = convertToHours(step.yugu_shichang, step.shichang_danwei)
-    return total + timeInHours
-  }, 0).toFixed(1)
+  return stepsList.value
+    .reduce((total, step) => {
+      const timeInHours = convertToHours(step.yugu_shichang, step.shichang_danwei)
+      return total + timeInHours
+    }, 0)
+    .toFixed(1)
 })
 
 // 总办事天数（将所有步骤时间转换为天数）
@@ -280,25 +267,35 @@ const totalDays = computed(() => {
 
 const totalCost = computed(() => {
   return stepsList.value.reduce((total, step) => {
-    const cost = typeof step.buzou_feiyong === 'number' ? step.buzou_feiyong : parseFloat(String(step.buzou_feiyong || 0))
+    const cost =
+      typeof step.buzou_feiyong === 'number'
+        ? step.buzou_feiyong
+        : parseFloat(String(step.buzou_feiyong || 0))
     return total + (isNaN(cost) ? 0 : cost)
   }, 0)
 })
 
 // 监听器
-watch(() => props.visible, (newVal) => {
-  if (newVal && props.product) {
-    loadSteps()
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal && props.product) {
+      loadSteps()
+    }
   }
-})
+)
 
-watch(stepsList, () => {
-  hasChanges.value = JSON.stringify(stepsList.value) !== JSON.stringify(originalSteps.value)
-}, { deep: true })
+watch(
+  stepsList,
+  () => {
+    hasChanges.value = JSON.stringify(stepsList.value) !== JSON.stringify(originalSteps.value)
+  },
+  { deep: true }
+)
 
 // 方法
 const getTimeUnitLabel = (unit: string) => {
-  const option = timeUnitOptions.find(opt => opt.value === unit)
+  const option = timeUnitOptions.find((opt) => opt.value === unit)
   return option?.label || unit
 }
 
@@ -311,30 +308,30 @@ const convertToHours = (time: number, unit: string) => {
   const unitMap: Record<string, number> = {
     xiaoshi: 1,
     tian: 8,
-    fenzhong: 1/60
+    fenzhong: 1 / 60,
   }
   return time * (unitMap[unit] || 1)
 }
 
 const convertToDays = (time: number, unit: string) => {
   const unitMap: Record<string, number> = {
-    tian: 1,           // 天 -> 天
-    xiaoshi: 1/8,      // 小时 -> 天（按8小时工作日）
-    fenzhong: 1/480    // 分钟 -> 天（480分钟 = 8小时 = 1天）
+    tian: 1, // 天 -> 天
+    xiaoshi: 1 / 8, // 小时 -> 天（按8小时工作日）
+    fenzhong: 1 / 480, // 分钟 -> 天（480分钟 = 8小时 = 1天）
   }
   return time * (unitMap[unit] || 1)
 }
 
 const loadSteps = async () => {
   if (!props.product) return
-  
+
   try {
     loading.value = true
     const steps = await productStepApi.getList(props.product.id)
-    stepsList.value = steps.map(step => ({
+    stepsList.value = steps.map((step) => ({
       ...step,
       editing: false,
-      isNew: false
+      isNew: false,
     }))
     originalSteps.value = JSON.parse(JSON.stringify(stepsList.value))
     hasChanges.value = false
@@ -359,7 +356,7 @@ const handleAddStep = () => {
     shi_bixu: 'N',
     zhuangtai: 'active',
     editing: true,
-    isNew: true
+    isNew: true,
   }
   stepsList.value.push(newStep)
 }
@@ -400,12 +397,11 @@ const handleSaveStep = async (step: any, index: number) => {
         buzou_miaoshu: step.buzou_miaoshu || '',
         paixu: Number(step.paixu || 0),
         shi_bixu: step.shi_bixu,
-        zhuangtai: step.zhuangtai
+        zhuangtai: step.zhuangtai,
       }
 
-      console.log('创建步骤数据:', createData)
       const result = await productStepApi.create(createData)
-      console.log('创建步骤成功:', result)
+
       Object.assign(step, result, { editing: false, isNew: false })
       ElMessage.success('步骤创建成功')
     } else {
@@ -418,12 +414,11 @@ const handleSaveStep = async (step: any, index: number) => {
         buzou_miaoshu: step.buzou_miaoshu || '',
         paixu: Number(step.paixu || 0),
         shi_bixu: step.shi_bixu,
-        zhuangtai: step.zhuangtai
+        zhuangtai: step.zhuangtai,
       }
 
-      console.log('更新步骤数据:', updateData)
       const result = await productStepApi.update(step.id, updateData)
-      console.log('更新步骤成功:', result)
+
       Object.assign(step, result, { editing: false })
       ElMessage.success('步骤更新成功')
     }
@@ -455,21 +450,17 @@ const handleCancelEdit = (step: any, index: number) => {
 
 const handleDeleteStep = async (step: any, index: number) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除步骤"${step.buzou_mingcheng}"吗？`,
-      '确认删除',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
-    
+    await ElMessageBox.confirm(`确定要删除步骤"${step.buzou_mingcheng}"吗？`, '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+
     if (step.id) {
       await productStepApi.delete(step.id)
       ElMessage.success('步骤删除成功')
     }
-    
+
     stepsList.value.splice(index, 1)
   } catch (error) {
     if (error !== 'cancel') {
@@ -484,14 +475,12 @@ const handleBatchSave = async () => {
     saving.value = true
 
     // 收集所有需要保存的步骤（新建或编辑中的步骤）
-    const stepsToSave = stepsList.value.filter(step => step.editing || step.isNew)
+    const stepsToSave = stepsList.value.filter((step) => step.editing || step.isNew)
 
     if (stepsToSave.length === 0) {
       ElMessage.warning('没有需要保存的步骤')
       return
     }
-
-    console.log(`批量保存 ${stepsToSave.length} 个步骤`)
 
     let successCount = 0
     let failCount = 0
@@ -535,10 +524,9 @@ const handleBatchSave = async () => {
             buzou_miaoshu: step.buzou_miaoshu || '',
             paixu: Number(step.paixu || 0),
             shi_bixu: step.shi_bixu,
-            zhuangtai: step.zhuangtai
+            zhuangtai: step.zhuangtai,
           }
 
-          console.log(`创建步骤 ${i + 1}:`, createData)
           const result = await productStepApi.create(createData)
           Object.assign(step, result, { editing: false, isNew: false })
           successCount++
@@ -552,10 +540,9 @@ const handleBatchSave = async () => {
             buzou_miaoshu: step.buzou_miaoshu || '',
             paixu: Number(step.paixu || 0),
             shi_bixu: step.shi_bixu,
-            zhuangtai: step.zhuangtai
+            zhuangtai: step.zhuangtai,
           }
 
-          console.log(`更新步骤 ${i + 1}:`, updateData)
           const result = await productStepApi.update(step.id, updateData)
           Object.assign(step, result, { editing: false })
           successCount++
@@ -603,7 +590,6 @@ const handleBatchSave = async () => {
         ElMessage.error(errors[0])
       }
     }
-
   } catch (error) {
     console.error('批量保存过程出错:', error)
     ElMessage.error('批量保存失败')
@@ -614,20 +600,18 @@ const handleBatchSave = async () => {
 
 const handleClose = () => {
   if (hasChanges.value) {
-    ElMessageBox.confirm(
-      '有未保存的更改，确定要关闭吗？',
-      '确认关闭',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    ).then(() => {
-      emit('update:visible', false)
-      emit('success')
-    }).catch(() => {
-      // 用户取消关闭
+    ElMessageBox.confirm('有未保存的更改，确定要关闭吗？', '确认关闭', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
     })
+      .then(() => {
+        emit('update:visible', false)
+        emit('success')
+      })
+      .catch(() => {
+        // 用户取消关闭
+      })
   } else {
     emit('update:visible', false)
     emit('success')

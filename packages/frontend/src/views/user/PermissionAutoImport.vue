@@ -6,9 +6,7 @@
           <el-icon><MagicStick /></el-icon>
           <h2>权限自动识别与导入</h2>
         </div>
-        <div class="description">
-          自动扫描系统路由和API，识别所有权限并一键导入
-        </div>
+        <div class="description">自动扫描系统路由和API，识别所有权限并一键导入</div>
       </div>
     </el-card>
 
@@ -132,12 +130,15 @@
                 <el-tag v-else-if="row.ziyuan_leixing === 'button'" type="success" size="small">
                   按钮
                 </el-tag>
-                <el-tag v-else type="info" size="small">
-                  接口
-                </el-tag>
+                <el-tag v-else type="info" size="small"> 接口 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="ziyuan_lujing" label="资源路径" min-width="200" show-overflow-tooltip />
+            <el-table-column
+              prop="ziyuan_lujing"
+              label="资源路径"
+              min-width="200"
+              show-overflow-tooltip
+            />
             <el-table-column prop="miaoshu" label="描述" min-width="200" show-overflow-tooltip />
           </el-table>
         </el-card>
@@ -188,12 +189,12 @@ const permissionNameMap: Record<string, string> = {
   'xiansuo:read': '查看线索',
   'xiansuo:source_read': '查看线索来源',
   'xiansuo:status_read': '查看线索状态',
-  'contract_manage': '管理合同',
-  'contract_template_manage': '管理合同模板',
-  'audit_manage': '管理审核',
-  'audit_config': '配置审核',
+  contract_manage: '管理合同',
+  contract_template_manage: '管理合同模板',
+  audit_manage: '管理审核',
+  audit_config: '配置审核',
   'audit_record:read': '查看审核记录',
-  'finance_manage': '管理财务',
+  finance_manage: '管理财务',
   'invoice:read': '查看开票',
   'invoice:create': '创建开票',
   'invoice:update': '编辑开票',
@@ -203,7 +204,7 @@ const permissionNameMap: Record<string, string> = {
   'service_order:read': '查看服务工单',
   'service_order:write': '编辑服务工单',
   'compliance:read': '查看合规',
-  'compliance:manage': '管理合规'
+  'compliance:manage': '管理合规',
 }
 
 // 扫描权限
@@ -218,22 +219,22 @@ const scanPermissions = () => {
     // 扫描路由
     if (scanOptions.value.includes('routes')) {
       const routes = router.getRoutes()
-      
-      routes.forEach(route => {
+
+      routes.forEach((route) => {
         if (route.meta?.permissions && Array.isArray(route.meta.permissions)) {
           route.meta.permissions.forEach((perm: string) => {
             if (!permissionSet.has(perm)) {
               permissionSet.add(perm)
-              
+
               const permission = {
                 quanxian_ming: permissionNameMap[perm] || perm,
                 quanxian_bianma: perm,
                 miaoshu: `${permissionNameMap[perm] || perm}的权限`,
                 ziyuan_leixing: 'menu',
                 ziyuan_lujing: route.path,
-                zhuangtai: defaultStatus.value
+                zhuangtai: defaultStatus.value,
               }
-              
+
               permissions.push(permission)
             }
           })
@@ -280,7 +281,7 @@ const importPermissions = async () => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 
@@ -291,10 +292,8 @@ const importPermissions = async () => {
 
     for (const permission of selectedPermissions.value) {
       try {
-        console.log('正在导入权限:', permission)
         await permissionAPI.createPermission(permission)
         successCount++
-        console.log(`✅ 成功导入: ${permission.quanxian_bianma}`)
       } catch (error: any) {
         console.error(`❌ 导入权限失败: ${permission.quanxian_bianma}`, error)
         console.error('错误详情:', error.response?.data)
@@ -305,19 +304,19 @@ const importPermissions = async () => {
           console.log(`⚠️ 权限已存在，跳过: ${permission.quanxian_bianma}`)
         } else {
           failCount++
-          failedPermissions.push(`${permission.quanxian_ming} (${permission.quanxian_bianma}): ${error.response?.data?.detail || error.message}`)
+          failedPermissions.push(
+            `${permission.quanxian_ming} (${permission.quanxian_bianma}): ${error.response?.data?.detail || error.message}`
+          )
         }
       }
     }
-
-    console.log(`导入完成: 成功 ${successCount}, 失败 ${failCount}`)
 
     importedCount.value += successCount
 
     if (failCount === 0) {
       ElMessage.success({
         message: `成功导入 ${successCount} 个权限！请返回权限管理页面刷新查看`,
-        duration: 5000
+        duration: 5000,
       })
 
       // 提示用户刷新权限列表页面
@@ -326,13 +325,13 @@ const importPermissions = async () => {
         '导入完成',
         {
           confirmButtonText: '我知道了',
-          type: 'success'
+          type: 'success',
         }
       )
     } else {
       ElMessage.warning({
         message: `成功导入 ${successCount} 个权限，失败 ${failCount} 个。请查看控制台了解详情`,
-        duration: 5000
+        duration: 5000,
       })
 
       // 显示失败详情
@@ -342,7 +341,7 @@ const importPermissions = async () => {
         '导入结果',
         {
           confirmButtonText: '我知道了',
-          type: 'warning'
+          type: 'warning',
         }
       )
     }
@@ -423,4 +422,3 @@ const importPermissions = async () => {
   }
 }
 </style>
-
