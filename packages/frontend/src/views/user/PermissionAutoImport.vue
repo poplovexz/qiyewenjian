@@ -299,12 +299,28 @@ const importPermissions = async () => {
     // 先获取已存在的权限列表，避免重复创建导致 400 错误
     let existingPermissionCodes: Set<string> = new Set()
     try {
-      const existingPermissions = await permissionAPI.getPermissionList({
-        page: 1,
-        size: 1000, // 获取足够多的权限
-      })
+      // 分页获取所有权限（后端限制每页最多100条）
+      let allPermissions: Array<{ quanxian_bianma: string }> = []
+      let currentPage = 1
+      let hasMore = true
+
+      while (hasMore) {
+        const response = await permissionAPI.getPermissionList({
+          page: currentPage,
+          size: 100, // 后端限制最大100
+        })
+        allPermissions = allPermissions.concat(response.items)
+
+        // 检查是否还有更多页
+        hasMore = currentPage < response.pages
+        currentPage++
+
+        // 安全限制，最多获取10页（1000条权限）
+        if (currentPage > 10) break
+      }
+
       existingPermissionCodes = new Set(
-        existingPermissions.items.map((p) => p.quanxian_bianma)
+        allPermissions.map((p) => p.quanxian_bianma)
       )
     } catch {
       // 如果获取失败，继续执行，让后端返回错误
