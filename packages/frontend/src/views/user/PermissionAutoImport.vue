@@ -295,11 +295,34 @@ const importPermissions = async () => {
     )
 
     importing.value = true
+
+    // 先获取已存在的权限列表，避免重复创建导致 400 错误
+    let existingPermissionCodes: Set<string> = new Set()
+    try {
+      const existingPermissions = await permissionAPI.getPermissionList({
+        page: 1,
+        size: 1000, // 获取足够多的权限
+      })
+      existingPermissionCodes = new Set(
+        existingPermissions.items.map((p) => p.quanxian_bianma)
+      )
+    } catch {
+      // 如果获取失败，继续执行，让后端返回错误
+      console.warn('无法获取已存在的权限列表，将逐个尝试创建')
+    }
+
+    // 过滤出需要创建的权限（排除已存在的）
+    const permissionsToCreate = selectedPermissions.value.filter(
+      (p) => !existingPermissionCodes.has(p.quanxian_bianma)
+    )
+    const skippedCount = selectedPermissions.value.length - permissionsToCreate.length
+
     let successCount = 0
     let failCount = 0
     const failedPermissions: string[] = []
 
-    for (const permission of selectedPermissions.value) {
+    // 只创建不存在的权限
+    for (const permission of permissionsToCreate) {
       try {
         await permissionAPI.createPermission(permission)
         successCount++
@@ -307,7 +330,7 @@ const importPermissions = async () => {
         const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
 
         if (axiosError.response?.data?.detail?.includes('已存在')) {
-          // 权限已存在，不算失败
+          // 权限已存在（可能在检查后被其他人创建），不算失败
           successCount++
         } else {
           failCount++
@@ -318,11 +341,17 @@ const importPermissions = async () => {
       }
     }
 
-    importedCount.value += successCount
+    // 加上跳过的数量作为成功数
+    const totalSuccess = successCount + skippedCount
+    importedCount.value += totalSuccess
 
     if (failCount === 0) {
+      const message = skippedCount > 0
+        ? `成功导入 ${successCount} 个权限，跳过 ${skippedCount} 个已存在的权限！请返回权限管理页面刷新查看`
+        : `成功导入 ${successCount} 个权限！请返回权限管理页面刷新查看`
+
       ElMessage.success({
-        message: `成功导入 ${successCount} 个权限！请返回权限管理页面刷新查看`,
+        message,
         duration: 5000,
       })
 
@@ -337,14 +366,14 @@ const importPermissions = async () => {
       )
     } else {
       ElMessage.warning({
-        message: `成功导入 ${successCount} 个权限，失败 ${failCount} 个。请查看控制台了解详情`,
+        message: `成功导入 ${successCount} 个权限，跳过 ${skippedCount} 个已存在的权限，失败 ${failCount} 个。请查看控制台了解详情`,
         duration: 5000,
       })
 
       // 显示失败详情
       const failedList = failedPermissions.join('\n')
       ElMessageBox.alert(
-        `导入完成！\n\n成功: ${successCount} 个\n失败: ${failCount} 个\n\n失败的权限:\n${failedList}\n\n请打开浏览器控制台（F12）查看详细错误信息。`,
+        `导入完成！\n\n新创建: ${successCount} 个\n已存在（跳过）: ${skippedCount} 个\n失败: ${failCount} 个\n\n失败的权限:\n${failedList}\n\n请打开浏览器控制台（F12）查看详细错误信息。`,
         '导入结果',
         {
           confirmButtonText: '我知道了',
