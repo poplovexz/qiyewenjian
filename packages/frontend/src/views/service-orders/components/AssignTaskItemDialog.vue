@@ -6,23 +6,13 @@
     width="500px"
     :close-on-click-modal="false"
   >
-    <el-form
-      ref="formRef"
-      :model="formData"
-      :rules="rules"
-      label-width="100px"
-    >
+    <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px">
       <el-form-item label="任务名称">
         <el-input :value="taskItem?.xiangmu_mingcheng" disabled />
       </el-form-item>
 
       <el-form-item label="任务描述">
-        <el-input
-          :value="taskItem?.xiangmu_miaoshu"
-          type="textarea"
-          :rows="3"
-          disabled
-        />
+        <el-input :value="taskItem?.xiangmu_miaoshu" type="textarea" :rows="3" disabled />
       </el-form-item>
 
       <el-form-item label="计划工时">
@@ -30,10 +20,7 @@
       </el-form-item>
 
       <el-form-item label="当前执行人">
-        <el-input
-          :value="taskItem?.zhixing_ren?.xingming || '未分配'"
-          disabled
-        />
+        <el-input :value="taskItem?.zhixing_ren?.xingming || '未分配'" disabled />
       </el-form-item>
 
       <el-form-item label="执行人" prop="zhixingRenId" required>
@@ -56,9 +43,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="handleCancel">取消</el-button>
-        <el-button type="primary" @click="handleConfirm" :loading="loading">
-          确定
-        </el-button>
+        <el-button type="primary" @click="handleConfirm" :loading="loading"> 确定 </el-button>
       </span>
     </template>
   </el-dialog>
@@ -96,27 +81,28 @@ const loading = ref(false)
 const users = ref<User[]>([])
 
 const formData = reactive({
-  zhixingRenId: ''
+  zhixingRenId: '',
 })
 
 const rules: FormRules = {
-  zhixingRenId: [
-    { required: true, message: '请选择执行人', trigger: 'change' }
-  ]
+  zhixingRenId: [{ required: true, message: '请选择执行人', trigger: 'change' }],
 }
 
 // 监听对话框打开，加载用户列表
-watch(() => props.modelValue, async (newVal) => {
-  if (newVal) {
-    await loadUsers()
-    // 如果任务项已有执行人，设置为默认值
-    if (props.taskItem?.zhixing_ren_id) {
-      formData.zhixingRenId = props.taskItem.zhixing_ren_id
-    } else {
-      formData.zhixingRenId = ''
+watch(
+  () => props.modelValue,
+  async (newVal) => {
+    if (newVal) {
+      await loadUsers()
+      // 如果任务项已有执行人，设置为默认值
+      if (props.taskItem?.zhixing_ren_id) {
+        formData.zhixingRenId = props.taskItem.zhixing_ren_id
+      } else {
+        formData.zhixingRenId = ''
+      }
     }
   }
-})
+)
 
 // 加载用户列表
 const loadUsers = async () => {
@@ -147,8 +133,8 @@ const handleConfirm = async () => {
           null,
           {
             params: {
-              zhixing_ren_id: formData.zhixingRenId
-            }
+              zhixing_ren_id: formData.zhixingRenId,
+            },
           }
         )
         ElMessage.success('分配任务项成功')

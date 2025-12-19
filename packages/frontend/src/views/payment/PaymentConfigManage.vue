@@ -11,7 +11,12 @@
     <el-card class="filter-card" shadow="never">
       <el-form :inline="true" :model="filterForm">
         <el-form-item label="配置类型">
-          <el-select v-model="filterForm.peizhi_leixing" placeholder="全部" clearable style="width: 150px">
+          <el-select
+            v-model="filterForm.peizhi_leixing"
+            placeholder="全部"
+            clearable
+            style="width: 150px"
+          >
             <el-option label="微信支付" value="weixin" />
             <el-option label="支付宝" value="zhifubao" />
             <el-option label="银行汇款" value="yinhang" />
@@ -19,7 +24,12 @@
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="filterForm.zhuangtai" placeholder="全部" clearable style="width: 120px">
+          <el-select
+            v-model="filterForm.zhuangtai"
+            placeholder="全部"
+            clearable
+            style="width: 120px"
+          >
             <el-option label="启用" value="qiyong" />
             <el-option label="停用" value="tingyong" />
           </el-select>
@@ -42,12 +52,7 @@
 
     <!-- 配置列表 -->
     <el-card class="table-card" shadow="never">
-      <el-table
-        v-loading="loading"
-        :data="configList"
-        stripe
-        style="width: 100%"
-      >
+      <el-table v-loading="loading" :data="configList" stripe style="width: 100%">
         <el-table-column prop="peizhi_mingcheng" label="配置名称" min-width="150" />
         <el-table-column prop="peizhi_leixing" label="配置类型" width="120">
           <template #default="{ row }">
@@ -96,12 +101,8 @@
         </el-table-column>
         <el-table-column label="操作" width="220" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" size="small" @click="handleView(row)">
-              查看
-            </el-button>
-            <el-button link type="primary" size="small" @click="handleEdit(row)">
-              编辑
-            </el-button>
+            <el-button link type="primary" size="small" @click="handleView(row)"> 查看 </el-button>
+            <el-button link type="primary" size="small" @click="handleEdit(row)"> 编辑 </el-button>
             <el-button
               link
               :type="row.zhuangtai === 'qiyong' ? 'warning' : 'success'"
@@ -110,9 +111,7 @@
             >
               {{ row.zhuangtai === 'qiyong' ? '停用' : '启用' }}
             </el-button>
-            <el-button link type="danger" size="small" @click="handleDelete(row)">
-              删除
-            </el-button>
+            <el-button link type="danger" size="small" @click="handleDelete(row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -138,16 +137,11 @@
       width="800px"
       :close-on-click-modal="false"
     >
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="formRules"
-        label-width="140px"
-      >
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="140px">
         <el-form-item label="配置名称" prop="peizhi_mingcheng">
           <el-input v-model="formData.peizhi_mingcheng" placeholder="请输入配置名称" />
         </el-form-item>
-        
+
         <el-form-item label="配置类型" prop="peizhi_leixing">
           <el-radio-group v-model="formData.peizhi_leixing" :disabled="isEdit">
             <el-radio label="weixin">微信支付</el-radio>
@@ -157,13 +151,17 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="环境" prop="huanjing" v-if="formData.peizhi_leixing === 'weixin' || formData.peizhi_leixing === 'zhifubao'">
+        <el-form-item
+          label="环境"
+          prop="huanjing"
+          v-if="formData.peizhi_leixing === 'weixin' || formData.peizhi_leixing === 'zhifubao'"
+        >
           <el-radio-group v-model="formData.huanjing">
             <el-radio label="shachang">沙箱环境</el-radio>
             <el-radio label="shengchan">生产环境</el-radio>
           </el-radio-group>
         </el-form-item>
-        
+
         <el-form-item label="状态" prop="zhuangtai">
           <el-radio-group v-model="formData.zhuangtai">
             <el-radio label="qiyong">启用</el-radio>
@@ -174,15 +172,15 @@
         <!-- 微信支付配置 -->
         <template v-if="formData.peizhi_leixing === 'weixin'">
           <el-divider content-position="left">微信支付配置</el-divider>
-          
+
           <el-form-item label="微信APPID" prop="weixin_appid">
             <el-input v-model="formData.weixin_appid" placeholder="请输入微信APPID" />
           </el-form-item>
-          
+
           <el-form-item label="微信商户号" prop="weixin_shanghu_hao">
             <el-input v-model="formData.weixin_shanghu_hao" placeholder="请输入微信商户号" />
           </el-form-item>
-          
+
           <el-form-item label="商户私钥" prop="weixin_shanghu_siyao">
             <el-input
               v-model="formData.weixin_shanghu_siyao"
@@ -191,11 +189,11 @@
               placeholder="请输入商户私钥（PEM格式）"
             />
           </el-form-item>
-          
+
           <el-form-item label="证书序列号" prop="weixin_zhengshu_xuliehao">
             <el-input v-model="formData.weixin_zhengshu_xuliehao" placeholder="请输入证书序列号" />
           </el-form-item>
-          
+
           <el-form-item label="API v3密钥" prop="weixin_api_v3_miyao">
             <el-input
               v-model="formData.weixin_api_v3_miyao"
@@ -209,7 +207,7 @@
         <!-- 支付宝配置 -->
         <template v-if="formData.peizhi_leixing === 'zhifubao'">
           <el-divider content-position="left">支付宝配置</el-divider>
-          
+
           <el-form-item label="支付宝APPID" prop="zhifubao_appid">
             <el-input v-model="formData.zhifubao_appid" placeholder="请输入支付宝APPID" />
           </el-form-item>
@@ -217,7 +215,7 @@
           <el-form-item label="支付宝网关" prop="zhifubao_wangguan">
             <el-input v-model="formData.zhifubao_wangguan" placeholder="请输入支付宝网关地址" />
             <div class="form-tip">
-              沙箱环境: https://openapi-sandbox.dl.alipaydev.com/gateway.do<br>
+              沙箱环境: https://openapi-sandbox.dl.alipaydev.com/gateway.do<br />
               生产环境: https://openapi.alipay.com/gateway.do
             </div>
           </el-form-item>
@@ -230,7 +228,7 @@
               placeholder="请输入商户私钥（RSA2格式）"
             />
           </el-form-item>
-          
+
           <el-form-item label="支付宝公钥" prop="zhifubao_zhifubao_gongyao">
             <el-input
               v-model="formData.zhifubao_zhifubao_gongyao"
@@ -246,7 +244,10 @@
           <el-divider content-position="left">银行账户信息</el-divider>
 
           <el-form-item label="银行名称" prop="yinhang_mingcheng">
-            <el-input v-model="formData.yinhang_mingcheng" placeholder="请输入银行名称，如：中国银行" />
+            <el-input
+              v-model="formData.yinhang_mingcheng"
+              placeholder="请输入银行名称，如：中国银行"
+            />
           </el-form-item>
 
           <el-form-item label="账户名称" prop="yinhang_zhanghu_mingcheng">
@@ -262,18 +263,25 @@
           </el-form-item>
 
           <el-form-item label="开户行联行号" prop="kaihuhang_lianhanghao">
-            <el-input v-model="formData.kaihuhang_lianhanghao" placeholder="请输入开户行联行号（可选）" />
+            <el-input
+              v-model="formData.kaihuhang_lianhanghao"
+              placeholder="请输入开户行联行号（可选）"
+            />
           </el-form-item>
         </template>
 
         <!-- 通用配置 -->
         <el-divider content-position="left">通用配置</el-divider>
 
-        <el-form-item label="回调通知URL" prop="tongzhi_url" v-if="formData.peizhi_leixing === 'weixin' || formData.peizhi_leixing === 'zhifubao'">
+        <el-form-item
+          label="回调通知URL"
+          prop="tongzhi_url"
+          v-if="formData.peizhi_leixing === 'weixin' || formData.peizhi_leixing === 'zhifubao'"
+        >
           <el-input v-model="formData.tongzhi_url" placeholder="请输入回调通知URL" />
           <div class="form-tip">支付成功后，第三方平台会向此URL发送通知</div>
         </el-form-item>
-        
+
         <el-form-item label="备注">
           <el-input
             v-model="formData.beizhu"
@@ -286,20 +294,16 @@
 
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">
-          确定
-        </el-button>
+        <el-button type="primary" :loading="submitLoading" @click="handleSubmit"> 确定 </el-button>
       </template>
     </el-dialog>
 
     <!-- 查看对话框 -->
-    <el-dialog
-      v-model="viewDialogVisible"
-      title="配置详情"
-      width="700px"
-    >
+    <el-dialog v-model="viewDialogVisible" title="配置详情" width="700px">
       <el-descriptions :column="2" border v-if="viewData">
-        <el-descriptions-item label="配置名称">{{ viewData.peizhi_mingcheng }}</el-descriptions-item>
+        <el-descriptions-item label="配置名称">{{
+          viewData.peizhi_mingcheng
+        }}</el-descriptions-item>
         <el-descriptions-item label="配置类型">
           <el-tag :type="getPaymentTypeTagType(viewData.peizhi_leixing)">
             {{ getPaymentTypeLabel(viewData.peizhi_leixing) }}
@@ -315,34 +319,73 @@
             {{ viewData.zhuangtai === 'qiyong' ? '启用' : '停用' }}
           </el-tag>
         </el-descriptions-item>
-        
+
         <template v-if="viewData.peizhi_leixing === 'weixin'">
-          <el-descriptions-item label="微信APPID" :span="2">{{ viewData.weixin_appid || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="微信商户号" :span="2">{{ viewData.weixin_shanghu_hao || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="商户私钥" :span="2">{{ viewData.weixin_shanghu_siyao_masked || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="证书序列号" :span="2">{{ viewData.weixin_zhengshu_xuliehao || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="API v3密钥" :span="2">{{ viewData.weixin_api_v3_miyao_masked || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="微信APPID" :span="2">{{
+            viewData.weixin_appid || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="微信商户号" :span="2">{{
+            viewData.weixin_shanghu_hao || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="商户私钥" :span="2">{{
+            viewData.weixin_shanghu_siyao_masked || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="证书序列号" :span="2">{{
+            viewData.weixin_zhengshu_xuliehao || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="API v3密钥" :span="2">{{
+            viewData.weixin_api_v3_miyao_masked || '-'
+          }}</el-descriptions-item>
         </template>
-        
+
         <template v-if="viewData.peizhi_leixing === 'zhifubao'">
-          <el-descriptions-item label="支付宝APPID" :span="2">{{ viewData.zhifubao_appid || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="支付宝网关" :span="2">{{ viewData.zhifubao_wangguan || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="商户私钥" :span="2">{{ viewData.zhifubao_shanghu_siyao_masked || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="支付宝公钥" :span="2">{{ viewData.zhifubao_zhifubao_gongyao_masked || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="支付宝APPID" :span="2">{{
+            viewData.zhifubao_appid || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="支付宝网关" :span="2">{{
+            viewData.zhifubao_wangguan || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="商户私钥" :span="2">{{
+            viewData.zhifubao_shanghu_siyao_masked || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="支付宝公钥" :span="2">{{
+            viewData.zhifubao_zhifubao_gongyao_masked || '-'
+          }}</el-descriptions-item>
         </template>
 
         <template v-if="viewData.peizhi_leixing === 'yinhang'">
-          <el-descriptions-item label="银行名称" :span="2">{{ viewData.yinhang_mingcheng || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="账户名称" :span="2">{{ viewData.yinhang_zhanghu_mingcheng || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="银行账号" :span="2">{{ viewData.yinhang_zhanghu_haoma || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="开户行名称" :span="2">{{ viewData.kaihuhang_mingcheng || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="开户行联行号" :span="2">{{ viewData.kaihuhang_lianhanghao || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="银行名称" :span="2">{{
+            viewData.yinhang_mingcheng || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="账户名称" :span="2">{{
+            viewData.yinhang_zhanghu_mingcheng || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="银行账号" :span="2">{{
+            viewData.yinhang_zhanghu_haoma || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="开户行名称" :span="2">{{
+            viewData.kaihuhang_mingcheng || '-'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="开户行联行号" :span="2">{{
+            viewData.kaihuhang_lianhanghao || '-'
+          }}</el-descriptions-item>
         </template>
 
-        <el-descriptions-item label="回调通知URL" :span="2" v-if="viewData.peizhi_leixing === 'weixin' || viewData.peizhi_leixing === 'zhifubao'">{{ viewData.tongzhi_url || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="备注" :span="2">{{ viewData.beizhu || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间" :span="2">{{ formatDateTime(viewData.created_at) }}</el-descriptions-item>
-        <el-descriptions-item label="更新时间" :span="2">{{ formatDateTime(viewData.updated_at) }}</el-descriptions-item>
+        <el-descriptions-item
+          label="回调通知URL"
+          :span="2"
+          v-if="viewData.peizhi_leixing === 'weixin' || viewData.peizhi_leixing === 'zhifubao'"
+          >{{ viewData.tongzhi_url || '-' }}</el-descriptions-item
+        >
+        <el-descriptions-item label="备注" :span="2">{{
+          viewData.beizhu || '-'
+        }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间" :span="2">{{
+          formatDateTime(viewData.created_at)
+        }}</el-descriptions-item>
+        <el-descriptions-item label="更新时间" :span="2">{{
+          formatDateTime(viewData.updated_at)
+        }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
@@ -361,7 +404,7 @@ import {
   toggleZhifuPeizhiStatus,
   type ZhifuPeizhiResponse,
   type ZhifuPeizhiCreate,
-  type ZhifuPeizhiUpdate
+  type ZhifuPeizhiUpdate,
 } from '@/api/modules/payment-config'
 import { formatDateTime } from '@/utils/date'
 
@@ -373,14 +416,14 @@ const configList = ref<ZhifuPeizhiResponse[]>([])
 const filterForm = reactive({
   peizhi_leixing: '',
   zhuangtai: '',
-  search: ''
+  search: '',
 })
 
 // 分页
 const pagination = reactive({
   page: 1,
   page_size: 10,
-  total: 0
+  total: 0,
 })
 
 // 对话框
@@ -406,17 +449,13 @@ const formData = reactive<ZhifuPeizhiCreate>({
   zhifubao_shanghu_siyao: '',
   zhifubao_zhifubao_gongyao: '',
   tongzhi_url: '',
-  beizhu: ''
+  beizhu: '',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  peizhi_mingcheng: [
-    { required: true, message: '请输入配置名称', trigger: 'blur' }
-  ],
-  peizhi_leixing: [
-    { required: true, message: '请选择配置类型', trigger: 'change' }
-  ]
+  peizhi_mingcheng: [{ required: true, message: '请输入配置名称', trigger: 'blur' }],
+  peizhi_leixing: [{ required: true, message: '请选择配置类型', trigger: 'change' }],
 }
 
 // 查看对话框
@@ -432,7 +471,7 @@ const loadList = async () => {
       page_size: pagination.page_size,
       peizhi_leixing: filterForm.peizhi_leixing || undefined,
       zhuangtai: filterForm.zhuangtai || undefined,
-      search: filterForm.search || undefined
+      search: filterForm.search || undefined,
     }
     const res = await getZhifuPeizhiList(params)
     configList.value = res.items
@@ -520,7 +559,7 @@ const handleDelete = async (row: ZhifuPeizhiResponse) => {
     await ElMessageBox.confirm('确定要删除此配置吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
     })
     await deleteZhifuPeizhi(row.id)
     ElMessage.success('删除成功')
@@ -535,10 +574,10 @@ const handleDelete = async (row: ZhifuPeizhiResponse) => {
 // 提交表单
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   await formRef.value.validate(async (valid) => {
     if (!valid) return
-    
+
     submitLoading.value = true
     try {
       if (isEdit.value) {
@@ -579,7 +618,7 @@ const resetForm = () => {
     kaihuhang_mingcheng: '',
     kaihuhang_lianhanghao: '',
     tongzhi_url: '',
-    beizhu: ''
+    beizhu: '',
   })
   formRef.value?.clearValidate()
 }
@@ -590,7 +629,7 @@ const getPaymentTypeLabel = (type: string) => {
     weixin: '微信支付',
     zhifubao: '支付宝',
     yinhang: '银行汇款',
-    xianjin: '现金支付'
+    xianjin: '现金支付',
   }
   return map[type] || type
 }
@@ -601,7 +640,7 @@ const getPaymentTypeTagType = (type: string) => {
     weixin: 'success',
     zhifubao: 'primary',
     yinhang: 'warning',
-    xianjin: 'info'
+    xianjin: 'info',
   }
   return map[type] || ''
 }
@@ -611,7 +650,7 @@ const getEnvironmentLabel = (env: string) => {
   const map: Record<string, string> = {
     shachang: '沙箱',
     shengchan: '生产',
-    wuxu: '无需'
+    wuxu: '无需',
   }
   return map[env] || env
 }
@@ -621,7 +660,7 @@ const getEnvironmentTagType = (env: string) => {
   const map: Record<string, string> = {
     shachang: 'warning',
     shengchan: 'danger',
-    wuxu: 'info'
+    wuxu: 'info',
   }
   return map[env] || ''
 }

@@ -31,14 +31,14 @@ export function getQudaoList(params?: ListParams) {
   return request({
     url: '/finance-settings/qudao',
     method: 'get',
-    params
+    params,
   })
 }
 
 export function getQudaoDetail(id: string) {
   return request({
     url: `/finance-settings/qudao/${id}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -46,7 +46,7 @@ export function createQudao(data: ShoufukuanQudao) {
   return request({
     url: '/finance-settings/qudao',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -54,14 +54,14 @@ export function updateQudao(id: string, data: Partial<ShoufukuanQudao>) {
   return request({
     url: `/finance-settings/qudao/${id}`,
     method: 'put',
-    data
+    data,
   })
 }
 
 export function deleteQudao(id: string) {
   return request({
     url: `/finance-settings/qudao/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -81,7 +81,7 @@ export function getShouruLeibieList(params?: ListParams) {
   return request({
     url: '/finance-settings/shouru-leibie',
     method: 'get',
-    params
+    params,
   })
 }
 
@@ -89,7 +89,7 @@ export function createShouruLeibie(data: ShouruLeibie) {
   return request({
     url: '/finance-settings/shouru-leibie',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -97,14 +97,14 @@ export function updateShouruLeibie(id: string, data: Partial<ShouruLeibie>) {
   return request({
     url: `/finance-settings/shouru-leibie/${id}`,
     method: 'put',
-    data
+    data,
   })
 }
 
 export function deleteShouruLeibie(id: string) {
   return request({
     url: `/finance-settings/shouru-leibie/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -124,7 +124,7 @@ export function getBaoxiaoLeibieList(params?: ListParams) {
   return request({
     url: '/finance-settings/baoxiao-leibie',
     method: 'get',
-    params
+    params,
   })
 }
 
@@ -132,7 +132,7 @@ export function createBaoxiaoLeibie(data: BaoxiaoLeibie) {
   return request({
     url: '/finance-settings/baoxiao-leibie',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -140,14 +140,14 @@ export function updateBaoxiaoLeibie(id: string, data: Partial<BaoxiaoLeibie>) {
   return request({
     url: `/finance-settings/baoxiao-leibie/${id}`,
     method: 'put',
-    data
+    data,
   })
 }
 
 export function deleteBaoxiaoLeibie(id: string) {
   return request({
     url: `/finance-settings/baoxiao-leibie/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -168,7 +168,7 @@ export function getZhichuLeibieList(params?: ListParams) {
   return request({
     url: '/finance-settings/zhichu-leibie',
     method: 'get',
-    params
+    params,
   })
 }
 
@@ -176,7 +176,7 @@ export function createZhichuLeibie(data: ZhichuLeibie) {
   return request({
     url: '/finance-settings/zhichu-leibie',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -184,13 +184,13 @@ export function updateZhichuLeibie(id: string, data: Partial<ZhichuLeibie>) {
   return request({
     url: `/finance-settings/zhichu-leibie/${id}`,
     method: 'put',
-    data
+    data,
   })
 }
 
 export function deleteZhichuLeibie(id: string) {
   return request({
     url: `/finance-settings/zhichu-leibie/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }

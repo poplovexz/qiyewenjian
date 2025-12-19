@@ -5,12 +5,7 @@
     width="600px"
     @close="handleClose"
   >
-    <el-form
-      ref="formRef"
-      :model="form"
-      :rules="rules"
-      label-width="120px"
-    >
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
       <el-form-item label="渠道名称" prop="mingcheng">
         <el-input v-model="form.mingcheng" placeholder="请输入渠道名称" />
       </el-form-item>
@@ -40,12 +35,7 @@
       </el-form-item>
 
       <el-form-item label="描述" prop="miaoshu">
-        <el-input
-          v-model="form.miaoshu"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入描述"
-        />
+        <el-input v-model="form.miaoshu" type="textarea" :rows="3" placeholder="请输入描述" />
       </el-form-item>
 
       <el-form-item label="排序" prop="paixu">
@@ -95,31 +85,35 @@ const form = ref<ShoufukuanQudao>({
   lianhanghao: '',
   miaoshu: '',
   paixu: 0,
-  zhuangtai: 'active'
+  zhuangtai: 'active',
 })
 
 const rules: FormRules = {
   mingcheng: [{ required: true, message: '请输入渠道名称', trigger: 'blur' }],
-  leixing: [{ required: true, message: '请选择渠道类型', trigger: 'change' }]
+  leixing: [{ required: true, message: '请选择渠道类型', trigger: 'change' }],
 }
 
-watch(() => props.qudao, (val) => {
-  if (val) {
-    form.value = { ...val }
-  } else {
-    form.value = {
-      mingcheng: '',
-      leixing: 'shoufukuan',
-      zhanghu_mingcheng: '',
-      zhanghu_haoma: '',
-      kaihuhang: '',
-      lianhanghao: '',
-      miaoshu: '',
-      paixu: 0,
-      zhuangtai: 'active'
+watch(
+  () => props.qudao,
+  (val) => {
+    if (val) {
+      form.value = { ...val }
+    } else {
+      form.value = {
+        mingcheng: '',
+        leixing: 'shoufukuan',
+        zhanghu_mingcheng: '',
+        zhanghu_haoma: '',
+        kaihuhang: '',
+        lianhanghao: '',
+        miaoshu: '',
+        paixu: 0,
+        zhuangtai: 'active',
+      }
     }
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 const handleClose = () => {
   emit('update:modelValue', false)

@@ -13,12 +13,7 @@
 
       <el-form :model="formData" label-width="180px" style="max-width: 600px">
         <el-form-item label="Token过期时间">
-          <el-input-number
-            v-model="formData.token_expire_hours"
-            :min="1"
-            :max="168"
-            :step="1"
-          />
+          <el-input-number v-model="formData.token_expire_hours" :min="1" :max="168" :step="1" />
           <span style="margin-left: 10px; color: #909399">小时</span>
           <div class="form-tip">用户登录Token的有效期，建议设置为8-24小时</div>
         </el-form-item>
@@ -35,12 +30,7 @@
         </el-form-item>
 
         <el-form-item label="密码最小长度">
-          <el-input-number
-            v-model="formData.password_min_length"
-            :min="6"
-            :max="20"
-            :step="1"
-          />
+          <el-input-number v-model="formData.password_min_length" :min="6" :max="20" :step="1" />
           <span style="margin-left: 10px; color: #909399">位</span>
           <div class="form-tip">用户密码的最小长度要求，建议不少于6位</div>
         </el-form-item>
@@ -62,14 +52,16 @@
       <template #header>
         <span>安全提示</span>
       </template>
-      
+
       <el-alert type="info" :closable="false">
         <template #title>
           <div style="line-height: 1.8">
-            <p><strong>Token过期时间：</strong>设置过短会导致用户频繁登录，设置过长会增加安全风险</p>
+            <p>
+              <strong>Token过期时间：</strong>设置过短会导致用户频繁登录，设置过长会增加安全风险
+            </p>
             <p><strong>刷新Token：</strong>用于在Token过期后自动续期，避免用户频繁输入密码</p>
             <p><strong>密码长度：</strong>密码越长安全性越高，但也要考虑用户体验</p>
-            <p style="color: #E6A23C; margin-top: 10px">
+            <p style="color: #e6a23c; margin-top: 10px">
               <el-icon><Warning /></el-icon>
               修改安全配置后，新配置将在下次用户登录时生效
             </p>
@@ -93,7 +85,7 @@ const saving = ref(false)
 const formData = ref({
   token_expire_hours: 8,
   refresh_token_expire_days: 30,
-  password_min_length: 6
+  password_min_length: 6,
 })
 
 // 加载配置
@@ -101,9 +93,9 @@ const loadConfigs = async () => {
   loading.value = true
   try {
     const configs = await getAllConfigs('security')
-    
+
     // 解析配置值
-    configs.forEach(config => {
+    configs.forEach((config) => {
       if (config.config_key === 'token_expire_hours') {
         formData.value.token_expire_hours = parseInt(config.config_value || '8')
       } else if (config.config_key === 'refresh_token_expire_days') {
@@ -127,7 +119,7 @@ const handleSave = async () => {
     const configs = {
       token_expire_hours: formData.value.token_expire_hours.toString(),
       refresh_token_expire_days: formData.value.refresh_token_expire_days.toString(),
-      password_min_length: formData.value.password_min_length.toString()
+      password_min_length: formData.value.password_min_length.toString(),
     }
 
     await batchUpdateConfigs(configs)

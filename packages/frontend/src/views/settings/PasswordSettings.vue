@@ -7,12 +7,7 @@
         </div>
       </template>
 
-      <el-alert
-        title="密码安全提示"
-        type="info"
-        :closable="false"
-        style="margin-bottom: 20px"
-      >
+      <el-alert title="密码安全提示" type="info" :closable="false" style="margin-bottom: 20px">
         <ul style="margin: 0; padding-left: 20px">
           <li>密码长度至少6位</li>
           <li>建议使用字母、数字和特殊字符的组合</li>
@@ -59,9 +54,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleSubmit" :loading="loading">
-            修改密码
-          </el-button>
+          <el-button type="primary" @click="handleSubmit" :loading="loading"> 修改密码 </el-button>
           <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -81,11 +74,15 @@ const loading = ref(false)
 const formData = reactive({
   old_password: '',
   new_password: '',
-  confirm_password: ''
+  confirm_password: '',
 })
 
 // 验证确认密码
-const validateConfirmPassword = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
+const validateConfirmPassword = (
+  _rule: unknown,
+  value: string,
+  callback: (error?: Error) => void
+) => {
   if (value === '') {
     callback(new Error('请再次输入新密码'))
   } else if (value !== formData.new_password) {
@@ -99,16 +96,16 @@ const validateConfirmPassword = (_rule: unknown, value: string, callback: (error
 const rules: FormRules = {
   old_password: [
     { required: true, message: '请输入旧密码', trigger: 'blur' },
-    { min: 6, message: '密码长度至少6位', trigger: 'blur' }
+    { min: 6, message: '密码长度至少6位', trigger: 'blur' },
   ],
   new_password: [
     { required: true, message: '请输入新密码', trigger: 'blur' },
-    { min: 6, max: 100, message: '密码长度在 6 到 100 个字符', trigger: 'blur' }
+    { min: 6, max: 100, message: '密码长度在 6 到 100 个字符', trigger: 'blur' },
   ],
   confirm_password: [
     { required: true, message: '请再次输入新密码', trigger: 'blur' },
-    { validator: validateConfirmPassword, trigger: 'blur' }
-  ]
+    { validator: validateConfirmPassword, trigger: 'blur' },
+  ],
 }
 
 // 提交表单
@@ -121,7 +118,7 @@ const handleSubmit = async () => {
       try {
         const data: PasswordChange = {
           old_password: formData.old_password,
-          new_password: formData.new_password
+          new_password: formData.new_password,
         }
         await changePassword(data)
         ElMessage.success('密码修改成功，请重新登录')

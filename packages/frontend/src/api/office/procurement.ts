@@ -35,14 +35,14 @@ export function getProcurementList(params: ListParams) {
   return request({
     url: '/office/procurement',
     method: 'get',
-    params
+    params,
   })
 }
 
 export function getProcurementDetail(id: string) {
   return request({
     url: `/office/procurement/${id}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -50,7 +50,7 @@ export function createProcurement(data: ProcurementApplication) {
   return request({
     url: '/office/procurement',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -58,14 +58,14 @@ export function updateProcurement(id: string, data: Partial<ProcurementApplicati
   return request({
     url: `/office/procurement/${id}`,
     method: 'put',
-    data
+    data,
   })
 }
 
 export function deleteProcurement(id: string) {
   return request({
     url: `/office/procurement/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -75,7 +75,7 @@ export function deleteProcurement(id: string) {
 export function submitProcurementForApproval(id: string) {
   return request({
     url: `/office/procurement/${id}/submit`,
-    method: 'post'
+    method: 'post',
   })
 }
 
@@ -86,7 +86,7 @@ export function approveProcurement(id: string, shenhe_yijian?: string) {
   return request({
     url: `/office/procurement/${id}/approve`,
     method: 'post',
-    params: { shenhe_yijian }
+    params: { shenhe_yijian },
   })
 }
 
@@ -97,6 +97,6 @@ export function rejectProcurement(id: string, shenhe_yijian: string) {
   return request({
     url: `/office/procurement/${id}/reject`,
     method: 'post',
-    params: { shenhe_yijian }
+    params: { shenhe_yijian },
   })
 }

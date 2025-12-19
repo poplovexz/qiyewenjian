@@ -126,7 +126,7 @@ export function getSystemInfo() {
  */
 export function getAllConfigs(configType?: string) {
   return request.get<SystemConfig[]>('/system/configs', {
-    params: configType ? { config_type: configType } : undefined
+    params: configType ? { config_type: configType } : undefined,
   })
 }
 
@@ -142,7 +142,7 @@ export function getConfigByKey(configKey: string) {
  */
 export function updateConfig(configKey: string, configValue: string) {
   return request.put<SystemConfig>(`/system/configs/${configKey}`, {
-    config_value: configValue
+    config_value: configValue,
   })
 }
 
@@ -161,6 +161,6 @@ export function batchUpdateConfigs(configs: Record<string, string>) {
  */
 export function clearCache(pattern?: string) {
   return request.post<CacheClearResponse>('/system/cache/clear', undefined, {
-    params: pattern ? { pattern } : undefined
+    params: pattern ? { pattern } : undefined,
   })
 }

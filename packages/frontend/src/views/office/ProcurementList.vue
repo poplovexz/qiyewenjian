@@ -56,9 +56,7 @@
         </el-table-column>
         <el-table-column prop="caigou_mingcheng" label="物品名称" width="150" />
         <el-table-column prop="caigou_shuliang" label="数量" width="100">
-          <template #default="{ row }">
-            {{ row.caigou_shuliang }} {{ row.danwei }}
-          </template>
+          <template #default="{ row }"> {{ row.caigou_shuliang }} {{ row.danwei }} </template>
         </el-table-column>
         <el-table-column prop="yugu_jine" label="预估金额" width="120">
           <template #default="{ row }">
@@ -85,10 +83,20 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click="handleView(row)">查看</el-button>
-            <el-button link type="primary" @click="handleEdit(row)" v-if="row.shenhe_zhuangtai === 'daishehe'">
+            <el-button
+              link
+              type="primary"
+              @click="handleEdit(row)"
+              v-if="row.shenhe_zhuangtai === 'daishehe'"
+            >
               编辑
             </el-button>
-            <el-button link type="danger" @click="handleDelete(row)" v-if="row.shenhe_zhuangtai === 'daishehe'">
+            <el-button
+              link
+              type="danger"
+              @click="handleDelete(row)"
+              v-if="row.shenhe_zhuangtai === 'daishehe'"
+            >
               删除
             </el-button>
           </template>
@@ -129,13 +137,13 @@ const searchForm = reactive({
   shenqing_bianhao: '',
   caigou_mingcheng: '',
   caigou_leixing: '',
-  shenhe_zhuangtai: ''
+  shenhe_zhuangtai: '',
 })
 
 const pagination = reactive({
   page: 1,
   page_size: 10,
-  total: 0
+  total: 0,
 })
 
 // 加载支出类别列表
@@ -161,7 +169,7 @@ const fetchData = async () => {
     const params = {
       ...searchForm,
       page: pagination.page,
-      page_size: pagination.page_size
+      page_size: pagination.page_size,
     }
     const response = await getProcurementList(params)
     tableData.value = response.items || []
@@ -207,7 +215,7 @@ const handleEdit = (row: ProcurementApplication) => {
 const handleDelete = async (row: ProcurementApplication) => {
   try {
     await ElMessageBox.confirm('确定要删除这条采购申请吗？', '确认删除', {
-      type: 'warning'
+      type: 'warning',
     })
 
     await deleteProcurement(row.id!)
@@ -231,7 +239,7 @@ const getStatusLabel = (status: string) => {
     daishehe: '待审核',
     shenhezhong: '审核中',
     tongguo: '已通过',
-    jujue: '已拒绝'
+    jujue: '已拒绝',
   }
   return map[status] || status
 }
@@ -241,7 +249,7 @@ const getStatusType = (status: string) => {
     daishehe: 'info',
     shenhezhong: 'warning',
     tongguo: 'success',
-    jujue: 'danger'
+    jujue: 'danger',
   }
   return map[status] || 'info'
 }

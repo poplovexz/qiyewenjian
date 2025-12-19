@@ -41,9 +41,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleSubmit" :loading="loading">
-            保存修改
-          </el-button>
+          <el-button type="primary" @click="handleSubmit" :loading="loading"> 保存修改 </el-button>
           <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -54,7 +52,12 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { getUserProfile, updateUserProfile, type UserProfile, type UserProfileUpdate } from '@/api/modules/settings'
+import {
+  getUserProfile,
+  updateUserProfile,
+  type UserProfile,
+  type UserProfileUpdate,
+} from '@/api/modules/settings'
 import { formatDateTime, formatDate } from '@/utils/format'
 
 const formRef = ref<FormInstance>()
@@ -68,28 +71,24 @@ const profile = ref<UserProfile>({
   shouji: '',
   youxiang: '',
   zhuangtai: '',
-  created_at: ''
+  created_at: '',
 })
 
 // 表单数据
 const formData = reactive<UserProfileUpdate>({
   xingming: '',
   shouji: '',
-  youxiang: ''
+  youxiang: '',
 })
 
 // 表单验证规则
 const rules: FormRules = {
   xingming: [
     { required: true, message: '请输入姓名', trigger: 'blur' },
-    { min: 1, max: 50, message: '姓名长度在 1 到 50 个字符', trigger: 'blur' }
+    { min: 1, max: 50, message: '姓名长度在 1 到 50 个字符', trigger: 'blur' },
   ],
-  shouji: [
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
-  ],
-  youxiang: [
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-  ]
+  shouji: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }],
+  youxiang: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }],
 }
 
 // 格式化日期

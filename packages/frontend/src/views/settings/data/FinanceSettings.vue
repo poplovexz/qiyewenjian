@@ -28,7 +28,12 @@
             </el-table-column>
             <el-table-column prop="zhanghu_mingcheng" label="账户名称" min-width="200" />
             <el-table-column prop="zhanghu_haoma" label="账户号码" min-width="180" />
-            <el-table-column prop="kaihuhang" label="开户行" min-width="200" show-overflow-tooltip />
+            <el-table-column
+              prop="kaihuhang"
+              label="开户行"
+              min-width="200"
+              show-overflow-tooltip
+            />
             <el-table-column prop="zhuangtai" label="状态" width="80">
               <template #default="{ row }">
                 <el-tag v-if="row.zhuangtai === 'active'" type="success" size="small">启用</el-tag>
@@ -37,8 +42,12 @@
             </el-table-column>
             <el-table-column label="操作" width="150" fixed="right">
               <template #default="{ row }">
-                <el-button link type="primary" size="small" @click="handleEditQudao(row)">修改</el-button>
-                <el-button link type="danger" size="small" @click="handleDeleteQudao(row)">删除</el-button>
+                <el-button link type="primary" size="small" @click="handleEditQudao(row)"
+                  >修改</el-button
+                >
+                <el-button link type="danger" size="small" @click="handleDeleteQudao(row)"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -64,8 +73,12 @@
             </el-table-column>
             <el-table-column label="操作" width="150" fixed="right">
               <template #default="{ row }">
-                <el-button link type="primary" size="small" @click="handleEditShouruLeibie(row)">修改</el-button>
-                <el-button link type="danger" size="small" @click="handleDeleteShouruLeibie(row)">删除</el-button>
+                <el-button link type="primary" size="small" @click="handleEditShouruLeibie(row)"
+                  >修改</el-button
+                >
+                <el-button link type="danger" size="small" @click="handleDeleteShouruLeibie(row)"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -91,8 +104,12 @@
             </el-table-column>
             <el-table-column label="操作" width="150" fixed="right">
               <template #default="{ row }">
-                <el-button link type="primary" size="small" @click="handleEditBaoxiaoLeibie(row)">修改</el-button>
-                <el-button link type="danger" size="small" @click="handleDeleteBaoxiaoLeibie(row)">删除</el-button>
+                <el-button link type="primary" size="small" @click="handleEditBaoxiaoLeibie(row)"
+                  >修改</el-button
+                >
+                <el-button link type="danger" size="small" @click="handleDeleteBaoxiaoLeibie(row)"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -118,8 +135,8 @@
           >
             <el-table-column prop="mingcheng" label="分类/类别名称" min-width="300">
               <template #default="{ row }">
-                <span v-if="row.isCategory" style="font-weight: bold; color: #409EFF;">
-                  <el-icon style="margin-right: 5px;"><Folder /></el-icon>
+                <span v-if="row.isCategory" style="font-weight: bold; color: #409eff">
+                  <el-icon style="margin-right: 5px"><Folder /></el-icon>
                   {{ row.mingcheng }}
                 </span>
                 <span v-else>{{ row.mingcheng }}</span>
@@ -129,7 +146,9 @@
             <el-table-column prop="zhuangtai" label="状态" width="80">
               <template #default="{ row }">
                 <template v-if="!row.isCategory">
-                  <el-tag v-if="row.zhuangtai === 'active'" type="success" size="small">启用</el-tag>
+                  <el-tag v-if="row.zhuangtai === 'active'" type="success" size="small"
+                    >启用</el-tag
+                  >
                   <el-tag v-else type="info" size="small">禁用</el-tag>
                 </template>
               </template>
@@ -137,8 +156,12 @@
             <el-table-column label="操作" width="150" fixed="right">
               <template #default="{ row }">
                 <template v-if="!row.isCategory">
-                  <el-button link type="primary" size="small" @click="handleEditZhichuLeibie(row)">修改</el-button>
-                  <el-button link type="danger" size="small" @click="handleDeleteZhichuLeibie(row)">删除</el-button>
+                  <el-button link type="primary" size="small" @click="handleEditZhichuLeibie(row)"
+                    >修改</el-button
+                  >
+                  <el-button link type="danger" size="small" @click="handleDeleteZhichuLeibie(row)"
+                    >删除</el-button
+                  >
                 </template>
               </template>
             </el-table-column>
@@ -197,7 +220,7 @@ import {
   type ShoufukuanQudao,
   type ShouruLeibie,
   type BaoxiaoLeibie,
-  type ZhichuLeibie
+  type ZhichuLeibie,
 } from '@/api/modules/finance-settings'
 import QudaoDialog from './components/QudaoDialog.vue'
 import ShouruLeibieDialog from './components/ShouruLeibieDialog.vue'
@@ -296,7 +319,7 @@ const zhichuTreeData = computed(() => {
   // 按分类分组
   const groupedData: Record<string, ZhichuLeibie[]> = {}
 
-  zhichuLeibieList.value.forEach(item => {
+  zhichuLeibieList.value.forEach((item) => {
     const fenlei = item.fenlei || '其他'
     if (!groupedData[fenlei]) {
       groupedData[fenlei] = []
@@ -312,18 +335,20 @@ const zhichuTreeData = computed(() => {
     children?: (ZhichuLeibie & { isCategory: boolean })[]
   }
   const treeData: TreeNode[] = []
-  Object.keys(groupedData).sort().forEach(fenlei => {
-    const categoryNode: TreeNode = {
-      id: `category-${fenlei}`,
-      mingcheng: fenlei,
-      isCategory: true,
-      children: groupedData[fenlei].map(item => ({
-        ...item,
-        isCategory: false
-      }))
-    }
-    treeData.push(categoryNode)
-  })
+  Object.keys(groupedData)
+    .sort()
+    .forEach((fenlei) => {
+      const categoryNode: TreeNode = {
+        id: `category-${fenlei}`,
+        mingcheng: fenlei,
+        isCategory: true,
+        children: groupedData[fenlei].map((item) => ({
+          ...item,
+          isCategory: false,
+        })),
+      }
+      treeData.push(categoryNode)
+    })
 
   return treeData
 })
@@ -346,7 +371,7 @@ const handleDeleteQudao = async (row: ShoufukuanQudao) => {
     await ElMessageBox.confirm('确定要删除该收付款渠道吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
     })
     await deleteQudao(row.id!)
     ElMessage.success('删除成功')
@@ -377,7 +402,7 @@ const handleDeleteShouruLeibie = async (row: ShouruLeibie) => {
     await ElMessageBox.confirm('确定要删除该收入类别吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
     })
     await deleteShouruLeibie(row.id!)
     ElMessage.success('删除成功')
@@ -407,7 +432,7 @@ const handleDeleteBaoxiaoLeibie = async (row: BaoxiaoLeibie) => {
     await ElMessageBox.confirm('确定要删除该报销类别吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
     })
     await deleteBaoxiaoLeibie(row.id!)
     ElMessage.success('删除成功')
@@ -437,7 +462,7 @@ const handleDeleteZhichuLeibie = async (row: ZhichuLeibie) => {
     await ElMessageBox.confirm('确定要删除该支出类别吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
     })
     await deleteZhichuLeibie(row.id!)
     ElMessage.success('删除成功')

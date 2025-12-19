@@ -7,12 +7,7 @@
         </div>
       </template>
 
-      <el-alert
-        title="通知说明"
-        type="info"
-        :closable="false"
-        style="margin-bottom: 20px"
-      >
+      <el-alert title="通知说明" type="info" :closable="false" style="margin-bottom: 20px">
         您可以选择接收哪些类型的通知。关闭某项通知后，您将不会收到该类型的提醒。
       </el-alert>
 
@@ -23,9 +18,7 @@
               <el-icon><Message /></el-icon>
               <span>邮件通知</span>
             </div>
-            <div class="item-desc">
-              接收系统发送的邮件通知，包括重要事项提醒、审核通知等
-            </div>
+            <div class="item-desc">接收系统发送的邮件通知，包括重要事项提醒、审核通知等</div>
           </div>
           <el-switch
             v-model="preferences.email_notification"
@@ -42,9 +35,7 @@
               <el-icon><ChatDotRound /></el-icon>
               <span>短信通知</span>
             </div>
-            <div class="item-desc">
-              接收系统发送的短信通知，用于紧急事项提醒
-            </div>
+            <div class="item-desc">接收系统发送的短信通知，用于紧急事项提醒</div>
           </div>
           <el-switch
             v-model="preferences.sms_notification"
@@ -61,9 +52,7 @@
               <el-icon><Bell /></el-icon>
               <span>系统消息</span>
             </div>
-            <div class="item-desc">
-              接收系统内的消息通知，在系统内显示通知提醒
-            </div>
+            <div class="item-desc">接收系统内的消息通知，在系统内显示通知提醒</div>
           </div>
           <el-switch
             v-model="preferences.system_notification"
@@ -80,7 +69,11 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Message, ChatDotRound, Bell } from '@element-plus/icons-vue'
-import { getUserPreferences, updateUserPreferences, type UserPreferences } from '@/api/modules/settings'
+import {
+  getUserPreferences,
+  updateUserPreferences,
+  type UserPreferences,
+} from '@/api/modules/settings'
 
 const loading = ref(false)
 
@@ -88,7 +81,7 @@ const loading = ref(false)
 const preferences = reactive<UserPreferences>({
   email_notification: true,
   sms_notification: true,
-  system_notification: true
+  system_notification: true,
 })
 
 // 加载偏好设置
@@ -110,7 +103,7 @@ const handleChange = async () => {
     await updateUserPreferences({
       email_notification: preferences.email_notification,
       sms_notification: preferences.sms_notification,
-      system_notification: preferences.system_notification
+      system_notification: preferences.system_notification,
     })
     ElMessage.success('设置已保存')
   } catch (error: unknown) {

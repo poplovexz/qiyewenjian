@@ -44,7 +44,7 @@ export function getReimbursementList(params: ReimbursementListParams) {
   return request<ReimbursementListResponse>({
     url: '/office/reimbursement',
     method: 'get',
-    params
+    params,
   })
 }
 
@@ -55,7 +55,7 @@ export function getMyReimbursementList(params: ReimbursementListParams) {
   return request<ReimbursementListResponse>({
     url: '/office/reimbursement/my',
     method: 'get',
-    params
+    params,
   })
 }
 
@@ -65,7 +65,7 @@ export function getMyReimbursementList(params: ReimbursementListParams) {
 export function getReimbursementDetail(id: string) {
   return request<ReimbursementApplication>({
     url: `/office/reimbursement/${id}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -76,7 +76,7 @@ export function createReimbursement(data: ReimbursementApplication) {
   return request<ReimbursementApplication>({
     url: '/office/reimbursement',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -87,7 +87,7 @@ export function updateReimbursement(id: string, data: Partial<ReimbursementAppli
   return request<ReimbursementApplication>({
     url: `/office/reimbursement/${id}`,
     method: 'put',
-    data
+    data,
   })
 }
 
@@ -97,7 +97,7 @@ export function updateReimbursement(id: string, data: Partial<ReimbursementAppli
 export function deleteReimbursement(id: string) {
   return request({
     url: `/office/reimbursement/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -107,7 +107,7 @@ export function deleteReimbursement(id: string) {
 export function submitReimbursementForApproval(id: string) {
   return request({
     url: `/office/reimbursement/${id}/submit`,
-    method: 'post'
+    method: 'post',
   })
 }
 
@@ -118,7 +118,7 @@ export function approveReimbursement(id: string, shenhe_yijian?: string) {
   return request({
     url: `/office/reimbursement/${id}/approve`,
     method: 'post',
-    params: { shenhe_yijian }
+    params: { shenhe_yijian },
   })
 }
 
@@ -129,6 +129,6 @@ export function rejectReimbursement(id: string, shenhe_yijian: string) {
   return request({
     url: `/office/reimbursement/${id}/reject`,
     method: 'post',
-    params: { shenhe_yijian }
+    params: { shenhe_yijian },
   })
 }

@@ -15,31 +15,35 @@
         <el-descriptions-item label="系统名称">
           {{ systemInfo.system_name }}
         </el-descriptions-item>
-        
+
         <el-descriptions-item label="系统版本">
           <el-tag type="success">{{ systemInfo.version }}</el-tag>
         </el-descriptions-item>
-        
+
         <el-descriptions-item label="运行环境">
           <el-tag :type="systemInfo.environment === 'production' ? 'danger' : 'warning'">
             {{ systemInfo.environment === 'production' ? '生产环境' : '开发环境' }}
           </el-tag>
         </el-descriptions-item>
-        
+
         <el-descriptions-item label="运行时间">
           {{ systemInfo.uptime }}
         </el-descriptions-item>
-        
+
         <el-descriptions-item label="数据库状态">
           <el-tag :type="systemInfo.database_status === '正常' ? 'success' : 'danger'">
-            <el-icon><CircleCheck v-if="systemInfo.database_status === '正常'" /><CircleClose v-else /></el-icon>
+            <el-icon
+              ><CircleCheck v-if="systemInfo.database_status === '正常'" /><CircleClose v-else
+            /></el-icon>
             {{ systemInfo.database_status }}
           </el-tag>
         </el-descriptions-item>
-        
+
         <el-descriptions-item label="Redis状态">
           <el-tag :type="systemInfo.redis_status === '正常' ? 'success' : 'danger'">
-            <el-icon><CircleCheck v-if="systemInfo.redis_status === '正常'" /><CircleClose v-else /></el-icon>
+            <el-icon
+              ><CircleCheck v-if="systemInfo.redis_status === '正常'" /><CircleClose v-else
+            /></el-icon>
             {{ systemInfo.redis_status }}
           </el-tag>
         </el-descriptions-item>
@@ -53,12 +57,7 @@
         </div>
       </template>
 
-      <el-alert
-        title="缓存清除说明"
-        type="warning"
-        :closable="false"
-        style="margin-bottom: 20px"
-      >
+      <el-alert title="缓存清除说明" type="warning" :closable="false" style="margin-bottom: 20px">
         清除缓存会影响系统性能，请谨慎操作。清除后系统会自动重新构建缓存。
       </el-alert>
 
@@ -99,7 +98,7 @@ const systemInfo = ref<SystemInfo>({
   environment: '',
   database_status: '',
   redis_status: '',
-  uptime: ''
+  uptime: '',
 })
 
 // 加载系统信息
@@ -127,7 +126,7 @@ const handleClearCache = async () => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 

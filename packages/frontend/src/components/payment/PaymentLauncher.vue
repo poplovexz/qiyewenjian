@@ -13,8 +13,12 @@
       <div v-if="orderInfo">
         <!-- 订单信息 -->
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="订单编号">{{ orderInfo.dingdan_bianhao }}</el-descriptions-item>
-          <el-descriptions-item label="订单名称">{{ orderInfo.dingdan_mingcheng }}</el-descriptions-item>
+          <el-descriptions-item label="订单编号">{{
+            orderInfo.dingdan_bianhao
+          }}</el-descriptions-item>
+          <el-descriptions-item label="订单名称">{{
+            orderInfo.dingdan_mingcheng
+          }}</el-descriptions-item>
           <el-descriptions-item label="应付金额">
             <span class="amount">¥{{ orderInfo.yingfu_jine }}</span>
           </el-descriptions-item>
@@ -28,7 +32,7 @@
         <!-- 支付方式选择 -->
         <div v-if="canPay" class="payment-options">
           <el-divider content-position="left">选择支付方式</el-divider>
-          
+
           <el-form :model="paymentForm" label-width="120px">
             <el-form-item label="支付平台">
               <el-radio-group v-model="paymentForm.zhifu_pingtai">
@@ -57,12 +61,21 @@
             </el-form-item>
 
             <!-- 微信JSAPI需要openid -->
-            <el-form-item v-if="paymentForm.zhifu_pingtai === 'weixin' && paymentForm.zhifu_fangshi === 'jsapi'" label="用户OpenID">
+            <el-form-item
+              v-if="paymentForm.zhifu_pingtai === 'weixin' && paymentForm.zhifu_fangshi === 'jsapi'"
+              label="用户OpenID"
+            >
               <el-input v-model="paymentForm.openid" placeholder="请输入微信用户OpenID" />
             </el-form-item>
 
             <!-- 支付宝需要return_url -->
-            <el-form-item v-if="paymentForm.zhifu_pingtai === 'zhifubao' && ['page', 'wap'].includes(paymentForm.zhifu_fangshi)" label="返回URL">
+            <el-form-item
+              v-if="
+                paymentForm.zhifu_pingtai === 'zhifubao' &&
+                ['page', 'wap'].includes(paymentForm.zhifu_fangshi)
+              "
+              label="返回URL"
+            >
               <el-input v-model="paymentForm.return_url" placeholder="支付成功后返回的URL" />
             </el-form-item>
 
@@ -83,15 +96,10 @@
         <!-- 支付结果展示 -->
         <div v-if="paymentResult" class="payment-result">
           <el-divider content-position="left">支付信息</el-divider>
-          
+
           <!-- 二维码支付 -->
           <div v-if="showQRCode" class="qrcode-container">
-            <el-alert
-              title="请使用微信扫码支付"
-              type="info"
-              :closable="false"
-              show-icon
-            />
+            <el-alert title="请使用微信扫码支付" type="info" :closable="false" show-icon />
             <div class="qrcode">
               <qrcode-vue :value="qrcodeUrl" :size="200" level="H" />
             </div>
@@ -100,12 +108,7 @@
 
           <!-- 跳转支付 -->
           <div v-else-if="paymentUrl" class="payment-url">
-            <el-alert
-              title="即将跳转到支付页面"
-              type="success"
-              :closable="false"
-              show-icon
-            />
+            <el-alert title="即将跳转到支付页面" type="success" :closable="false" show-icon />
             <el-button type="primary" size="large" @click="handleJumpToPayment">
               前往支付
             </el-button>
@@ -160,7 +163,7 @@ const paymentForm = ref({
   zhifu_fangshi: 'native' as 'native' | 'jsapi' | 'h5' | 'app',
   openid: '',
   return_url: window.location.origin + '/payment/success',
-  quit_url: window.location.origin + '/payment/cancel'
+  quit_url: window.location.origin + '/payment/cancel',
 })
 
 // 是否可以支付
@@ -202,7 +205,7 @@ const getStatusType = (status: string) => {
     paid: 'success',
     failed: 'danger',
     cancelled: 'info',
-    refunded: 'warning'
+    refunded: 'warning',
   }
   return typeMap[status] || 'info'
 }
@@ -215,7 +218,7 @@ const getStatusText = (status: string) => {
     paid: '已支付',
     failed: '支付失败',
     cancelled: '已取消',
-    refunded: '已退款'
+    refunded: '已退款',
   }
   return textMap[status] || status
 }
@@ -241,12 +244,12 @@ const handleCreatePayment = async () => {
       zhifu_fangshi: paymentForm.value.zhifu_fangshi,
       openid: paymentForm.value.openid || undefined,
       return_url: paymentForm.value.return_url || undefined,
-      quit_url: paymentForm.value.quit_url || undefined
+      quit_url: paymentForm.value.quit_url || undefined,
     })
-    
+
     paymentResult.value = result
     ElMessage.success('支付创建成功')
-    
+
     // 如果是跳转支付，自动跳转
     if (paymentUrl.value) {
       setTimeout(() => {
@@ -294,7 +297,7 @@ const handleClosePayment = async () => {
     await ElMessageBox.confirm('确定要关闭此订单吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
     })
 
     await closePayment(props.orderId)

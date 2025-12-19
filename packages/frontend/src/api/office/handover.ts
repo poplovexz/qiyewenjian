@@ -37,14 +37,14 @@ export function getHandoverList(params: ListParams) {
   return request({
     url: '/office/handover',
     method: 'get',
-    params
+    params,
   })
 }
 
 export function getHandoverDetail(id: string) {
   return request({
     url: `/office/handover/${id}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -52,7 +52,7 @@ export function createHandover(data: HandoverApplication) {
   return request({
     url: '/office/handover',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -60,14 +60,14 @@ export function updateHandover(id: string, data: Partial<HandoverApplication>) {
   return request({
     url: `/office/handover/${id}`,
     method: 'put',
-    data
+    data,
   })
 }
 
 export function deleteHandover(id: string) {
   return request({
     url: `/office/handover/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -77,7 +77,7 @@ export function deleteHandover(id: string) {
 export function submitHandoverForConfirm(id: string) {
   return request({
     url: `/office/handover/${id}/submit`,
-    method: 'post'
+    method: 'post',
   })
 }
 
@@ -88,7 +88,7 @@ export function confirmHandover(id: string, beizhu?: string) {
   return request({
     url: `/office/handover/${id}/confirm`,
     method: 'post',
-    params: { beizhu }
+    params: { beizhu },
   })
 }
 
@@ -99,7 +99,7 @@ export function rejectHandover(id: string, beizhu: string) {
   return request({
     url: `/office/handover/${id}/reject`,
     method: 'post',
-    params: { beizhu }
+    params: { beizhu },
   })
 }
 
@@ -110,6 +110,6 @@ export function getUserList(params?: ListParams) {
   return request({
     url: '/users',
     method: 'get',
-    params
+    params,
   })
 }

@@ -28,7 +28,7 @@ export const serviceOrderApi = {
    */
   getByContract(hetongId: string) {
     return request.get('/service-orders/', {
-      params: { hetong_id: hetongId }
+      params: { hetong_id: hetongId },
     })
   },
 
@@ -44,5 +44,5 @@ export const serviceOrderApi = {
    */
   getList(params: ServiceOrderListParams = {}) {
     return request.get('/service-orders/', { params })
-  }
+  },
 }
