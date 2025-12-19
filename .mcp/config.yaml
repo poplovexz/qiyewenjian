@@ -14,14 +14,14 @@ mcp:
 # 状态流定义
 # ============================================
 state_flow:
-  - INIT           # 初始化
-  - ARCH_GEN       # 生成骨架
-  - ARCH_REVIEW    # 架构审计
-  - DESIGN_FREEZE  # 冻结设计
-  - DOMAIN_CODE    # Domain 层代码
-  - SERVICE_CODE   # Service 层代码
-  - API_CODE       # API 层代码
-  - RUN_FIX        # 运行修复
+  - INIT # 初始化
+  - ARCH_GEN # 生成骨架
+  - ARCH_REVIEW # 架构审计
+  - DESIGN_FREEZE # 冻结设计
+  - DOMAIN_CODE # Domain 层代码
+  - SERVICE_CODE # Service 层代码
+  - API_CODE # API 层代码
+  - RUN_FIX # 运行修复
 
 # ============================================
 # 全局不可违反规则
@@ -141,4 +141,3 @@ roles:
       - ARCHITECTURE.md
       - DOMAIN.md
       - FLOW.md
-
