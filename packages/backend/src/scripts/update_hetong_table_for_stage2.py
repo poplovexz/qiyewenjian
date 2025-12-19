@@ -152,14 +152,10 @@ def update_hetong_table():
         "COMMENT ON COLUMN hetong.zidong_shengcheng IS '是否自动生成：Y(是)、N(否)'"
     ]
     
-    try:
-        with engine.connect() as connection:
-            for sql in sql_statements:
-                connection.execute(text(sql))
-                connection.commit()
-        
-    except Exception as e:
-        raise
+    with engine.connect() as connection:
+        for sql in sql_statements:
+            connection.execute(text(sql))
+            connection.commit()
 
 if __name__ == "__main__":
     update_hetong_table()

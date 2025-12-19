@@ -17,10 +17,9 @@ def init_system_permissions():
     
     engine = create_engine(str(settings.DATABASE_URL))
     
-    try:
-        with engine.connect() as conn:
-            # 系统设置权限数据
-            permissions_sql = """
+    with engine.connect() as conn:
+        # 系统设置权限数据
+        permissions_sql = """
             INSERT INTO quanxian (
                 id, quanxian_ming, quanxian_bianma, miaoshu,
                 ziyuan_leixing, ziyuan_lujing, zhuangtai,
@@ -60,12 +59,12 @@ def init_system_permissions():
             )
             ON CONFLICT (quanxian_bianma) DO NOTHING;
             """
-            
-            conn.execute(text(permissions_sql))
-            conn.commit()
-            
-            # 为管理员角色分配权限
-            role_permissions_sql = """
+        
+        conn.execute(text(permissions_sql))
+        conn.commit()
+        
+        # 为管理员角色分配权限
+        role_permissions_sql = """
             INSERT INTO jiaose_quanxian (id, jiaose_id, quanxian_id, created_at, updated_at, is_deleted)
             SELECT 
                 'rp_admin_' || q.id,
@@ -82,12 +81,10 @@ def init_system_permissions():
                 AND rp.quanxian_id = q.id
             );
             """
-            
-            conn.execute(text(role_permissions_sql))
-            conn.commit()
-            
-    except Exception as e:
-        raise
+        
+        conn.execute(text(role_permissions_sql))
+        conn.commit()
+        
 
 if __name__ == "__main__":
     init_system_permissions()
