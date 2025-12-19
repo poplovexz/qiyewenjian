@@ -37,12 +37,12 @@ class StubAlipay:
     """用于模拟支付宝SDK返回的 order_string"""
 
     @staticmethod
-    def api_alipay_trade_page_pay(**kwargs):
+    def api_alipay_trade_page_pay(**_kwargs):
         # 返回一个可拼接到网关后的订单串
         return "method=alipay.trade.page.pay&biz_content=%7B...%7D&timestamp=2025-01-01+00%3A00%3A00"
 
     @staticmethod
-    def api_alipay_trade_wap_pay(**kwargs):
+    def api_alipay_trade_wap_pay(**_kwargs):
         return "method=alipay.trade.wap.pay&biz_content=%7B...%7D&timestamp=2025-01-01+00%3A00%3A00"
 
 def assert_equal(name: str, actual: str, expected: str):
