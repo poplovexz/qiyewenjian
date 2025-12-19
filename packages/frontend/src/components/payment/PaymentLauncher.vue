@@ -129,21 +129,35 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import QrcodeVue from 'qrcode.vue'
 import { createPayment, queryPayment, closePayment } from '@/api/modules/payment-api'
 
+// 订单信息类型
+interface OrderInfo {
+  id: string
+  zhifu_zhuangtai: string
+  jine: number
+}
+
+// 支付结果类型
+interface PaymentResult {
+  success: boolean
+  payment_url?: string
+  qr_code?: string
+}
+
 interface Props {
   orderId: string
 }
 
 const props = defineProps<Props>()
 
-const orderInfo = ref<any>(null)
+const orderInfo = ref<OrderInfo | null>(null)
 const loading = ref(false)
 const queryLoading = ref(false)
-const paymentResult = ref<any>(null)
+const paymentResult = ref<PaymentResult | null>(null)
 const activeCollapse = ref<string[]>([])
 
 const paymentForm = ref({
   zhifu_pingtai: 'weixin' as 'weixin' | 'zhifubao',
-  zhifu_fangshi: 'native' as any,
+  zhifu_fangshi: 'native' as 'native' | 'jsapi' | 'h5' | 'app',
   openid: '',
   return_url: window.location.origin + '/payment/success',
   quit_url: window.location.origin + '/payment/cancel'
@@ -239,8 +253,9 @@ const handleCreatePayment = async () => {
         handleJumpToPayment()
       }, 1000)
     }
-  } catch (error: any) {
-    ElMessage.error(error.response?.data?.detail || '创建支付失败')
+  } catch (error: unknown) {
+    const axiosError = error as { response?: { data?: { detail?: string } } }
+    ElMessage.error(axiosError.response?.data?.detail || '创建支付失败')
   } finally {
     loading.value = false
   }
@@ -252,12 +267,12 @@ const handleQueryPayment = async () => {
   try {
     const result = await queryPayment(props.orderId)
     ElMessage.success('查询成功')
-    
+
     // 更新订单状态
     if (orderInfo.value) {
       orderInfo.value.zhifu_zhuangtai = result.zhifu_zhuangtai
     }
-    
+
     // 如果已支付，刷新页面
     if (result.zhifu_zhuangtai === 'paid') {
       ElMessage.success('支付成功！')
@@ -265,8 +280,9 @@ const handleQueryPayment = async () => {
         window.location.reload()
       }, 1500)
     }
-  } catch (error: any) {
-    ElMessage.error(error.response?.data?.detail || '查询失败')
+  } catch (error: unknown) {
+    const axiosError = error as { response?: { data?: { detail?: string } } }
+    ElMessage.error(axiosError.response?.data?.detail || '查询失败')
   } finally {
     queryLoading.value = false
   }
@@ -280,17 +296,18 @@ const handleClosePayment = async () => {
       cancelButtonText: '取消',
       type: 'warning'
     })
-    
+
     await closePayment(props.orderId)
     ElMessage.success('订单已关闭')
-    
+
     // 刷新页面
     setTimeout(() => {
       window.location.reload()
     }, 1000)
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.response?.data?.detail || '关闭订单失败')
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      ElMessage.error(axiosError.response?.data?.detail || '关闭订单失败')
     }
   }
 }

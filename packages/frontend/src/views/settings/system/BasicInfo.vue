@@ -108,8 +108,9 @@ const loadSystemInfo = async () => {
   try {
     const data = await getSystemInfo()
     systemInfo.value = data
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载系统信息失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载系统信息失败')
   } finally {
     loading.value = false
   }
@@ -119,7 +120,7 @@ const loadSystemInfo = async () => {
 const handleClearCache = async () => {
   try {
     await ElMessageBox.confirm(
-      cachePattern.value 
+      cachePattern.value
         ? `确定要清除匹配 "${cachePattern.value}" 的缓存吗？`
         : '确定要清除所有缓存吗？此操作不可恢复！',
       '警告',
@@ -134,9 +135,10 @@ const handleClearCache = async () => {
     const result = await clearCache(cachePattern.value || undefined)
     ElMessage.success(result.message)
     cachePattern.value = ''
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '清除缓存失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '清除缓存失败')
     }
   } finally {
     clearingCache.value = false

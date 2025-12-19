@@ -248,7 +248,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
     loading.value = true
     try {
       // 后端API使用查询参数，不是请求体
-      const params: any = {
+      const params: Record<string, string> = {
         zhixing_ren_id: zhixingRenId
       }
       if (fenpeiBeizhu) {
@@ -289,7 +289,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
     loading.value = true
     try {
       // 后端API使用查询参数，不是请求体
-      const params: any = {
+      const params: Record<string, string> = {
         wancheng_qingkuang: wanchengQingkuang
       }
       if (jiaofeiWenjian) {
@@ -374,10 +374,10 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   const fetchStatistics = async (kehuId?: string, zhixingRenId?: string) => {
     loading.value = true
     try {
-      const params: any = {}
+      const params: Record<string, string> = {}
       if (kehuId) params.kehu_id = kehuId
       if (zhixingRenId) params.zhixing_ren_id = zhixingRenId
-      
+
       const response = await request.get('/service-orders/statistics/overview', { params })
       statistics.value = response.data
       return response.data

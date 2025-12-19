@@ -244,7 +244,7 @@ const formRules: FormRules = {
 }
 
 // 验证JSON格式
-function validateJSON(rule: any, value: string, callback: any) {
+function validateJSON(_rule: unknown, value: string, callback: (error?: Error) => void) {
   if (!value) {
     callback()
     return

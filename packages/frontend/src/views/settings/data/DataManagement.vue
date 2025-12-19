@@ -156,7 +156,7 @@ const loadStats = async () => {
       categories: 8,
       products: 24
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('加载统计数据失败:', error)
   }
 }

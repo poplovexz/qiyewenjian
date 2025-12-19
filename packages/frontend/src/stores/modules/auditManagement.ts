@@ -4,37 +4,88 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import { auditRuleApi, auditWorkflowApi, auditRecordApi } from '@/api/modules/audit'
+import {
+  auditRuleApi,
+  auditWorkflowApi,
+  auditRecordApi,
+  type AuditRuleListParams,
+  type AuditRuleCreate,
+  type AuditRuleUpdate,
+  type AuditWorkflowListParams,
+  type AuditRecordListParams,
+  type AuditStatisticsParams,
+  type AuditActionData
+} from '@/api/modules/audit'
+
+// 审核规则类型
+interface AuditRule {
+  id: string
+  guize_mingcheng: string
+  guize_leixing: string
+  zhuangtai: string
+}
+
+// 审核流程类型
+interface AuditWorkflow {
+  id: string
+  liucheng_mingcheng: string
+  liucheng_leixing: string
+  zhuangtai: string
+}
+
+// 审核记录类型
+interface AuditRecord {
+  id: string
+  workflow_id: string
+  status: string
+  created_at?: string
+}
+
+// 待审核任务类型
+interface PendingAudit {
+  id: string
+  workflow_id: string
+  record_id: string
+  status: string
+}
+
+// 审核统计类型
+interface AuditStatistics {
+  pending_count?: number
+  approved_count?: number
+  rejected_count?: number
+  total_count?: number
+}
 
 export const useAuditManagementStore = defineStore('auditManagement', () => {
   // 状态
   const loading = ref(false)
 
   // 审核规则
-  const auditRules = ref<any[]>([])
+  const auditRules = ref<AuditRule[]>([])
   const auditRulesTotal = ref(0)
-  const currentAuditRule = ref<any>(null)
+  const currentAuditRule = ref<AuditRule | null>(null)
 
   // 审核流程
-  const auditWorkflows = ref<any[]>([])
+  const auditWorkflows = ref<AuditWorkflow[]>([])
   const auditWorkflowsTotal = ref(0)
-  const currentAuditWorkflow = ref<any>(null)
+  const currentAuditWorkflow = ref<AuditWorkflow | null>(null)
 
   // 审核记录
-  const auditRecords = ref<any[]>([])
+  const auditRecords = ref<AuditRecord[]>([])
   const auditRecordsTotal = ref(0)
 
   // 待审核任务
-  const pendingAudits = ref<any[]>([])
+  const pendingAudits = ref<PendingAudit[]>([])
 
   // 审核统计
-  const auditStatistics = ref<any>({})
+  const auditStatistics = ref<AuditStatistics>({})
 
   // 计算属性
   const pendingAuditsCount = computed(() => pendingAudits.value.length)
 
   // 审核规则管理
-  const fetchAuditRules = async (params: any = {}) => {
+  const fetchAuditRules = async (params: AuditRuleListParams = {}) => {
     try {
       loading.value = true
       const response = await auditRuleApi.getList(params)
@@ -48,7 +99,7 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
     }
   }
 
-  const createAuditRule = async (data: any) => {
+  const createAuditRule = async (data: AuditRuleCreate) => {
     try {
       loading.value = true
       const response = await auditRuleApi.create(data)
@@ -65,7 +116,7 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
     }
   }
 
-  const updateAuditRule = async (id: string, data: any) => {
+  const updateAuditRule = async (id: string, data: AuditRuleUpdate) => {
     try {
       loading.value = true
       const response = await auditRuleApi.update(id, data)
@@ -104,7 +155,7 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
   }
 
   // 审核流程管理
-  const fetchAuditWorkflows = async (params: any = {}) => {
+  const fetchAuditWorkflows = async (params: AuditWorkflowListParams = {}) => {
     try {
       loading.value = true
       const response = await auditWorkflowApi.getList(params)
@@ -139,7 +190,8 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       const response = await auditWorkflowApi.getMyPendingAudits()
       // 修复：后端返回的是纯数组，不是分页对象
       // 兼容两种格式：纯数组或分页对象 { items, total }
-      pendingAudits.value = Array.isArray(response) ? response : response.items || []
+      const responseData = response as { items?: PendingAudit[] } | PendingAudit[]
+      pendingAudits.value = Array.isArray(responseData) ? responseData : responseData.items || []
       return response
     } catch (error) {
       console.error('获取待审核任务失败:', error)
@@ -148,7 +200,7 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
     }
   }
 
-  const processAuditAction = async (taskId: string, action: string, data: any) => {
+  const processAuditAction = async (taskId: string, action: string, data: AuditActionData) => {
     try {
       loading.value = true
 
@@ -165,10 +217,11 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
 
       ElMessage.success('审核操作处理成功')
       return result
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('处理审核操作失败:', error)
-      console.error('错误详情:', error.response?.data)
-      ElMessage.error(error.response?.data?.detail || '处理审核操作失败')
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      console.error('错误详情:', axiosError.response?.data)
+      ElMessage.error(axiosError.response?.data?.detail || '处理审核操作失败')
       throw error
     } finally {
       loading.value = false
@@ -183,7 +236,8 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       // 更新流程列表
       const index = auditWorkflows.value.findIndex((workflow) => workflow.id === workflowId)
       if (index !== -1) {
-        auditWorkflows.value[index].shenhe_zhuangtai = 'chexiao'
+        const workflow = auditWorkflows.value[index] as AuditWorkflow & { shenhe_zhuangtai?: string }
+        workflow.shenhe_zhuangtai = 'chexiao'
       }
 
       ElMessage.success('审核流程取消成功')
@@ -197,7 +251,7 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
   }
 
   // 审核记录管理
-  const fetchAuditRecords = async (params: any = {}) => {
+  const fetchAuditRecords = async (params: AuditRecordListParams = {}) => {
     try {
       loading.value = true
       const response = await auditRecordApi.getList(params)
@@ -236,7 +290,7 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
     }
   }
 
-  const fetchMyAuditStatistics = async (params?: any) => {
+  const fetchMyAuditStatistics = async (params?: AuditStatisticsParams) => {
     try {
       const response = await auditRecordApi.getMyStatistics(params)
       return response

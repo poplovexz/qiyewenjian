@@ -143,10 +143,10 @@ const loadZhichuLeibieOptions = async () => {
   zhichuLeibieLoading.value = true
   try {
     const res = await getZhichuLeibieList({ page: 1, size: 200 })
-    const allItems = (res as any).items || []
+    const allItems = (res as { items?: ZhichuLeibie[] }).items || []
     // 只显示启用状态的类别
     zhichuLeibieOptions.value = allItems.filter((item: ZhichuLeibie) => item.zhuangtai === 'active')
-  } catch (error: any) {
+  } catch (error: unknown) {
     // 静默失败，不影响主要功能
     zhichuLeibieOptions.value = []
   } finally {
@@ -213,7 +213,7 @@ const handleDelete = async (row: ProcurementApplication) => {
     await deleteProcurement(row.id!)
     ElMessage.success('删除成功')
     fetchData()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       ElMessage.error('删除失败')
     }

@@ -201,6 +201,32 @@ import { storeToRefs } from 'pinia'
 import AuditActionDialog from '@/components/audit/AuditActionDialog.vue'
 import AuditDetailDialog from '@/components/audit/AuditDetailDialog.vue'
 
+// 审核任务类型
+interface AuditTask {
+  id: string
+  workflow_id: string
+  record_id: string
+  status: string
+  expected_time?: string
+  created_at?: string
+}
+
+// 审核统计类型
+interface AuditStatistics {
+  pending_count?: number
+  approved_count?: number
+  rejected_count?: number
+  total_count?: number
+}
+
+// 已处理审核类型
+interface ProcessedAudit {
+  id: string
+  workflow_id: string
+  status: string
+  processed_at?: string
+}
+
 // 使用store
 const auditStore = useAuditManagementStore()
 const { pendingAudits, pendingAuditsCount } = storeToRefs(auditStore)
@@ -209,11 +235,11 @@ const { pendingAudits, pendingAuditsCount } = storeToRefs(auditStore)
 const activeTab = ref('pending')
 const auditDialogVisible = ref(false)
 const detailDialogVisible = ref(false)
-const currentTask = ref<any>(null)
+const currentTask = ref<AuditTask | null>(null)
 const currentWorkflowId = ref('')
-const myStatistics = ref<any>({})
+const myStatistics = ref<AuditStatistics>({})
 const overdueCount = ref(0)
-const processedAudits = ref<any[]>([])
+const processedAudits = ref<ProcessedAudit[]>([])
 const loadingProcessed = ref(false)
 
 // 计算属性
@@ -260,12 +286,12 @@ const handleRefresh = async () => {
   ElMessage.success('刷新成功')
 }
 
-const handleAudit = (task: any) => {
+const handleAudit = (task: AuditTask) => {
   currentTask.value = task
   auditDialogVisible.value = true
 }
 
-const handleViewDetail = (task: any) => {
+const handleViewDetail = (task: AuditTask) => {
   currentWorkflowId.value = task.workflow_id
   detailDialogVisible.value = true
 }

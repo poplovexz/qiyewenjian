@@ -3,6 +3,13 @@
  */
 import request from '@/utils/request'
 
+// 通用列表参数类型
+interface ListParams {
+  page?: number
+  size?: number
+  [key: string]: string | number | undefined
+}
+
 export interface LeaveApplication {
   id?: string
   shenqing_bianhao?: string
@@ -19,7 +26,7 @@ export interface LeaveApplication {
   shenqing_ren_xingming?: string
 }
 
-export function getLeaveList(params: any) {
+export function getLeaveList(params: ListParams) {
   return request({
     url: '/office/leave',
     method: 'get',

@@ -296,6 +296,30 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { roleAPI, type Role } from '@/api/modules/role'
 import { auditWorkflowApi } from '@/api/modules/audit'
 
+// 类型定义
+interface WorkflowStep {
+  step?: number
+  step_order?: number
+  step_name?: string
+  name?: string
+  description?: string
+  condition?: string
+  approver_role?: string
+  is_required?: boolean
+  expected_time?: number
+}
+
+interface Workflow {
+  id: string
+  workflow_name: string
+  audit_type: string
+  description?: string
+  status: string
+  steps?: WorkflowStep[]
+  created_at?: string
+  updated_at?: string
+}
+
 // 响应式数据
 const loading = ref(false)
 const submitting = ref(false)
@@ -438,7 +462,7 @@ const handleCreate = async () => {
   dialogVisible.value = true
 }
 
-const handleEdit = async (row: any) => {
+const handleEdit = async (row: Workflow) => {
   isEdit.value = true
   // 修复：正确映射后端字段到前端表单字段
   Object.assign(formData, {
@@ -447,7 +471,7 @@ const handleEdit = async (row: any) => {
     shenhe_leixing: row.audit_type,
     liucheng_miaoshu: row.description,
     zhuangtai: row.status,
-    buzhou_peizhi: row.steps?.map(step => ({
+    buzhou_peizhi: row.steps?.map((step: WorkflowStep) => ({
       buzhou_mingcheng: step.step_name || step.name,  // 兼容两种字段名
       buzhou_miaoshu: step.description,
       shenhe_ren_jiaose: step.approver_role
@@ -457,7 +481,7 @@ const handleEdit = async (row: any) => {
   dialogVisible.value = true
 }
 
-const handleView = async (row: any) => {
+const handleView = async (row: Workflow) => {
   try {
     // 获取工作流详情
     const response = await auditWorkflowApi.getById(row.id)
@@ -469,7 +493,7 @@ const handleView = async (row: any) => {
   }
 }
 
-const handleDelete = async (row: any) => {
+const handleDelete = async (row: Workflow) => {
   try {
     await ElMessageBox.confirm(
       `确定要删除流程"${row.workflow_name}"吗？`,
@@ -575,43 +599,44 @@ const handleCurrentChange = (page: number) => {
 }
 
 // 步骤预览相关函数
-const getStepIcon = (step: any) => {
-  const icons = {
+const getStepIcon = (step: WorkflowStep) => {
+  const icons: Record<number | string, string> = {
     1: 'User',
     2: 'Document',
     3: 'Check',
     default: 'Operation'
   }
-  return icons[step.step || step.step_order] || icons.default
+  const stepNum = step.step || step.step_order || 'default'
+  return icons[stepNum] || icons.default
 }
 
-const getStepType = (step: any) => {
+const getStepType = (step: WorkflowStep) => {
   if (step.is_required === false) return 'info'
-  return step.step <= 2 ? 'primary' : 'success'
+  return (step.step || 0) <= 2 ? 'primary' : 'success'
 }
 
-const getStepTimestamp = (step: any) => {
+const getStepTimestamp = (step: WorkflowStep) => {
   return `步骤 ${step.step || step.step_order}`
 }
 
 // SLA相关函数
-const getTotalExpectedTime = (steps: any[]) => {
+const getTotalExpectedTime = (steps: WorkflowStep[]) => {
   if (!steps || steps.length === 0) return 0
   return steps.reduce((total, step) => total + (step.expected_time || 24), 0)
 }
 
-const getMaxProcessingTime = (steps: any[]) => {
+const getMaxProcessingTime = (steps: WorkflowStep[]) => {
   if (!steps || steps.length === 0) return 0
   return Math.max(...steps.map(step => step.expected_time || 24))
 }
 
-const getAverageProcessingTime = (steps: any[]) => {
+const getAverageProcessingTime = (steps: WorkflowStep[]) => {
   if (!steps || steps.length === 0) return 0
   const total = getTotalExpectedTime(steps)
   return Math.round(total / steps.length)
 }
 
-const getCriticalPath = (steps: any[]) => {
+const getCriticalPath = (steps: WorkflowStep[]) => {
   if (!steps || steps.length === 0) return '-'
   const requiredSteps = steps.filter(step => step.is_required !== false)
   return requiredSteps.map(step => step.name || step.step_name).join(' → ')

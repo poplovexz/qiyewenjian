@@ -179,13 +179,30 @@ const emit = defineEmits<{
   success: []
 }>()
 
+// 审核流程详情类型
+interface WorkflowDetail {
+  id: string
+  shenhe_zhuangtai: string
+  workflow_name?: string
+  created_at?: string
+}
+
+// 审核记录类型
+interface AuditRecord {
+  id: string
+  workflow_id: string
+  status: string
+  comment?: string
+  created_at?: string
+}
+
 // 使用store
 const auditStore = useAuditManagementStore()
 
 // 响应式数据
 const loading = ref(false)
-const workflowDetail = ref<any>(null)
-const auditRecords = ref<any[]>([])
+const workflowDetail = ref<WorkflowDetail | null>(null)
+const auditRecords = ref<AuditRecord[]>([])
 
 // 计算属性
 const dialogVisible = computed({
@@ -242,7 +259,7 @@ const handleCancel = async () => {
     await fetchWorkflowDetail()
 
     emit('success')
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('取消审核流程失败:', error)
       ElMessage.error('取消审核流程失败')

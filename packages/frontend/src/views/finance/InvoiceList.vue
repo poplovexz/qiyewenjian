@@ -331,19 +331,28 @@ const handleCurrentChange = (page: number) => {
   fetchData()
 }
 
+// 发票记录类型
+interface InvoiceRecord {
+  id: string
+  shenqing_zhuangtai: string
+  kaipiao_leixing?: string
+  kaipiao_mingcheng?: string
+  jine?: number
+}
+
 const handleCreate = () => {
   router.push('/finance/invoices/create')
 }
 
-const handleView = (row: any) => {
+const handleView = (row: InvoiceRecord) => {
   router.push(`/finance/invoices/${row.id}`)
 }
 
-const handleEdit = (row: any) => {
+const handleEdit = (row: InvoiceRecord) => {
   router.push(`/finance/invoices/${row.id}/edit`)
 }
 
-const handleSubmit = async (row: any) => {
+const handleSubmit = async (row: InvoiceRecord) => {
   try {
     await ElMessageBox.confirm('确认要提交该开票申请吗？', '确认操作', {
       type: 'warning'
@@ -367,7 +376,7 @@ const handleSubmit = async (row: any) => {
   }
 }
 
-const handleAudit = (row: any) => {
+const handleAudit = (row: InvoiceRecord) => {
   currentRecord.value = row
   auditForm.shenhe_jieguo = ''
   auditForm.shenhe_yijian = ''
@@ -408,7 +417,7 @@ const confirmAudit = async () => {
   }
 }
 
-const handleProcess = (row: any) => {
+const handleProcess = (row: InvoiceRecord) => {
   currentRecord.value = row
   processForm.fapiao_hao = ''
   processForm.fapiao_daima = ''
@@ -435,7 +444,7 @@ const confirmProcess = async () => {
         ...processForm
       })
     })
-    
+
     if (response.ok) {
       ElMessage.success('开票处理成功')
       processDialogVisible.value = false
@@ -451,7 +460,7 @@ const confirmProcess = async () => {
   }
 }
 
-const handleDelete = async (row: any) => {
+const handleDelete = async (row: InvoiceRecord) => {
   try {
     await ElMessageBox.confirm('确认要删除该开票申请吗？', '确认删除', {
       type: 'warning'
@@ -460,7 +469,7 @@ const handleDelete = async (row: any) => {
     const response = await fetch(`/invoices/${row.id}`, {
       method: 'DELETE'
     })
-    
+
     if (response.ok) {
       ElMessage.success('删除成功')
       fetchData()
@@ -476,27 +485,27 @@ const handleDelete = async (row: any) => {
 }
 
 // 权限判断方法
-const canEdit = (row: any) => {
+const canEdit = (row: InvoiceRecord) => {
   return row.shenqing_zhuangtai === 'draft'
 }
 
-const canSubmit = (row: any) => {
+const canSubmit = (row: InvoiceRecord) => {
   return row.shenqing_zhuangtai === 'draft'
 }
 
-const canAudit = (row: any) => {
+const canAudit = (row: InvoiceRecord) => {
   return row.shenqing_zhuangtai === 'submitted'
 }
 
-const canProcess = (row: any) => {
+const canProcess = (row: InvoiceRecord) => {
   return row.shenqing_zhuangtai === 'approved'
 }
 
-const canDelete = (row: any) => {
+const canDelete = (row: InvoiceRecord) => {
   return row.shenqing_zhuangtai === 'draft'
 }
 
-const hasMoreActions = (row: any) => {
+const hasMoreActions = (row: InvoiceRecord) => {
   return canSubmit(row) || canAudit(row) || canProcess(row) || canDelete(row)
 }
 

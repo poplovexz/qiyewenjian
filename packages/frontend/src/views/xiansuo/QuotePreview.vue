@@ -220,10 +220,11 @@ const fetchDetail = async () => {
   try {
     const detail = await xiansuoStore.getBaojiaDetailWithXiansuo(id)
     baojia.value = normalizeBaojia(detail)
-  } catch (err: any) {
-    if (err?.response?.status === 401) {
+  } catch (err: unknown) {
+    const axiosError = err as { response?: { status?: number } }
+    if (axiosError?.response?.status === 401) {
       error.value = '需要登录后才能查看此报价。'
-    } else if (err?.response?.status === 404) {
+    } else if (axiosError?.response?.status === 404) {
       error.value = '未找到该报价。'
     } else {
       error.value = '加载报价详情失败，请稍后重试。'
@@ -265,10 +266,11 @@ const confirmQuote = async () => {
     await fetchDetail()
 
     ElMessage.success('报价确认成功！')
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('确认报价失败:', error)
-      ElMessage.error(error.message || '确认报价失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '确认报价失败')
     }
   } finally {
     confirmLoading.value = false
@@ -297,10 +299,11 @@ const rejectQuote = async () => {
     await fetchDetail()
 
     ElMessage.success('报价已拒绝')
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('拒绝报价失败:', error)
-      ElMessage.error(error.message || '拒绝报价失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '拒绝报价失败')
     }
   } finally {
     rejectLoading.value = false

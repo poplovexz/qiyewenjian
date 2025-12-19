@@ -24,12 +24,21 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
+// 服务记录类型
+interface ServiceRecord {
+  id?: string
+  fuwu_neirong?: string
+  fuwu_shijian?: string
+  fuwu_renyuan?: string
+  [key: string]: unknown
+}
+
 // Props
 interface Props {
   visible: boolean
   customerId: string
   customerName: string
-  record?: any
+  record?: ServiceRecord | null
   mode?: 'view' | 'edit' | 'create'
 }
 

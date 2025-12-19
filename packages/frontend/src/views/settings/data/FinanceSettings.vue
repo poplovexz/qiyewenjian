@@ -236,9 +236,11 @@ const loadQudaoList = async () => {
   qudaoLoading.value = true
   try {
     const res = await getQudaoList({ page: 1, size: 100 })
-    qudaoList.value = (res as any).items || []
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载收付款渠道失败')
+    const response = res as { items?: ShoufukuanQudao[] }
+    qudaoList.value = response.items || []
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载收付款渠道失败')
   } finally {
     qudaoLoading.value = false
   }
@@ -249,9 +251,11 @@ const loadShouruLeibieList = async () => {
   shouruLoading.value = true
   try {
     const res = await getShouruLeibieList({ page: 1, size: 100 })
-    shouruLeibieList.value = (res as any).items || []
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载收入类别失败')
+    const response = res as { items?: ShouruLeibie[] }
+    shouruLeibieList.value = response.items || []
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载收入类别失败')
   } finally {
     shouruLoading.value = false
   }
@@ -262,9 +266,11 @@ const loadBaoxiaoLeibieList = async () => {
   baoxiaoLoading.value = true
   try {
     const res = await getBaoxiaoLeibieList({ page: 1, size: 100 })
-    baoxiaoLeibieList.value = (res as any).items || []
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载报销类别失败')
+    const response = res as { items?: BaoxiaoLeibie[] }
+    baoxiaoLeibieList.value = response.items || []
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载报销类别失败')
   } finally {
     baoxiaoLoading.value = false
   }
@@ -275,9 +281,11 @@ const loadZhichuLeibieList = async () => {
   zhichuLoading.value = true
   try {
     const res = await getZhichuLeibieList({ page: 1, size: 200 })
-    zhichuLeibieList.value = (res as any).items || []
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载支出类别失败')
+    const response = res as { items?: ZhichuLeibie[] }
+    zhichuLeibieList.value = response.items || []
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载支出类别失败')
   } finally {
     zhichuLoading.value = false
   }
@@ -297,9 +305,15 @@ const zhichuTreeData = computed(() => {
   })
 
   // 转换为树状结构
-  const treeData: any[] = []
+  interface TreeNode {
+    id: string
+    mingcheng: string
+    isCategory: boolean
+    children?: (ZhichuLeibie & { isCategory: boolean })[]
+  }
+  const treeData: TreeNode[] = []
   Object.keys(groupedData).sort().forEach(fenlei => {
-    const categoryNode = {
+    const categoryNode: TreeNode = {
       id: `category-${fenlei}`,
       mingcheng: fenlei,
       isCategory: true,
@@ -337,9 +351,10 @@ const handleDeleteQudao = async (row: ShoufukuanQudao) => {
     await deleteQudao(row.id!)
     ElMessage.success('删除成功')
     loadQudaoList()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '删除失败')
     }
   }
 }
@@ -367,9 +382,10 @@ const handleDeleteShouruLeibie = async (row: ShouruLeibie) => {
     await deleteShouruLeibie(row.id!)
     ElMessage.success('删除成功')
     loadShouruLeibieList()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '删除失败')
     }
   }
 }
@@ -396,9 +412,10 @@ const handleDeleteBaoxiaoLeibie = async (row: BaoxiaoLeibie) => {
     await deleteBaoxiaoLeibie(row.id!)
     ElMessage.success('删除成功')
     loadBaoxiaoLeibieList()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '删除失败')
     }
   }
 }
@@ -425,9 +442,10 @@ const handleDeleteZhichuLeibie = async (row: ZhichuLeibie) => {
     await deleteZhichuLeibie(row.id!)
     ElMessage.success('删除成功')
     loadZhichuLeibieList()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '删除失败')
     }
   }
 }

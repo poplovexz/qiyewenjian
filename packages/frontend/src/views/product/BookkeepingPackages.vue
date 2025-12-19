@@ -455,7 +455,16 @@ const loadProductItemList = async () => {
     })
 
     // 将API返回的数据转换为页面需要的格式
-    allProductItemList.value = response.items.map((item: any) => ({
+    interface ProductApiItem {
+      id: string
+      xiangmu_mingcheng: string
+      xiangmu_beizhu?: string
+      yewu_baojia: number | string
+      baojia_danwei: string
+      zhuangtai: string
+      paixu?: number
+    }
+    allProductItemList.value = response.items.map((item: ProductApiItem) => ({
       id: item.id,
       chanpin_mingcheng: item.xiangmu_mingcheng,
       chanpin_miaoshu: item.xiangmu_beizhu || '',
@@ -614,7 +623,7 @@ const handleDeleteProductItem = async (item: BookkeepingProductItem) => {
       updatePackageProductItemCount()
       ElMessage.success('产品项目删除成功')
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       ElMessage.error('删除失败')
     }

@@ -360,9 +360,10 @@ const handleDeleteCategory = async (category: ProductCategory) => {
 
     loadCategoryList()
     loadCategoryOptions()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+      const axiosError = error as { message?: string }
+      ElMessage.error(axiosError.message || '删除失败')
     }
   }
 }
@@ -402,13 +403,14 @@ const handleDeleteProduct = async (product: Product) => {
         type: 'warning'
       }
     )
-    
+
     await productStore.deleteProduct(product.id)
     ElMessage.success('删除成功')
     loadProductList()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+      const axiosError = error as { message?: string }
+      ElMessage.error(axiosError.message || '删除失败')
     }
   }
 }

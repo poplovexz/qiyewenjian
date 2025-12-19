@@ -183,7 +183,7 @@ const handleDelete = async (row: LeaveApplication) => {
     await deleteLeave(row.id!)
     ElMessage.success('删除成功')
     fetchData()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       ElMessage.error('删除失败')
     }

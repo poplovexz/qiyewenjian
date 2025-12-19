@@ -6,6 +6,8 @@ import type {
   UserListParams,
   UserListResponse,
   Role,
+  RoleCreate,
+  RoleUpdate,
   RoleListParams,
   RoleListResponse,
   Permission
@@ -93,14 +95,14 @@ export const roleApi = {
   /**
    * 创建角色
    */
-  createRole(data: any): Promise<Role> {
+  createRole(data: RoleCreate): Promise<Role> {
     return request.post('/user-management/roles/', data)
   },
 
   /**
    * 更新角色
    */
-  updateRole(id: string, data: any): Promise<Role> {
+  updateRole(id: string, data: RoleUpdate): Promise<Role> {
     return request.put(`/user-management/roles/${id}`, data)
   },
 

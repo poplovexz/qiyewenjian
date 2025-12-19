@@ -308,12 +308,19 @@ const loadCustomers = async () => {
   }
 }
 
+// 合规事项类型
+interface ComplianceCalendarItem {
+  id: string
+  status_info?: { status?: string; urgency?: string; message?: string }
+  shili_zhuangtai?: string
+}
+
 const getItemsForDate = (date: string) => {
   if (!calendarData.value?.calendar_data) return []
   return calendarData.value.calendar_data[date] || []
 }
 
-const getItemStatusClass = (item: any) => {
+const getItemStatusClass = (item: ComplianceCalendarItem) => {
   const status = item.status_info?.status || item.shili_zhuangtai
   return `status-${status}`
 }
@@ -411,7 +418,7 @@ const resetFilters = () => {
   loadUpcomingItems()
 }
 
-const showItemDetail = (item: any) => {
+const showItemDetail = (item: ComplianceCalendarItem) => {
   // 显示合规事项详情
 }
 

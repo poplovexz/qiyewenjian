@@ -131,8 +131,9 @@ const loadConfigs = async () => {
         formData.value.cache_short_seconds = parseInt(config.config_value || '60')
       }
     })
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载配置失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载配置失败')
   } finally {
     loading.value = false
   }
@@ -147,11 +148,12 @@ const handleSave = async () => {
       cache_long_hours: formData.value.cache_long_hours.toString(),
       cache_short_seconds: formData.value.cache_short_seconds.toString()
     }
-    
+
     await batchUpdateConfigs(configs)
     ElMessage.success('缓存配置已保存')
-  } catch (error: any) {
-    ElMessage.error(error.message || '保存配置失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '保存配置失败')
   } finally {
     saving.value = false
   }

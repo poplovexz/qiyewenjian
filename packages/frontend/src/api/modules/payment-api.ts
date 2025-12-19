@@ -12,12 +12,34 @@ export interface CreatePaymentRequest {
   quit_url?: string
 }
 
+// 微信支付数据
+export interface WeixinPaymentData {
+  prepay_id?: string
+  code_url?: string
+  h5_url?: string
+  app_params?: Record<string, string>
+}
+
+// 支付宝支付数据
+export interface AlipayPaymentData {
+  form_html?: string
+  pay_url?: string
+}
+
 export interface CreatePaymentResponse {
   dingdan_id: string
   dingdan_bianhao: string
   zhifu_pingtai: string
   zhifu_fangshi: string
-  payment_data: any
+  payment_data: WeixinPaymentData | AlipayPaymentData
+}
+
+// 查询结果类型
+export interface PaymentQueryResult {
+  trade_state?: string
+  trade_state_desc?: string
+  transaction_id?: string
+  time_end?: string
 }
 
 export interface QueryPaymentResponse {
@@ -27,7 +49,7 @@ export interface QueryPaymentResponse {
   zhifu_pingtai?: string
   disanfang_dingdan_hao?: string
   disanfang_liushui_hao?: string
-  query_result: any
+  query_result: PaymentQueryResult
 }
 
 /**

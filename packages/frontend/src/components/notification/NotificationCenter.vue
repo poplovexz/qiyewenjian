@@ -67,18 +67,28 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, type Component } from 'vue'
 import { useRouter } from 'vue-router'
 import { Bell, Warning, SuccessFilled, CircleCheck, Document } from '@element-plus/icons-vue'
 import { useNotificationStore } from '@/stores/modules/notification'
 import { ElMessage } from 'element-plus'
+
+// 通知类型
+interface Notification {
+  id: string
+  tongzhi_zhuangtai: string
+  lianjie_url?: string
+  tongzhi_leixing?: string
+  tongzhi_neirong?: string
+  chuangjian_shijian?: string
+}
 
 const router = useRouter()
 const notificationStore = useNotificationStore()
 
 // 获取通知图标
 const getNotificationIcon = (type: string) => {
-  const iconMap: Record<string, any> = {
+  const iconMap: Record<string, Component> = {
     'audit_pending': Warning,
     'audit_approved': SuccessFilled,
     'audit_rejected': Warning,
@@ -129,12 +139,12 @@ const handleShow = async () => {
 }
 
 // 点击通知
-const handleNotificationClick = async (notification: any) => {
+const handleNotificationClick = async (notification: Notification) => {
   // 标记为已读
   if (notification.tongzhi_zhuangtai === 'unread') {
     await notificationStore.markAsRead(notification.id)
   }
-  
+
   // 跳转到相关页面
   if (notification.lianjie_url) {
     router.push(notification.lianjie_url)

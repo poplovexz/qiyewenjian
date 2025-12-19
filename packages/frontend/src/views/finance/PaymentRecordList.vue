@@ -165,9 +165,20 @@ import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import { formatCurrency, formatDateTime } from '@/utils/format'
 import request from '@/utils/request'
 
+// 类型定义
+interface PaymentRecord {
+  id: string
+  liushui_bianhao: string
+  liushui_leixing: string
+  liushui_zhuangtai: string
+  duizhang_zhuangtai: string
+  jine: number
+  beizhu?: string
+}
+
 // 响应式数据
 const loading = ref(false)
-const tableData = ref([])
+const tableData = ref<PaymentRecord[]>([])
 
 // 搜索表单
 const searchForm = reactive({
@@ -233,13 +244,13 @@ const handleCreate = () => {
 }
 
 // 查看流水
-const handleView = (row: any) => {
+const handleView = (row: PaymentRecord) => {
   // TODO: 跳转到流水详情页面
   ElMessage.info(`查看流水: ${row.liushui_bianhao}`)
 }
 
 // 财务确认
-const handleConfirm = async (row: any) => {
+const handleConfirm = async (row: PaymentRecord) => {
   try {
     await ElMessageBox.confirm(
       `确定要财务确认流水 ${row.liushui_bianhao} 吗？`,
@@ -254,16 +265,17 @@ const handleConfirm = async (row: any) => {
     await request.post(`/payment-records/${row.id}/confirm`)
     ElMessage.success('财务确认成功')
     fetchRecordList()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('财务确认失败:', error)
-      ElMessage.error(error.message || '财务确认失败')
+      const axiosError = error as { message?: string }
+      ElMessage.error(axiosError.message || '财务确认失败')
     }
   }
 }
 
 // 编辑流水
-const handleEdit = (row: any) => {
+const handleEdit = (row: PaymentRecord) => {
   // TODO: 跳转到编辑流水页面
   ElMessage.info(`编辑流水: ${row.liushui_bianhao}`)
 }

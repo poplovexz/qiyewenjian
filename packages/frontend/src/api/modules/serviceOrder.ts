@@ -3,6 +3,15 @@
  */
 import { request } from '@/utils/request'
 
+// 服务工单列表查询参数
+export interface ServiceOrderListParams {
+  page?: number
+  size?: number
+  search?: string
+  hetong_id?: string
+  gongdan_zhuangtai?: string
+}
+
 /**
  * 服务工单 API
  */
@@ -33,7 +42,7 @@ export const serviceOrderApi = {
   /**
    * 获取工单列表
    */
-  getList(params: any = {}) {
+  getList(params: ServiceOrderListParams = {}) {
     return request.get('/service-orders/', { params })
   }
 }

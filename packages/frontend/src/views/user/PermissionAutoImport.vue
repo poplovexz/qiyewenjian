@@ -207,13 +207,23 @@ const permissionNameMap: Record<string, string> = {
   'compliance:manage': '管理合规',
 }
 
+// 权限项类型
+interface PermissionItem {
+  quanxian_ming: string
+  quanxian_bianma: string
+  miaoshu: string
+  ziyuan_leixing: string
+  ziyuan_lujing: string
+  zhuangtai: string
+}
+
 // 扫描权限
 const scanPermissions = () => {
   scanning.value = true
   scannedPermissions.value = []
 
   try {
-    const permissions: any[] = []
+    const permissions: PermissionItem[] = []
     const permissionSet = new Set<string>()
 
     // 扫描路由
@@ -253,7 +263,7 @@ const scanPermissions = () => {
 }
 
 // 处理选择变化
-const handleSelectionChange = (selection: any[]) => {
+const handleSelectionChange = (selection: PermissionItem[]) => {
   selectedPermissions.value = selection
 }
 
@@ -294,18 +304,19 @@ const importPermissions = async () => {
       try {
         await permissionAPI.createPermission(permission)
         successCount++
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
         console.error(`❌ 导入权限失败: ${permission.quanxian_bianma}`, error)
-        console.error('错误详情:', error.response?.data)
+        console.error('错误详情:', axiosError.response?.data)
 
-        if (error.response?.data?.detail?.includes('已存在')) {
+        if (axiosError.response?.data?.detail?.includes('已存在')) {
           // 权限已存在，不算失败
           successCount++
           console.log(`⚠️ 权限已存在，跳过: ${permission.quanxian_bianma}`)
         } else {
           failCount++
           failedPermissions.push(
-            `${permission.quanxian_ming} (${permission.quanxian_bianma}): ${error.response?.data?.detail || error.message}`
+            `${permission.quanxian_ming} (${permission.quanxian_bianma}): ${axiosError.response?.data?.detail || axiosError.message}`
           )
         }
       }

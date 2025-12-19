@@ -208,6 +208,18 @@ import { format } from 'date-fns'
 import TemplateFormDialog from './components/TemplateFormDialog.vue'
 import TemplateDetailDialog from './components/TemplateDetailDialog.vue'
 
+// 模板类型
+interface ComplianceTemplate {
+  id: string
+  shixiang_mingcheng: string
+  shixiang_bianma: string
+  shixiang_leixing?: string
+  shenbao_zhouqi?: string
+  moban_zhuangtai?: string
+  fengxian_dengji?: string
+  [key: string]: unknown
+}
+
 // Store
 const complianceStore = useComplianceStore()
 
@@ -281,35 +293,35 @@ const handleCurrentChange = (page: number) => {
   loadTemplates()
 }
 
-const handleSelectionChange = (selection: any[]) => {
+const handleSelectionChange = (selection: ComplianceTemplate[]) => {
   selectedRows.value = selection
 }
 
-const handleView = (row: any) => {
+const handleView = (row: ComplianceTemplate) => {
   viewingTemplateId.value = row.id
   showDetailDialog.value = true
 }
 
-const handleEdit = (row: any) => {
+const handleEdit = (row: ComplianceTemplate) => {
   editingTemplateId.value = row.id
   showCreateDialog.value = true
 }
 
-const handleCopy = async (row: any) => {
+const handleCopy = async (row: ComplianceTemplate) => {
   try {
-    const templateData = {
+    const templateData: Record<string, unknown> = {
       ...row,
       shixiang_mingcheng: `${row.shixiang_mingcheng}（副本）`,
       shixiang_bianma: `${row.shixiang_bianma}_COPY_${Date.now()}`,
       moban_zhuangtai: 'draft'
     }
-    
+
     delete templateData.id
     delete templateData.created_at
     delete templateData.updated_at
     delete templateData.created_by
     delete templateData.updated_by
-    
+
     await complianceStore.createTemplate(templateData)
     loadTemplates()
   } catch (error) {
@@ -317,7 +329,7 @@ const handleCopy = async (row: any) => {
   }
 }
 
-const handleDelete = async (row: any) => {
+const handleDelete = async (row: ComplianceTemplate) => {
   try {
     await ElMessageBox.confirm(
       `确定要删除模板"${row.shixiang_mingcheng}"吗？`,

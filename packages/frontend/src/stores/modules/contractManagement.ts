@@ -147,14 +147,15 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       
       ElMessage.success('基于报价生成合同成功')
       return response
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('基于报价生成合同失败:', error)
+      const axiosError = error as { response?: { status?: number }; message?: string }
 
       // 检查是否是400错误（重复创建）
-      if (error.response?.status === 400) {
+      if (axiosError.response?.status === 400) {
         ElMessage.warning('该报价已经生成过合同，请在合同管理页面查看')
       } else {
-        ElMessage.error('基于报价生成合同失败: ' + (error.message || '未知错误'))
+        ElMessage.error('基于报价生成合同失败: ' + (axiosError.message || '未知错误'))
       }
       throw error
     } finally {

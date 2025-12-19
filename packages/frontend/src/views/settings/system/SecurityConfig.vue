@@ -112,8 +112,9 @@ const loadConfigs = async () => {
         formData.value.password_min_length = parseInt(config.config_value || '6')
       }
     })
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载配置失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载配置失败')
   } finally {
     loading.value = false
   }
@@ -128,11 +129,12 @@ const handleSave = async () => {
       refresh_token_expire_days: formData.value.refresh_token_expire_days.toString(),
       password_min_length: formData.value.password_min_length.toString()
     }
-    
+
     await batchUpdateConfigs(configs)
     ElMessage.success('安全配置已保存')
-  } catch (error: any) {
-    ElMessage.error(error.message || '保存配置失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '保存配置失败')
   } finally {
     saving.value = false
   }

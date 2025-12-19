@@ -220,6 +220,13 @@ import { Plus, Edit, Delete, Check, Close } from '@element-plus/icons-vue'
 import { productStepApi, timeUnitOptions } from '@/api/modules/product'
 import type { Product, ProductStep } from '@/types/product'
 
+// 编辑中的步骤类型
+interface EditableStep extends ProductStep {
+  editing?: boolean
+  isNew?: boolean
+  originalData?: Partial<ProductStep>
+}
+
 // Props
 interface Props {
   visible: boolean
@@ -239,8 +246,8 @@ const emit = defineEmits<{
 // 响应式数据
 const loading = ref(false)
 const saving = ref(false)
-const stepsList = ref<any[]>([])
-const originalSteps = ref<any[]>([])
+const stepsList = ref<EditableStep[]>([])
+const originalSteps = ref<EditableStep[]>([])
 const hasChanges = ref(false)
 
 // 计算属性
@@ -361,12 +368,12 @@ const handleAddStep = () => {
   stepsList.value.push(newStep)
 }
 
-const handleEditStep = (step: any, index: number) => {
+const handleEditStep = (step: EditableStep, index: number) => {
   step.editing = true
   step.originalData = { ...step }
 }
 
-const handleSaveStep = async (step: any, index: number) => {
+const handleSaveStep = async (step: EditableStep, index: number) => {
   // 验证步骤名称
   if (!step.buzou_mingcheng || !step.buzou_mingcheng.trim()) {
     ElMessage.error('请输入步骤名称')
@@ -424,22 +431,23 @@ const handleSaveStep = async (step: any, index: number) => {
     }
 
     delete step.originalData
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('保存步骤失败:', error)
 
     // 提取详细的错误信息
     let errorMessage = '保存步骤失败'
-    if (error.response?.data?.detail) {
-      errorMessage = error.response.data.detail
-    } else if (error.message) {
-      errorMessage = error.message
+    const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
+    if (axiosError.response?.data?.detail) {
+      errorMessage = axiosError.response.data.detail
+    } else if (axiosError.message) {
+      errorMessage = axiosError.message
     }
 
     ElMessage.error(errorMessage)
   }
 }
 
-const handleCancelEdit = (step: any, index: number) => {
+const handleCancelEdit = (step: EditableStep, index: number) => {
   if (step.isNew) {
     stepsList.value.splice(index, 1)
   } else {
@@ -448,7 +456,7 @@ const handleCancelEdit = (step: any, index: number) => {
   }
 }
 
-const handleDeleteStep = async (step: any, index: number) => {
+const handleDeleteStep = async (step: EditableStep, index: number) => {
   try {
     await ElMessageBox.confirm(`确定要删除步骤"${step.buzou_mingcheng}"吗？`, '确认删除', {
       confirmButtonText: '确定',
@@ -549,7 +557,7 @@ const handleBatchSave = async () => {
         }
 
         delete step.originalData
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(`保存步骤 ${i + 1} 失败:`, error)
 
         let errorMessage = `步骤 ${i + 1}`
@@ -557,10 +565,11 @@ const handleBatchSave = async () => {
           errorMessage += ` (${step.buzou_mingcheng})`
         }
 
-        if (error.response?.data?.detail) {
-          errorMessage += `: ${error.response.data.detail}`
-        } else if (error.message) {
-          errorMessage += `: ${error.message}`
+        const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
+        if (axiosError.response?.data?.detail) {
+          errorMessage += `: ${axiosError.response.data.detail}`
+        } else if (axiosError.message) {
+          errorMessage += `: ${axiosError.message}`
         } else {
           errorMessage += ': 保存失败'
         }

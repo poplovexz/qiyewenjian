@@ -3,14 +3,32 @@
  */
 import { request } from '@/utils/request'
 
+// 类型定义
+interface NotificationListParams {
+  page?: number
+  size?: number
+  tongzhi_zhuangtai?: string
+  [key: string]: string | number | undefined
+}
+
+interface NotificationItem {
+  id: string
+  [key: string]: unknown
+}
+
+interface NotificationListResponse {
+  items?: NotificationItem[]
+  total?: number
+}
+
 export const notificationApi = {
   // 获取通知列表
-  getList: (params: any) => {
+  getList: (params: NotificationListParams) => {
     return request.get('/notifications', { params })
   },
 
   // 获取我的通知列表
-  getMyList: (params: any) => {
+  getMyList: (params: NotificationListParams) => {
     return request.get('/notifications/my', { params })
   },
 
@@ -39,8 +57,8 @@ export const notificationApi = {
     // 先获取所有未读通知，然后批量标记为已读
     return request.get('/notifications/my', {
       params: { tongzhi_zhuangtai: 'unread', size: 100 }
-    }).then((response: any) => {
-      const unreadIds = response.items?.map((item: any) => item.id) || []
+    }).then((response: NotificationListResponse) => {
+      const unreadIds = response.items?.map((item: NotificationItem) => item.id) || []
       if (unreadIds.length > 0) {
         return notificationApi.markMultipleAsRead(unreadIds)
       }

@@ -122,8 +122,9 @@ const handleSubmit = async () => {
         await updateUserProfile(formData)
         ElMessage.success('保存成功')
         await loadProfile()
-      } catch (error: any) {
-        ElMessage.error(error.message || '保存失败')
+      } catch (error: unknown) {
+        const err = error as { message?: string }
+        ElMessage.error(err.message || '保存失败')
       } finally {
         loading.value = false
       }

@@ -143,8 +143,9 @@ const handleSubmit = async () => {
       }
       emit('success')
       handleClose()
-    } catch (error: any) {
-      ElMessage.error(error.message || '操作失败')
+    } catch (error: unknown) {
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '操作失败')
     } finally {
       loading.value = false
     }

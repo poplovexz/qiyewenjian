@@ -55,8 +55,8 @@ vi.mock('@/api/modules/customer', () => ({
 }))
 
 describe('CustomerList', () => {
-  let wrapper: any
-  let customerStore: any
+  let wrapper: ReturnType<typeof mount>
+  let customerStore: ReturnType<typeof useCustomerStore>
 
   const mockCustomers = [
     {

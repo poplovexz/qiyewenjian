@@ -232,12 +232,32 @@ import { Refresh, Plus } from '@element-plus/icons-vue'
 import { request } from '@/utils/request'
 import { useAuthStore } from '@/stores/modules/auth'
 
+// 银行汇款单据类型
+interface BankTransferDanju {
+  id: string
+  danju_bianhao: string
+  jine: number
+  shenhe_zhuangtai: string
+  voucher_url?: string
+  huikuan_ren?: string
+  huikuan_yinhang?: string
+  huikuan_zhanghu?: string
+  huikuan_riqi?: string
+  beizhu?: string
+}
+
+// 上传响应类型
+interface UploadResponse {
+  data?: { url: string }
+  url?: string
+}
+
 const authStore = useAuthStore()
 
 // 响应式数据
 const loading = ref(false)
 const submitting = ref(false)
-const tableData = ref([])
+const tableData = ref<BankTransferDanju[]>([])
 const total = ref(0)
 const uploadDialogVisible = ref(false)
 const detailDialogVisible = ref(false)
@@ -252,7 +272,7 @@ const queryParams = reactive({
 // 待处理数量
 const pendingCount = ref(0)
 
-const currentDanju = ref<any>({})
+const currentDanju = ref<BankTransferDanju | Record<string, unknown>>({})
 
 const uploadForm = reactive({
   voucher_url: '',
@@ -289,7 +309,7 @@ const uploadHeaders = {
 const loadData = async () => {
   try {
     loading.value = true
-    const params: any = {
+    const params: Record<string, string | number> = {
       page: queryParams.page,
       size: queryParams.size
     }
@@ -303,9 +323,10 @@ const loadData = async () => {
 
     // 加载待处理数量
     await loadPendingCount()
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('加载数据失败:', error)
-    ElMessage.error(error.response?.data?.detail || '加载数据失败')
+    const axiosError = error as { response?: { data?: { detail?: string } } }
+    ElMessage.error(axiosError.response?.data?.detail || '加载数据失败')
   } finally {
     loading.value = false
   }
@@ -341,7 +362,7 @@ const handleReset = () => {
 }
 
 // 上传凭证
-const handleUploadVoucher = (row: any) => {
+const handleUploadVoucher = (row: BankTransferDanju) => {
   currentDanju.value = { ...row }
   uploadForm.voucher_url = ''
   uploadForm.beizhu = ''
@@ -353,7 +374,7 @@ const handleUploadVoucher = (row: any) => {
 }
 
 // 查看详情
-const handleViewDetail = (row: any) => {
+const handleViewDetail = (row: BankTransferDanju) => {
   currentDanju.value = { ...row }
   detailDialogVisible.value = true
 }
@@ -375,8 +396,8 @@ const beforeUpload = (file: File) => {
 }
 
 // 上传成功
-const handleUploadSuccess = (response: any) => {
-  uploadForm.voucher_url = response.data?.url || response.url
+const handleUploadSuccess = (response: UploadResponse) => {
+  uploadForm.voucher_url = response.data?.url || response.url || ''
   ElMessage.success('图片上传成功')
 }
 
@@ -406,10 +427,11 @@ const handleSubmitVoucher = async () => {
     ElMessage.success('凭证上传成功，汇款信息已更新，已提交财务审核')
     uploadDialogVisible.value = false
     loadData()
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('提交失败:', error)
     if (error !== 'cancel') {
-      ElMessage.error(error.response?.data?.detail || '提交失败')
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      ElMessage.error(axiosError.response?.data?.detail || '提交失败')
     }
   } finally {
     submitting.value = false

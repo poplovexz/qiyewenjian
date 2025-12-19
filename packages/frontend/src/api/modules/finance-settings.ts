@@ -3,6 +3,14 @@
  */
 import request from '@/utils/request'
 
+// 通用列表参数类型
+interface ListParams {
+  page?: number
+  size?: number
+  zhuangtai?: string
+  [key: string]: string | number | undefined
+}
+
 // ==================== 收付款渠道 ====================
 export interface ShoufukuanQudao {
   id?: string
@@ -19,7 +27,7 @@ export interface ShoufukuanQudao {
   updated_at?: string
 }
 
-export function getQudaoList(params?: any) {
+export function getQudaoList(params?: ListParams) {
   return request({
     url: '/finance-settings/qudao',
     method: 'get',
@@ -69,7 +77,7 @@ export interface ShouruLeibie {
   updated_at?: string
 }
 
-export function getShouruLeibieList(params?: any) {
+export function getShouruLeibieList(params?: ListParams) {
   return request({
     url: '/finance-settings/shouru-leibie',
     method: 'get',
@@ -112,7 +120,7 @@ export interface BaoxiaoLeibie {
   updated_at?: string
 }
 
-export function getBaoxiaoLeibieList(params?: any) {
+export function getBaoxiaoLeibieList(params?: ListParams) {
   return request({
     url: '/finance-settings/baoxiao-leibie',
     method: 'get',
@@ -156,7 +164,7 @@ export interface ZhichuLeibie {
   updated_at?: string
 }
 
-export function getZhichuLeibieList(params?: any) {
+export function getZhichuLeibieList(params?: ListParams) {
   return request({
     url: '/finance-settings/zhichu-leibie',
     method: 'get',

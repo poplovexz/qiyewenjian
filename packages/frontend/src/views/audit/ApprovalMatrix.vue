@@ -153,19 +153,55 @@
 import { ref, reactive, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 
+// 类型定义
+interface ApprovalRole {
+  id: string
+  jiaose_ming: string
+  jiaose_bianma: string
+  miaoshu?: string
+  users?: ApprovalUser[]
+  [key: string]: unknown
+}
+
+interface ApprovalUser {
+  id: string
+  xingming: string
+  yonghu_ming: string
+  [key: string]: unknown
+}
+
+interface ApprovalLevel {
+  level: number
+  min_amount: number
+  max_amount: number
+  approvers?: ApprovalUser[]
+  [key: string]: unknown
+}
+
+interface ApprovalChain {
+  levels: ApprovalLevel[]
+  [key: string]: unknown
+}
+
+interface MatrixData {
+  roles: ApprovalRole[]
+  approval_levels: Record<string, ApprovalLevel[]>
+  role_mappings: Record<string, string[]>
+}
+
 // 响应式数据
 const activeTab = ref('roles')
-const matrixData = ref<any>({
+const matrixData = ref<MatrixData>({
   roles: [],
   approval_levels: {},
   role_mappings: {}
 })
 const selectedRuleType = ref('')
-const approvalLevels = ref<any>(null)
+const approvalLevels = ref<ApprovalLevel[] | null>(null)
 const userDialogVisible = ref(false)
-const selectedRole = ref<any>(null)
+const selectedRole = ref<ApprovalRole | null>(null)
 const testing = ref(false)
-const approvalChain = ref<any>(null)
+const approvalChain = ref<ApprovalChain | null>(null)
 
 // 测试表单
 const testForm = reactive({
@@ -210,12 +246,12 @@ const formatAmount = (amount: number) => {
   return `¥${amount.toLocaleString()}`
 }
 
-const viewRoleUsers = (role: any) => {
+const viewRoleUsers = (role: ApprovalRole) => {
   selectedRole.value = role
   userDialogVisible.value = true
 }
 
-const testAssignment = async (level: any) => {
+const testAssignment = async (level: ApprovalLevel) => {
   try {
     const response = await fetch('/approval-matrix/assign-approver', {
       method: 'POST',
@@ -224,7 +260,7 @@ const testAssignment = async (level: any) => {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
       body: JSON.stringify({
-        role_code: level.role_code,
+        role_code: (level as Record<string, unknown>).role_code,
         amount: level.min_amount + 1000
       })
     })

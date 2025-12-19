@@ -174,6 +174,16 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { contractSignApi } from '@/api/modules/contract'
 import { sanitizeContractHtml } from '@/utils/sanitize'
 
+// 合同信息类型
+interface ContractInfo {
+  id: string
+  hetong_bianhao: string
+  hetong_mingcheng: string
+  hetong_neirong?: string
+  hetong_jine?: number
+  qianshu_zhuangtai?: string
+}
+
 // 路由
 const route = useRoute()
 const router = useRouter()
@@ -181,7 +191,7 @@ const router = useRouter()
 // 响应式数据
 const loading = ref(true)
 const error = ref('')
-const contractInfo = ref<any>(null)
+const contractInfo = ref<ContractInfo | null>(null)
 const submitting = ref(false)
 const agreeTerms = ref(false)
 
@@ -227,9 +237,10 @@ const fetchContractInfo = async () => {
   try {
     const response = await contractSignApi.verifyToken(token)
     contractInfo.value = response.data
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('获取合同信息失败:', err)
-    error.value = err.response?.data?.detail || '获取合同信息失败'
+    const axiosError = err as { response?: { data?: { detail?: string } } }
+    error.value = axiosError.response?.data?.detail || '获取合同信息失败'
   } finally {
     loading.value = false
   }
@@ -343,7 +354,7 @@ const handleSubmitSign = async () => {
 
     // 重新获取合同信息
     await fetchContractInfo()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('合同签署失败:', error)
       ElMessage.error('合同签署失败')

@@ -49,9 +49,9 @@ vi.mock('@/api/modules/customer', () => ({
 }))
 
 describe('客户管理端到端测试', () => {
-  let router: any
-  let customerStore: any
-  let authStore: any
+  let router: ReturnType<typeof createRouter>
+  let customerStore: ReturnType<typeof useCustomerStore>
+  let authStore: ReturnType<typeof useAuthStore>
 
   const mockUser = {
     id: 'user1',

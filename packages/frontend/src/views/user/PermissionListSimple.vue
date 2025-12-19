@@ -98,6 +98,17 @@ import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus } from '@element-plus/icons-vue'
 
+// 权限类型
+interface Permission {
+  id: string
+  quanxian_ming: string
+  quanxian_bianma: string
+  miaoshu?: string
+  ziyuan_leixing: string
+  ziyuan_lujing?: string
+  zhuangtai: string
+}
+
 // 响应式数据
 const searchForm = ref({
   search: '',
@@ -174,15 +185,15 @@ const handleCreate = () => {
   ElMessage.info('创建权限功能开发中...')
 }
 
-const handleView = (permission: any) => {
+const handleView = (permission: Permission) => {
   ElMessage.info(`查看权限: ${permission.quanxian_ming}`)
 }
 
-const handleEdit = (permission: any) => {
+const handleEdit = (permission: Permission) => {
   ElMessage.info(`编辑权限: ${permission.quanxian_ming}`)
 }
 
-const handleDelete = async (permission: any) => {
+const handleDelete = async (permission: Permission) => {
   try {
     await ElMessageBox.confirm(`确定要删除权限"${permission.quanxian_ming}"吗？`, '确认删除', {
       confirmButtonText: '确定',

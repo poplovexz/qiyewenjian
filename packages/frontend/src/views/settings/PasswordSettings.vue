@@ -85,7 +85,7 @@ const formData = reactive({
 })
 
 // 验证确认密码
-const validateConfirmPassword = (rule: any, value: any, callback: any) => {
+const validateConfirmPassword = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
   if (value === '') {
     callback(new Error('请再次输入新密码'))
   } else if (value !== formData.new_password) {
@@ -131,8 +131,9 @@ const handleSubmit = async () => {
         // setTimeout(() => {
         //   router.push('/login')
         // }, 1500)
-      } catch (error: any) {
-        ElMessage.error(error.message || '密码修改失败')
+      } catch (error: unknown) {
+        const err = error as { message?: string }
+        ElMessage.error(err.message || '密码修改失败')
       } finally {
         loading.value = false
       }

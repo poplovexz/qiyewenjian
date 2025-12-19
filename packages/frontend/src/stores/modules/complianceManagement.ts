@@ -244,7 +244,7 @@ export const useComplianceStore = defineStore('compliance', () => {
   ): Promise<ComplianceCalendarData> => {
     try {
       loading.value = true
-      const params: any = { year }
+      const params: Record<string, string | number> = { year }
       if (month) params.month = month
       if (kehu_id) params.kehu_id = kehu_id
       if (shixiang_leixing) params.shixiang_leixing = shixiang_leixing
@@ -260,9 +260,9 @@ export const useComplianceStore = defineStore('compliance', () => {
     }
   }
 
-  const fetchUpcomingItems = async (days = 7, kehu_id?: string): Promise<any[]> => {
+  const fetchUpcomingItems = async (days = 7, kehu_id?: string): Promise<ComplianceItem[]> => {
     try {
-      const params: any = { days }
+      const params: Record<string, string | number> = { days }
       if (kehu_id) params.kehu_id = kehu_id
 
       const response = await request.get('/compliance/upcoming', { params })
@@ -273,9 +273,9 @@ export const useComplianceStore = defineStore('compliance', () => {
     }
   }
 
-  const fetchOverdueItems = async (kehu_id?: string): Promise<any[]> => {
+  const fetchOverdueItems = async (kehu_id?: string): Promise<ComplianceItem[]> => {
     try {
-      const params: any = {}
+      const params: Record<string, string> = {}
       if (kehu_id) params.kehu_id = kehu_id
 
       const response = await request.get('/compliance/overdue', { params })
@@ -292,7 +292,7 @@ export const useComplianceStore = defineStore('compliance', () => {
     kehu_id?: string
   ): Promise<ComplianceStatistics> => {
     try {
-      const params: any = { year }
+      const params: Record<string, string | number> = { year }
       if (month) params.month = month
       if (kehu_id) params.kehu_id = kehu_id
 

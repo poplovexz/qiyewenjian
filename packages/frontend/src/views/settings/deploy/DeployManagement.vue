@@ -492,8 +492,9 @@ const loadGitBranches = async () => {
     if (!deployForm.value.branch || deployForm.value.branch === 'main') {
       deployForm.value.branch = res.current_branch
     }
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载分支列表失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载分支列表失败')
     // 失败时使用默认值
     gitBranches.value = ['main']
     currentBranch.value = 'main'
@@ -514,8 +515,9 @@ const loadHistory = async () => {
     })
     historyList.value = res.items
     pagination.value.total = res.total
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载部署历史失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载部署历史失败')
   } finally {
     loading.value = false
   }
@@ -540,8 +542,9 @@ const runPreCheck = async (deepCheck = false) => {
     } else {
       ElMessage.warning(`${checkType}完成：${result.warnings} 个警告`)
     }
-  } catch (error: any) {
-    ElMessage.error(error.message || '部署前检查失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '部署前检查失败')
   } finally {
     preChecking.value = false
   }
@@ -562,8 +565,9 @@ const handleDeploy = async () => {
 
     // 刷新历史列表
     loadHistory()
-  } catch (error: any) {
-    ElMessage.error(error.message || '触发部署失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '触发部署失败')
   } finally {
     deploying.value = false
   }
@@ -636,9 +640,10 @@ const handleCancelDeploy = async () => {
     currentDeploy.value = null
     stopPolling()
     loadHistory()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '取消部署失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '取消部署失败')
     }
   }
 }
@@ -664,8 +669,9 @@ const refreshLogs = async () => {
     if (logsContentRef.value) {
       logsContentRef.value.scrollTop = logsContentRef.value.scrollHeight
     }
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载日志失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载日志失败')
   } finally {
     logsLoading.value = false
   }
@@ -689,9 +695,10 @@ const handleRollback = async (deploy: DeployHistoryItem) => {
     ElMessage.success('回滚已启动')
     startPolling()
     loadHistory()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '回滚失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '回滚失败')
     }
   }
 }
@@ -759,8 +766,9 @@ const loadConfigs = async () => {
   configLoading.value = true
   try {
     configList.value = await getAllDeployConfigs()
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载配置失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载配置失败')
   } finally {
     configLoading.value = false
   }
@@ -799,8 +807,9 @@ const saveConfig = async () => {
     }
     showConfigFormDialog.value = false
     await loadConfigs()
-  } catch (error: any) {
-    ElMessage.error(error.message || '保存配置失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '保存配置失败')
   } finally {
     configSaving.value = false
   }
@@ -818,9 +827,10 @@ const deleteConfig = async (config: DeployConfig) => {
     await deleteDeployConfigApi(config.environment)
     ElMessage.success('配置已删除')
     await loadConfigs()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除配置失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '删除配置失败')
     }
   }
 }

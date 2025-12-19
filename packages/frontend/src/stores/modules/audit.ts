@@ -5,6 +5,33 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { auditRuleApi, auditWorkflowApi } from '@/api/modules/audit'
 
+// 审核规则数据类型
+interface AuditRuleData {
+  guize_mingcheng: string
+  guize_leixing: string
+  chufa_tiaojian?: Record<string, unknown>
+  shenhe_liucheng?: Record<string, unknown>
+  shifou_qiyong?: boolean
+}
+
+// 审核操作数据类型
+interface AuditActionData {
+  shenhe_jieguo: string
+  shenhe_yijian?: string
+}
+
+// 触发数据类型
+interface TriggerData {
+  amount_change?: string | number
+  [key: string]: unknown
+}
+
+// 触发条件类型
+interface TriggerConditions {
+  amount_threshold?: string | number
+  [key: string]: unknown
+}
+
 export const useAuditStore = defineStore('audit', () => {
   // 状态
   const auditRules = ref([])
@@ -39,7 +66,7 @@ export const useAuditStore = defineStore('audit', () => {
   }
 
   // 创建审核规则
-  const createAuditRule = async (ruleData: any) => {
+  const createAuditRule = async (ruleData: AuditRuleData) => {
     try {
       loading.value = true
       const response = await auditRuleApi.create(ruleData)
@@ -54,7 +81,7 @@ export const useAuditStore = defineStore('audit', () => {
   }
 
   // 更新审核规则
-  const updateAuditRule = async (id: string, ruleData: any) => {
+  const updateAuditRule = async (id: string, ruleData: Partial<AuditRuleData>) => {
     try {
       loading.value = true
       const response = await auditRuleApi.update(id, ruleData)
@@ -121,7 +148,7 @@ export const useAuditStore = defineStore('audit', () => {
   }
 
   // 提交审核申请
-  const submitAudit = async (auditData: any) => {
+  const submitAudit = async (auditData: Record<string, unknown>) => {
     try {
       loading.value = true
       const response = await auditWorkflowApi.create(auditData)
@@ -135,16 +162,16 @@ export const useAuditStore = defineStore('audit', () => {
   }
 
   // 处理审核操作
-  const processAuditAction = async (workflowId: string, stepId: string, actionData: any) => {
+  const processAuditAction = async (workflowId: string, stepId: string, actionData: AuditActionData) => {
     try {
       loading.value = true
       const response = await auditWorkflowApi.processAction(workflowId, stepId, actionData)
-      
+
       // 刷新当前工作流详情
       if (currentWorkflow.value?.id === workflowId) {
         await fetchWorkflowDetail(workflowId)
       }
-      
+
       return response.data
     } catch (error) {
       console.error('处理审核操作失败:', error)
@@ -200,12 +227,12 @@ export const useAuditStore = defineStore('audit', () => {
   const batchProcessAudit = async (actions: Array<{
     workflowId: string
     stepId: string
-    actionData: any
+    actionData: AuditActionData
   }>) => {
     try {
       loading.value = true
-      const results = []
-      
+      const results: Array<{ success: boolean; data?: unknown; error?: string }> = []
+
       for (const action of actions) {
         try {
           const result = await auditWorkflowApi.processAction(
@@ -214,11 +241,12 @@ export const useAuditStore = defineStore('audit', () => {
             action.actionData
           )
           results.push({ success: true, data: result.data })
-        } catch (error) {
-          results.push({ success: false, error: error.message })
+        } catch (error: unknown) {
+          const err = error as Error
+          results.push({ success: false, error: err.message })
         }
       }
-      
+
       return results
     } catch (error) {
       console.error('批量审核操作失败:', error)
@@ -240,15 +268,15 @@ export const useAuditStore = defineStore('audit', () => {
   }
 
   // 检查是否需要审核
-  const checkNeedsAudit = async (auditType: string, triggerData: any) => {
+  const checkNeedsAudit = async (auditType: string, triggerData: TriggerData) => {
     try {
       // 这里可以调用后端API检查是否需要审核
       // 暂时使用前端逻辑判断
       const rules = await fetchActiveRulesByType(auditType)
-      
+
       for (const rule of rules) {
         const conditions = JSON.parse(rule.chufa_tiaojian)
-        
+
         // 检查触发条件
         if (checkTriggerConditions(conditions, triggerData)) {
           return {
@@ -258,7 +286,7 @@ export const useAuditStore = defineStore('audit', () => {
           }
         }
       }
-      
+
       return { needsAudit: false }
     } catch (error) {
       console.error('检查审核需求失败:', error)
@@ -267,7 +295,7 @@ export const useAuditStore = defineStore('audit', () => {
   }
 
   // 检查触发条件
-  const checkTriggerConditions = (conditions: any, triggerData: any): boolean => {
+  const checkTriggerConditions = (conditions: TriggerConditions, triggerData: TriggerData): boolean => {
     try {
       // 金额阈值检查
       if (conditions.amount_threshold && triggerData.amount_change) {

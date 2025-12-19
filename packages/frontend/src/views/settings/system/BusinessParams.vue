@@ -133,8 +133,9 @@ const loadConfigs = async () => {
         formData.value.compliance_remind_days = config.config_value || '15,7,3,1'
       }
     })
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载配置失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载配置失败')
   } finally {
     loading.value = false
   }
@@ -156,11 +157,12 @@ const handleSave = async () => {
       audit_timeout_hours: formData.value.audit_timeout_hours.toString(),
       compliance_remind_days: formData.value.compliance_remind_days
     }
-    
+
     await batchUpdateConfigs(configs)
     ElMessage.success('业务参数配置已保存')
-  } catch (error: any) {
-    ElMessage.error(error.message || '保存配置失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '保存配置失败')
   } finally {
     saving.value = false
   }

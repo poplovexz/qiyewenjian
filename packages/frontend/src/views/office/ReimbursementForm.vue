@@ -182,13 +182,15 @@ const loadBaoxiaoLeibieOptions = async () => {
   baoxiaoLeibieLoading.value = true
   try {
     const res = await getBaoxiaoLeibieList({ page: 1, size: 100 })
-    const allItems = (res as any).items || []
+    const response = res as { items?: BaoxiaoLeibie[] }
+    const allItems = response.items || []
     // 只显示启用状态的类别
     baoxiaoLeibieOptions.value = allItems.filter(
       (item: BaoxiaoLeibie) => item.zhuangtai === 'active'
     )
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载报销类型失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '加载报销类型失败')
     baoxiaoLeibieOptions.value = []
   } finally {
     baoxiaoLeibieLoading.value = false
@@ -303,9 +305,10 @@ const handleSubmit = async () => {
     }
 
     router.push('/office/reimbursement')
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '操作失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '操作失败')
     }
   } finally {
     submitting.value = false

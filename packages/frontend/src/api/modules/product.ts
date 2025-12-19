@@ -157,7 +157,7 @@ export const productStepApi = {
   /**
    * 批量更新产品步骤
    */
-  batchUpdate(xiangmu_id: string, steps: any[]): Promise<ProductStep[]> {
+  batchUpdate(xiangmu_id: string, steps: Partial<ProductStep>[]): Promise<ProductStep[]> {
     return request.put(`/product-management/products/${xiangmu_id}/steps`, {
       xiangmu_id,
       buzou_list: steps

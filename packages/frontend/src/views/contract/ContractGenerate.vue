@@ -319,6 +319,20 @@ import type { XiansuoBaojiaDetail } from '@/types/xiansuo'
 import type { ContractParty } from '@/api/modules/contract'
 import { sanitizeContractHtml } from '@/utils/sanitize'
 
+// 合同模板类型
+interface ContractTemplate {
+  id: string
+  moban_mingcheng: string
+  hetong_leixing: string
+  moban_neirong?: string
+}
+
+// 报价项目类型
+interface QuoteItem {
+  xiangmu_mingcheng: string
+  xiaoji: string | number
+}
+
 const route = useRoute()
 const router = useRouter()
 const xiansuoStore = useXiansuoStore()
@@ -327,7 +341,7 @@ const contractStore = useContractManagementStore()
 // 响应式数据
 const quoteInfo = ref<XiansuoBaojiaDetail | null>(null)
 const contractParties = ref<ContractParty[]>([])
-const contractTemplates = ref<any[]>([])
+const contractTemplates = ref<ContractTemplate[]>([])
 const previewLoading = ref(false)
 const generateLoading = ref(false)
 const auditLoading = ref(false)
@@ -380,24 +394,24 @@ const getDaliJizhangOriginalPrice = () => {
   if (!quoteInfo.value) return 0
   // 计算代理记账服务的原始报价金额
   const daliJizhangItems = quoteInfo.value.xiangmu_list.filter(
-    (item: any) =>
+    (item: QuoteItem) =>
       item.xiangmu_mingcheng.includes('代理记账') ||
       item.xiangmu_mingcheng.includes('记账') ||
       item.xiangmu_mingcheng.includes('纳税人')
   )
-  return daliJizhangItems.reduce((sum: number, item: any) => sum + parseFloat(item.xiaoji), 0)
+  return daliJizhangItems.reduce((sum: number, item: QuoteItem) => sum + parseFloat(String(item.xiaoji)), 0)
 }
 
 const getZengzhiFuwuOriginalPrice = () => {
   if (!quoteInfo.value) return 0
   // 计算增值服务的原始报价金额
   const zengzhiFuwuItems = quoteInfo.value.xiangmu_list.filter(
-    (item: any) =>
+    (item: QuoteItem) =>
       !item.xiangmu_mingcheng.includes('代理记账') &&
       !item.xiangmu_mingcheng.includes('记账') &&
       !item.xiangmu_mingcheng.includes('纳税人')
   )
-  return zengzhiFuwuItems.reduce((sum: number, item: any) => sum + parseFloat(item.xiaoji), 0)
+  return zengzhiFuwuItems.reduce((sum: number, item: QuoteItem) => sum + parseFloat(String(item.xiaoji)), 0)
 }
 
 const getDaliJizhangPriceDiff = () => {
@@ -478,10 +492,10 @@ const getZengzhiFuwuTemplates = () => {
 
 const analyzeQuoteServices = (quote: XiansuoBaojiaDetail) => {
   // 分析报价项目，按服务类型分类
-  const daliJizhangItems: any[] = []
-  const zengzhiFuwuItems: any[] = []
+  const daliJizhangItems: QuoteItem[] = []
+  const zengzhiFuwuItems: QuoteItem[] = []
 
-  quote.xiangmu_list.forEach((item: any) => {
+  quote.xiangmu_list.forEach((item: QuoteItem) => {
     // 根据产品项目的类型或名称判断服务类型
     if (
       item.xiangmu_mingcheng.includes('代理记账') ||
@@ -496,11 +510,11 @@ const analyzeQuoteServices = (quote: XiansuoBaojiaDetail) => {
 
   // 计算各类服务的价格
   const daliJizhangTotal = daliJizhangItems.reduce(
-    (sum: number, item: any) => sum + parseFloat(item.xiaoji),
+    (sum: number, item: QuoteItem) => sum + parseFloat(String(item.xiaoji)),
     0
   )
   const zengzhiFuwuTotal = zengzhiFuwuItems.reduce(
-    (sum: number, item: any) => sum + parseFloat(item.xiaoji),
+    (sum: number, item: QuoteItem) => sum + parseFloat(String(item.xiaoji)),
     0
   )
 
@@ -642,10 +656,11 @@ const handlePreview = async () => {
     }
 
     previewDialogVisible.value = true
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('预览合同失败:', error)
+    const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
     ElMessage.error(
-      '预览合同失败: ' + (error?.response?.data?.detail || error?.message || '未知错误')
+      '预览合同失败: ' + (axiosError?.response?.data?.detail || axiosError?.message || '未知错误')
     )
   } finally {
     previewLoading.value = false
@@ -710,9 +725,10 @@ const handleSubmitAudit = async () => {
 
     // 直接调用合同生成API，后端会自动触发审核流程
     await generateContracts()
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('提交审核失败:', error)
-    const errorMsg = error?.response?.data?.detail || error?.message || '提交审核失败'
+    const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
+    const errorMsg = axiosError?.response?.data?.detail || axiosError?.message || '提交审核失败'
     ElMessage.error(String(errorMsg))
   } finally {
     auditLoading.value = false
@@ -767,10 +783,11 @@ const generateContracts = async () => {
       ElMessage.success(response.message)
       router.push('/contracts') // 跳转到合同列表
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('生成合同失败:', error)
+    const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
     ElMessage.error(
-      '生成合同失败: ' + (error?.response?.data?.detail || error?.message || '未知错误')
+      '生成合同失败: ' + (axiosError?.response?.data?.detail || axiosError?.message || '未知错误')
     )
   } finally {
     generateLoading.value = false

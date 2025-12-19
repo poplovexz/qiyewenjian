@@ -491,8 +491,9 @@ const handleEdit = async (row: ZhifuPeizhiResponse) => {
     Object.assign(formData, data)
 
     dialogVisible.value = true
-  } catch (error: any) {
-    ElMessage.error(error.message || '获取配置详情失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '获取配置详情失败')
   }
 }
 
@@ -524,7 +525,7 @@ const handleDelete = async (row: ZhifuPeizhiResponse) => {
     await deleteZhifuPeizhi(row.id)
     ElMessage.success('删除成功')
     loadList()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       ElMessage.error('删除失败')
     }

@@ -107,10 +107,24 @@ import { Check, Close, Share, Upload } from '@element-plus/icons-vue'
 import { useAuditManagementStore } from '@/stores/modules/auditManagement'
 import { useAuthStore } from '@/stores/modules/auth'
 
+// 审核任务类型
+interface AuditTask {
+  id: string
+  workflow_id: string
+  record_id: string
+  status: string
+}
+
+// 上传响应类型
+interface UploadResponse {
+  success: boolean
+  data?: { file_path: string }
+}
+
 // Props
 interface Props {
   visible: boolean
-  task: any
+  task: AuditTask | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -208,7 +222,7 @@ const handleSubmit = async () => {
 
     emit('success')
     ElMessage.success('审核操作提交成功')
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('提交审核失败:', error)
       ElMessage.error('提交审核失败')
@@ -241,8 +255,8 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   return true
 }
 
-const handleUploadSuccess = (response: any) => {
-  if (response.success) {
+const handleUploadSuccess = (response: UploadResponse) => {
+  if (response.success && response.data) {
     formData.value.fujian_lujing = response.data.file_path
     ElMessage.success('文件上传成功')
   } else {

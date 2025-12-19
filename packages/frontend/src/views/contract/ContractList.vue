@@ -372,6 +372,24 @@ import { contractApi } from '@/api/modules/contract'
 import { serviceOrderApi } from '@/api/modules/serviceOrder'
 import { sanitizeContractHtml } from '@/utils/sanitize'
 
+// 合同类型定义
+interface Contract {
+  id: string
+  hetong_bianhao: string
+  hetong_mingcheng: string
+  hetong_zhuangtai: string
+  daoqi_riqi?: string
+  payment_amount?: number
+  contractNumber?: string
+  kehu_mingcheng?: string
+}
+
+// 签署链接信息类型
+interface SignLinkInfo {
+  sign_url: string
+  expire_time: string
+}
+
 const router = useRouter()
 const contractStore = useContractManagementStore()
 
@@ -380,12 +398,12 @@ const loading = ref(false)
 const saving = ref(false)
 const voiding = ref(false)
 const contractList = ref([])
-const currentContract = ref<any>(null)
+const currentContract = ref<Contract | null>(null)
 const viewDialogVisible = ref(false)
 const editDialogVisible = ref(false)
 const signLinkDialogVisible = ref(false)
 const voidDialogVisible = ref(false)
-const signLinkInfo = ref<any>(null)
+const signLinkInfo = ref<SignLinkInfo | null>(null)
 const editFormRef = ref()
 const voidFormRef = ref()
 const editForm = reactive({
@@ -550,7 +568,7 @@ const handleCreate = () => {
 }
 
 // 查看
-const handleView = async (row: any) => {
+const handleView = async (row: Contract) => {
   try {
     loading.value = true
     const response = await contractApi.getDetail(row.id)
@@ -565,19 +583,21 @@ const handleView = async (row: any) => {
 }
 
 // 编辑
-const handleEdit = async (row: any) => {
+const handleEdit = async (row: Contract) => {
   try {
     loading.value = true
     const response = await contractApi.getDetail(row.id)
     currentContract.value = response.data || response
 
     // 填充编辑表单
-    Object.assign(editForm, {
-      hetong_mingcheng: currentContract.value.hetong_mingcheng,
-      hetong_zhuangtai: currentContract.value.hetong_zhuangtai,
-      daoqi_riqi: currentContract.value.daoqi_riqi,
-      payment_amount: currentContract.value.payment_amount || '',
-    })
+    if (currentContract.value) {
+      Object.assign(editForm, {
+        hetong_mingcheng: currentContract.value.hetong_mingcheng,
+        hetong_zhuangtai: currentContract.value.hetong_zhuangtai,
+        daoqi_riqi: currentContract.value.daoqi_riqi,
+        payment_amount: currentContract.value.payment_amount || '',
+      })
+    }
 
     editDialogVisible.value = true
   } catch (error) {
@@ -605,7 +625,7 @@ const handleSaveEdit = async () => {
 }
 
 // 生成签署链接
-const handleGenerateSignLink = async (row: any) => {
+const handleGenerateSignLink = async (row: Contract) => {
   try {
     loading.value = true
     const response = await contractApi.generateSignLink(row.id)
@@ -618,9 +638,10 @@ const handleGenerateSignLink = async (row: any) => {
     } else {
       ElMessage.success('签署链接生成成功')
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('生成签署链接失败:', error)
-    const errorMsg = error.response?.data?.detail || '生成签署链接失败'
+    const axiosError = error as { response?: { data?: { detail?: string } } }
+    const errorMsg = axiosError.response?.data?.detail || '生成签署链接失败'
     ElMessage.error(errorMsg)
 
     // 如果是状态问题，给出更详细的提示
@@ -655,7 +676,7 @@ const formatExpireTime = (expireTime: string) => {
 }
 
 // 作废合同
-const handleVoid = async (row: any) => {
+const handleVoid = async (row: Contract) => {
   currentContract.value = row
   voidForm.voidReason = ''
   voidDialogVisible.value = true
@@ -663,7 +684,7 @@ const handleVoid = async (row: any) => {
 
 // 确认作废
 const handleConfirmVoid = async () => {
-  if (!voidFormRef.value) return
+  if (!voidFormRef.value || !currentContract.value) return
 
   try {
     await voidFormRef.value.validate()
@@ -677,10 +698,11 @@ const handleConfirmVoid = async () => {
     ElMessage.success('合同已作废')
     voidDialogVisible.value = false
     getContractList()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('作废失败:', error)
-      ElMessage.error(error.response?.data?.detail || '作废失败')
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      ElMessage.error(axiosError.response?.data?.detail || '作废失败')
     }
   } finally {
     voiding.value = false
@@ -688,7 +710,7 @@ const handleConfirmVoid = async () => {
 }
 
 // 删除
-const handleDelete = async (row: any) => {
+const handleDelete = async (row: Contract) => {
   try {
     await ElMessageBox.confirm(`确定要删除合同 "${row.hetong_bianhao}" 吗？`, '确认删除', {
       confirmButtonText: '确定',
@@ -699,7 +721,7 @@ const handleDelete = async (row: any) => {
     await contractApi.delete(row.id)
     ElMessage.success('删除成功')
     getContractList()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('删除失败:', error)
       ElMessage.error('删除失败')
@@ -748,7 +770,7 @@ const handlePartyManage = () => {
 }
 
 // 创建服务工单
-const handleCreateServiceOrder = async (row: any) => {
+const handleCreateServiceOrder = async (row: Contract) => {
   try {
     await ElMessageBox.confirm(
       `确定要为合同 "${row.contractNumber}" 创建服务工单吗？`,
@@ -768,17 +790,19 @@ const handleCreateServiceOrder = async (row: any) => {
     await getContractList()
 
     // 跳转到工单详情页
-    if (result?.data && result.data.id) {
-      router.push(`/service-orders/${result.data.id}`)
-    } else if (result?.id) {
-      router.push(`/service-orders/${result.id}`)
+    const resultData = result as { data?: { id?: string }; id?: string }
+    if (resultData?.data && resultData.data.id) {
+      router.push(`/service-orders/${resultData.data.id}`)
+    } else if (resultData?.id) {
+      router.push(`/service-orders/${resultData.id}`)
     } else {
       console.warn('工单创建成功，但无法获取工单ID，无法跳转')
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('创建服务工单失败:', error)
-      const errorMsg = error.response?.data?.detail || '创建服务工单失败'
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      const errorMsg = axiosError.response?.data?.detail || '创建服务工单失败'
       ElMessage.error(errorMsg)
     }
   } finally {
@@ -787,25 +811,27 @@ const handleCreateServiceOrder = async (row: any) => {
 }
 
 // 查看服务工单
-const handleViewServiceOrder = async (row: any) => {
+const handleViewServiceOrder = async (row: Contract) => {
   try {
     loading.value = true
     // 获取合同关联的工单
     const result = await serviceOrderApi.getByContract(row.id)
 
     // 检查返回数据的多种可能结构
-    if (result?.data && result.data.items && result.data.items.length > 0) {
+    const resultData = result as { data?: { items?: { id: string }[] }; items?: { id: string }[] }
+    if (resultData?.data && resultData.data.items && resultData.data.items.length > 0) {
       // 跳转到第一个工单的详情页
-      router.push(`/service-orders/${result.data.items[0].id}`)
-    } else if (result?.items && result.items.length > 0) {
+      router.push(`/service-orders/${resultData.data.items[0].id}`)
+    } else if (resultData?.items && resultData.items.length > 0) {
       // 备用：直接在result中的items
-      router.push(`/service-orders/${result.items[0].id}`)
+      router.push(`/service-orders/${resultData.items[0].id}`)
     } else {
       ElMessage.warning('该合同暂无关联工单')
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('获取工单失败:', error)
-    const errorMsg = error.response?.data?.detail || error.message || '获取工单失败'
+    const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
+    const errorMsg = axiosError.response?.data?.detail || axiosError.message || '获取工单失败'
     ElMessage.error(errorMsg)
   } finally {
     loading.value = false

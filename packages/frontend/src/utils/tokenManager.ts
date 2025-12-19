@@ -4,11 +4,12 @@
 import { authApi } from '@/api/auth'
 import { ElMessage } from 'element-plus'
 import router from '@/router'
+import type { InternalAxiosRequestConfig } from 'axios'
 
 interface PendingRequest {
-  resolve: (value: any) => void
-  reject: (reason: any) => void
-  config: any
+  resolve: (value: unknown) => void
+  reject: (reason: unknown) => void
+  config: InternalAxiosRequestConfig
 }
 
 class TokenManager {
@@ -194,7 +195,7 @@ class TokenManager {
   /**
    * 使用原生fetch刷新token，避免axios拦截器的循环依赖
    */
-  private async _refreshTokenWithFetch(refreshToken: string): Promise<any> {
+  private async _refreshTokenWithFetch(refreshToken: string): Promise<{ access_token: string; refresh_token?: string }> {
     const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
     const url = `${baseURL}/auth/refresh`
 
@@ -218,7 +219,7 @@ class TokenManager {
   /**
    * 添加待处理的请求
    */
-  addPendingRequest(config: any): Promise<any> {
+  addPendingRequest(config: InternalAxiosRequestConfig): Promise<unknown> {
     return new Promise((resolve, reject) => {
       this.pendingRequests.push({ resolve, reject, config })
     })
@@ -243,7 +244,7 @@ class TokenManager {
   /**
    * 失败所有待处理的请求
    */
-  private _failAllPendingRequests(error: any) {
+  private _failAllPendingRequests(error: unknown) {
     const requests = this.pendingRequests.splice(0)
 
     requests.forEach(({ reject }) => {

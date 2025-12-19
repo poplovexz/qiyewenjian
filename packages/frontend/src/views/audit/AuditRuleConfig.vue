@@ -444,13 +444,27 @@ import { auditRuleApi, auditWorkflowApi } from '@/api/modules/audit'
 import request from '@/utils/request'
 
 // 类型定义
+interface TriggerCondition {
+  condition_type?: string
+  operator?: string
+  threshold_value?: string | number
+  [key: string]: unknown
+}
+
+interface WorkflowConfig {
+  workflow_id?: string
+  auto_assign?: boolean
+  notification_methods?: string[]
+  [key: string]: unknown
+}
+
 interface AuditRule {
   id: string
   guize_mingcheng: string
   guize_leixing: string
   guize_miaoshu?: string
-  chufa_tiaojian: any
-  shenhe_liucheng_peizhi: any
+  chufa_tiaojian: TriggerCondition | string
+  shenhe_liucheng_peizhi: WorkflowConfig | string
   shi_qiyong: string
   paixu: number
   liucheng_mingcheng?: string
@@ -605,7 +619,7 @@ const getStatusLabel = (status: string) => {
 }
 
 // 格式化JSON显示
-const formatJSON = (data: any) => {
+const formatJSON = (data: unknown) => {
   if (!data) return '-'
   try {
     if (typeof data === 'string') {
@@ -613,7 +627,7 @@ const formatJSON = (data: any) => {
     }
     return JSON.stringify(data, null, 2)
   } catch (error) {
-    return data.toString()
+    return String(data)
   }
 }
 
@@ -643,17 +657,24 @@ const runTest = async () => {
     }
 
     // 调用测试API - 使用 request 工具自动处理认证
-    const result: any = await request.post('/audit-rules/test/single', requestData)
+    const result = await request.post('/audit-rules/test/single', requestData) as TestResult
     testResult.value = result
 
     ElMessage.success('测试完成')
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('规则测试失败:', error)
-    const errorMsg = error.response?.data?.detail || error.message || '规则测试失败'
+    const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
+    const errorMsg = axiosError.response?.data?.detail || axiosError.message || '规则测试失败'
     ElMessage.error(errorMsg)
   } finally {
     testing.value = false
   }
+}
+
+// 测试模板类型
+interface TestTemplate {
+  type: string
+  template: Record<string, unknown>
 }
 
 const loadTestTemplate = async () => {
@@ -661,11 +682,11 @@ const loadTestTemplate = async () => {
 
   try {
     // 获取测试模板 - 使用 request 工具自动处理认证
-    const data: any = await request.get('/audit-rules/test/templates')
+    const data = await request.get('/audit-rules/test/templates') as { templates?: TestTemplate[] }
     const templates = data.templates || []
 
     // 查找匹配的模板
-    const template = templates.find((t: any) => t.type === testRule.value?.guize_leixing)
+    const template = templates.find((t: TestTemplate) => t.type === testRule.value?.guize_leixing)
 
     if (template) {
       Object.assign(testData, template.template)
@@ -673,9 +694,10 @@ const loadTestTemplate = async () => {
     } else {
       ElMessage.warning('未找到匹配的测试模板')
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('加载测试模板失败:', error)
-    const errorMsg = error.response?.data?.detail || error.message || '加载测试模板失败'
+    const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
+    const errorMsg = axiosError.response?.data?.detail || axiosError.message || '加载测试模板失败'
     ElMessage.error(errorMsg)
   }
 }
@@ -683,7 +705,7 @@ const loadTestTemplate = async () => {
 
 
 // 格式化触发条件
-const formatTriggerCondition = (condition: any) => {
+const formatTriggerCondition = (condition: TriggerCondition | string | null) => {
   if (!condition) return '-'
   try {
     const parsed = typeof condition === 'string' ? JSON.parse(condition) : condition
@@ -698,7 +720,7 @@ const fetchRuleList = async () => {
   loading.value = true
   try {
     // 修复：调用真实API获取审核规则列表，支持筛选
-    const params: any = {
+    const params: Record<string, string | number> = {
       page: pagination.page,
       size: pagination.size
     }
@@ -715,7 +737,7 @@ const fetchRuleList = async () => {
 
     // 🔧 修复：过滤掉工作流模板类型的规则（这些应该只在工作流配置页面显示）
     const filteredItems = (response.items || []).filter(
-      (item: any) => item.guize_leixing !== 'workflow_template'
+      (item: AuditRule) => item.guize_leixing !== 'workflow_template'
     )
 
     ruleList.value = filteredItems
@@ -730,6 +752,12 @@ const fetchRuleList = async () => {
   }
 }
 
+// 工作流响应类型
+interface WorkflowItem {
+  id: string
+  workflow_name: string
+}
+
 const fetchWorkflowOptions = async () => {
   try {
     // 修复：调用真实API获取审核流程列表
@@ -741,7 +769,7 @@ const fetchWorkflowOptions = async () => {
     })
 
     // 转换为下拉框选项格式
-    workflowOptions.value = (response.items || []).map((workflow: any) => ({
+    workflowOptions.value = (response.items || []).map((workflow: WorkflowItem) => ({
       label: workflow.workflow_name,
       value: workflow.id
     }))
@@ -761,14 +789,14 @@ const handleCreate = () => {
   dialogVisible.value = true
 }
 
-const handleEdit = (row: any) => {
+const handleEdit = (row: AuditRule) => {
   isEdit.value = true
 
   // 修复：正确映射后端字段到前端表单
   formData.id = row.id
   formData.guize_mingcheng = row.guize_mingcheng
   formData.guize_leixing = row.guize_leixing
-  formData.guize_miaoshu = row.guize_miaoshu
+  formData.guize_miaoshu = row.guize_miaoshu || ''
   formData.guize_zhuangtai = row.shi_qiyong === 'Y' ? 'active' : 'inactive'  // 状态字段映射
 
   // 解析触发条件
@@ -800,7 +828,7 @@ const handleEdit = (row: any) => {
   dialogVisible.value = true
 }
 
-const handleView = async (row: any) => {
+const handleView = async (row: AuditRule) => {
   try {
     // 获取规则详情
     const response = await auditRuleApi.getById(row.id)
@@ -812,14 +840,14 @@ const handleView = async (row: any) => {
   }
 }
 
-const handleTest = (row: any) => {
+const handleTest = (row: AuditRule) => {
   testRule.value = row
   testResult.value = null
   resetTestData()
   testDialogVisible.value = true
 }
 
-const handleDelete = async (row: any) => {
+const handleDelete = async (row: AuditRule) => {
   try {
     await ElMessageBox.confirm(
       `确定要删除规则"${row.guize_mingcheng}"吗？`,
@@ -835,13 +863,14 @@ const handleDelete = async (row: any) => {
     await auditRuleApi.delete(row.id)
     ElMessage.success('删除成功')
     fetchRuleList()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('删除失败:', error)
       // 提取详细错误信息
       let errorMsg = '删除失败'
-      if (error?.response?.data?.detail) {
-        errorMsg = error.response.data.detail
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      if (axiosError?.response?.data?.detail) {
+        errorMsg = axiosError.response.data.detail
       }
       ElMessage.error(errorMsg)
     }
@@ -866,7 +895,7 @@ const handleSubmit = async () => {
     const chufaTiaojian = conditionData
 
     // 🔧 修复：构建工作流配置，引用选择的工作流模板
-    let workflowConfig: any = {
+    const workflowConfig: WorkflowConfig = {
       workflow_id: actionData.workflow_id,
       auto_assign: actionData.auto_assign,
       notification_methods: actionData.notification_methods

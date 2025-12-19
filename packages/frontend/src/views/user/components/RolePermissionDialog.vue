@@ -100,11 +100,21 @@ const emit = defineEmits<Emits>()
 const roleStore = useRoleStore()
 const permissionStore = usePermissionStore()
 
+// 权限树节点类型
+interface PermissionTreeNode {
+  id: string
+  label: string
+  type?: string
+  icon?: string
+  children?: PermissionTreeNode[]
+  [key: string]: unknown
+}
+
 // 响应式数据
 const treeRef = ref<InstanceType<typeof ElTree>>()
 const loading = ref(false)
 const checkedPermissions = ref<string[]>([])
-const permissionTree = ref<any[]>([])
+const permissionTree = ref<PermissionTreeNode[]>([])
 
 // 计算属性
 const dialogVisible = computed({
@@ -189,9 +199,9 @@ const collapseAll = () => {
   })
 }
 
-const getAllNodeKeys = (nodes: any[]): string[] => {
+const getAllNodeKeys = (nodes: PermissionTreeNode[]): string[] => {
   const keys: string[] = []
-  const traverse = (nodeList: any[]) => {
+  const traverse = (nodeList: PermissionTreeNode[]) => {
     nodeList.forEach(node => {
       keys.push(node.id)
       if (node.children) {
@@ -203,7 +213,7 @@ const getAllNodeKeys = (nodes: any[]): string[] => {
   return keys
 }
 
-const findNodeById = (nodes: any[], id: string): any => {
+const findNodeById = (nodes: PermissionTreeNode[], id: string): PermissionTreeNode | null => {
   for (const node of nodes) {
     if (node.id === id) {
       return node

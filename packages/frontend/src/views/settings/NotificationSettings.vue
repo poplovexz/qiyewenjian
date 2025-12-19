@@ -113,8 +113,9 @@ const handleChange = async () => {
       system_notification: preferences.system_notification
     })
     ElMessage.success('设置已保存')
-  } catch (error: any) {
-    ElMessage.error(error.message || '保存失败')
+  } catch (error: unknown) {
+    const err = error as { message?: string }
+    ElMessage.error(err.message || '保存失败')
     // 失败时重新加载设置
     await loadPreferences()
   } finally {

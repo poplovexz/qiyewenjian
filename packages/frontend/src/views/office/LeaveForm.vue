@@ -309,9 +309,10 @@ const handleSubmit = async () => {
     }
 
     router.push('/office/leave')
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '操作失败')
+      const err = error as { message?: string }
+      ElMessage.error(err.message || '操作失败')
     }
   } finally {
     submitting.value = false

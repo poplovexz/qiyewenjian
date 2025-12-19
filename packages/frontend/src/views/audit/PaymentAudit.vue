@@ -285,9 +285,18 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Refresh, Search } from '@element-plus/icons-vue'
 
+// 支付审核记录类型
+interface PaymentAuditRecord {
+  id: string
+  payment_order_id: string
+  amount: number
+  status: string
+  created_at?: string
+}
+
 // 响应式数据
 const activeTab = ref('pending')
-const pendingList = ref([])
+const pendingList = ref<PaymentAuditRecord[]>([])
 const pendingLoading = ref(false)
 const pendingPage = ref(1)
 const pendingSize = ref(20)
@@ -296,12 +305,12 @@ const pendingTotal = ref(0)
 const searchForm = reactive({
   payment_order_id: ''
 })
-const searchResult = ref(null)
+const searchResult = ref<PaymentAuditRecord | null>(null)
 
 const approvalDialogVisible = ref(false)
 const rejectionDialogVisible = ref(false)
 const historyDialogVisible = ref(false)
-const currentRecord = ref(null)
+const currentRecord = ref<PaymentAuditRecord | null>(null)
 const approvalLoading = ref(false)
 const rejectionLoading = ref(false)
 
@@ -373,13 +382,13 @@ const resetSearch = () => {
   searchResult.value = null
 }
 
-const handleApprove = (record: any) => {
+const handleApprove = (record: PaymentAuditRecord) => {
   currentRecord.value = record
   approvalForm.approval_comment = ''
   approvalDialogVisible.value = true
 }
 
-const handleReject = (record: any) => {
+const handleReject = (record: PaymentAuditRecord) => {
   currentRecord.value = record
   rejectionForm.rejection_reason = ''
   rejectionDialogVisible.value = true
@@ -450,7 +459,7 @@ const confirmRejection = async () => {
   }
 }
 
-const viewDetails = (record: any) => {
+const viewDetails = (record: PaymentAuditRecord) => {
   // 查看详情逻辑
   ElMessage.info('查看详情功能开发中')
 }

@@ -103,9 +103,10 @@ export const useAuthStore = defineStore('auth', () => {
 
       ElMessage.success(response.message || '登录成功')
       return true
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('登录失败:', error)
-      ElMessage.error(error.response?.data?.detail || error.message || '登录失败')
+      const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
+      ElMessage.error(axiosError.response?.data?.detail || axiosError.message || '登录失败')
       return false
     } finally {
       isLoading.value = false
@@ -162,9 +163,10 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authApi.changePassword(passwordData)
       ElMessage.success(response.message || '密码修改成功')
       return true
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('修改密码失败:', error)
-      ElMessage.error(error.response?.data?.detail || '修改密码失败')
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      ElMessage.error(axiosError.response?.data?.detail || '修改密码失败')
       return false
     } finally {
       isLoading.value = false

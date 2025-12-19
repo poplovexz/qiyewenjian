@@ -155,10 +155,10 @@ const loadBaoxiaoLeibieOptions = async () => {
   baoxiaoLeibieLoading.value = true
   try {
     const res = await getBaoxiaoLeibieList({ page: 1, size: 100 })
-    const allItems = (res as any).items || []
+    const allItems = (res as { items?: BaoxiaoLeibie[] }).items || []
     // 只显示启用状态的类别
     baoxiaoLeibieOptions.value = allItems.filter((item: BaoxiaoLeibie) => item.zhuangtai === 'active')
-  } catch (error: any) {
+  } catch (error: unknown) {
     // 静默失败，不影响主要功能
     baoxiaoLeibieOptions.value = []
   } finally {

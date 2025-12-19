@@ -297,7 +297,11 @@ export const serviceRecordApi = {
         gongsi_mingcheng: string
         kehu_zhuangtai: string
       }
-      service_statistics: any
+      service_statistics: {
+        total_records: number
+        completed_records: number
+        pending_records: number
+      }
       recent_records: ServiceRecord[]
       pending_issues: number
     }>(`/service-records/kehu/${customerId}/summary`)

@@ -3,10 +3,145 @@
  */
 import { request } from '@/utils/request'
 
+// 审核规则类型定义
+export interface AuditRuleListParams {
+  page?: number
+  size?: number
+  search?: string
+  guize_leixing?: string
+  shi_qiyong?: string
+}
+
+export interface AuditRuleCreate {
+  guize_mingcheng: string
+  guize_leixing: string
+  chufa_tiaojian: Record<string, string | number | boolean>
+  shenhe_liucheng_peizhi: Record<string, unknown>
+  shi_qiyong?: string
+  paixu?: number
+  guize_miaoshu?: string
+}
+
+export interface AuditRuleUpdate {
+  guize_mingcheng?: string
+  guize_leixing?: string
+  chufa_tiaojian?: Record<string, string | number | boolean>
+  shenhe_liucheng_peizhi?: Record<string, unknown>
+  shi_qiyong?: string
+  paixu?: number
+  guize_miaoshu?: string
+}
+
+// 审核流程类型定义
+export interface AuditWorkflowListParams {
+  page?: number
+  size?: number
+  search?: string
+  workflow_status?: string
+}
+
+export interface AuditWorkflowCreate {
+  workflow_name: string
+  workflow_type: string
+  related_id: string
+  steps: AuditWorkflowStep[]
+}
+
+export interface AuditWorkflowStep {
+  step_name: string
+  approver_id?: string
+  approver_role?: string
+  required: boolean
+}
+
+export interface AuditWorkflowUpdate {
+  workflow_name?: string
+  workflow_status?: string
+}
+
+export interface AuditActionData {
+  action: 'approve' | 'reject' | 'return'
+  comment?: string
+}
+
+// 审核记录类型定义
+export interface AuditRecordListParams {
+  page?: number
+  size?: number
+  workflow_id?: string
+  approver_id?: string
+  status?: string
+}
+
+export interface AuditRecordUpdate {
+  status?: string
+  comment?: string
+}
+
+export interface AuditStatisticsParams {
+  start_date?: string
+  end_date?: string
+}
+
+export interface AuditApproveData {
+  comment?: string
+}
+
+export interface AuditRejectData {
+  comment: string
+  reason?: string
+}
+
+// 合同支付类型定义
+export interface ContractPaymentListParams {
+  page?: number
+  size?: number
+  contract_id?: string
+  payment_status?: string
+}
+
+export interface ContractPaymentCreate {
+  contract_id: string
+  payment_amount: number
+  payment_method: string
+}
+
+export interface ContractPaymentUpdate {
+  payment_status?: string
+  payment_amount?: number
+}
+
+// 银行汇款类型定义
+export interface BankTransferListParams {
+  page?: number
+  size?: number
+  payment_id?: string
+  status?: string
+}
+
+export interface BankTransferCreate {
+  payment_id: string
+  transfer_amount: number
+  transfer_date: string
+  bank_name: string
+  account_number: string
+  transfer_reference?: string
+}
+
+export interface BankTransferUpdate {
+  status?: string
+  transfer_reference?: string
+}
+
+export interface BankTransferAuditData {
+  action: 'approve' | 'reject'
+  comment?: string
+}
+
 // 审核规则相关接口
 export const auditRuleApi = {
   // 获取审核规则列表
-  getList: (params: any) => {
+  getList: (params: AuditRuleListParams) => {
     return request.get('/audit-rules', { params })
   },
 
@@ -16,12 +151,12 @@ export const auditRuleApi = {
   },
 
   // 创建审核规则
-  create: (data: any) => {
+  create: (data: AuditRuleCreate) => {
     return request.post('/audit-rules', data)
   },
 
   // 更新审核规则
-  update: (id: string, data: any) => {
+  update: (id: string, data: AuditRuleUpdate) => {
     return request.put(`/audit-rules/${id}`, data)
   },
 
@@ -39,7 +174,7 @@ export const auditRuleApi = {
 // 审核流程相关接口
 export const auditWorkflowApi = {
   // 获取审核流程列表
-  getList: (params: any) => {
+  getList: (params: AuditWorkflowListParams) => {
     return request.get('/audit-workflows', { params })
   },
 
@@ -54,12 +189,12 @@ export const auditWorkflowApi = {
   },
 
   // 创建审核流程
-  create: (data: any) => {
+  create: (data: AuditWorkflowCreate) => {
     return request.post('/audit-workflows', data)
   },
 
   // 更新审核流程
-  update: (id: string, data: any) => {
+  update: (id: string, data: AuditWorkflowUpdate) => {
     return request.put(`/audit-workflows/${id}`, data)
   },
 
@@ -74,7 +209,7 @@ export const auditWorkflowApi = {
   },
 
   // 处理审核操作
-  processAction: (workflowId: string, stepId: string, data: any) => {
+  processAction: (workflowId: string, stepId: string, data: AuditActionData) => {
     return request.post(`/audit-workflows/${workflowId}/steps/${stepId}/action`, data)
   },
 
@@ -97,7 +232,7 @@ export const auditWorkflowApi = {
 // 审核记录相关接口
 export const auditRecordApi = {
   // 获取审核记录列表
-  getList: (params: any) => {
+  getList: (params: AuditRecordListParams) => {
     return request.get('/audit-records', { params })
   },
 
@@ -112,22 +247,22 @@ export const auditRecordApi = {
   },
 
   // 更新审核记录
-  update: (id: string, data: any) => {
+  update: (id: string, data: AuditRecordUpdate) => {
     return request.put(`/audit-records/${id}`, data)
   },
 
   // 获取用户审核统计
-  getUserStatistics: (userId: string, params?: any) => {
+  getUserStatistics: (userId: string, params?: AuditStatisticsParams) => {
     return request.get(`/audit-records/statistics/user/${userId}`, { params })
   },
 
   // 获取我的审核统计
-  getMyStatistics: (params?: any) => {
+  getMyStatistics: (params?: AuditStatisticsParams) => {
     return request.get('/audit-records/statistics/my', { params })
   },
 
   // 获取超期审核记录
-  getOverdueList: (params?: any) => {
+  getOverdueList: (params?: AuditRecordListParams) => {
     return request.get('/audit-records/overdue/list', { params })
   },
 
@@ -137,12 +272,12 @@ export const auditRecordApi = {
   },
 
   // 审核通过
-  approve: (recordId: string, data: any) => {
+  approve: (recordId: string, data: AuditApproveData) => {
     return request.post(`/audit-records/${recordId}/approve`, data)
   },
 
   // 审核拒绝
-  reject: (recordId: string, data: any) => {
+  reject: (recordId: string, data: AuditRejectData) => {
     return request.post(`/audit-records/${recordId}/reject`, data)
   },
 
@@ -155,7 +290,7 @@ export const auditRecordApi = {
 // 合同支付相关接口
 export const contractPaymentApi = {
   // 获取合同支付列表
-  getList: (params: any) => {
+  getList: (params: ContractPaymentListParams) => {
     return request.get('/contract-payments', { params })
   },
 
@@ -165,12 +300,12 @@ export const contractPaymentApi = {
   },
 
   // 创建合同支付
-  create: (data: any) => {
+  create: (data: ContractPaymentCreate) => {
     return request.post('/contract-payments', data)
   },
 
   // 更新合同支付
-  update: (id: string, data: any) => {
+  update: (id: string, data: ContractPaymentUpdate) => {
     return request.put(`/contract-payments/${id}`, data)
   },
 
@@ -183,7 +318,7 @@ export const contractPaymentApi = {
 // 银行汇款单据相关接口
 export const bankTransferApi = {
   // 获取汇款单据列表
-  getList: (params: any) => {
+  getList: (params: BankTransferListParams) => {
     return request.get('/bank-transfers', { params })
   },
 
@@ -193,17 +328,17 @@ export const bankTransferApi = {
   },
 
   // 创建汇款单据
-  create: (data: any) => {
+  create: (data: BankTransferCreate) => {
     return request.post('/bank-transfers', data)
   },
 
   // 更新汇款单据
-  update: (id: string, data: any) => {
+  update: (id: string, data: BankTransferUpdate) => {
     return request.put(`/bank-transfers/${id}`, data)
   },
 
   // 审核汇款单据
-  audit: (id: string, data: any) => {
+  audit: (id: string, data: BankTransferAuditData) => {
     return request.post(`/bank-transfers/${id}/audit`, data)
   },
 

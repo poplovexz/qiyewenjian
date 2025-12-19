@@ -315,6 +315,19 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh, Search, ArrowDown, DataAnalysis } from '@element-plus/icons-vue'
 
+// 成本记录类型
+interface CostRecord {
+  id: string
+  chengben_bianhao?: string
+  chengben_mingcheng?: string
+  chengben_leixing?: string
+  chengben_fenlei?: string
+  chengben_jine?: number
+  shenhe_zhuangtai?: string
+  gongyingshang_mingcheng?: string
+  [key: string]: unknown
+}
+
 // 路由
 const router = useRouter()
 
@@ -442,15 +455,15 @@ const handleCreate = () => {
   router.push('/finance/costs/create')
 }
 
-const handleView = (row: any) => {
+const handleView = (row: CostRecord) => {
   router.push(`/finance/costs/${row.id}`)
 }
 
-const handleEdit = (row: any) => {
+const handleEdit = (row: CostRecord) => {
   router.push(`/finance/costs/${row.id}/edit`)
 }
 
-const handleSubmit = async (row: any) => {
+const handleSubmit = async (row: CostRecord) => {
   try {
     await ElMessageBox.confirm('确认要提交该成本记录吗？', '确认操作', {
       type: 'warning'
@@ -459,7 +472,7 @@ const handleSubmit = async (row: any) => {
     const response = await fetch(`/costs/${row.id}/submit`, {
       method: 'POST'
     })
-    
+
     if (response.ok) {
       ElMessage.success('提交成功')
       fetchData()
@@ -474,7 +487,7 @@ const handleSubmit = async (row: any) => {
   }
 }
 
-const handleAudit = (row: any) => {
+const handleAudit = (row: CostRecord) => {
   currentRecord.value = row
   auditForm.shenhe_jieguo = ''
   auditForm.shenhe_yijian = ''
@@ -515,9 +528,9 @@ const confirmAudit = async () => {
   }
 }
 
-const handleRecord = (row: any) => {
+const handleRecord = (row: CostRecord) => {
   currentRecord.value = row
-  recordForm.shiji_jine = row.chengben_jine
+  recordForm.shiji_jine = row.chengben_jine || 0
   recordForm.jizhangjian = null
   recordForm.kuaiji_kemu = ''
   recordForm.chengben_zhongxin = ''
@@ -558,7 +571,7 @@ const confirmRecord = async () => {
   }
 }
 
-const handleDelete = async (row: any) => {
+const handleDelete = async (row: CostRecord) => {
   try {
     await ElMessageBox.confirm('确认要删除该成本记录吗？', '确认删除', {
       type: 'warning'
@@ -588,27 +601,27 @@ const showStatistics = () => {
 }
 
 // 权限判断方法
-const canEdit = (row: any) => {
+const canEdit = (row: CostRecord) => {
   return row.shenhe_zhuangtai === 'draft'
 }
 
-const canSubmit = (row: any) => {
+const canSubmit = (row: CostRecord) => {
   return row.shenhe_zhuangtai === 'draft'
 }
 
-const canAudit = (row: any) => {
+const canAudit = (row: CostRecord) => {
   return row.shenhe_zhuangtai === 'submitted'
 }
 
-const canRecord = (row: any) => {
+const canRecord = (row: CostRecord) => {
   return row.shenhe_zhuangtai === 'approved'
 }
 
-const canDelete = (row: any) => {
+const canDelete = (row: CostRecord) => {
   return row.shenhe_zhuangtai === 'draft'
 }
 
-const hasMoreActions = (row: any) => {
+const hasMoreActions = (row: CostRecord) => {
   return canSubmit(row) || canAudit(row) || canRecord(row) || canDelete(row)
 }
 

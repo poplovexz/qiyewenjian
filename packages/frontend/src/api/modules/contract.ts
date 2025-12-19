@@ -74,7 +74,7 @@ export interface ContractTemplateListResponse {
 
 export interface ContractTemplatePreview {
   moban_id: string
-  bianliang_zhis: Record<string, any>
+  bianliang_zhis: Record<string, string | number | boolean>
 }
 
 export interface ContractTemplateStatistics {
@@ -83,6 +83,134 @@ export interface ContractTemplateStatistics {
   draft_count: number
   archived_count: number
   type_statistics: Record<string, number>
+}
+
+// 合同生成相关类型
+export interface ContractGenerateRequest {
+  baojia_id: string
+  moban_id: string
+  kehu_id?: string
+  yifang_zhuti_id?: string
+  bianliang_zhis?: Record<string, string | number | boolean>
+}
+
+export interface ContractGenerateResponse {
+  id: string
+  hetong_bianhao: string
+  hetong_mingcheng: string
+  hetong_neirong: string
+}
+
+export interface ContractPreviewRequest {
+  moban_id: string
+  baojia_id?: string
+  kehu_id?: string
+  bianliang_zhis?: Record<string, string | number | boolean>
+}
+
+export interface ContractPreviewResponse {
+  content: string
+  variables: Record<string, string | number | boolean>
+}
+
+export interface ContractTemplateOption {
+  id: string
+  moban_mingcheng: string
+  hetong_leixing: string
+}
+
+// 合同签署相关类型
+export interface ContractSigningInfo {
+  id: string
+  hetong_bianhao: string
+  hetong_mingcheng: string
+  hetong_neirong: string
+  hetong_zhuangtai: string
+  kehu_info?: {
+    gongsi_mingcheng: string
+    lianxi_ren: string
+  }
+}
+
+export interface ContractSigningLinkResponse {
+  sign_link: string
+  sign_token: string
+  expires_at: string
+}
+
+export interface ContractSignatureData {
+  signature_image: string
+  signer_name?: string
+  signer_id_number?: string
+  sign_ip?: string
+}
+
+export interface ContractSigningStatusResponse {
+  is_signed: boolean
+  signed_at?: string
+  signer_info?: {
+    name: string
+    ip: string
+  }
+}
+
+// 合同支付相关类型
+export interface ContractPaymentInfo {
+  contract_id: string
+  hetong_bianhao: string
+  hetong_mingcheng: string
+  payment_amount: number
+  payment_status: string
+  payment_methods: PaymentMethodInfo[]
+}
+
+export interface PaymentMethodInfo {
+  id: string
+  method_type: string
+  method_name: string
+  is_enabled: boolean
+}
+
+export interface CreatePaymentRequest {
+  contract_id: string
+  payment_method: string
+  amount: number
+}
+
+export interface CreatePaymentResponse {
+  payment_id: string
+  payment_status: string
+}
+
+export interface AlipayPaymentParams {
+  return_url?: string
+}
+
+export interface AlipayPaymentResponse {
+  payment_url: string
+}
+
+export interface WechatPaymentParams {
+  trade_type?: string
+}
+
+export interface WechatPaymentResponse {
+  code_url?: string
+  prepay_id?: string
+}
+
+export interface BankTransferResponse {
+  bank_name: string
+  bank_account: string
+  bank_holder: string
+  amount: number
+  reference: string
+}
+
+export interface ContractCheckByQuoteResponse {
+  has_contract: boolean
+  contract_id?: string
+  hetong_bianhao?: string
 }
 
 // 合同模板管理 API
@@ -120,7 +248,7 @@ export const contractTemplateApi = {
   },
 
   // 预览合同模板
-  preview: (id: string, variables: Record<string, any>) => {
+  preview: (id: string, variables: Record<string, string | number | boolean>) => {
     return request.post<{ content: string }>(`/contract-templates/${id}/preview`, {
       moban_id: id,
       bianliang_zhis: variables
@@ -129,7 +257,7 @@ export const contractTemplateApi = {
 
   // 获取模板变量配置
   getVariables: (id: string) => {
-    return request.get<{ variables: Record<string, any> }>(`/contract-templates/${id}/variables`)
+    return request.get<{ variables: Record<string, string | number | boolean> }>(`/contract-templates/${id}/variables`)
   },
 
   // 获取统计信息
@@ -252,7 +380,7 @@ export interface ContractListResponse {
 export interface ContractPreview {
   moban_id: string
   baojia_id?: string
-  bianliang_zhis: Record<string, any>
+  bianliang_zhis: Record<string, string | number | boolean>
 }
 
 export interface ContractSignature {
@@ -428,18 +556,18 @@ export const contractApi = {
   },
 
   // 生成合同（新的合同生成API）
-  generateContracts: (data: any) => {
-    return request.post<any>('/contract-generate/generate', data)
+  generateContracts: (data: ContractGenerateRequest) => {
+    return request.post<ContractGenerateResponse>('/contract-generate/generate', data)
   },
 
   // 预览合同（新的预览API）
-  previewContract: (data: any) => {
-    return request.post<any>('/contract-generate/preview', data)
+  previewContract: (data: ContractPreviewRequest) => {
+    return request.post<ContractPreviewResponse>('/contract-generate/preview', data)
   },
 
   // 获取合同模板列表
   getTemplates: (contractType?: string) => {
-    return request.get<any>('/contract-generate/templates', {
+    return request.get<ContractTemplateOption[]>('/contract-generate/templates', {
       params: contractType ? { contract_type: contractType } : {}
     })
   },
@@ -458,7 +586,7 @@ export const contractApi = {
 
   // 检查报价是否已生成合同
   checkContractByQuote: (baojiaId: string) => {
-    return request.get<any>(`/contracts/check-by-quote/${baojiaId}`)
+    return request.get<ContractCheckByQuoteResponse>(`/contracts/check-by-quote/${baojiaId}`)
   },
 
   // 批量删除
@@ -485,22 +613,22 @@ export const contractApi = {
 export const contractSignApi = {
   // 根据签署令牌获取合同信息
   getByToken: (token: string) => {
-    return request.get<any>(`/contract-signing/token/${token}`)
+    return request.get<ContractSigningInfo>(`/contract-signing/token/${token}`)
   },
 
   // 创建签署链接
   createLink: (contractId: string) => {
-    return request.post<any>(`/contract-signing/${contractId}/create-link`)
+    return request.post<ContractSigningLinkResponse>(`/contract-signing/${contractId}/create-link`)
   },
 
   // 电子签名
-  sign: (token: string, signatureData: any) => {
-    return request.post<any>(`/contract-signing/sign/${token}`, signatureData)
+  sign: (token: string, signatureData: ContractSignatureData) => {
+    return request.post<{ success: boolean; message: string }>(`/contract-signing/sign/${token}`, signatureData)
   },
 
   // 获取签署状态
   getSigningStatus: (contractId: string) => {
-    return request.get<any>(`/contract-signing/${contractId}/status`)
+    return request.get<ContractSigningStatusResponse>(`/contract-signing/${contractId}/status`)
   }
 }
 
@@ -508,32 +636,32 @@ export const contractSignApi = {
 export const contractPaymentApi = {
   // 获取合同支付信息
   getContractInfo: (contractId: string) => {
-    return request.get<any>(`/contract-payment/${contractId}/info`)
+    return request.get<ContractPaymentInfo>(`/contract-payment/${contractId}/info`)
   },
 
   // 创建支付记录
-  createPayment: (paymentData: any) => {
-    return request.post<any>('/contract-payment/create', paymentData)
+  createPayment: (paymentData: CreatePaymentRequest) => {
+    return request.post<CreatePaymentResponse>('/contract-payment/create', paymentData)
   },
 
   // 发起支付宝支付
-  initiateAlipay: (paymentId: string, params: any) => {
-    return request.post<any>(`/contract-payment/${paymentId}/alipay`, params)
+  initiateAlipay: (paymentId: string, params: AlipayPaymentParams) => {
+    return request.post<AlipayPaymentResponse>(`/contract-payment/${paymentId}/alipay`, params)
   },
 
   // 发起微信支付
-  initiateWechat: (paymentId: string, params: any) => {
-    return request.post<any>(`/contract-payment/${paymentId}/wechat`, params)
+  initiateWechat: (paymentId: string, params: WechatPaymentParams) => {
+    return request.post<WechatPaymentResponse>(`/contract-payment/${paymentId}/wechat`, params)
   },
 
   // 选择银行转账
   selectBankTransfer: (paymentId: string) => {
-    return request.post<any>(`/contract-payment/${paymentId}/bank-transfer`)
+    return request.post<BankTransferResponse>(`/contract-payment/${paymentId}/bank-transfer`)
   },
 
   // 下载合同
   downloadContract: (contractId: string) => {
-    return request.get(`/contract-payment/${contractId}/download`, {
+    return request.get<Blob>(`/contract-payment/${contractId}/download`, {
       responseType: 'blob'
     })
   }

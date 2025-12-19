@@ -244,17 +244,36 @@ import { sanitizeContractHtml } from '@/utils/sanitize'
 const route = useRoute()
 const router = useRouter()
 
+// 类型定义
+interface ContractInfo {
+  id: string
+  hetong_mingcheng: string
+  hetong_bianhao: string
+  daoqi_riqi?: string
+  payment_amount?: number
+  hetong_neirong?: string
+  payment_status?: string
+  [key: string]: unknown
+}
+
+interface PaymentMethodOption {
+  method: string
+  label: string
+  icon: string
+  description: string
+}
+
 // 响应式数据
 const loading = ref(true)
 const error = ref('')
-const contractInfo = ref<any>(null)
+const contractInfo = ref<ContractInfo | null>(null)
 const currentStep = ref(0)
 const submitting = ref(false)
 const paying = ref(false)
 const paymentCompleted = ref(false)
 const paymentMethod = ref('wechat')
 const paymentQrCode = ref('')
-const availablePaymentMethods = ref<any[]>([])
+const availablePaymentMethods = ref<PaymentMethodOption[]>([])
 const loadingPaymentMethods = ref(false)
 let paymentStatusTimer: number | null = null
 
@@ -293,7 +312,7 @@ const loadAvailablePaymentMethods = async () => {
       const firstOnlineMethod = availablePaymentMethods.value.find((m) => m.method !== 'bank')
       paymentMethod.value = firstOnlineMethod ? firstOnlineMethod.method : 'bank'
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('加载支付方式失败:', err)
     // 如果加载失败，使用默认支付方式
     availablePaymentMethods.value = [
@@ -325,9 +344,10 @@ const loadContractInfo = async () => {
         currentStep.value = 3
       }
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('加载合同信息失败:', err)
-    error.value = err.response?.data?.detail || '签署链接无效或已过期'
+    const axiosError = err as { response?: { data?: { detail?: string } } }
+    error.value = axiosError.response?.data?.detail || '签署链接无效或已过期'
   } finally {
     loading.value = false
   }
@@ -444,10 +464,11 @@ const submitSignature = async () => {
 
     ElMessage.success('签署成功')
     nextStep()
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('签署失败:', error)
     if (error !== 'cancel') {
-      ElMessage.error(error.response?.data?.detail || '签署失败')
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      ElMessage.error(axiosError.response?.data?.detail || '签署失败')
     }
   } finally {
     submitting.value = false
@@ -493,9 +514,10 @@ const initiatePayment = async () => {
       // 开始轮询支付状态
       startPaymentStatusPolling()
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('发起支付失败:', error)
-    ElMessage.error(error.response?.data?.detail || '发起支付失败')
+    const axiosError = error as { response?: { data?: { detail?: string } } }
+    ElMessage.error(axiosError.response?.data?.detail || '发起支付失败')
   } finally {
     paying.value = false
   }

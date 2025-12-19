@@ -3,6 +3,13 @@
  */
 import request from '@/utils/request'
 
+// 通用列表参数类型
+interface ListParams {
+  page?: number
+  size?: number
+  [key: string]: string | number | undefined
+}
+
 export interface PaymentApplication {
   id?: string
   shenqing_bianhao?: string
@@ -24,7 +31,7 @@ export interface PaymentApplication {
   shenqing_ren_xingming?: string
 }
 
-export function getPaymentList(params: any) {
+export function getPaymentList(params: ListParams) {
   return request({
     url: '/office/payment',
     method: 'get',

@@ -66,9 +66,18 @@ import { ElMessage } from 'element-plus'
 import { Document } from '@element-plus/icons-vue'
 import { auditRecordApi } from '@/api/modules/audit'
 
+// 审核记录类型
+interface AuditRecord {
+  id: string
+  shenhe_jieguo: string
+  shenhe_yijian?: string
+  shenhe_shijian?: string
+  shenhe_ren?: string
+}
+
 interface Props {
   workflowId?: string
-  records?: any[]
+  records?: AuditRecord[]
   autoFetch?: boolean
 }
 
@@ -79,7 +88,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const loading = ref(false)
-const records = ref<any[]>([])
+const records = ref<AuditRecord[]>([])
 
 // 监听 props.records 变化
 watch(

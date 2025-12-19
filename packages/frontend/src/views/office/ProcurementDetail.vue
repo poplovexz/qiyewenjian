@@ -183,7 +183,7 @@ const handleSubmitApproval = async () => {
     await submitProcurementForApproval(procurementId.value)
     ElMessage.success('提交成功')
     fetchDetail()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       ElMessage.error('提交失败')
     }

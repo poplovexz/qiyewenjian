@@ -3,6 +3,13 @@
  */
 import request from '@/utils/request'
 
+// 通用列表参数类型
+interface ListParams {
+  page?: number
+  size?: number
+  [key: string]: string | number | undefined
+}
+
 export interface HandoverApplication {
   id?: string
   jiaojie_bianhao?: string
@@ -26,7 +33,7 @@ export interface HandoverApplication {
   queren_ren_xingming?: string
 }
 
-export function getHandoverList(params: any) {
+export function getHandoverList(params: ListParams) {
   return request({
     url: '/office/handover',
     method: 'get',
@@ -99,7 +106,7 @@ export function rejectHandover(id: string, beizhu: string) {
 /**
  * 获取用户列表（用于选择接收人）
  */
-export function getUserList(params?: any) {
+export function getUserList(params?: ListParams) {
   return request({
     url: '/users',
     method: 'get',

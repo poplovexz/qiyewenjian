@@ -240,11 +240,23 @@ import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import { formatCurrency, formatDateTime } from '@/utils/format'
 import request from '@/utils/request'
 
+// 类型定义
+interface PaymentOrder {
+  id: string
+  dingdan_bianhao: string
+  zhifu_zhuangtai: string
+  zhifu_leixing: string
+  zhifu_jine: number
+  zhifu_shijian?: string
+  guoqi_shijian?: string
+  beizhu?: string
+}
+
 // 响应式数据
 const loading = ref(false)
-const tableData = ref([])
+const tableData = ref<PaymentOrder[]>([])
 const detailDialogVisible = ref(false)
-const currentOrder = ref(null)
+const currentOrder = ref<PaymentOrder | null>(null)
 
 // 搜索表单
 const searchForm = reactive({
@@ -307,19 +319,19 @@ const handleCreate = () => {
 }
 
 // 查看订单
-const handleView = (row: any) => {
+const handleView = (row: PaymentOrder) => {
   currentOrder.value = row
   detailDialogVisible.value = true
 }
 
 // 编辑订单
-const handleEdit = (row: any) => {
+const handleEdit = (row: PaymentOrder) => {
   // TODO: 跳转到编辑订单页面
   ElMessage.info(`编辑订单: ${row.dingdan_bianhao}`)
 }
 
 // 取消订单
-const handleCancel = async (row: any) => {
+const handleCancel = async (row: PaymentOrder) => {
   try {
     await ElMessageBox.confirm(
       `确定要取消订单 ${row.dingdan_bianhao} 吗？`,

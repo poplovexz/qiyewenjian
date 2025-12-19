@@ -173,9 +173,10 @@ const fetchRefundList = async () => {
     const response = await refundApi.getList(params)
     refundList.value = response.items
     pagination.total = response.total
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('获取退款列表失败:', error)
-    ElMessage.error(error.response?.data?.detail || '获取退款列表失败')
+    const axiosError = error as { response?: { data?: { detail?: string } } }
+    ElMessage.error(axiosError.response?.data?.detail || '获取退款列表失败')
   } finally {
     loading.value = false
   }
@@ -225,9 +226,10 @@ const handleViewDetail = async (row: Refund) => {
     const refund = await refundApi.getDetail(row.id)
     currentRefund.value = refund
     detailDialogVisible.value = true
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('获取退款详情失败:', error)
-    ElMessage.error(error.response?.data?.detail || '获取退款详情失败')
+    const axiosError = error as { response?: { data?: { detail?: string } } }
+    ElMessage.error(axiosError.response?.data?.detail || '获取退款详情失败')
   }
 }
 

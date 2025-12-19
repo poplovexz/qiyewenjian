@@ -521,13 +521,28 @@ const currentAssignXiansuo = ref<Xiansuo | null>(null)
 const followupDialogVisible = ref(false)
 const currentFollowupXiansuo = ref<Xiansuo | null>(null)
 
+// 合同状态信息类型
+interface ContractStatusInfo {
+  has_contract: boolean
+  contract_id?: string
+  hetong_bianhao?: string
+}
+
+// 审核详情类型
+interface AuditDetails {
+  id: string
+  workflow_id: string
+  status: string
+  comment?: string
+}
+
 // 合同生成相关
 const contractGenerating = ref(false)
-const contractStatusMap = ref<Map<string, any>>(new Map()) // 存储线索ID -> 合同状态信息的映射
+const contractStatusMap = ref<Map<string, ContractStatusInfo>>(new Map()) // 存储线索ID -> 合同状态信息的映射
 
 // 审核弹框相关
 const auditDialogVisible = ref(false)
-const currentAuditDetails = ref<any>(null)
+const currentAuditDetails = ref<AuditDetails | null>(null)
 
 // 计算属性
 const {
@@ -864,7 +879,7 @@ const handleViewAudit = async (xiansuo: Xiansuo) => {
       router.push('/audit/tasks')
       ElMessage.info('请在审核任务列表中查看相关审核')
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('查看审核失败:', error)
     ElMessage.error('查看审核失败')
   }
@@ -875,7 +890,7 @@ const handleViewContract = async (xiansuo: Xiansuo) => {
   try {
     // 直接跳转到合同列表页面
     router.push('/contracts')
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('跳转到合同页面失败:', error)
     ElMessage.error('跳转失败')
   }
@@ -902,9 +917,10 @@ const handleGenerateContract = async (xiansuo: Xiansuo) => {
       path: '/contracts/generate',
       query: { baojia_id: acceptedBaojia.id },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('跳转到合同生成页面失败:', error)
-    ElMessage.error('跳转失败: ' + (error?.message || '未知错误'))
+    const err = error as { message?: string }
+    ElMessage.error('跳转失败: ' + (err?.message || '未知错误'))
   } finally {
     contractGenerating.value = false
   }

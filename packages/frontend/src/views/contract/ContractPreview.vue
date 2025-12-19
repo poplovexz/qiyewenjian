@@ -286,12 +286,35 @@ const router = useRouter()
 const contractStore = useContractManagementStore()
 const auditStore = useAuditManagementStore()
 
+// 审核历史类型
+interface AuditHistoryItem {
+  id: string
+  shenhe_jieguo: string
+  shenhe_yijian?: string
+  shenhe_shijian?: string
+  shenhe_ren?: string
+}
+
+// 签署信息类型
+interface SigningInfo {
+  id: string
+  qianshu_zhuangtai: string
+  qianshu_shijian?: string
+}
+
+// 支付信息类型
+interface PaymentInfoItem {
+  id: string
+  zhifu_zhuangtai: string
+  zhifu_jine?: number
+}
+
 // 响应式数据
 const contract = computed(() => contractStore.currentContract)
 const loading = computed(() => contractStore.contractLoading)
-const auditHistory = ref<any[]>([])
-const signingInfo = ref<any>(null)
-const paymentInfo = ref<any[]>([])
+const auditHistory = ref<AuditHistoryItem[]>([])
+const signingInfo = ref<SigningInfo | null>(null)
+const paymentInfo = ref<PaymentInfoItem[]>([])
 
 // 签名相关
 const signDialogVisible = ref(false)
@@ -420,7 +443,7 @@ const handleCancelSigning = async () => {
 
     // 刷新签署信息
     await fetchSigningInfo(contract.value.id)
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       console.error('取消签署失败:', error)
       ElMessage.error('取消签署失败')
@@ -441,7 +464,7 @@ const handleCreatePayment = async () => {
   }
 }
 
-const handlePayment = (paymentRecord: any) => {
+const handlePayment = (paymentRecord: PaymentInfoItem) => {
   // 跳转到支付页面
   router.push(`/contract-payment/${paymentRecord.id}`)
 }
@@ -509,7 +532,7 @@ const confirmSignature = async () => {
   try {
     signing.value = true
 
-    let signatureData: any = {}
+    const signatureData: { qianming_tupian?: string; qianming_wenben?: string } = {}
 
     if (signatureType.value === 'draw') {
       if (!signatureCanvas.value) {
