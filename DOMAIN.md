@@ -25,14 +25,14 @@
 
 ### 实体
 
-| 实体 | 文件 | 说明 |
-|------|------|------|
-| **Yonghu** | `yonghu.py` | 用户实体，包含登录凭证、基本信息 |
-| **Jiaose** | `jiaose.py` | 角色实体，定义权限组 |
-| **Quanxian** | `quanxian.py` | 权限实体，最小权限单元 |
-| **YonghuJiaose** | `yonghu_jiaose.py` | 用户-角色关联 |
-| **JiaoseQuanxian** | `jiaose_quanxian.py` | 角色-权限关联 |
-| **UserPreferences** | `user_preferences.py` | 用户偏好设置 |
+| 实体                | 文件                  | 说明                             |
+| ------------------- | --------------------- | -------------------------------- |
+| **Yonghu**          | `yonghu.py`           | 用户实体，包含登录凭证、基本信息 |
+| **Jiaose**          | `jiaose.py`           | 角色实体，定义权限组             |
+| **Quanxian**        | `quanxian.py`         | 权限实体，最小权限单元           |
+| **YonghuJiaose**    | `yonghu_jiaose.py`    | 用户-角色关联                    |
+| **JiaoseQuanxian**  | `jiaose_quanxian.py`  | 角色-权限关联                    |
+| **UserPreferences** | `user_preferences.py` | 用户偏好设置                     |
 
 ### 核心字段
 
@@ -66,9 +66,9 @@
 
 ### 实体
 
-| 实体 | 文件 | 说明 |
-|------|------|------|
-| **Kehu** | `kehu.py` | 客户实体 |
+| 实体         | 文件           | 说明     |
+| ------------ | -------------- | -------- |
+| **Kehu**     | `kehu.py`      | 客户实体 |
 | **FuwuJilu** | `fuwu_jilu.py` | 服务记录 |
 
 ### 核心字段
@@ -91,12 +91,12 @@
 
 ### 实体
 
-| 实体 | 文件 | 说明 |
-|------|------|------|
-| **Xiansuo** | `xiansuo.py` | 线索实体 |
-| **XiansuoGenjin** | `xiansuo_genjin.py` | 跟进记录 |
-| **XiansuoBaojia** | `xiansuo_baojia.py` | 报价单 |
-| **XiansuoLaiyuan** | `xiansuo_laiyuan.py` | 线索来源配置 |
+| 实体                 | 文件                   | 说明         |
+| -------------------- | ---------------------- | ------------ |
+| **Xiansuo**          | `xiansuo.py`           | 线索实体     |
+| **XiansuoGenjin**    | `xiansuo_genjin.py`    | 跟进记录     |
+| **XiansuoBaojia**    | `xiansuo_baojia.py`    | 报价单       |
+| **XiansuoLaiyuan**   | `xiansuo_laiyuan.py`   | 线索来源配置 |
 | **XiansuoZhuangtai** | `xiansuo_zhuangtai.py` | 线索状态配置 |
 
 ### 核心字段
@@ -126,17 +126,17 @@
 
 ### 实体
 
-| 实体 | 文件 | 说明 |
-|------|------|------|
-| **Hetong** | `hetong.py` | 合同实体 |
-| **HetongMoban** | `hetong_moban.py` | 合同模板 |
-| **HetongQianshu** | `hetong_qianshu.py` | 合同签署记录 |
-| **HetongYifangZhuti** | `hetong_yifang_zhuti.py` | 乙方主体 |
+| 实体                   | 文件                      | 说明         |
+| ---------------------- | ------------------------- | ------------ |
+| **Hetong**             | `hetong.py`               | 合同实体     |
+| **HetongMoban**        | `hetong_moban.py`         | 合同模板     |
+| **HetongQianshu**      | `hetong_qianshu.py`       | 合同签署记录 |
+| **HetongYifangZhuti**  | `hetong_yifang_zhuti.py`  | 乙方主体     |
 | **HetongZhifuFangshi** | `hetong_zhifu_fangshi.py` | 支付方式配置 |
 
 ### 核心字段
 
-```python
+````python
 # Hetong (合同)
 - id: UUID
 - hetong_bianhao: str          # 合同编号
@@ -173,7 +173,7 @@
 - shenpi_ren_id: UUID          # 审批人ID
 - shenpi_jieguo: str           # 审批结果 (approved/rejected)
 - shenpi_yijian: str           # 审批意见
-```
+````
 
 ---
 
@@ -181,13 +181,13 @@
 
 ### 实体
 
-| 实体 | 文件 | 说明 |
-|------|------|------|
-| **QingjiaShenqing** | `qingjia_shenqing.py` | 请假申请 |
-| **BaoxiaoShenqing** | `baoxiao_shenqing.py` | 报销申请 |
-| **CaigouShenqing** | `caigou_shenqing.py` | 采购申请 |
+| 实体                     | 文件                        | 说明         |
+| ------------------------ | --------------------------- | ------------ |
+| **QingjiaShenqing**      | `qingjia_shenqing.py`       | 请假申请     |
+| **BaoxiaoShenqing**      | `baoxiao_shenqing.py`       | 报销申请     |
+| **CaigouShenqing**       | `caigou_shenqing.py`        | 采购申请     |
 | **DuiwaiFukuanShenqing** | `duiwai_fukuan_shenqing.py` | 对外付款申请 |
-| **GongzuoJiaojie** | `gongzuo_jiaojie.py` | 工作交接 |
+| **GongzuoJiaojie**       | `gongzuo_jiaojie.py`        | 工作交接     |
 
 ### 核心字段
 
@@ -215,11 +215,11 @@
 
 ### 实体
 
-| 实体 | 文件 | 说明 |
-|------|------|------|
+| 实体               | 文件                 | 说明     |
+| ------------------ | -------------------- | -------- |
 | **ChanpinXiangmu** | `chanpin_xiangmu.py` | 产品项目 |
-| **ChanpinFenlei** | `chanpin_fenlei.py` | 产品分类 |
-| **ChanpinBuzou** | `chanpin_buzou.py` | 产品步骤 |
+| **ChanpinFenlei**  | `chanpin_fenlei.py`  | 产品分类 |
+| **ChanpinBuzou**   | `chanpin_buzou.py`   | 产品步骤 |
 
 ### 核心字段
 
@@ -291,13 +291,14 @@ frozen_at: "2025-12-19T16:00:00Z"
 ```
 
 **冻结后禁止**:
+
 - ❌ 添加新实体
 - ❌ 删除现有实体
 - ❌ 修改实体关系
 - ❌ 修改核心字段定义
 
 **冻结后允许**:
+
 - ✅ 在现有实体内添加可空字段
 - ✅ 添加索引
 - ✅ 添加计算属性
-
