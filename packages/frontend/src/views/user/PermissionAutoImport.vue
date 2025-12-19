@@ -319,9 +319,7 @@ const importPermissions = async () => {
         if (currentPage > 10) break
       }
 
-      existingPermissionCodes = new Set(
-        allPermissions.map((p) => p.quanxian_bianma)
-      )
+      existingPermissionCodes = new Set(allPermissions.map((p) => p.quanxian_bianma))
     } catch {
       // 如果获取失败，继续执行，让后端返回错误
       console.warn('无法获取已存在的权限列表，将逐个尝试创建')
@@ -362,9 +360,10 @@ const importPermissions = async () => {
     importedCount.value += totalSuccess
 
     if (failCount === 0) {
-      const message = skippedCount > 0
-        ? `成功导入 ${successCount} 个权限，跳过 ${skippedCount} 个已存在的权限！请返回权限管理页面刷新查看`
-        : `成功导入 ${successCount} 个权限！请返回权限管理页面刷新查看`
+      const message =
+        skippedCount > 0
+          ? `成功导入 ${successCount} 个权限，跳过 ${skippedCount} 个已存在的权限！请返回权限管理页面刷新查看`
+          : `成功导入 ${successCount} 个权限！请返回权限管理页面刷新查看`
 
       ElMessage.success({
         message,
