@@ -20,12 +20,7 @@
 
     <!-- 流程列表 -->
     <el-card class="workflow-list">
-      <el-table
-        v-loading="loading"
-        :data="workflowList"
-        stripe
-        style="width: 100%"
-      >
+      <el-table v-loading="loading" :data="workflowList" stripe style="width: 100%">
         <el-table-column prop="workflow_name" label="流程名称" width="200" />
         <el-table-column prop="audit_type" label="流程类型" width="120">
           <template #default="{ row }">
@@ -89,16 +84,11 @@
       width="800px"
       :close-on-click-modal="false"
     >
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="formRules"
-        label-width="120px"
-      >
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px">
         <el-form-item label="流程名称" prop="liucheng_mingcheng">
           <el-input v-model="formData.liucheng_mingcheng" placeholder="请输入流程名称" />
         </el-form-item>
-        
+
         <el-form-item label="流程类型" prop="shenhe_leixing">
           <el-select v-model="formData.shenhe_leixing" placeholder="请选择流程类型">
             <el-option label="合同审核" value="contract" />
@@ -127,11 +117,7 @@
         <!-- 审核步骤配置 -->
         <el-form-item label="审核步骤">
           <div class="workflow-steps">
-            <div
-              v-for="(step, index) in formData.buzhou_peizhi"
-              :key="index"
-              class="step-item"
-            >
+            <div v-for="(step, index) in formData.buzhou_peizhi" :key="index" class="step-item">
               <el-card>
                 <div class="step-header">
                   <span class="step-number">步骤 {{ index + 1 }}</span>
@@ -145,7 +131,7 @@
                     删除
                   </el-button>
                 </div>
-                
+
                 <el-row :gutter="20">
                   <el-col :span="12">
                     <el-form-item label="步骤名称">
@@ -169,21 +155,14 @@
                     </el-form-item>
                   </el-col>
                 </el-row>
-                
+
                 <el-form-item label="步骤描述">
-                  <el-input
-                    v-model="step.buzhou_miaoshu"
-                    placeholder="请输入步骤描述"
-                  />
+                  <el-input v-model="step.buzhou_miaoshu" placeholder="请输入步骤描述" />
                 </el-form-item>
               </el-card>
             </div>
-            
-            <el-button
-              type="dashed"
-              style="width: 100%; margin-top: 10px;"
-              @click="addStep"
-            >
+
+            <el-button type="dashed" style="width: 100%; margin-top: 10px" @click="addStep">
               <el-icon><Plus /></el-icon>
               添加步骤
             </el-button>
@@ -202,12 +181,7 @@
     </el-dialog>
 
     <!-- 流程详情抽屉 -->
-    <el-drawer
-      v-model="detailDrawerVisible"
-      title="审核流程详情"
-      size="700px"
-      direction="rtl"
-    >
+    <el-drawer v-model="detailDrawerVisible" title="审核流程详情" size="700px" direction="rtl">
       <div v-if="currentWorkflow" class="workflow-detail">
         <el-descriptions :column="1" border>
           <el-descriptions-item label="流程名称">
@@ -336,7 +310,7 @@ const currentWorkflow = ref(null)
 const pagination = reactive({
   page: 1,
   size: 20,
-  total: 0
+  total: 0,
 })
 
 // 表单数据
@@ -350,19 +324,15 @@ const formData = reactive({
     {
       buzhou_mingcheng: '',
       buzhou_miaoshu: '',
-      shenhe_ren_jiaose: ''
-    }
-  ]
+      shenhe_ren_jiaose: '',
+    },
+  ],
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  liucheng_mingcheng: [
-    { required: true, message: '请输入流程名称', trigger: 'blur' }
-  ],
-  shenhe_leixing: [
-    { required: true, message: '请选择流程类型', trigger: 'change' }
-  ]
+  liucheng_mingcheng: [{ required: true, message: '请输入流程名称', trigger: 'blur' }],
+  shenhe_leixing: [{ required: true, message: '请选择流程类型', trigger: 'change' }],
 }
 
 // 计算属性
@@ -378,7 +348,7 @@ const getTypeTagType = (type: string) => {
     amount_change: 'warning',
     customer: 'info',
     financial: 'warning',
-    yinhang_huikuan: 'danger'
+    yinhang_huikuan: 'danger',
   }
   return typeMap[type] || 'info'
 }
@@ -391,7 +361,7 @@ const getTypeLabel = (type: string) => {
     amount_change: '金额变更审核',
     customer: '客户审核',
     financial: '财务审核',
-    yinhang_huikuan: '银行汇款审核'
+    yinhang_huikuan: '银行汇款审核',
   }
   return typeMap[type] || type
 }
@@ -400,7 +370,7 @@ const getTypeLabel = (type: string) => {
 const getStatusTagType = (status: string) => {
   const statusMap: Record<string, string> = {
     active: 'success',
-    inactive: 'info'
+    inactive: 'info',
   }
   return statusMap[status] || 'info'
 }
@@ -409,7 +379,7 @@ const getStatusTagType = (status: string) => {
 const getStatusLabel = (status: string) => {
   const statusMap: Record<string, string> = {
     active: '启用',
-    inactive: '禁用'
+    inactive: '禁用',
   }
   return statusMap[status] || status
 }
@@ -421,7 +391,7 @@ const fetchWorkflowList = async () => {
     // 修复：调用真实API获取审核流程列表
     const response = await auditWorkflowApi.getList({
       page: pagination.page,
-      size: pagination.size
+      size: pagination.size,
     })
     workflowList.value = response.items || []
     pagination.total = response.total || 0
@@ -438,7 +408,7 @@ const fetchAvailableRoles = async () => {
     const response = await roleAPI.getRoleList({
       page: 1,
       size: 100,
-      zhuangtai: 'active'
+      zhuangtai: 'active',
     })
     availableRoles.value = response.items
   } catch (error) {
@@ -469,11 +439,12 @@ const handleEdit = async (row: Workflow) => {
     shenhe_leixing: row.audit_type,
     liucheng_miaoshu: row.description,
     zhuangtai: row.status,
-    buzhou_peizhi: row.steps?.map((step: WorkflowStep) => ({
-      buzhou_mingcheng: step.step_name || step.name,  // 兼容两种字段名
-      buzhou_miaoshu: step.description,
-      shenhe_ren_jiaose: step.approver_role
-    })) || []
+    buzhou_peizhi:
+      row.steps?.map((step: WorkflowStep) => ({
+        buzhou_mingcheng: step.step_name || step.name, // 兼容两种字段名
+        buzhou_miaoshu: step.description,
+        shenhe_ren_jiaose: step.approver_role,
+      })) || [],
   })
   await fetchAvailableRoles()
   dialogVisible.value = true
@@ -492,15 +463,11 @@ const handleView = async (row: Workflow) => {
 
 const handleDelete = async (row: Workflow) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除流程"${row.workflow_name}"吗？`,
-      '确认删除',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm(`确定要删除流程"${row.workflow_name}"吗？`, '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     // 修复：调用真实删除API
     await auditWorkflowApi.delete(row.id)
@@ -515,11 +482,11 @@ const handleDelete = async (row: Workflow) => {
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     submitting.value = true
-    
+
     // 修复：调用真实API保存数据，转换字段名
     const submitData = {
       workflow_name: formData.liucheng_mingcheng,
@@ -532,8 +499,8 @@ const handleSubmit = async () => {
         approver_role: step.shenhe_ren_jiaose,
         description: step.buzhou_miaoshu,
         expected_time: 24, // 默认24小时
-        is_required: true
-      }))
+        is_required: true,
+      })),
     }
 
     if (isEdit.value) {
@@ -543,7 +510,7 @@ const handleSubmit = async () => {
       await auditWorkflowApi.create(submitData)
       ElMessage.success('创建成功')
     }
-    
+
     dialogVisible.value = false
     fetchWorkflowList()
   } catch (error) {
@@ -557,7 +524,7 @@ const addStep = () => {
   formData.buzhou_peizhi.push({
     buzhou_mingcheng: '',
     buzhou_miaoshu: '',
-    shenhe_ren_jiaose: ''
+    shenhe_ren_jiaose: '',
   })
 }
 
@@ -576,9 +543,9 @@ const resetForm = () => {
       {
         buzhou_mingcheng: '',
         buzhou_miaoshu: '',
-        shenhe_ren_jiaose: ''
-      }
-    ]
+        shenhe_ren_jiaose: '',
+      },
+    ],
   })
   formRef.value?.clearValidate()
 }
@@ -599,7 +566,7 @@ const getStepIcon = (step: WorkflowStep) => {
     1: 'User',
     2: 'Document',
     3: 'Check',
-    default: 'Operation'
+    default: 'Operation',
   }
   const stepNum = step.step || step.step_order || 'default'
   return icons[stepNum] || icons.default
@@ -622,7 +589,7 @@ const getTotalExpectedTime = (steps: WorkflowStep[]) => {
 
 const getMaxProcessingTime = (steps: WorkflowStep[]) => {
   if (!steps || steps.length === 0) return 0
-  return Math.max(...steps.map(step => step.expected_time || 24))
+  return Math.max(...steps.map((step) => step.expected_time || 24))
 }
 
 const getAverageProcessingTime = (steps: WorkflowStep[]) => {
@@ -633,8 +600,8 @@ const getAverageProcessingTime = (steps: WorkflowStep[]) => {
 
 const getCriticalPath = (steps: WorkflowStep[]) => {
   if (!steps || steps.length === 0) return '-'
-  const requiredSteps = steps.filter(step => step.is_required !== false)
-  return requiredSteps.map(step => step.name || step.step_name).join(' → ')
+  const requiredSteps = steps.filter((step) => step.is_required !== false)
+  return requiredSteps.map((step) => step.name || step.step_name).join(' → ')
 }
 
 // 生命周期

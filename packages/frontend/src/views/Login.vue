@@ -27,9 +27,27 @@
           <div class="brand-logo">
             <div class="logo-circle">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                  d="M12 2L2 7L12 12L22 7L12 2Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M2 17L12 22L22 17"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M2 12L12 17L22 12"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
             </div>
           </div>
@@ -100,9 +118,7 @@
             </el-form-item>
 
             <div class="form-options">
-              <el-checkbox v-model="rememberMe" class="remember-checkbox">
-                记住我
-              </el-checkbox>
+              <el-checkbox v-model="rememberMe" class="remember-checkbox"> 记住我 </el-checkbox>
               <a href="#" class="forgot-link" @click.prevent>忘记密码？</a>
             </div>
 
@@ -161,19 +177,19 @@ const error = ref('')
 // 登录表单数据
 const loginForm = reactive<LoginRequest>({
   yonghu_ming: '',
-  mima: ''
+  mima: '',
 })
 
 // 表单验证规则
 const loginRules = {
   yonghu_ming: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }
+    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' },
   ],
   mima: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 50, message: '密码长度在 6 到 50 个字符', trigger: 'blur' }
-  ]
+    { min: 6, max: 50, message: '密码长度在 6 到 50 个字符', trigger: 'blur' },
+  ],
 }
 
 // 粒子样式生成
@@ -188,7 +204,7 @@ const getParticleStyle = (index: number) => {
     height: `${size}px`,
     left: `${left}%`,
     animationDuration: `${animationDuration}s`,
-    animationDelay: `${animationDelay}s`
+    animationDelay: `${animationDelay}s`,
   }
 }
 
@@ -362,7 +378,8 @@ onMounted(() => {
 }
 
 @keyframes orbFloat {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
   33% {
@@ -696,9 +713,16 @@ onMounted(() => {
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-10px); }
-  75% { transform: translateX(10px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
 }
 
 .error-icon {

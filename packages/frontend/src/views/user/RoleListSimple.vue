@@ -20,41 +20,31 @@
             <el-icon><Search /></el-icon>
           </template>
         </el-input>
-        
+
         <el-button @click="handleSearch" style="margin-left: 10px">
           <el-icon><Search /></el-icon>
           搜索
         </el-button>
       </div>
-      
+
       <div class="search-right">
         <el-button type="primary" @click="handleCreate" v-if="hasPermission('role:create')">
           <el-icon><Plus /></el-icon>
           新增角色
         </el-button>
-        <el-button @click="handleRefresh">
-          刷新
-        </el-button>
+        <el-button @click="handleRefresh"> 刷新 </el-button>
       </div>
     </div>
 
     <!-- 角色列表 -->
     <el-card class="table-card">
-      <el-table
-        :data="roleStore.roles"
-        :loading="roleStore.loading"
-        stripe
-        style="width: 100%"
-      >
+      <el-table :data="roleStore.roles" :loading="roleStore.loading" stripe style="width: 100%">
         <el-table-column prop="jiaose_ming" label="角色名称" min-width="120" />
         <el-table-column prop="jiaose_bianma" label="角色编码" min-width="120" />
         <el-table-column prop="miaoshu" label="角色描述" min-width="200" show-overflow-tooltip />
         <el-table-column prop="zhuangtai" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag 
-              :type="row.zhuangtai === 'active' ? 'success' : 'danger'"
-              size="small"
-            >
+            <el-tag :type="row.zhuangtai === 'active' ? 'success' : 'danger'" size="small">
               {{ row.zhuangtai === 'active' ? '启用' : '禁用' }}
             </el-tag>
           </template>
@@ -139,7 +129,7 @@ const roleStore = useRoleStore()
 // 响应式数据
 const searchForm = ref({
   search: '',
-  zhuangtai: ''
+  zhuangtai: '',
 })
 
 const formVisible = ref(false)
@@ -194,7 +184,7 @@ const handleDelete = async (role: Role) => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 

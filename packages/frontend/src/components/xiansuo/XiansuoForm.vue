@@ -23,7 +23,7 @@
             />
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="联系人" prop="lianxi_ren">
             <el-input
@@ -34,7 +34,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="联系电话" prop="lianxi_dianhua">
@@ -45,7 +45,7 @@
             />
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="联系邮箱" prop="lianxi_youxiang">
             <el-input
@@ -56,7 +56,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="行业类型" prop="hangye_leixing">
@@ -76,7 +76,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="公司规模" prop="gongsi_guimo">
             <el-select
@@ -94,7 +94,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-form-item label="注册地址" prop="zhuce_dizhi">
         <el-input
           v-model="formData.zhuce_dizhi"
@@ -102,7 +102,7 @@
           :disabled="mode === 'view'"
         />
       </el-form-item>
-      
+
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="服务类型" prop="fuwu_leixing">
@@ -121,7 +121,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="预算范围" prop="yusuan_fanwei">
             <el-select
@@ -139,7 +139,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="时间要求" prop="shijian_yaoqiu">
@@ -157,7 +157,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="线索来源" prop="laiyuan_id">
             <el-select
@@ -176,7 +176,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="质量评估" prop="zhiliang_pinggu">
@@ -192,7 +192,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        
+
         <el-col :span="12">
           <el-form-item label="质量分数" prop="zhiliang_fenshu">
             <el-input-number
@@ -205,7 +205,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-form-item label="来源详细" prop="laiyuan_xiangxi">
         <el-input
           v-model="formData.laiyuan_xiangxi"
@@ -215,7 +215,7 @@
           :disabled="mode === 'view'"
         />
       </el-form-item>
-      
+
       <el-form-item label="详细需求" prop="xiangxi_xuqiu">
         <el-input
           v-model="formData.xiangxi_xuqiu"
@@ -230,12 +230,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button
-          v-if="mode !== 'view'"
-          type="primary"
-          :loading="loading"
-          @click="handleSubmit"
-        >
+        <el-button v-if="mode !== 'view'" type="primary" :loading="loading" @click="handleSubmit">
           {{ mode === 'create' ? '创建' : '更新' }}
         </el-button>
       </div>
@@ -258,7 +253,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  xiansuo: null
+  xiansuo: null,
 })
 
 // Emits
@@ -289,39 +284,29 @@ const formData = ref<XiansuoCreate & { zhiliang_fenshu?: number }>({
   zhiliang_pinggu: 'medium',
   zhiliang_fenshu: 60,
   laiyuan_id: '',
-  laiyuan_xiangxi: ''
+  laiyuan_xiangxi: '',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  gongsi_mingcheng: [
-    { required: true, message: '请输入公司名称', trigger: 'blur' }
-  ],
-  lianxi_ren: [
-    { required: true, message: '请输入联系人姓名', trigger: 'blur' }
-  ],
-  lianxi_dianhua: [
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
-  ],
-  lianxi_youxiang: [
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-  ],
-  laiyuan_id: [
-    { required: true, message: '请选择线索来源', trigger: 'change' }
-  ]
+  gongsi_mingcheng: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
+  lianxi_ren: [{ required: true, message: '请输入联系人姓名', trigger: 'blur' }],
+  lianxi_dianhua: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }],
+  lianxi_youxiang: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }],
+  laiyuan_id: [{ required: true, message: '请选择线索来源', trigger: 'change' }],
 }
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 const dialogTitle = computed(() => {
   const titles = {
     create: '新增线索',
     edit: '编辑线索',
-    view: '查看线索'
+    view: '查看线索',
   }
   return titles[props.mode]
 })
@@ -349,7 +334,7 @@ watch(
         zhiliang_pinggu: newXiansuo.zhiliang_pinggu,
         zhiliang_fenshu: newXiansuo.zhiliang_fenshu,
         laiyuan_id: newXiansuo.laiyuan_id,
-        laiyuan_xiangxi: newXiansuo.laiyuan_xiangxi || ''
+        laiyuan_xiangxi: newXiansuo.laiyuan_xiangxi || '',
       }
     }
   },
@@ -389,7 +374,7 @@ const resetForm = () => {
     zhiliang_pinggu: 'medium',
     zhiliang_fenshu: 60,
     laiyuan_id: '',
-    laiyuan_xiangxi: ''
+    laiyuan_xiangxi: '',
   }
   nextTick(() => {
     formRef.value?.clearValidate()

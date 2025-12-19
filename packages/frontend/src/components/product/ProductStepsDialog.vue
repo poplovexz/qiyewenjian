@@ -431,7 +431,6 @@ const handleSaveStep = async (step: EditableStep, index: number) => {
 
     delete step.originalData
   } catch (error: unknown) {
-
     // 提取详细的错误信息
     let errorMessage = '保存步骤失败'
     const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
@@ -555,7 +554,6 @@ const handleBatchSave = async () => {
 
         delete step.originalData
       } catch (error: unknown) {
-
         let errorMessage = `步骤 ${i + 1}`
         if (step.buzou_mingcheng) {
           errorMessage += ` (${step.buzou_mingcheng})`

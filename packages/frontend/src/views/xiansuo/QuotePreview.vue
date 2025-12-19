@@ -41,8 +41,12 @@
               <div class="company">{{ baojia.xiansuo_info.gongsi_mingcheng }}</div>
               <div class="contact">
                 <span>{{ baojia.xiansuo_info.lianxi_ren }}</span>
-                <span v-if="baojia.xiansuo_info.lianxi_dianhua"> · {{ baojia.xiansuo_info.lianxi_dianhua }}</span>
-                <span v-if="baojia.xiansuo_info.lianxi_youxiang"> · {{ baojia.xiansuo_info.lianxi_youxiang }}</span>
+                <span v-if="baojia.xiansuo_info.lianxi_dianhua">
+                  · {{ baojia.xiansuo_info.lianxi_dianhua }}</span
+                >
+                <span v-if="baojia.xiansuo_info.lianxi_youxiang">
+                  · {{ baojia.xiansuo_info.lianxi_youxiang }}</span
+                >
               </div>
             </div>
           </el-descriptions-item>
@@ -77,9 +81,7 @@
           </el-table-column>
           <el-table-column prop="shuliang" label="数量" width="100" align="center" />
           <el-table-column label="单价" width="120" align="right">
-            <template #default="{ row }">
-              ¥{{ formatAmount(row.danjia) }}
-            </template>
+            <template #default="{ row }"> ¥{{ formatAmount(row.danjia) }} </template>
           </el-table-column>
           <el-table-column label="小计" width="140" align="right">
             <template #default="{ row }">
@@ -131,12 +133,12 @@ const normalizeBaojia = (detail: XiansuoBaojiaDetail): XiansuoBaojiaDetail => {
   return {
     ...detail,
     zongji_jine: Number(detail.zongji_jine),
-    xiangmu_list: detail.xiangmu_list.map(item => ({
+    xiangmu_list: detail.xiangmu_list.map((item) => ({
       ...item,
       shuliang: Number(item.shuliang),
       danjia: Number(item.danjia),
-      xiaoji: Number(item.xiaoji)
-    }))
+      xiaoji: Number(item.xiaoji),
+    })),
   }
 }
 
@@ -159,7 +161,7 @@ const getStatusTagType = (status: string) => {
     sent: 'warning',
     accepted: 'success',
     rejected: 'danger',
-    expired: 'danger'
+    expired: 'danger',
   }
   return map[status] || 'info'
 }
@@ -170,7 +172,7 @@ const getStatusText = (status: string) => {
     sent: '已发送',
     accepted: '已接受',
     rejected: '已拒绝',
-    expired: '已过期'
+    expired: '已过期',
   }
   return map[status] || status
 }
@@ -206,10 +208,10 @@ const fetchDetail = async () => {
   const payload = route.query.payload as string | undefined
   if (payload) {
     try {
-    const decoded = JSON.parse(decodeURIComponent(escape(atob(payload)))) as XiansuoBaojiaDetail
-    baojia.value = normalizeBaojia(decoded)
-  } catch (errorDecode) {
-    error.value = '分享链接无效或已过期。'
+      const decoded = JSON.parse(decodeURIComponent(escape(atob(payload)))) as XiansuoBaojiaDetail
+      baojia.value = normalizeBaojia(decoded)
+    } catch (errorDecode) {
+      error.value = '分享链接无效或已过期。'
     } finally {
       loading.value = false
     }
@@ -247,15 +249,11 @@ const confirmQuote = async () => {
   if (!baojia.value) return
 
   try {
-    await ElMessageBox.confirm(
-      '确定要确认这个报价吗？',
-      '确认报价',
-      {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm('确定要确认这个报价吗？', '确认报价', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     confirmLoading.value = true
     await xiansuoStore.confirmBaojia(baojia.value.id)
@@ -279,15 +277,11 @@ const rejectQuote = async () => {
   if (!baojia.value) return
 
   try {
-    await ElMessageBox.confirm(
-      '确定要拒绝这个报价吗？拒绝后可以重新创建新的报价。',
-      '拒绝报价',
-      {
-        confirmButtonText: '拒绝',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm('确定要拒绝这个报价吗？拒绝后可以重新创建新的报价。', '拒绝报价', {
+      confirmButtonText: '拒绝',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     rejectLoading.value = true
     await xiansuoStore.rejectBaojia(baojia.value.id)
@@ -380,7 +374,7 @@ onMounted(() => {
 }
 
 .highlight {
-  color: #E6A23C;
+  color: #e6a23c;
   font-weight: 700;
 }
 

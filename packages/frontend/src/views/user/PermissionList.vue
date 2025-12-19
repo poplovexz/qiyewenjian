@@ -20,7 +20,7 @@
             <el-icon><Search /></el-icon>
           </template>
         </el-input>
-        
+
         <el-select
           v-model="searchForm.ziyuan_leixing"
           placeholder="资源类型"
@@ -31,7 +31,7 @@
           <el-option label="按钮" value="button" />
           <el-option label="接口" value="api" />
         </el-select>
-        
+
         <el-select
           v-model="searchForm.zhuangtai"
           placeholder="状态筛选"
@@ -41,18 +41,18 @@
           <el-option label="启用" value="active" />
           <el-option label="禁用" value="inactive" />
         </el-select>
-        
+
         <el-button @click="handleSearch" style="margin-left: 10px">
           <el-icon><Search /></el-icon>
           搜索
         </el-button>
-        
+
         <el-button @click="handleReset" style="margin-left: 10px">
           <el-icon><Refresh /></el-icon>
           重置
         </el-button>
       </div>
-      
+
       <div class="search-right">
         <el-button
           v-if="hasPermission('permission:create')"
@@ -83,23 +83,13 @@
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item
-                @click="handleBatchEnable"
-                :disabled="!canBatchEnable"
-              >
+              <el-dropdown-item @click="handleBatchEnable" :disabled="!canBatchEnable">
                 批量启用
               </el-dropdown-item>
-              <el-dropdown-item
-                @click="handleBatchDisable"
-                :disabled="!canBatchDisable"
-              >
+              <el-dropdown-item @click="handleBatchDisable" :disabled="!canBatchDisable">
                 批量禁用
               </el-dropdown-item>
-              <el-dropdown-item
-                @click="handleBatchDelete"
-                :disabled="!canBatchDelete"
-                divided
-              >
+              <el-dropdown-item @click="handleBatchDelete" :disabled="!canBatchDelete" divided>
                 批量删除
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -168,19 +158,19 @@
 
     <!-- 权限列表 -->
     <el-card class="table-card">
-      <el-table 
-        :data="permissions" 
+      <el-table
+        :data="permissions"
         :loading="loading"
         stripe
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        
+
         <el-table-column prop="quanxian_ming" label="权限名称" min-width="150">
           <template #default="{ row }">
             <div class="permission-name">
-              <el-tag 
+              <el-tag
                 :type="getResourceTypeTag(row.ziyuan_leixing)"
                 size="small"
                 style="margin-right: 8px"
@@ -191,30 +181,32 @@
             </div>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="quanxian_bianma" label="权限编码" min-width="180" />
-        
+
         <el-table-column prop="miaoshu" label="权限描述" min-width="200" show-overflow-tooltip />
-        
-        <el-table-column prop="ziyuan_lujing" label="资源路径" min-width="200" show-overflow-tooltip />
-        
+
+        <el-table-column
+          prop="ziyuan_lujing"
+          label="资源路径"
+          min-width="200"
+          show-overflow-tooltip
+        />
+
         <el-table-column prop="zhuangtai" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag 
-              :type="row.zhuangtai === 'active' ? 'success' : 'danger'"
-              size="small"
-            >
+            <el-tag :type="row.zhuangtai === 'active' ? 'success' : 'danger'" size="small">
               {{ row.zhuangtai === 'active' ? '启用' : '禁用' }}
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="created_at" label="创建时间" width="180">
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" width="240" fixed="right">
           <template #default="{ row }">
             <el-button
@@ -246,7 +238,7 @@
           </template>
         </el-table-column>
       </el-table>
-      
+
       <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination
@@ -286,7 +278,7 @@ import {
   Connection,
   DataAnalysis,
   ArrowDown,
-  MagicStick
+  MagicStick,
 } from '@element-plus/icons-vue'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { hasPermission } from '@/utils/permissions'
@@ -300,7 +292,7 @@ const permissionStore = usePermissionStore()
 const searchForm = ref({
   search: '',
   ziyuan_leixing: '',
-  zhuangtai: ''
+  zhuangtai: '',
 })
 
 const formVisible = ref(false)
@@ -317,7 +309,7 @@ const {
   pageSize,
   menuPermissions,
   buttonPermissions,
-  apiPermissions
+  apiPermissions,
 } = storeToRefs(permissionStore)
 
 // 工具函数
@@ -325,7 +317,7 @@ const getResourceTypeTag = (type: string) => {
   const typeMap = {
     menu: 'primary',
     button: 'success',
-    api: 'warning'
+    api: 'warning',
   }
   return typeMap[type] || 'info'
 }
@@ -334,7 +326,7 @@ const getResourceTypeText = (type: string) => {
   const typeMap = {
     menu: '菜单',
     button: '按钮',
-    api: '接口'
+    api: '接口',
   }
   return typeMap[type] || type
 }
@@ -370,15 +362,15 @@ const canDeletePermission = (permission: Permission) => {
 
 // 批量操作权限控制
 const canBatchEnable = computed(() => {
-  return selectedPermissions.value.some(p => p.zhuangtai === 'inactive')
+  return selectedPermissions.value.some((p) => p.zhuangtai === 'inactive')
 })
 
 const canBatchDisable = computed(() => {
-  return selectedPermissions.value.some(p => p.zhuangtai === 'active' && canEditPermission(p))
+  return selectedPermissions.value.some((p) => p.zhuangtai === 'active' && canEditPermission(p))
 })
 
 const canBatchDelete = computed(() => {
-  return selectedPermissions.value.every(p => canDeletePermission(p))
+  return selectedPermissions.value.every((p) => canDeletePermission(p))
 })
 
 // 事件处理
@@ -388,7 +380,7 @@ const handleSearch = async () => {
     size: pageSize.value,
     search: searchForm.value.search,
     ziyuan_leixing: searchForm.value.ziyuan_leixing,
-    zhuangtai: searchForm.value.zhuangtai
+    zhuangtai: searchForm.value.zhuangtai,
   })
 }
 
@@ -396,7 +388,7 @@ const handleReset = () => {
   searchForm.value = {
     search: '',
     ziyuan_leixing: '',
-    zhuangtai: ''
+    zhuangtai: '',
   }
   handleSearch()
 }
@@ -432,10 +424,10 @@ const handleDelete = async (perm: Permission) => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
-    
+
     await permissionStore.deletePermission(perm.id)
     await handleSearch()
     ElMessage.success('权限删除成功')
@@ -468,9 +460,7 @@ const handleFormSuccess = () => {
 // 批量操作处理
 const handleBatchEnable = async () => {
   try {
-    const ids = selectedPermissions.value
-      .filter(p => p.zhuangtai === 'inactive')
-      .map(p => p.id)
+    const ids = selectedPermissions.value.filter((p) => p.zhuangtai === 'inactive').map((p) => p.id)
 
     if (ids.length === 0) {
       ElMessage.warning('没有可启用的权限')
@@ -488,8 +478,8 @@ const handleBatchEnable = async () => {
 const handleBatchDisable = async () => {
   try {
     const ids = selectedPermissions.value
-      .filter(p => p.zhuangtai === 'active' && canEditPermission(p))
-      .map(p => p.id)
+      .filter((p) => p.zhuangtai === 'active' && canEditPermission(p))
+      .map((p) => p.id)
 
     if (ids.length === 0) {
       ElMessage.warning('没有可禁用的权限')
@@ -506,7 +496,7 @@ const handleBatchDisable = async () => {
 
 const handleBatchDelete = async () => {
   try {
-    const deletablePermissions = selectedPermissions.value.filter(p => canDeletePermission(p))
+    const deletablePermissions = selectedPermissions.value.filter((p) => canDeletePermission(p))
 
     if (deletablePermissions.length === 0) {
       ElMessage.warning('没有可删除的权限')
@@ -519,11 +509,11 @@ const handleBatchDelete = async () => {
       {
         confirmButtonText: '确定删除',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 
-    const ids = deletablePermissions.map(p => p.id)
+    const ids = deletablePermissions.map((p) => p.id)
     ElMessage.success(`成功删除 ${ids.length} 个权限`)
     selectedPermissions.value = []
     handleSearch()

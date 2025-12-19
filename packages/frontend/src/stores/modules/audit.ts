@@ -153,7 +153,11 @@ export const useAuditStore = defineStore('audit', () => {
   }
 
   // 处理审核操作
-  const processAuditAction = async (workflowId: string, stepId: string, actionData: AuditActionData) => {
+  const processAuditAction = async (
+    workflowId: string,
+    stepId: string,
+    actionData: AuditActionData
+  ) => {
     try {
       loading.value = true
       const response = await auditWorkflowApi.processAction(workflowId, stepId, actionData)
@@ -186,12 +190,12 @@ export const useAuditStore = defineStore('audit', () => {
     try {
       loading.value = true
       const response = await auditWorkflowApi.cancel(workflowId, reason)
-      
+
       // 刷新当前工作流详情
       if (currentWorkflow.value?.id === workflowId) {
         await fetchWorkflowDetail(workflowId)
       }
-      
+
       return response.data
     } catch (error) {
       throw error
@@ -211,11 +215,13 @@ export const useAuditStore = defineStore('audit', () => {
   }
 
   // 批量审核操作
-  const batchProcessAudit = async (actions: Array<{
-    workflowId: string
-    stepId: string
-    actionData: AuditActionData
-  }>) => {
+  const batchProcessAudit = async (
+    actions: Array<{
+      workflowId: string
+      stepId: string
+      actionData: AuditActionData
+    }>
+  ) => {
     try {
       loading.value = true
       const results: Array<{ success: boolean; data?: unknown; error?: string }> = []
@@ -267,7 +273,7 @@ export const useAuditStore = defineStore('audit', () => {
           return {
             needsAudit: true,
             rule: rule,
-            reason: rule.guize_miaoshu
+            reason: rule.guize_miaoshu,
           }
         }
       }
@@ -279,7 +285,10 @@ export const useAuditStore = defineStore('audit', () => {
   }
 
   // 检查触发条件
-  const checkTriggerConditions = (conditions: TriggerConditions, triggerData: TriggerData): boolean => {
+  const checkTriggerConditions = (
+    conditions: TriggerConditions,
+    triggerData: TriggerData
+  ): boolean => {
     try {
       // 金额阈值检查
       if (conditions.amount_threshold && triggerData.amount_change) {
@@ -289,7 +298,7 @@ export const useAuditStore = defineStore('audit', () => {
           return true
         }
       }
-      
+
       // 百分比阈值检查
       if (conditions.percentage_threshold && triggerData.percentage_change) {
         const threshold = parseFloat(conditions.percentage_threshold)
@@ -298,9 +307,9 @@ export const useAuditStore = defineStore('audit', () => {
           return true
         }
       }
-      
+
       // 其他条件检查...
-      
+
       return false
     } catch (error) {
       return false
@@ -344,6 +353,6 @@ export const useAuditStore = defineStore('audit', () => {
     fetchRuleConfig,
     checkNeedsAudit,
     checkTriggerConditions,
-    resetState
+    resetState,
   }
 })

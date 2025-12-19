@@ -35,9 +35,7 @@
           show-word-limit
         >
           <template #append>
-            <el-button @click="autoFillAll" :icon="Refresh">
-              自动填充
-            </el-button>
+            <el-button @click="autoFillAll" :icon="Refresh"> 自动填充 </el-button>
           </template>
         </el-input>
         <div class="form-tip">
@@ -60,7 +58,7 @@
           <span>已自动生成描述，可手动修改</span>
         </div>
       </el-form-item>
-      
+
       <el-form-item label="资源类型" prop="ziyuan_leixing">
         <el-select
           v-model="formData.ziyuan_leixing"
@@ -107,7 +105,7 @@
           {{ getResourcePathTip() }}
         </div>
       </el-form-item>
-      
+
       <el-form-item label="状态" prop="zhuangtai">
         <el-radio-group v-model="formData.zhuangtai">
           <el-radio label="active">启用</el-radio>
@@ -115,16 +113,11 @@
         </el-radio-group>
       </el-form-item>
     </el-form>
-    
+
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button 
-          v-if="mode !== 'view'"
-          type="primary" 
-          :loading="loading"
-          @click="handleSubmit"
-        >
+        <el-button v-if="mode !== 'view'" type="primary" :loading="loading" @click="handleSubmit">
           {{ mode === 'create' ? '创建' : '保存' }}
         </el-button>
       </div>
@@ -151,7 +144,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  permission: null
+  permission: null,
 })
 
 const emit = defineEmits<Emits>()
@@ -167,20 +160,20 @@ const formData = ref({
   miaoshu: '',
   ziyuan_leixing: '',
   ziyuan_lujing: '',
-  zhuangtai: 'active'
+  zhuangtai: 'active',
 })
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 const dialogTitle = computed(() => {
   const titleMap = {
     create: '新增权限',
     edit: '编辑权限',
-    view: '查看权限'
+    view: '查看权限',
   }
   return titleMap[props.mode]
 })
@@ -203,88 +196,131 @@ const getResourcePathTip = () => {
 const formRules: FormRules = {
   quanxian_ming: [
     { required: true, message: '请输入权限名称', trigger: 'blur' },
-    { min: 2, max: 50, message: '权限名称长度在 2 到 50 个字符', trigger: 'blur' }
+    { min: 2, max: 50, message: '权限名称长度在 2 到 50 个字符', trigger: 'blur' },
   ],
   quanxian_bianma: [
     { required: true, message: '请输入权限编码', trigger: 'blur' },
     { min: 2, max: 100, message: '权限编码长度在 2 到 100 个字符', trigger: 'blur' },
-    { pattern: /^[a-zA-Z][a-zA-Z0-9_:]*$/, message: '权限编码必须以字母开头，只能包含字母、数字、下划线和冒号', trigger: 'blur' }
+    {
+      pattern: /^[a-zA-Z][a-zA-Z0-9_:]*$/,
+      message: '权限编码必须以字母开头，只能包含字母、数字、下划线和冒号',
+      trigger: 'blur',
+    },
   ],
-  miaoshu: [
-    { max: 200, message: '权限描述不能超过 200 个字符', trigger: 'blur' }
-  ],
-  ziyuan_leixing: [
-    { required: true, message: '请选择资源类型', trigger: 'change' }
-  ],
+  miaoshu: [{ max: 200, message: '权限描述不能超过 200 个字符', trigger: 'blur' }],
+  ziyuan_leixing: [{ required: true, message: '请选择资源类型', trigger: 'change' }],
   ziyuan_lujing: [
     { required: true, message: '请输入资源路径', trigger: 'blur' },
-    { max: 200, message: '资源路径不能超过 200 个字符', trigger: 'blur' }
+    { max: 200, message: '资源路径不能超过 200 个字符', trigger: 'blur' },
   ],
-  zhuangtai: [
-    { required: true, message: '请选择状态', trigger: 'change' }
-  ]
+  zhuangtai: [{ required: true, message: '请选择状态', trigger: 'change' }],
 }
 
 // 中文拼音映射表（常用字）
 const pinyinMap: Record<string, string> = {
-  '查': 'cha', '看': 'kan', '阅': 'yue', '读': 'du', '览': 'lan',
-  '创': 'chuang', '建': 'jian', '新': 'xin', '增': 'zeng', '加': 'jia',
-  '编': 'bian', '辑': 'ji', '修': 'xiu', '改': 'gai', '更': 'geng',
-  '删': 'shan', '除': 'chu', '移': 'yi',
-  '用': 'yong', '户': 'hu', '客': 'ke', '服': 'fu',
-  '角': 'jue', '色': 'se', '权': 'quan', '限': 'xian',
-  '管': 'guan', '理': 'li', '员': 'yuan',
-  '业': 'ye', '务': 'wu', '财': 'cai',
-  '合': 'he', '同': 'tong', '报': 'bao', '价': 'jia',
-  '线': 'xian', '索': 'suo', '跟': 'gen', '进': 'jin',
-  '审': 'shen', '核': 'he', '批': 'pi', '准': 'zhun',
-  '导': 'dao', '出': 'chu', '入': 'ru',
-  '上': 'shang', '传': 'chuan', '下': 'xia', '载': 'zai',
-  '启': 'qi', '禁': 'jin',
-  '列': 'lie', '表': 'biao', '详': 'xiang', '情': 'qing',
-  '统': 'tong', '计': 'ji', '分': 'fen', '析': 'xi'
+  查: 'cha',
+  看: 'kan',
+  阅: 'yue',
+  读: 'du',
+  览: 'lan',
+  创: 'chuang',
+  建: 'jian',
+  新: 'xin',
+  增: 'zeng',
+  加: 'jia',
+  编: 'bian',
+  辑: 'ji',
+  修: 'xiu',
+  改: 'gai',
+  更: 'geng',
+  删: 'shan',
+  除: 'chu',
+  移: 'yi',
+  用: 'yong',
+  户: 'hu',
+  客: 'ke',
+  服: 'fu',
+  角: 'jue',
+  色: 'se',
+  权: 'quan',
+  限: 'xian',
+  管: 'guan',
+  理: 'li',
+  员: 'yuan',
+  业: 'ye',
+  务: 'wu',
+  财: 'cai',
+  合: 'he',
+  同: 'tong',
+  报: 'bao',
+  价: 'jia',
+  线: 'xian',
+  索: 'suo',
+  跟: 'gen',
+  进: 'jin',
+  审: 'shen',
+  核: 'he',
+  批: 'pi',
+  准: 'zhun',
+  导: 'dao',
+  出: 'chu',
+  入: 'ru',
+  上: 'shang',
+  传: 'chuan',
+  下: 'xia',
+  载: 'zai',
+  启: 'qi',
+  禁: 'jin',
+  列: 'lie',
+  表: 'biao',
+  详: 'xiang',
+  情: 'qing',
+  统: 'tong',
+  计: 'ji',
+  分: 'fen',
+  析: 'xi',
 }
 
 // 操作动词映射
 const actionMap: Record<string, string> = {
-  '查看': 'read',
-  '阅读': 'read',
-  '查询': 'query',
-  '创建': 'create',
-  '新建': 'create',
-  '新增': 'create',
-  '添加': 'create',
-  '编辑': 'update',
-  '修改': 'update',
-  '更新': 'update',
-  '删除': 'delete',
-  '移除': 'delete',
-  '导出': 'export',
-  '导入': 'import',
-  '上传': 'upload',
-  '下载': 'download',
-  '审核': 'audit',
-  '审批': 'approve',
-  '启用': 'enable',
-  '禁用': 'disable',
-  '管理': 'manage',
-  '分配': 'assign',
-  '统计': 'statistics'
+  查看: 'read',
+  阅读: 'read',
+  查询: 'query',
+  创建: 'create',
+  新建: 'create',
+  新增: 'create',
+  添加: 'create',
+  编辑: 'update',
+  修改: 'update',
+  更新: 'update',
+  删除: 'delete',
+  移除: 'delete',
+  导出: 'export',
+  导入: 'import',
+  上传: 'upload',
+  下载: 'download',
+  审核: 'audit',
+  审批: 'approve',
+  启用: 'enable',
+  禁用: 'disable',
+  管理: 'manage',
+  分配: 'assign',
+  统计: 'statistics',
 }
 
 // 模块名称映射
 const moduleMap: Record<string, string> = {
-  '用户': 'user',
-  '客户': 'customer',
-  '角色': 'role',
-  '权限': 'permission',
-  '合同': 'contract',
-  '报价': 'quote',
-  '线索': 'lead',
-  '业务': 'business',
-  '财务': 'finance',
-  '审核': 'audit',
-  '审批': 'approval'
+  用户: 'user',
+  客户: 'customer',
+  角色: 'role',
+  权限: 'permission',
+  合同: 'contract',
+  报价: 'quote',
+  线索: 'lead',
+  业务: 'business',
+  财务: 'finance',
+  审核: 'audit',
+  审批: 'approval',
 }
 
 // 智能分析权限名称
@@ -389,7 +425,20 @@ const recommendResourceType = () => {
   // 菜单相关关键词
   const menuKeywords = ['页面', '菜单', '访问', '进入', '打开', '列表', '管理']
   // 按钮相关关键词
-  const buttonKeywords = ['创建', '新增', '编辑', '修改', '删除', '导出', '导入', '审核', '审批', '启用', '禁用', '分配']
+  const buttonKeywords = [
+    '创建',
+    '新增',
+    '编辑',
+    '修改',
+    '删除',
+    '导出',
+    '导入',
+    '审核',
+    '审批',
+    '启用',
+    '禁用',
+    '分配',
+  ]
 
   // 检查是否包含菜单关键词
   for (const keyword of menuKeywords) {
@@ -503,26 +552,30 @@ const resetForm = () => {
     miaoshu: '',
     ziyuan_leixing: '',
     ziyuan_lujing: '',
-    zhuangtai: 'active'
+    zhuangtai: 'active',
   }
   formRef.value?.clearValidate()
 }
 
 // 监听权限数据变化
-watch(() => props.permission, (newPermission) => {
-  if (newPermission) {
-    formData.value = {
-      quanxian_ming: newPermission.quanxian_ming || '',
-      quanxian_bianma: newPermission.quanxian_bianma || '',
-      miaoshu: newPermission.miaoshu || '',
-      ziyuan_leixing: newPermission.ziyuan_leixing || '',
-      ziyuan_lujing: newPermission.ziyuan_lujing || '',
-      zhuangtai: newPermission.zhuangtai || 'active'
+watch(
+  () => props.permission,
+  (newPermission) => {
+    if (newPermission) {
+      formData.value = {
+        quanxian_ming: newPermission.quanxian_ming || '',
+        quanxian_bianma: newPermission.quanxian_bianma || '',
+        miaoshu: newPermission.miaoshu || '',
+        ziyuan_leixing: newPermission.ziyuan_leixing || '',
+        ziyuan_lujing: newPermission.ziyuan_lujing || '',
+        zhuangtai: newPermission.zhuangtai || 'active',
+      }
+    } else {
+      resetForm()
     }
-  } else {
-    resetForm()
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 // 处理关闭
 const handleClose = () => {
@@ -546,7 +599,7 @@ const handleSubmit = async () => {
       await permissionStore.updatePermission(props.permission!.id, formData.value)
       ElMessage.success('权限更新成功')
     }
-    
+
     emit('success')
     handleClose()
   } catch (error) {

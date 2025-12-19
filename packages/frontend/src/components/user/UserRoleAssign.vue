@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-model="visible"
-    title="分配角色"
-    width="500px"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="visible" title="分配角色" width="500px" :before-close="handleClose">
     <div v-loading="loading" class="role-assign-container">
       <div class="user-info">
         <el-descriptions :column="1" border size="small">
@@ -52,9 +47,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="submitting">
-          确定
-        </el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="submitting"> 确定 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -89,23 +82,23 @@ const selectedRoles = ref<string[]>([])
 // 计算属性
 const visible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 // 获取角色名称
 const getRoleName = (roleId: string) => {
-  const role = availableRoles.value.find(r => r.id === roleId)
+  const role = availableRoles.value.find((r) => r.id === roleId)
   return role?.jiaose_ming || ''
 }
 
 // 获取用户信息
 const fetchUserInfo = async () => {
   if (!props.userId) return
-  
+
   try {
     userInfo.value = await userApi.getUserById(props.userId)
     // 设置当前用户的角色
-    selectedRoles.value = userInfo.value.roles?.map(role => role.id) || []
+    selectedRoles.value = userInfo.value.roles?.map((role) => role.id) || []
   } catch (error) {
     ElMessage.error('获取用户信息失败')
   }
@@ -125,10 +118,7 @@ const fetchAvailableRoles = async () => {
 const initData = async () => {
   loading.value = true
   try {
-    await Promise.all([
-      fetchUserInfo(),
-      fetchAvailableRoles()
-    ])
+    await Promise.all([fetchUserInfo(), fetchAvailableRoles()])
   } finally {
     loading.value = false
   }

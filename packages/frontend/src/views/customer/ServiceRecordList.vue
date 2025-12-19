@@ -20,7 +20,7 @@
             <el-icon><Search /></el-icon>
           </template>
         </el-input>
-        
+
         <el-select
           v-model="searchForm.goutong_fangshi"
           placeholder="沟通方式"
@@ -33,7 +33,7 @@
           <el-option label="面谈" value="meeting" />
           <el-option label="其他" value="other" />
         </el-select>
-        
+
         <el-select
           v-model="searchForm.chuli_zhuangtai"
           placeholder="处理状态"
@@ -45,7 +45,7 @@
           <el-option label="已完成" value="completed" />
           <el-option label="已关闭" value="closed" />
         </el-select>
-        
+
         <el-button type="primary" @click="handleSearch">
           <el-icon><Search /></el-icon>
           搜索
@@ -55,7 +55,7 @@
           重置
         </el-button>
       </div>
-      
+
       <div class="search-right">
         <el-button
           v-if="selectedRecords.length > 0"
@@ -65,11 +65,7 @@
           <el-icon><Edit /></el-icon>
           批量更新状态
         </el-button>
-        <el-button
-          v-if="selectedRecords.length > 0"
-          type="danger"
-          @click="handleBatchDelete"
-        >
+        <el-button v-if="selectedRecords.length > 0" type="danger" @click="handleBatchDelete">
           <el-icon><Delete /></el-icon>
           批量删除
         </el-button>
@@ -87,7 +83,7 @@
           <el-icon><Document /></el-icon>
         </div>
       </el-card>
-      
+
       <el-card class="stat-card">
         <div class="stat-content">
           <div class="stat-number">{{ statistics.pending_records || 0 }}</div>
@@ -97,7 +93,7 @@
           <el-icon><Clock /></el-icon>
         </div>
       </el-card>
-      
+
       <el-card class="stat-card">
         <div class="stat-content">
           <div class="stat-number">{{ statistics.completed_records || 0 }}</div>
@@ -107,7 +103,7 @@
           <el-icon><Check /></el-icon>
         </div>
       </el-card>
-      
+
       <el-card class="stat-card">
         <div class="stat-content">
           <div class="stat-number">{{ statistics.today_records || 0 }}</div>
@@ -128,18 +124,15 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        
+
         <el-table-column prop="kehu_mingcheng" label="客户名称" min-width="150">
           <template #default="{ row }">
-            <router-link 
-              :to="`/customers/${row.kehu_id}`"
-              class="customer-link"
-            >
+            <router-link :to="`/customers/${row.kehu_id}`" class="customer-link">
               {{ row.kehu_mingcheng }}
             </router-link>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="goutong_fangshi" label="沟通方式" width="100">
           <template #default="{ row }">
             <el-tag :type="getCommunicationType(row.goutong_fangshi)" size="small">
@@ -147,7 +140,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="goutong_neirong" label="沟通内容" min-width="200">
           <template #default="{ row }">
             <div class="content-cell">
@@ -155,7 +148,7 @@
             </div>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="wenti_leixing" label="问题类型" width="100">
           <template #default="{ row }">
             <el-tag v-if="row.wenti_leixing" type="info" size="small">
@@ -164,7 +157,7 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="chuli_zhuangtai" label="处理状态" width="100">
           <template #default="{ row }">
             <el-tag :type="getProcessStatusType(row.chuli_zhuangtai)" size="small">
@@ -172,34 +165,28 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="goutong_shijian" label="沟通时间" width="160">
           <template #default="{ row }">
             {{ formatDateTime(row.goutong_shijian) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="created_at" label="创建时间" width="160">
           <template #default="{ row }">
             {{ formatDateTime(row.created_at) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleView(row)">
-              查看
-            </el-button>
-            <el-button type="warning" size="small" @click="handleEdit(row)">
-              编辑
-            </el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">
-              删除
-            </el-button>
+            <el-button type="primary" size="small" @click="handleView(row)"> 查看 </el-button>
+            <el-button type="warning" size="small" @click="handleEdit(row)"> 编辑 </el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
-      
+
       <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination
@@ -237,7 +224,7 @@ import {
   Document,
   Clock,
   Check,
-  Plus
+  Plus,
 } from '@element-plus/icons-vue'
 import { serviceRecordApi, type ServiceRecord } from '@/api/modules/customer'
 import ServiceRecordDialog from './components/ServiceRecordDialog.vue'
@@ -254,20 +241,20 @@ const dialogMode = ref<'view' | 'edit'>('view')
 const searchForm = ref({
   search: '',
   goutong_fangshi: '',
-  chuli_zhuangtai: ''
+  chuli_zhuangtai: '',
 })
 
 const pagination = ref({
   page: 1,
   size: 20,
-  total: 0
+  total: 0,
 })
 
 const statistics = ref({
   total_records: 0,
   pending_records: 0,
   completed_records: 0,
-  today_records: 0
+  today_records: 0,
 })
 
 // 计算属性
@@ -280,11 +267,11 @@ const loadServiceRecords = async () => {
     const params = {
       page: pagination.value.page,
       size: pagination.value.size,
-      ...searchForm.value
+      ...searchForm.value,
     }
 
     // 过滤空值
-    Object.keys(params).forEach(key => {
+    Object.keys(params).forEach((key) => {
       if (params[key] === '' || params[key] === null || params[key] === undefined) {
         delete params[key]
       }
@@ -304,8 +291,7 @@ const loadStatistics = async () => {
   try {
     const stats = await serviceRecordApi.getStatistics()
     statistics.value = stats
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const handleSearch = () => {
@@ -317,7 +303,7 @@ const handleReset = () => {
   searchForm.value = {
     search: '',
     goutong_fangshi: '',
-    chuli_zhuangtai: ''
+    chuli_zhuangtai: '',
   }
   pagination.value.page = 1
   loadServiceRecords()
@@ -342,7 +328,7 @@ const handleEdit = (record: ServiceRecord) => {
 const handleDelete = async (record: ServiceRecord) => {
   try {
     await ElMessageBox.confirm('确定要删除这条服务记录吗？', '确认删除', {
-      type: 'warning'
+      type: 'warning',
     })
 
     await serviceRecordApi.delete(record.id)
@@ -369,11 +355,11 @@ const handleBatchUpdateStatus = async () => {
         { label: '待处理', value: 'pending' },
         { label: '处理中', value: 'processing' },
         { label: '已完成', value: 'completed' },
-        { label: '已关闭', value: 'closed' }
-      ]
+        { label: '已关闭', value: 'closed' },
+      ],
     })
 
-    const recordIds = selectedRecords.value.map(record => record.id)
+    const recordIds = selectedRecords.value.map((record) => record.id)
     await serviceRecordApi.batchUpdateStatus(recordIds, status)
     ElMessage.success('批量更新成功')
     selectedRecords.value = []
@@ -399,7 +385,7 @@ const handleBatchDelete = async () => {
       { type: 'warning' }
     )
 
-    const recordIds = selectedRecords.value.map(record => record.id)
+    const recordIds = selectedRecords.value.map((record) => record.id)
     await serviceRecordApi.batchDelete(recordIds)
     ElMessage.success('批量删除成功')
     selectedRecords.value = []
@@ -436,7 +422,7 @@ const getCommunicationType = (type: string) => {
     wechat: 'primary',
     email: 'info',
     meeting: 'warning',
-    other: ''
+    other: '',
   }
   return typeMap[type] || ''
 }
@@ -447,7 +433,7 @@ const getCommunicationText = (type: string) => {
     wechat: '微信',
     email: '邮件',
     meeting: '面谈',
-    other: '其他'
+    other: '其他',
   }
   return textMap[type] || type
 }
@@ -459,7 +445,7 @@ const getProblemTypeText = (type: string) => {
     caiwu: '财务',
     fawu: '法务',
     zixun: '咨询',
-    other: '其他'
+    other: '其他',
   }
   return textMap[type] || type
 }
@@ -469,7 +455,7 @@ const getProcessStatusType = (status: string) => {
     pending: 'warning',
     processing: 'primary',
     completed: 'success',
-    closed: 'info'
+    closed: 'info',
   }
   return statusMap[status] || ''
 }
@@ -479,7 +465,7 @@ const getProcessStatusText = (status: string) => {
     pending: '待处理',
     processing: '处理中',
     completed: '已完成',
-    closed: '已关闭'
+    closed: '已关闭',
   }
   return textMap[status] || status
 }

@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
-    title="合规模板详情"
-    width="800px"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="dialogVisible" title="合规模板详情" width="800px" :before-close="handleClose">
     <div v-loading="loading" class="template-detail">
       <template v-if="templateData">
         <!-- 基本信息 -->
@@ -24,7 +19,7 @@
               </div>
             </el-col>
           </el-row>
-          
+
           <el-row :gutter="20" class="detail-row">
             <el-col :span="12">
               <div class="detail-item">
@@ -41,7 +36,7 @@
               </div>
             </el-col>
           </el-row>
-          
+
           <el-row :gutter="20" class="detail-row">
             <el-col :span="12">
               <div class="detail-item">
@@ -166,7 +161,7 @@
               </div>
             </el-col>
           </el-row>
-          
+
           <el-row :gutter="20" class="detail-row" v-if="templateData.updated_at">
             <el-col :span="12">
               <div class="detail-item">
@@ -206,7 +201,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  templateId: ''
+  templateId: '',
 })
 
 // Emits
@@ -224,13 +219,13 @@ const templateData = ref(null)
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 // 方法
 const loadTemplateData = async () => {
   if (!props.templateId) return
-  
+
   try {
     loading.value = true
     templateData.value = await complianceStore.fetchTemplateDetail(props.templateId)
@@ -250,7 +245,7 @@ const getTypeTagType = (type: string) => {
     shuiwu_shenbao: 'danger',
     nianbao_shenbao: 'warning',
     zhizhao_nianjian: 'primary',
-    qita_heguishixiang: 'info'
+    qita_heguishixiang: 'info',
   }
   return typeMap[type] || 'info'
 }
@@ -260,7 +255,7 @@ const getRiskTagType = (risk: string) => {
     low: 'success',
     medium: 'warning',
     high: 'danger',
-    critical: 'danger'
+    critical: 'danger',
   }
   return riskMap[risk] || 'info'
 }
@@ -269,7 +264,7 @@ const getStatusTagType = (status: string) => {
   const statusMap = {
     active: 'success',
     inactive: 'info',
-    draft: 'warning'
+    draft: 'warning',
   }
   return statusMap[status] || 'info'
 }
@@ -295,11 +290,14 @@ const parseJSON = (jsonString: string) => {
 }
 
 // 监听器
-watch(() => props.visible, (visible) => {
-  if (visible && props.templateId) {
-    loadTemplateData()
+watch(
+  () => props.visible,
+  (visible) => {
+    if (visible && props.templateId) {
+      loadTemplateData()
+    }
   }
-})
+)
 </script>
 
 <style scoped>

@@ -49,7 +49,7 @@
                 class="checkbox"
               />
             </th>
-            
+
             <!-- 数据列 -->
             <th
               v-for="column in columns"
@@ -57,7 +57,7 @@
               class="table-cell"
               :class="[
                 `align-${column.align || 'left'}`,
-                { 'sortable': column.sortable, 'sorted': sortBy === column.key }
+                { sortable: column.sortable, sorted: sortBy === column.key },
               ]"
               :style="{ width: column.width }"
               @click="column.sortable && handleSort(column.key)"
@@ -70,21 +70,21 @@
                     :class="{ active: sortBy === column.key && sortOrder === 'asc' }"
                     viewBox="0 0 24 24"
                   >
-                    <path d="M7 14l5-5 5 5z"/>
+                    <path d="M7 14l5-5 5 5z" />
                   </svg>
                   <svg
                     class="sort-icon"
                     :class="{ active: sortBy === column.key && sortOrder === 'desc' }"
                     viewBox="0 0 24 24"
                   >
-                    <path d="M7 10l5 5 5-5z"/>
+                    <path d="M7 10l5 5 5-5z" />
                   </svg>
                 </div>
               </div>
             </th>
           </tr>
         </thead>
-        
+
         <tbody class="table-body">
           <!-- 空状态 -->
           <tr v-if="!loading && filteredData.length === 0" class="empty-row">
@@ -92,22 +92,24 @@
               <div class="empty-state">
                 <div class="empty-icon">
                   <svg viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    <path
+                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    />
                   </svg>
                 </div>
                 <p>{{ emptyText || '暂无数据' }}</p>
               </div>
             </td>
           </tr>
-          
+
           <!-- 数据行 -->
           <tr
             v-for="(row, index) in paginatedData"
             :key="getRowKey(row, index)"
             class="table-row"
-            :class="{ 
-              'selected': selectedRows.includes(getRowKey(row, index)),
-              'clickable': rowClickable
+            :class="{
+              selected: selectedRows.includes(getRowKey(row, index)),
+              clickable: rowClickable,
             }"
             @click="handleRowClick(row, index)"
           >
@@ -121,7 +123,7 @@
                 class="checkbox"
               />
             </td>
-            
+
             <!-- 数据列 -->
             <td
               v-for="column in columns"
@@ -161,7 +163,7 @@
         >
           上一页
         </button>
-        
+
         <div class="page-numbers">
           <button
             v-for="page in visiblePages"
@@ -173,7 +175,7 @@
             {{ page }}
           </button>
         </div>
-        
+
         <button
           class="pagination-btn"
           :disabled="currentPage === totalPages"
@@ -196,7 +198,7 @@ const SearchIcon = {
     <svg viewBox="0 0 24 24" fill="currentColor">
       <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
     </svg>
-  `
+  `,
 }
 
 interface Column {
@@ -241,7 +243,7 @@ const props = withDefaults(defineProps<Props>(), {
   rowClickable: false,
   emptyText: undefined,
   size: 'medium',
-  variant: 'default'
+  variant: 'default',
 })
 
 const emit = defineEmits<{
@@ -263,8 +265,8 @@ const tableClasses = computed(() => [
   `table-${props.variant}`,
   {
     'table-selectable': props.selectable,
-    'table-clickable': props.rowClickable
-  }
+    'table-clickable': props.rowClickable,
+  },
 ])
 
 const totalColumns = computed(() => {
@@ -273,29 +275,27 @@ const totalColumns = computed(() => {
 
 const filteredData = computed(() => {
   let result = [...props.data]
-  
+
   // 搜索过滤
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    result = result.filter(row =>
-      props.columns.some(column =>
-        String(row[column.key]).toLowerCase().includes(query)
-      )
+    result = result.filter((row) =>
+      props.columns.some((column) => String(row[column.key]).toLowerCase().includes(query))
     )
   }
-  
+
   // 排序
   if (sortBy.value) {
     result.sort((a, b) => {
       const aVal = a[sortBy.value]
       const bVal = b[sortBy.value]
-      
+
       if (aVal < bVal) return sortOrder.value === 'asc' ? -1 : 1
       if (aVal > bVal) return sortOrder.value === 'asc' ? 1 : -1
       return 0
     })
   }
-  
+
   return result
 })
 
@@ -306,7 +306,7 @@ const totalPages = computed(() => {
 
 const paginatedData = computed(() => {
   if (!props.pagination) return filteredData.value
-  
+
   const start = (currentPage.value - 1) * props.pageSize
   const end = start + props.pageSize
   return filteredData.value.slice(start, end)
@@ -326,7 +326,7 @@ const visiblePages = computed(() => {
   const pages = []
   const total = totalPages.value
   const current = currentPage.value
-  
+
   if (total <= 7) {
     for (let i = 1; i <= total; i++) {
       pages.push(i)
@@ -354,17 +354,19 @@ const visiblePages = computed(() => {
       pages.push(total)
     }
   }
-  
+
   return pages
 })
 
 const isAllSelected = computed(() => {
-  return paginatedData.value.length > 0 && 
-         paginatedData.value.every(row => selectedRows.value.includes(getRowKey(row, 0)))
+  return (
+    paginatedData.value.length > 0 &&
+    paginatedData.value.every((row) => selectedRows.value.includes(getRowKey(row, 0)))
+  )
 })
 
 const isIndeterminate = computed(() => {
-  const selectedCount = paginatedData.value.filter(row => 
+  const selectedCount = paginatedData.value.filter((row) =>
     selectedRows.value.includes(getRowKey(row, 0))
   ).length
   return selectedCount > 0 && selectedCount < paginatedData.value.length
@@ -414,14 +416,14 @@ const handleRowSelect = (rowKey: string) => {
   } else {
     selectedRows.value.push(rowKey)
   }
-  
+
   emit('selection-change', selectedRows.value)
 }
 
 const handleSelectAll = () => {
   if (isAllSelected.value) {
     // 取消选择当前页所有行
-    paginatedData.value.forEach(row => {
+    paginatedData.value.forEach((row) => {
       const rowKey = getRowKey(row, 0)
       const index = selectedRows.value.indexOf(rowKey)
       if (index > -1) {
@@ -430,14 +432,14 @@ const handleSelectAll = () => {
     })
   } else {
     // 选择当前页所有行
-    paginatedData.value.forEach(row => {
+    paginatedData.value.forEach((row) => {
       const rowKey = getRowKey(row, 0)
       if (!selectedRows.value.includes(rowKey)) {
         selectedRows.value.push(rowKey)
       }
     })
   }
-  
+
   emit('selection-change', selectedRows.value)
 }
 
@@ -448,9 +450,12 @@ const handlePageChange = (page: number) => {
 }
 
 // 监听数据变化，重置分页
-watch(() => props.data, () => {
-  currentPage.value = 1
-})
+watch(
+  () => props.data,
+  () => {
+    currentPage.value = 1
+  }
+)
 </script>
 
 <style scoped>
@@ -526,8 +531,12 @@ watch(() => props.data, () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .table {
@@ -754,21 +763,21 @@ watch(() => props.data, () => {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .table-controls {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-box {
     max-width: none;
   }
-  
+
   .table-pagination {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .pagination-controls {
     justify-content: center;
   }

@@ -303,16 +303,14 @@ const handleAuditSuccess = () => {
 const fetchMyStatistics = async () => {
   try {
     myStatistics.value = await auditStore.fetchMyAuditStatistics()
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const fetchOverdueCount = async () => {
   try {
     // 这里应该调用获取超期任务数量的API
     overdueCount.value = pendingAudits.value.filter((task) => isOverdue(task.expected_time)).length
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const getAuditTypeTagType = (type: string) => {

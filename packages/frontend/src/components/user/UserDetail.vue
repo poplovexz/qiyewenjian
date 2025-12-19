@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-model="visible"
-    title="用户详情"
-    width="800px"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="visible" title="用户详情" width="800px" :before-close="handleClose">
     <div v-loading="loading" class="user-detail">
       <template v-if="userInfo">
         <!-- 基本信息 -->
@@ -14,7 +9,7 @@
               <span class="card-title">基本信息</span>
             </div>
           </template>
-          
+
           <el-descriptions :column="2" border>
             <el-descriptions-item label="用户名">
               {{ userInfo.yonghu_ming }}
@@ -29,10 +24,7 @@
               {{ userInfo.shouji }}
             </el-descriptions-item>
             <el-descriptions-item label="状态">
-              <el-tag
-                :type="userInfo.zhuangtai === 'active' ? 'success' : 'danger'"
-                size="small"
-              >
+              <el-tag :type="userInfo.zhuangtai === 'active' ? 'success' : 'danger'" size="small">
                 {{ userInfo.zhuangtai === 'active' ? '启用' : '禁用' }}
               </el-tag>
             </el-descriptions-item>
@@ -64,15 +56,10 @@
               </el-button>
             </div>
           </template>
-          
+
           <div class="roles-container">
             <template v-if="userInfo.roles && userInfo.roles.length > 0">
-              <el-tag
-                v-for="role in userInfo.roles"
-                :key="role.id"
-                class="role-tag"
-                type="primary"
-              >
+              <el-tag v-for="role in userInfo.roles" :key="role.id" class="role-tag" type="primary">
                 {{ role.jiaose_ming }}
               </el-tag>
             </template>
@@ -87,7 +74,7 @@
               <span class="card-title">权限信息</span>
             </div>
           </template>
-          
+
           <div class="permissions-container">
             <template v-if="userInfo.permissions && userInfo.permissions.length > 0">
               <el-tag
@@ -166,13 +153,13 @@ const roleAssignVisible = ref(false)
 // 计算属性
 const visible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 // 获取用户详情
 const fetchUserDetail = async () => {
   if (!props.userId) return
-  
+
   try {
     loading.value = true
     userInfo.value = await userApi.getUserById(props.userId)

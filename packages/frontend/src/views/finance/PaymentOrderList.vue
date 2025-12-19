@@ -18,7 +18,12 @@
           />
         </el-form-item>
         <el-form-item label="支付状态">
-          <el-select v-model="searchForm.zhifu_zhuangtai" placeholder="全部状态" clearable style="width: 120px">
+          <el-select
+            v-model="searchForm.zhifu_zhuangtai"
+            placeholder="全部状态"
+            clearable
+            style="width: 120px"
+          >
             <el-option label="待支付" value="pending" />
             <el-option label="支付中" value="paying" />
             <el-option label="已支付" value="paid" />
@@ -28,7 +33,12 @@
           </el-select>
         </el-form-item>
         <el-form-item label="支付方式">
-          <el-select v-model="searchForm.zhifu_leixing" placeholder="全部方式" clearable style="width: 120px">
+          <el-select
+            v-model="searchForm.zhifu_leixing"
+            placeholder="全部方式"
+            clearable
+            style="width: 120px"
+          >
             <el-option label="微信支付" value="weixin" />
             <el-option label="支付宝" value="zhifubao" />
             <el-option label="银行转账" value="yinhangzhuanzhang" />
@@ -66,11 +76,16 @@
         <el-table-column prop="kehu_mingcheng" label="付款方" width="180" show-overflow-tooltip>
           <template #default="{ row }">
             {{ row.kehu_mingcheng || '-' }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="yifang_zhuti_mingcheng" label="收款方" width="180" show-overflow-tooltip>
-        <template #default="{ row }">
-          {{ row.yifang_zhuti_mingcheng || '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="yifang_zhuti_mingcheng"
+          label="收款方"
+          width="180"
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">
+            {{ row.yifang_zhuti_mingcheng || '-' }}
           </template>
         </el-table-column>
         <el-table-column prop="hetong_bianhao" label="合同编号" width="150">
@@ -78,7 +93,12 @@
             {{ row.hetong_bianhao || '-' }}
           </template>
         </el-table-column>
-        <el-table-column prop="hetong_mingcheng" label="合同名称" min-width="180" show-overflow-tooltip>
+        <el-table-column
+          prop="hetong_mingcheng"
+          label="合同名称"
+          min-width="180"
+          show-overflow-tooltip
+        >
           <template #default="{ row }">
             {{ row.hetong_mingcheng || '-' }}
           </template>
@@ -112,20 +132,18 @@
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleView(row)">
-              查看
-            </el-button>
-            <el-button 
-              type="warning" 
-              size="small" 
+            <el-button type="primary" size="small" @click="handleView(row)"> 查看 </el-button>
+            <el-button
+              type="warning"
+              size="small"
               @click="handleEdit(row)"
               v-if="row.zhifu_zhuangtai === 'pending'"
             >
               编辑
             </el-button>
-            <el-button 
-              type="danger" 
-              size="small" 
+            <el-button
+              type="danger"
+              size="small"
               @click="handleCancel(row)"
               v-if="row.zhifu_zhuangtai === 'pending'"
             >
@@ -262,14 +280,14 @@ const currentOrder = ref<PaymentOrder | null>(null)
 const searchForm = reactive({
   search: '',
   zhifu_zhuangtai: '',
-  zhifu_leixing: ''
+  zhifu_leixing: '',
 })
 
 // 分页信息
 const pagination = reactive({
   page: 1,
   size: 20,
-  total: 0
+  total: 0,
 })
 
 // 获取订单列表
@@ -281,7 +299,7 @@ const fetchOrderList = async () => {
       size: pagination.size,
       search: searchForm.search || undefined,
       zhifu_zhuangtai: searchForm.zhifu_zhuangtai || undefined,
-      zhifu_leixing: searchForm.zhifu_leixing || undefined
+      zhifu_leixing: searchForm.zhifu_leixing || undefined,
     }
 
     const response = await request.get('/payment-orders/', { params })
@@ -305,7 +323,7 @@ const handleReset = () => {
   Object.assign(searchForm, {
     search: '',
     zhifu_zhuangtai: '',
-    zhifu_leixing: ''
+    zhifu_leixing: '',
   })
   pagination.page = 1
   fetchOrderList()
@@ -332,16 +350,12 @@ const handleEdit = (row: PaymentOrder) => {
 // 取消订单
 const handleCancel = async (row: PaymentOrder) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要取消订单 ${row.dingdan_bianhao} 吗？`,
-      '取消订单',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
-    
+    await ElMessageBox.confirm(`确定要取消订单 ${row.dingdan_bianhao} 吗？`, '取消订单', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+
     // TODO: 调用取消订单API
     ElMessage.success('订单已取消')
     fetchOrderList()
@@ -370,7 +384,7 @@ const getPaymentTypeText = (type: string) => {
     zhifubao: '支付宝',
     yinhangzhuanzhang: '银行转账',
     xianjin: '现金',
-    qita: '其他'
+    qita: '其他',
   }
   return typeMap[type] || type
 }
@@ -383,7 +397,7 @@ const getStatusType = (status: string) => {
     paid: 'success',
     failed: 'danger',
     cancelled: 'info',
-    refunded: 'warning'
+    refunded: 'warning',
   }
   return statusMap[status] || 'info'
 }
@@ -396,7 +410,7 @@ const getStatusText = (status: string) => {
     paid: '已支付',
     failed: '支付失败',
     cancelled: '已取消',
-    refunded: '已退款'
+    refunded: '已退款',
   }
   return statusMap[status] || status
 }

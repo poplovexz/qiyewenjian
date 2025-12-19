@@ -20,7 +20,7 @@
             style="width: 200px"
           />
         </el-form-item>
-        
+
         <el-form-item label="工单标题">
           <el-input
             v-model="searchForm.gongdan_biaoti"
@@ -29,7 +29,7 @@
             style="width: 200px"
           />
         </el-form-item>
-        
+
         <el-form-item label="服务类型">
           <el-select
             v-model="searchForm.fuwu_leixing"
@@ -45,7 +45,7 @@
             />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item label="工单状态">
           <el-select
             v-model="searchForm.gongdan_zhuangtai"
@@ -61,7 +61,7 @@
             />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item label="优先级">
           <el-select
             v-model="searchForm.youxian_ji"
@@ -77,11 +77,11 @@
             />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item>
           <el-checkbox v-model="searchForm.is_overdue">仅显示逾期</el-checkbox>
         </el-form-item>
-        
+
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
             <el-icon><Search /></el-icon>
@@ -142,15 +142,15 @@
         style="width: 100%"
       >
         <el-table-column prop="gongdan_bianhao" label="工单编号" width="150" />
-        
+
         <el-table-column prop="gongdan_biaoti" label="工单标题" min-width="200" />
-        
+
         <el-table-column prop="fuwu_leixing" label="服务类型" width="120">
           <template #default="{ row }">
             <el-tag>{{ serviceOrderStore.serviceTypeMap[row.fuwu_leixing] }}</el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="gongdan_zhuangtai" label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.gongdan_zhuangtai)">
@@ -158,7 +158,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="youxian_ji" label="优先级" width="100">
           <template #default="{ row }">
             <el-tag :type="getPriorityType(row.youxian_ji)" size="small">
@@ -166,7 +166,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="progress_percentage" label="进度" width="120">
           <template #default="{ row }">
             <el-progress
@@ -176,7 +176,7 @@
             />
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="jihua_jieshu_shijian" label="计划完成时间" width="180">
           <template #default="{ row }">
             <div :class="{ 'overdue-text': row.is_overdue }">
@@ -185,23 +185,17 @@
             </div>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="created_at" label="创建时间" width="180">
           <template #default="{ row }">
             {{ formatDateTime(row.created_at) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button
-              type="primary"
-              size="small"
-              @click="viewDetail(row.id)"
-            >
-              查看
-            </el-button>
-            
+            <el-button type="primary" size="small" @click="viewDetail(row.id)"> 查看 </el-button>
+
             <el-button
               v-if="row.gongdan_zhuangtai === 'created'"
               type="success"
@@ -210,7 +204,7 @@
             >
               分配
             </el-button>
-            
+
             <el-button
               v-if="row.gongdan_zhuangtai === 'assigned'"
               type="warning"
@@ -219,8 +213,10 @@
             >
               开始
             </el-button>
-            
-            <el-dropdown v-if="row.gongdan_zhuangtai !== 'completed' && row.gongdan_zhuangtai !== 'cancelled'">
+
+            <el-dropdown
+              v-if="row.gongdan_zhuangtai !== 'completed' && row.gongdan_zhuangtai !== 'cancelled'"
+            >
               <el-button size="small">
                 更多<el-icon><ArrowDown /></el-icon>
               </el-button>
@@ -250,10 +246,7 @@
     </el-card>
 
     <!-- 创建工单对话框 -->
-    <ServiceOrderForm
-      v-model:visible="showCreateDialog"
-      @success="handleCreateSuccess"
-    />
+    <ServiceOrderForm v-model:visible="showCreateDialog" @success="handleCreateSuccess" />
 
     <!-- 分配工单对话框 -->
     <AssignOrderDialog
@@ -301,14 +294,14 @@ const searchForm = reactive({
   fuwu_leixing: '',
   gongdan_zhuangtai: '',
   youxian_ji: '',
-  is_overdue: false
+  is_overdue: false,
 })
 
 // 计算属性
 const searchParams = computed(() => ({
   page: currentPage.value,
   size: pageSize.value,
-  ...searchForm
+  ...searchForm,
 }))
 
 // 方法
@@ -316,8 +309,7 @@ const loadData = async () => {
   try {
     await serviceOrderStore.fetchServiceOrders(searchParams.value)
     statistics.value = await serviceOrderStore.fetchStatistics()
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const handleSearch = () => {
@@ -332,7 +324,7 @@ const handleReset = () => {
     fuwu_leixing: '',
     gongdan_zhuangtai: '',
     youxian_ji: '',
-    is_overdue: false
+    is_overdue: false,
   })
   handleSearch()
 }
@@ -364,9 +356,9 @@ const showCancelDialog = (order: ServiceOrder) => {
 const startOrder = async (id: string) => {
   try {
     await ElMessageBox.confirm('确认开始执行此工单？', '确认操作', {
-      type: 'warning'
+      type: 'warning',
     })
-    
+
     await serviceOrderStore.startServiceOrder(id)
     loadData()
   } catch (error) {
@@ -402,7 +394,7 @@ const getStatusType = (status: string) => {
     in_progress: 'primary',
     pending_review: 'warning',
     completed: 'success',
-    cancelled: 'danger'
+    cancelled: 'danger',
   }
   return typeMap[status] || 'info'
 }
@@ -412,7 +404,7 @@ const getPriorityType = (priority: string) => {
     low: 'info',
     medium: 'warning',
     high: 'danger',
-    urgent: 'danger'
+    urgent: 'danger',
   }
   return typeMap[priority] || 'info'
 }

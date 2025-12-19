@@ -36,7 +36,7 @@ export class MemoryCache {
     const item: CacheItem<T> = {
       data,
       timestamp: Date.now(),
-      expireTime: expireTime || this.defaultExpireTime
+      expireTime: expireTime || this.defaultExpireTime,
     }
     this.cache.set(key, item)
   }
@@ -51,7 +51,7 @@ export class MemoryCache {
     }
 
     const now = Date.now()
-    const isExpired = item.expireTime && (now - item.timestamp) > item.expireTime
+    const isExpired = item.expireTime && now - item.timestamp > item.expireTime
 
     if (isExpired) {
       this.cache.delete(key)
@@ -95,7 +95,7 @@ export class MemoryCache {
   cleanup(): void {
     const now = Date.now()
     for (const [key, item] of this.cache.entries()) {
-      if (item.expireTime && (now - item.timestamp) > item.expireTime) {
+      if (item.expireTime && now - item.timestamp > item.expireTime) {
         this.cache.delete(key)
       }
     }
@@ -126,11 +126,10 @@ export class LocalStorageCache {
       const item: CacheItem<T> = {
         data,
         timestamp: Date.now(),
-        expireTime: expireTime || this.defaultExpireTime
+        expireTime: expireTime || this.defaultExpireTime,
       }
       localStorage.setItem(this.getKey(key), JSON.stringify(item))
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   /**
@@ -145,7 +144,7 @@ export class LocalStorageCache {
 
       const item: CacheItem<T> = JSON.parse(itemStr)
       const now = Date.now()
-      const isExpired = item.expireTime && (now - item.timestamp) > item.expireTime
+      const isExpired = item.expireTime && now - item.timestamp > item.expireTime
 
       if (isExpired) {
         localStorage.removeItem(this.getKey(key))
@@ -183,13 +182,12 @@ export class LocalStorageCache {
   clear(): void {
     try {
       const keys = Object.keys(localStorage)
-      keys.forEach(key => {
+      keys.forEach((key) => {
         if (key.startsWith(this.prefix)) {
           localStorage.removeItem(key)
         }
       })
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   /**
@@ -199,14 +197,14 @@ export class LocalStorageCache {
     try {
       const keys = Object.keys(localStorage)
       const now = Date.now()
-      
-      keys.forEach(key => {
+
+      keys.forEach((key) => {
         if (key.startsWith(this.prefix)) {
           try {
             const itemStr = localStorage.getItem(key)
             if (itemStr) {
               const item: CacheItem = JSON.parse(itemStr)
-              if (item.expireTime && (now - item.timestamp) > item.expireTime) {
+              if (item.expireTime && now - item.timestamp > item.expireTime) {
                 localStorage.removeItem(key)
               }
             }
@@ -216,8 +214,7 @@ export class LocalStorageCache {
           }
         }
       })
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 }
 
@@ -230,10 +227,7 @@ export class CacheManager {
 
   constructor(options: CacheOptions = {}) {
     this.memoryCache = new MemoryCache(options.expireTime)
-    this.localStorageCache = new LocalStorageCache(
-      options.storagePrefix,
-      options.expireTime
-    )
+    this.localStorageCache = new LocalStorageCache(options.storagePrefix, options.expireTime)
   }
 
   /**
@@ -311,7 +305,7 @@ export class CacheManager {
 // 创建默认的缓存管理器实例
 export const defaultCache = new CacheManager({
   expireTime: 5 * 60 * 1000, // 5分钟
-  storagePrefix: 'app_cache_'
+  storagePrefix: 'app_cache_',
 })
 
 // 导出常用的缓存时间常量
@@ -321,5 +315,5 @@ export const CACHE_TIME = {
   MINUTE_15: 15 * 60 * 1000,
   MINUTE_30: 30 * 60 * 1000,
   HOUR_1: 60 * 60 * 1000,
-  HOUR_24: 24 * 60 * 60 * 1000
+  HOUR_24: 24 * 60 * 60 * 1000,
 } as const

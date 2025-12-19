@@ -41,7 +41,11 @@
         <!-- 审批级别配置 -->
         <el-tab-pane label="审批级别配置" name="levels">
           <div class="levels-content">
-            <el-select v-model="selectedRuleType" placeholder="选择规则类型" style="margin-bottom: 20px">
+            <el-select
+              v-model="selectedRuleType"
+              placeholder="选择规则类型"
+              style="margin-bottom: 20px"
+            >
               <el-option
                 v-for="type in ruleTypes"
                 :key="type.value"
@@ -54,14 +58,14 @@
               <template #header>
                 <span>{{ approvalLevels.name }}</span>
               </template>
-              
+
               <el-table :data="approvalLevels.levels" border>
                 <el-table-column prop="level" label="级别" width="80" />
                 <el-table-column prop="role_name" label="角色名称" width="150" />
                 <el-table-column prop="role_code" label="角色代码" width="150" />
                 <el-table-column label="金额范围" width="200">
                   <template #default="{ row }">
-                    {{ formatAmount(row.min_amount) }} - 
+                    {{ formatAmount(row.min_amount) }} -
                     {{ row.max_amount === Infinity ? '无限制' : formatAmount(row.max_amount) }}
                   </template>
                 </el-table-column>
@@ -116,8 +120,10 @@
                   <div class="chain-step">
                     <h4>级别 {{ step.level }}: {{ step.role_name }}</h4>
                     <p>角色代码: {{ step.role_code }}</p>
-                    <p>金额范围: {{ formatAmount(step.min_amount) }} - 
-                       {{ step.max_amount ? formatAmount(step.max_amount) : '无限制' }}</p>
+                    <p>
+                      金额范围: {{ formatAmount(step.min_amount) }} -
+                      {{ step.max_amount ? formatAmount(step.max_amount) : '无限制' }}
+                    </p>
                     <p v-if="step.approver_id">
                       <el-tag type="success">已分配审批人: {{ step.approver_id }}</el-tag>
                     </p>
@@ -194,7 +200,7 @@ const activeTab = ref('roles')
 const matrixData = ref<MatrixData>({
   roles: [],
   approval_levels: {},
-  role_mappings: {}
+  role_mappings: {},
 })
 const selectedRuleType = ref('')
 const approvalLevels = ref<ApprovalLevel[] | null>(null)
@@ -206,14 +212,14 @@ const approvalChain = ref<ApprovalChain | null>(null)
 // 测试表单
 const testForm = reactive({
   rule_type: '',
-  amount: 0
+  amount: 0,
 })
 
 // 规则类型选项
 const ruleTypes = ref([
   { value: 'hetong_jine_xiuzheng', label: '合同金额修正审批' },
   { value: 'baojia_shenhe', label: '报价审核' },
-  { value: 'zhifu_shenhe', label: '支付审核' }
+  { value: 'zhifu_shenhe', label: '支付审核' },
 ])
 
 // 方法
@@ -221,17 +227,17 @@ const refreshMatrix = async () => {
   try {
     const response = await fetch('/approval-matrix/matrix', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
     })
-    
+
     if (!response.ok) {
       throw new Error('获取审批矩阵失败')
     }
-    
+
     const data = await response.json()
     matrixData.value = data
-    
+
     ElMessage.success('审批矩阵刷新成功')
   } catch (error) {
     ElMessage.error('获取审批矩阵失败')
@@ -256,20 +262,20 @@ const testAssignment = async (level: ApprovalLevel) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify({
         role_code: (level as Record<string, unknown>).role_code,
-        amount: level.min_amount + 1000
-      })
+        amount: level.min_amount + 1000,
+      }),
     })
-    
+
     if (!response.ok) {
       throw new Error('测试分配失败')
     }
-    
+
     const result = await response.json()
-    
+
     if (result.success) {
       ElMessage.success(`分配成功: ${result.approver.name}`)
     } else {
@@ -285,29 +291,29 @@ const testApprovalChain = async () => {
     ElMessage.warning('请选择规则类型')
     return
   }
-  
+
   try {
     testing.value = true
-    
+
     const response = await fetch('/approval-matrix/approval-chain', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify({
         rule_type: testForm.rule_type,
-        amount: testForm.amount
-      })
+        amount: testForm.amount,
+      }),
     })
-    
+
     if (!response.ok) {
       throw new Error('测试审批链失败')
     }
-    
+
     const result = await response.json()
     approvalChain.value = result
-    
+
     ElMessage.success('审批链测试完成')
   } catch (error) {
     ElMessage.error('测试审批链失败')
@@ -322,14 +328,14 @@ watch(selectedRuleType, async (newType) => {
     try {
       const response = await fetch(`/approval-matrix/approval-levels/${newType}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       })
-      
+
       if (!response.ok) {
         throw new Error('获取审批级别失败')
       }
-      
+
       const data = await response.json()
       approvalLevels.value = data.config
     } catch (error) {

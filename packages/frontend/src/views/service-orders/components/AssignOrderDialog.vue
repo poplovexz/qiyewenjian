@@ -40,12 +40,7 @@
           filterable
           style="width: 100%"
         >
-          <el-option
-            v-for="user in users"
-            :key="user.id"
-            :label="user.xingming"
-            :value="user.id"
-          >
+          <el-option v-for="user in users" :key="user.id" :label="user.xingming" :value="user.id">
             <div style="display: flex; justify-content: space-between">
               <span>{{ user.xingming }}</span>
               <span style="color: #8492a6; font-size: 13px">{{ user.yonghu_ming }}</span>
@@ -53,7 +48,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      
+
       <el-form-item label="分配备注" prop="fenpei_beizhu">
         <el-input
           v-model="formData.fenpei_beizhu"
@@ -67,9 +62,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="loading">
-          确认分配
-        </el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="loading"> 确认分配 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -105,14 +98,12 @@ const users = ref([])
 
 const formData = reactive({
   zhixing_ren_id: '',
-  fenpei_beizhu: ''
+  fenpei_beizhu: '',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  zhixing_ren_id: [
-    { required: true, message: '请选择执行人', trigger: 'change' }
-  ]
+  zhixing_ren_id: [{ required: true, message: '请选择执行人', trigger: 'change' }],
 }
 
 // 方法
@@ -131,7 +122,7 @@ const getPriorityType = (priority: string) => {
     low: 'info',
     medium: 'warning',
     high: 'danger',
-    urgent: 'danger'
+    urgent: 'danger',
   }
   return typeMap[priority] || 'info'
 }
@@ -141,15 +132,15 @@ const handleSubmit = async () => {
 
   try {
     await formRef.value.validate()
-    
+
     loading.value = true
-    
+
     await serviceOrderStore.assignServiceOrder(
       props.order.id,
       formData.zhixing_ren_id,
       formData.fenpei_beizhu
     )
-    
+
     emit('success')
   } catch (error) {
   } finally {
@@ -166,19 +157,22 @@ const resetForm = () => {
   if (formRef.value) {
     formRef.value.resetFields()
   }
-  
+
   Object.assign(formData, {
     zhixing_ren_id: '',
-    fenpei_beizhu: ''
+    fenpei_beizhu: '',
   })
 }
 
 // 监听
-watch(() => props.visible, (newVal) => {
-  if (newVal) {
-    loadUsers()
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      loadUsers()
+    }
   }
-})
+)
 
 // 生命周期
 onMounted(() => {

@@ -15,18 +15,17 @@ const canvas = ref<HTMLCanvasElement>()
 
 const generateQRCode = async () => {
   if (!canvas.value || !props.value) return
-  
+
   try {
     await QRCode.toCanvas(canvas.value, props.value, {
       width: props.size || 200,
       margin: 1,
       color: {
         dark: '#000000',
-        light: '#FFFFFF'
-      }
+        light: '#FFFFFF',
+      },
     })
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 watch(() => props.value, generateQRCode)
@@ -34,4 +33,3 @@ watch(() => props.size, generateQRCode)
 
 onMounted(generateQRCode)
 </script>
-

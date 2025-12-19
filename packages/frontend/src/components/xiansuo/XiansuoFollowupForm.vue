@@ -26,7 +26,7 @@
           <el-option label="其他" value="other" />
         </el-select>
       </el-form-item>
-      
+
       <el-form-item label="跟进时间" prop="genjin_shijian">
         <el-date-picker
           v-model="formData.genjin_shijian"
@@ -37,7 +37,7 @@
           value-format="YYYY-MM-DD HH:mm:ss"
         />
       </el-form-item>
-      
+
       <el-form-item label="跟进内容" prop="genjin_neirong">
         <el-input
           v-model="formData.genjin_neirong"
@@ -46,7 +46,7 @@
           placeholder="请输入跟进内容"
         />
       </el-form-item>
-      
+
       <el-form-item label="客户反馈" prop="kehu_fankui">
         <el-input
           v-model="formData.kehu_fankui"
@@ -55,19 +55,15 @@
           placeholder="请输入客户反馈"
         />
       </el-form-item>
-      
+
       <el-form-item label="客户态度" prop="kehu_taidu">
-        <el-select
-          v-model="formData.kehu_taidu"
-          placeholder="请选择客户态度"
-          style="width: 100%"
-        >
+        <el-select v-model="formData.kehu_taidu" placeholder="请选择客户态度" style="width: 100%">
           <el-option label="积极" value="positive" />
           <el-option label="中性" value="neutral" />
           <el-option label="消极" value="negative" />
         </el-select>
       </el-form-item>
-      
+
       <el-form-item label="跟进结果" prop="genjin_jieguo">
         <el-select
           v-model="formData.genjin_jieguo"
@@ -82,7 +78,7 @@
           <el-option label="无效线索" value="invalid" />
         </el-select>
       </el-form-item>
-      
+
       <el-form-item label="下次跟进时间" prop="xiaci_genjin_shijian">
         <el-date-picker
           v-model="formData.xiaci_genjin_shijian"
@@ -93,7 +89,7 @@
           value-format="YYYY-MM-DD HH:mm:ss"
         />
       </el-form-item>
-      
+
       <el-form-item label="下次跟进内容" prop="xiaci_genjin_neirong">
         <el-input
           v-model="formData.xiaci_genjin_neirong"
@@ -107,13 +103,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button
-          type="primary"
-          :loading="loading"
-          @click="handleSubmit"
-        >
-          保存
-        </el-button>
+        <el-button type="primary" :loading="loading" @click="handleSubmit"> 保存 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -155,23 +145,19 @@ const formData = ref<XiansuoGenjinCreate>({
   kehu_taidu: '',
   xiaci_genjin_shijian: '',
   xiaci_genjin_neirong: '',
-  genjin_jieguo: ''
+  genjin_jieguo: '',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  genjin_fangshi: [
-    { required: true, message: '请选择跟进方式', trigger: 'change' }
-  ],
-  genjin_neirong: [
-    { required: true, message: '请输入跟进内容', trigger: 'blur' }
-  ]
+  genjin_fangshi: [{ required: true, message: '请选择跟进方式', trigger: 'change' }],
+  genjin_neirong: [{ required: true, message: '请输入跟进内容', trigger: 'blur' }],
 }
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 // 监听props变化
@@ -207,7 +193,7 @@ const resetForm = () => {
     kehu_taidu: '',
     xiaci_genjin_shijian: '',
     xiaci_genjin_neirong: '',
-    genjin_jieguo: ''
+    genjin_jieguo: '',
   }
   nextTick(() => {
     formRef.value?.clearValidate()

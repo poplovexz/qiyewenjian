@@ -5,12 +5,7 @@
     width="600px"
     :before-close="handleClose"
   >
-    <el-form
-      ref="formRef"
-      :model="formData"
-      :rules="formRules"
-      label-width="120px"
-    >
+    <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px">
       <el-form-item label="来源编码" prop="laiyuan_bianma">
         <el-input
           v-model="formData.laiyuan_bianma"
@@ -20,10 +15,7 @@
       </el-form-item>
 
       <el-form-item label="来源名称" prop="laiyuan_mingcheng">
-        <el-input
-          v-model="formData.laiyuan_mingcheng"
-          placeholder="请输入来源名称"
-        />
+        <el-input v-model="formData.laiyuan_mingcheng" placeholder="请输入来源名称" />
       </el-form-item>
 
       <el-form-item label="来源类型" prop="laiyuan_leixing">
@@ -49,17 +41,11 @@
       </el-form-item>
 
       <el-form-item label="联系人" prop="lianxiren">
-        <el-input
-          v-model="formData.lianxiren"
-          placeholder="请输入联系人"
-        />
+        <el-input v-model="formData.lianxiren" placeholder="请输入联系人" />
       </el-form-item>
 
       <el-form-item label="联系电话" prop="lianxi_dianhua">
-        <el-input
-          v-model="formData.lianxi_dianhua"
-          placeholder="请输入联系电话"
-        />
+        <el-input v-model="formData.lianxi_dianhua" placeholder="请输入联系电话" />
       </el-form-item>
 
       <el-form-item label="状态" prop="zhuangtai">
@@ -112,7 +98,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  laiyuan: null
+  laiyuan: null,
 })
 
 // Emits
@@ -134,35 +120,31 @@ const formData = ref<XiansuoLaiyuanCreate>({
   lianxi_dianhua: '',
   zhuangtai: 'active',
   miaoshu: '',
-  beizhu: ''
+  beizhu: '',
 })
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 // 表单验证规则
 const formRules: FormRules = {
   laiyuan_bianma: [
     { required: true, message: '请输入来源编码', trigger: 'blur' },
-    { min: 2, max: 50, message: '编码长度在 2 到 50 个字符', trigger: 'blur' }
+    { min: 2, max: 50, message: '编码长度在 2 到 50 个字符', trigger: 'blur' },
   ],
   laiyuan_mingcheng: [
     { required: true, message: '请输入来源名称', trigger: 'blur' },
-    { min: 2, max: 100, message: '名称长度在 2 到 100 个字符', trigger: 'blur' }
+    { min: 2, max: 100, message: '名称长度在 2 到 100 个字符', trigger: 'blur' },
   ],
-  laiyuan_leixing: [
-    { required: true, message: '请选择来源类型', trigger: 'change' }
-  ],
+  laiyuan_leixing: [{ required: true, message: '请选择来源类型', trigger: 'change' }],
   huoqu_chengben: [
     { required: true, message: '请输入获取成本', trigger: 'blur' },
-    { type: 'number', min: 0, message: '获取成本不能小于0', trigger: 'blur' }
+    { type: 'number', min: 0, message: '获取成本不能小于0', trigger: 'blur' },
   ],
-  lianxi_dianhua: [
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
-  ]
+  lianxi_dianhua: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }],
 }
 
 // 方法
@@ -176,7 +158,7 @@ const resetForm = () => {
     lianxi_dianhua: '',
     zhuangtai: 'active',
     miaoshu: '',
-    beizhu: ''
+    beizhu: '',
   }
 }
 
@@ -191,7 +173,7 @@ const loadFormData = () => {
       lianxi_dianhua: props.laiyuan.lianxi_dianhua || '',
       zhuangtai: props.laiyuan.zhuangtai,
       miaoshu: props.laiyuan.miaoshu || '',
-      beizhu: props.laiyuan.beizhu || ''
+      beizhu: props.laiyuan.beizhu || '',
     }
   } else {
     resetForm()
@@ -207,11 +189,11 @@ const handleSubmit = async () => {
 
     if (props.mode === 'create') {
       // TODO: 调用创建API
-      await new Promise(resolve => setTimeout(resolve, 1000)) // 模拟API调用
+      await new Promise((resolve) => setTimeout(resolve, 1000)) // 模拟API调用
       ElMessage.success('创建成功')
     } else {
       // TODO: 调用更新API
-      await new Promise(resolve => setTimeout(resolve, 1000)) // 模拟API调用
+      await new Promise((resolve) => setTimeout(resolve, 1000)) // 模拟API调用
       ElMessage.success('更新成功')
     }
 

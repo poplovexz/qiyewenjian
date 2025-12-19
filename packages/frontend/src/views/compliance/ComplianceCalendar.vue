@@ -284,16 +284,14 @@ const loadCalendarData = async () => {
       selectedType.value || undefined
     )
     calendarData.value = data
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const loadUpcomingItems = async () => {
   try {
     const items = await complianceStore.fetchUpcomingItems(7, selectedCustomer.value || undefined)
     upcomingItems.value = items
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const loadCustomers = async () => {
@@ -301,8 +299,7 @@ const loadCustomers = async () => {
     // 这里应该调用客户管理的API
     // customers.value = await customerStore.fetchCustomers()
     customers.value = [] // 临时空数组
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 // 合规事项类型

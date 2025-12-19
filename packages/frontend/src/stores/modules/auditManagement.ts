@@ -14,7 +14,7 @@ import {
   type AuditWorkflowListParams,
   type AuditRecordListParams,
   type AuditStatisticsParams,
-  type AuditActionData
+  type AuditActionData,
 } from '@/api/modules/audit'
 
 // 审核规则类型
@@ -227,7 +227,9 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       // 更新流程列表
       const index = auditWorkflows.value.findIndex((workflow) => workflow.id === workflowId)
       if (index !== -1) {
-        const workflow = auditWorkflows.value[index] as AuditWorkflow & { shenhe_zhuangtai?: string }
+        const workflow = auditWorkflows.value[index] as AuditWorkflow & {
+          shenhe_zhuangtai?: string
+        }
         workflow.shenhe_zhuangtai = 'chexiao'
       }
 

@@ -24,11 +24,14 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="统一社会信用代码" prop="tongyi_shehui_xinyong_daima">
-                <el-input v-model="formData.tongyi_shehui_xinyong_daima" placeholder="请输入18位信用代码" />
+                <el-input
+                  v-model="formData.tongyi_shehui_xinyong_daima"
+                  placeholder="请输入18位信用代码"
+                />
               </el-form-item>
             </el-col>
           </el-row>
-          
+
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="成立日期" prop="chengli_riqi">
@@ -42,7 +45,11 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="客户状态" prop="kehu_zhuangtai">
-                <el-select v-model="formData.kehu_zhuangtai" placeholder="选择客户状态" style="width: 100%">
+                <el-select
+                  v-model="formData.kehu_zhuangtai"
+                  placeholder="选择客户状态"
+                  style="width: 100%"
+                >
                   <el-option label="活跃" value="active" />
                   <el-option label="续约中" value="renewing" />
                   <el-option label="已终止" value="terminated" />
@@ -50,7 +57,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          
+
           <el-form-item label="注册地址" prop="zhuce_dizhi">
             <el-input
               v-model="formData.zhuce_dizhi"
@@ -75,7 +82,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          
+
           <el-form-item label="法人联系方式" prop="faren_lianxi">
             <el-input v-model="formData.faren_lianxi" placeholder="请输入法人联系方式" />
           </el-form-item>
@@ -95,7 +102,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          
+
           <el-form-item label="联系地址" prop="lianxi_dizhi">
             <el-input
               v-model="formData.lianxi_dizhi"
@@ -130,7 +137,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          
+
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="营业执照路径" prop="yingye_zhizhao_lujing">
@@ -182,7 +189,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   customer: null,
-  mode: 'create'
+  mode: 'create',
 })
 
 const emit = defineEmits<Emits>()
@@ -208,44 +215,40 @@ const formData = ref<CustomerCreate>({
   yingye_zhizhao_youxiao_qi: '',
   kehu_zhuangtai: 'active',
   fuwu_kaishi_riqi: '',
-  fuwu_jieshu_riqi: ''
+  fuwu_jieshu_riqi: '',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  gongsi_mingcheng: [
-    { required: true, message: '请输入公司名称', trigger: 'blur' }
-  ],
+  gongsi_mingcheng: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
   tongyi_shehui_xinyong_daima: [
     { required: true, message: '请输入统一社会信用代码', trigger: 'blur' },
     { len: 18, message: '统一社会信用代码必须为18位', trigger: 'blur' },
-    { pattern: /^[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}$/, message: '统一社会信用代码格式不正确', trigger: 'blur' }
+    {
+      pattern: /^[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}$/,
+      message: '统一社会信用代码格式不正确',
+      trigger: 'blur',
+    },
   ],
-  faren_xingming: [
-    { required: true, message: '请输入法人姓名', trigger: 'blur' }
-  ],
+  faren_xingming: [{ required: true, message: '请输入法人姓名', trigger: 'blur' }],
   faren_shenfenzheng: [
-    { pattern: /^\d{17}[\dXx]$/, message: '身份证号码格式不正确', trigger: 'blur' }
+    { pattern: /^\d{17}[\dXx]$/, message: '身份证号码格式不正确', trigger: 'blur' },
   ],
-  lianxi_youxiang: [
-    { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
-  ],
-  kehu_zhuangtai: [
-    { required: true, message: '请选择客户状态', trigger: 'change' }
-  ]
+  lianxi_youxiang: [{ type: 'email', message: '邮箱格式不正确', trigger: 'blur' }],
+  kehu_zhuangtai: [{ required: true, message: '请选择客户状态', trigger: 'change' }],
 }
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 const dialogTitle = computed(() => {
   const titleMap = {
     create: '新增客户',
     edit: '编辑客户',
-    view: '查看客户'
+    view: '查看客户',
   }
   return titleMap[props.mode]
 })
@@ -267,7 +270,7 @@ const resetForm = () => {
     yingye_zhizhao_youxiao_qi: '',
     kehu_zhuangtai: 'active',
     fuwu_kaishi_riqi: '',
-    fuwu_jieshu_riqi: ''
+    fuwu_jieshu_riqi: '',
   }
 
   // 清除表单验证
@@ -297,7 +300,7 @@ watch(
         yingye_zhizhao_youxiao_qi: customer.yingye_zhizhao_youxiao_qi || '',
         kehu_zhuangtai: customer.kehu_zhuangtai,
         fuwu_kaishi_riqi: customer.fuwu_kaishi_riqi || '',
-        fuwu_jieshu_riqi: customer.fuwu_jieshu_riqi || ''
+        fuwu_jieshu_riqi: customer.fuwu_jieshu_riqi || '',
       })
     } else {
       // 新增模式，重置表单
@@ -309,17 +312,17 @@ watch(
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     loading.value = true
-    
+
     if (props.mode === 'create') {
       await customerStore.createCustomer(formData.value)
     } else if (props.mode === 'edit' && props.customer) {
       await customerStore.updateCustomer(props.customer.id, formData.value as CustomerUpdate)
     }
-    
+
     emit('success')
   } catch (error) {
   } finally {

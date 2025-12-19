@@ -6,11 +6,7 @@
         <h3>报价记录</h3>
         <span class="count">共 {{ baojiaList.length }} 条</span>
       </div>
-      <el-button 
-        type="primary" 
-        @click="handleCreate"
-        :disabled="!canCreateBaojia"
-      >
+      <el-button type="primary" @click="handleCreate" :disabled="!canCreateBaojia">
         <el-icon><Plus /></el-icon>
         创建报价
       </el-button>
@@ -36,19 +32,10 @@
             <div class="baojia-info">
               <div class="baojia-code">{{ baojia.baojia_bianma }}</div>
               <div class="baojia-status">
-                <el-tag 
-                  :type="getStatusTagType(baojia.baojia_zhuangtai)"
-                  size="small"
-                >
+                <el-tag :type="getStatusTagType(baojia.baojia_zhuangtai)" size="small">
                   {{ getStatusText(baojia.baojia_zhuangtai) }}
                 </el-tag>
-                <el-tag 
-                  v-if="baojia.is_expired" 
-                  type="danger" 
-                  size="small"
-                >
-                  已过期
-                </el-tag>
+                <el-tag v-if="baojia.is_expired" type="danger" size="small"> 已过期 </el-tag>
               </div>
             </div>
             <div class="card-actions">
@@ -59,23 +46,11 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item command="view">查看详情</el-dropdown-item>
-                    <el-dropdown-item 
-                      command="edit" 
-                      :disabled="baojia.is_expired"
-                    >
+                    <el-dropdown-item command="edit" :disabled="baojia.is_expired">
                       编辑报价
                     </el-dropdown-item>
-                    <el-dropdown-item 
-                      command="copy"
-                    >
-                      复制报价
-                    </el-dropdown-item>
-                    <el-dropdown-item 
-                      command="delete" 
-                      divided
-                    >
-                      删除报价
-                    </el-dropdown-item>
+                    <el-dropdown-item command="copy"> 复制报价 </el-dropdown-item>
+                    <el-dropdown-item command="delete" divided> 删除报价 </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -104,10 +79,7 @@
                   <span class="xiangmu-name">{{ xiangmu.xiangmu_mingcheng }}</span>
                   <span class="xiangmu-price">¥{{ xiangmu.xiaoji.toFixed(2) }}</span>
                 </div>
-                <div
-                  v-if="baojia.xiangmu_list.length > 3"
-                  class="xiangmu-more"
-                >
+                <div v-if="baojia.xiangmu_list.length > 3" class="xiangmu-more">
                   还有 {{ baojia.xiangmu_list.length - 3 }} 项...
                 </div>
               </div>
@@ -145,10 +117,7 @@
     />
 
     <!-- 报价详情弹窗 -->
-    <XiansuoBaojiaDetail
-      v-model:visible="detailVisible"
-      :baojia-id="currentBaojiaId"
-    />
+    <XiansuoBaojiaDetail v-model:visible="detailVisible" :baojia-id="currentBaojiaId" />
   </div>
 </template>
 
@@ -181,9 +150,7 @@ const currentBaojiaId = ref('')
 const baojiaList = ref<XiansuoBaojia[]>([])
 
 const canCreateBaojia = computed(() => {
-  return !baojiaList.value.some(
-    b => !b.is_expired && b.baojia_zhuangtai !== 'rejected'
-  )
+  return !baojiaList.value.some((b) => !b.is_expired && b.baojia_zhuangtai !== 'rejected')
 })
 
 // 方法
@@ -226,15 +193,11 @@ const handleAction = async (command: string, baojia: XiansuoBaojia) => {
 
 const handleCopy = async (baojia: XiansuoBaojia) => {
   try {
-    await ElMessageBox.confirm(
-      '确定要复制这个报价吗？将创建一个新的报价。',
-      '确认复制',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'info'
-      }
-    )
+    await ElMessageBox.confirm('确定要复制这个报价吗？将创建一个新的报价。', '确认复制', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'info',
+    })
 
     const copyData = {
       xiansuo_id: baojia.xiansuo_id,
@@ -248,8 +211,8 @@ const handleCopy = async (baojia: XiansuoBaojia) => {
         danjia: item.danjia,
         danwei: item.danwei,
         paixu: index,
-        beizhu: item.beizhu
-      }))
+        beizhu: item.beizhu,
+      })),
     }
 
     await xiansuoStore.createBaojia(copyData)
@@ -269,7 +232,7 @@ const handleDelete = async (baojia: XiansuoBaojia) => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 
@@ -291,7 +254,7 @@ const getStatusTagType = (status: string) => {
     draft: 'info',
     sent: 'warning',
     accepted: 'success',
-    rejected: 'danger'
+    rejected: 'danger',
   }
   return types[status] || 'info'
 }
@@ -301,7 +264,7 @@ const getStatusText = (status: string) => {
     draft: '草稿',
     sent: '已发送',
     accepted: '已接受',
-    rejected: '已拒绝'
+    rejected: '已拒绝',
   }
   return texts[status] || status
 }
@@ -311,11 +274,15 @@ const formatDate = (dateString: string) => {
 }
 
 // 监听器
-watch(() => props.xiansuo.id, (id) => {
-  if (id) {
-    void loadBaojiaList()
-  }
-}, { immediate: true })
+watch(
+  () => props.xiansuo.id,
+  (id) => {
+    if (id) {
+      void loadBaojiaList()
+    }
+  },
+  { immediate: true }
+)
 
 // 生命周期
 onMounted(() => {
@@ -359,7 +326,7 @@ onMounted(() => {
 }
 
 .baojia-card {
-  border: 1px solid #EBEEF5;
+  border: 1px solid #ebeef5;
   border-radius: 8px;
   padding: 20px;
   background: white;
@@ -371,8 +338,8 @@ onMounted(() => {
 }
 
 .baojia-card.expired {
-  border-color: #F56C6C;
-  background-color: #FEF0F0;
+  border-color: #f56c6c;
+  background-color: #fef0f0;
 }
 
 .card-header {
@@ -415,7 +382,7 @@ onMounted(() => {
 }
 
 .amount-value {
-  color: #E6A23C;
+  color: #e6a23c;
   font-weight: 700;
   font-size: 20px;
 }

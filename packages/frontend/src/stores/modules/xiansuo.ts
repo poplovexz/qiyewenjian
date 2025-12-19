@@ -453,8 +453,7 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
           const list = await xiansuoBaojiaApi.getByXiansuo(id)
 
           setBaojiaList(id, list)
-        } catch (error) {
-        }
+        } catch (error) {}
       })
     )
   }

@@ -8,20 +8,18 @@
     </el-card>
 
     <el-card>
-      <el-form 
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="120px"
-        v-loading="loading"
-      >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" v-loading="loading">
         <!-- 基本信息 -->
         <el-divider content-position="left">基本信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="开票类型" prop="kaipiao_leixing">
-              <el-select v-model="form.kaipiao_leixing" placeholder="请选择开票类型" style="width: 100%">
+              <el-select
+                v-model="form.kaipiao_leixing"
+                placeholder="请选择开票类型"
+                style="width: 100%"
+              >
                 <el-option label="增值税专用发票" value="zengzhishui" />
                 <el-option label="普通发票" value="putong" />
                 <el-option label="电子发票" value="dianzifapiao" />
@@ -36,9 +34,9 @@
         </el-row>
 
         <el-form-item label="开票内容" prop="kaipiao_neirong">
-          <el-input 
-            v-model="form.kaipiao_neirong" 
-            type="textarea" 
+          <el-input
+            v-model="form.kaipiao_neirong"
+            type="textarea"
             :rows="3"
             placeholder="请输入开票内容"
           />
@@ -46,12 +44,12 @@
 
         <!-- 金额信息 -->
         <el-divider content-position="left">金额信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="开票金额" prop="kaipiao_jine">
-              <el-input-number 
-                v-model="form.kaipiao_jine" 
+              <el-input-number
+                v-model="form.kaipiao_jine"
                 :precision="2"
                 :min="0"
                 style="width: 100%"
@@ -62,8 +60,8 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="税额" prop="shuie">
-              <el-input-number 
-                v-model="form.shuie" 
+              <el-input-number
+                v-model="form.shuie"
                 :precision="2"
                 :min="0"
                 style="width: 100%"
@@ -74,8 +72,8 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="价税合计" prop="jia_shui_jine">
-              <el-input-number 
-                v-model="form.jia_shui_jine" 
+              <el-input-number
+                v-model="form.jia_shui_jine"
                 :precision="2"
                 :min="0"
                 style="width: 100%"
@@ -88,7 +86,7 @@
 
         <!-- 购物方信息 -->
         <el-divider content-position="left">购物方信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="购物方名称" prop="gouwu_fang_mingcheng">
@@ -130,7 +128,7 @@
 
         <!-- 销售方信息 -->
         <el-divider content-position="left">销售方信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="销售方名称" prop="xiaoshou_fang_mingcheng">
@@ -172,7 +170,7 @@
 
         <!-- 其他信息 -->
         <el-divider content-position="left">其他信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="要求开票时间" prop="yaoqiu_kaipiao_shijian">
@@ -186,8 +184,13 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="客户" prop="kehu_id">
-              <el-select v-model="form.kehu_id" placeholder="请选择客户" style="width: 100%" filterable>
-                <el-option 
+              <el-select
+                v-model="form.kehu_id"
+                placeholder="请选择客户"
+                style="width: 100%"
+                filterable
+              >
+                <el-option
                   v-for="customer in customers"
                   :key="customer.id"
                   :label="customer.kehu_mingcheng"
@@ -199,12 +202,7 @@
         </el-row>
 
         <el-form-item label="备注" prop="beizhu">
-          <el-input 
-            v-model="form.beizhu" 
-            type="textarea" 
-            :rows="3"
-            placeholder="请输入备注信息"
-          />
+          <el-input v-model="form.beizhu" type="textarea" :rows="3" placeholder="请输入备注信息" />
         </el-form-item>
 
         <!-- 操作按钮 -->
@@ -212,9 +210,7 @@
           <el-button type="primary" @click="handleSubmit" :loading="submitLoading">
             {{ isEdit ? '更新' : '创建' }}
           </el-button>
-          <el-button @click="handleSaveAsDraft" :loading="draftLoading">
-            保存为草稿
-          </el-button>
+          <el-button @click="handleSaveAsDraft" :loading="draftLoading"> 保存为草稿 </el-button>
           <el-button @click="handleCancel">取消</el-button>
         </el-form-item>
       </el-form>
@@ -264,36 +260,24 @@ const form = reactive({
   xiaoshou_fang_yinhang: '',
   xiaoshou_fang_zhanghu: '',
   yaoqiu_kaipiao_shijian: null,
-  beizhu: ''
+  beizhu: '',
 })
 
 const rules = {
-  kaipiao_leixing: [
-    { required: true, message: '请选择开票类型', trigger: 'change' }
-  ],
-  kaipiao_mingcheng: [
-    { required: true, message: '请输入开票名称', trigger: 'blur' }
-  ],
+  kaipiao_leixing: [{ required: true, message: '请选择开票类型', trigger: 'change' }],
+  kaipiao_mingcheng: [{ required: true, message: '请输入开票名称', trigger: 'blur' }],
   kaipiao_jine: [
     { required: true, message: '请输入开票金额', trigger: 'blur' },
-    { type: 'number', min: 0.01, message: '开票金额必须大于0', trigger: 'blur' }
+    { type: 'number', min: 0.01, message: '开票金额必须大于0', trigger: 'blur' },
   ],
   jia_shui_jine: [
     { required: true, message: '价税合计不能为空', trigger: 'blur' },
-    { type: 'number', min: 0.01, message: '价税合计必须大于0', trigger: 'blur' }
+    { type: 'number', min: 0.01, message: '价税合计必须大于0', trigger: 'blur' },
   ],
-  gouwu_fang_mingcheng: [
-    { required: true, message: '请输入购物方名称', trigger: 'blur' }
-  ],
-  xiaoshou_fang_mingcheng: [
-    { required: true, message: '请输入销售方名称', trigger: 'blur' }
-  ],
-  xiaoshou_fang_shuihao: [
-    { required: true, message: '请输入销售方税号', trigger: 'blur' }
-  ],
-  kehu_id: [
-    { required: true, message: '请选择客户', trigger: 'change' }
-  ]
+  gouwu_fang_mingcheng: [{ required: true, message: '请输入购物方名称', trigger: 'blur' }],
+  xiaoshou_fang_mingcheng: [{ required: true, message: '请输入销售方名称', trigger: 'blur' }],
+  xiaoshou_fang_shuihao: [{ required: true, message: '请输入销售方税号', trigger: 'blur' }],
+  kehu_id: [{ required: true, message: '请选择客户', trigger: 'change' }],
 }
 
 // 方法
@@ -305,12 +289,11 @@ const fetchCustomers = async () => {
   try {
     const response = await fetch('/customers')
     const data = await response.json()
-    
+
     if (response.ok) {
       customers.value = data.items || []
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const fetchInvoiceDetail = async () => {
@@ -320,7 +303,7 @@ const fetchInvoiceDetail = async () => {
   try {
     const response = await fetch(`/invoices/${invoiceId.value}`)
     const data = await response.json()
-    
+
     if (response.ok) {
       Object.assign(form, data)
     } else {
@@ -338,25 +321,23 @@ const fetchInvoiceDetail = async () => {
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
-    
+
     submitLoading.value = true
-    
-    const url = isEdit.value 
-      ? `/invoices/${invoiceId.value}`
-      : '/invoices'
-    
+
+    const url = isEdit.value ? `/invoices/${invoiceId.value}` : '/invoices'
+
     const method = isEdit.value ? 'PUT' : 'POST'
-    
+
     const response = await fetch(url, {
       method,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(form)
+      body: JSON.stringify(form),
     })
-    
+
     const data = await response.json()
-    
+
     if (response.ok) {
       ElMessage.success(isEdit.value ? '更新成功' : '创建成功')
       router.push('/finance/invoices')
@@ -379,28 +360,26 @@ const handleSaveAsDraft = async () => {
       ElMessage.warning('请至少填写开票名称和购物方名称')
       return
     }
-    
+
     draftLoading.value = true
-    
-    const url = isEdit.value 
-      ? `/invoices/${invoiceId.value}`
-      : '/invoices'
-    
+
+    const url = isEdit.value ? `/invoices/${invoiceId.value}` : '/invoices'
+
     const method = isEdit.value ? 'PUT' : 'POST'
-    
+
     const response = await fetch(url, {
       method,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...form,
-        shenqing_zhuangtai: 'draft'
-      })
+        shenqing_zhuangtai: 'draft',
+      }),
     })
-    
+
     const data = await response.json()
-    
+
     if (response.ok) {
       ElMessage.success('保存草稿成功')
       router.push('/finance/invoices')

@@ -37,11 +37,7 @@
 
       <!-- 跟进记录列表 -->
       <div v-if="genjinList.length > 0" class="followup-list">
-        <div
-          v-for="record in genjinList"
-          :key="record.id"
-          class="followup-item"
-        >
+        <div v-for="record in genjinList" :key="record.id" class="followup-item">
           <div class="followup-header">
             <div class="followup-meta">
               <span class="followup-time">{{ formatDateTime(record.genjin_shijian) }}</span>
@@ -68,12 +64,7 @@
       <!-- 添加跟进表单 -->
       <div v-if="showForm" class="add-form">
         <el-divider content-position="left">添加跟进记录</el-divider>
-        <el-form
-          ref="formRef"
-          :model="formData"
-          :rules="formRules"
-          label-width="100px"
-        >
+        <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
           <el-form-item label="跟进方式" prop="genjin_fangshi">
             <el-select v-model="formData.genjin_fangshi" placeholder="请选择跟进方式">
               <el-option label="电话" value="phone" />
@@ -83,7 +74,7 @@
               <el-option label="其他" value="other" />
             </el-select>
           </el-form-item>
-          
+
           <el-form-item label="跟进内容" prop="genjin_neirong">
             <el-input
               v-model="formData.genjin_neirong"
@@ -92,7 +83,7 @@
               placeholder="请输入跟进内容"
             />
           </el-form-item>
-          
+
           <el-form-item label="下次跟进">
             <el-date-picker
               v-model="formData.xiaci_genjin_shijian"
@@ -102,7 +93,7 @@
               value-format="YYYY-MM-DD HH:mm:ss"
             />
           </el-form-item>
-          
+
           <el-form-item>
             <el-button type="primary" @click="handleSubmit" :loading="submitting">
               保存跟进记录
@@ -153,17 +144,15 @@ const formData = reactive<XiansuoGenjinCreate>({
   xiansuo_id: '',
   genjin_fangshi: '',
   genjin_neirong: '',
-  xiaci_genjin_shijian: undefined
+  xiaci_genjin_shijian: undefined,
 })
 
 const formRules: FormRules = {
-  genjin_fangshi: [
-    { required: true, message: '请选择跟进方式', trigger: 'change' }
-  ],
+  genjin_fangshi: [{ required: true, message: '请选择跟进方式', trigger: 'change' }],
   genjin_neirong: [
     { required: true, message: '请输入跟进内容', trigger: 'blur' },
-    { min: 5, message: '跟进内容至少5个字符', trigger: 'blur' }
-  ]
+    { min: 5, message: '跟进内容至少5个字符', trigger: 'blur' },
+  ],
 }
 
 // 计算属性
@@ -193,21 +182,21 @@ const resetForm = () => {
     xiansuo_id: '',
     genjin_fangshi: '',
     genjin_neirong: '',
-    xiaci_genjin_shijian: undefined
+    xiaci_genjin_shijian: undefined,
   })
   formRef.value?.clearValidate()
 }
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     const valid = await formRef.value.validate()
     if (!valid) return
-    
+
     submitting.value = true
     const success = await xiansuoStore.createGenjin(formData)
-    
+
     if (success) {
       ElMessage.success('跟进记录添加成功')
       showForm.value = false
@@ -234,7 +223,7 @@ const getStatusType = (status: string) => {
     following: 'warning',
     interested: 'success',
     won: 'success',
-    lost: 'danger'
+    lost: 'danger',
   }
   return map[status] || ''
 }
@@ -245,7 +234,7 @@ const getStatusText = (status: string) => {
     following: '跟进中',
     interested: '有意向',
     won: '已成交',
-    lost: '已失效'
+    lost: '已失效',
   }
   return map[status] || status
 }
@@ -256,7 +245,7 @@ const getFollowupType = (method: string) => {
     email: 'success',
     wechat: 'warning',
     meeting: 'danger',
-    other: ''
+    other: '',
   }
   return map[method] || ''
 }
@@ -267,18 +256,21 @@ const getFollowupMethodText = (method: string) => {
     email: '邮件',
     wechat: '微信',
     meeting: '面谈',
-    other: '其他'
+    other: '其他',
   }
   return map[method] || method
 }
 
 // 监听对话框显示状态
-watch(() => props.visible, async (newVal) => {
-  if (newVal && props.xiansuo) {
-    // 加载跟进记录
-    await xiansuoStore.fetchGenjinByXiansuo(props.xiansuo.id)
+watch(
+  () => props.visible,
+  async (newVal) => {
+    if (newVal && props.xiansuo) {
+      // 加载跟进记录
+      await xiansuoStore.fetchGenjinByXiansuo(props.xiansuo.id)
+    }
   }
-})
+)
 </script>
 
 <style scoped>

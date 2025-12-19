@@ -67,10 +67,7 @@
       </el-form-item>
 
       <el-form-item label="状态" prop="zhuangtai">
-        <el-radio-group
-          v-model="formData.zhuangtai"
-          :disabled="mode === 'view'"
-        >
+        <el-radio-group v-model="formData.zhuangtai" :disabled="mode === 'view'">
           <el-radio
             v-for="option in productStatusOptions"
             :key="option.value"
@@ -131,11 +128,7 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { useProductStore } from '@/stores/modules/product'
 import { formatDateTime } from '@/utils/date'
 import { productTypeOptions, productStatusOptions } from '@/api/modules/product'
-import type { 
-  ProductCategory, 
-  ProductCategoryCreate, 
-  ProductCategoryUpdate 
-} from '@/types/product'
+import type { ProductCategory, ProductCategoryCreate, ProductCategoryUpdate } from '@/types/product'
 
 // Props
 interface Props {
@@ -145,7 +138,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  category: null
+  category: null,
 })
 
 // Emits
@@ -168,29 +161,29 @@ const formData = reactive<ProductCategoryCreate>({
   chanpin_leixing: 'zengzhi',
   miaoshu: '',
   paixu: 0,
-  zhuangtai: 'active'
+  zhuangtai: 'active',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
   fenlei_mingcheng: [
     { required: true, message: '请输入分类名称', trigger: 'blur' },
-    { min: 1, max: 100, message: '分类名称长度在 1 到 100 个字符', trigger: 'blur' }
+    { min: 1, max: 100, message: '分类名称长度在 1 到 100 个字符', trigger: 'blur' },
   ],
   fenlei_bianma: [
     { required: true, message: '请输入分类编码', trigger: 'blur' },
     { min: 1, max: 50, message: '分类编码长度在 1 到 50 个字符', trigger: 'blur' },
-    { pattern: /^[a-zA-Z0-9_-]+$/, message: '分类编码只能包含字母、数字、下划线和横线', trigger: 'blur' }
+    {
+      pattern: /^[a-zA-Z0-9_-]+$/,
+      message: '分类编码只能包含字母、数字、下划线和横线',
+      trigger: 'blur',
+    },
   ],
-  chanpin_leixing: [
-    { required: true, message: '请选择产品类型', trigger: 'change' }
-  ],
+  chanpin_leixing: [{ required: true, message: '请选择产品类型', trigger: 'change' }],
   paixu: [
-    { type: 'number', min: 0, max: 9999, message: '排序号必须在 0 到 9999 之间', trigger: 'blur' }
+    { type: 'number', min: 0, max: 9999, message: '排序号必须在 0 到 9999 之间', trigger: 'blur' },
   ],
-  zhuangtai: [
-    { required: true, message: '请选择状态', trigger: 'change' }
-  ]
+  zhuangtai: [{ required: true, message: '请选择状态', trigger: 'change' }],
 }
 
 // 计算属性
@@ -198,20 +191,23 @@ const dialogTitle = computed(() => {
   const titles = {
     create: '新增产品分类',
     edit: '编辑产品分类',
-    view: '查看产品分类'
+    view: '查看产品分类',
   }
   return titles[props.mode]
 })
 
 // 监听器
-watch(() => props.visible, (newVal) => {
-  if (newVal) {
-    resetForm()
-    if (props.category && (props.mode === 'edit' || props.mode === 'view')) {
-      loadCategoryData()
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      resetForm()
+      if (props.category && (props.mode === 'edit' || props.mode === 'view')) {
+        loadCategoryData()
+      }
     }
   }
-})
+)
 
 // 方法
 const resetForm = () => {
@@ -221,9 +217,9 @@ const resetForm = () => {
     chanpin_leixing: 'zengzhi',
     miaoshu: '',
     paixu: 0,
-    zhuangtai: 'active'
+    zhuangtai: 'active',
   })
-  
+
   nextTick(() => {
     formRef.value?.clearValidate()
   })
@@ -237,7 +233,7 @@ const loadCategoryData = () => {
       chanpin_leixing: props.category.chanpin_leixing,
       miaoshu: props.category.miaoshu || '',
       paixu: props.category.paixu,
-      zhuangtai: props.category.zhuangtai
+      zhuangtai: props.category.zhuangtai,
     })
   }
 }
@@ -248,11 +244,11 @@ const handleClose = () => {
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     submitting.value = true
-    
+
     if (props.mode === 'create') {
       // 创建分类
       await productStore.createCategory(formData)
@@ -265,13 +261,13 @@ const handleSubmit = async () => {
         chanpin_leixing: formData.chanpin_leixing,
         miaoshu: formData.miaoshu,
         paixu: formData.paixu,
-        zhuangtai: formData.zhuangtai
+        zhuangtai: formData.zhuangtai,
       }
-      
+
       await productStore.updateCategory(props.category!.id, updateData)
       ElMessage.success('产品分类更新成功')
     }
-    
+
     emit('success')
   } catch (error) {
   } finally {

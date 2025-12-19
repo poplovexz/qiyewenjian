@@ -15,7 +15,7 @@
         :closable="false"
         style="margin-bottom: 20px"
       />
-      
+
       <h4>工单信息</h4>
       <el-descriptions :column="1" border size="small">
         <el-descriptions-item label="工单编号">
@@ -61,12 +61,8 @@
           <el-option label="其他原因" value="其他原因" />
         </el-select>
       </el-form-item>
-      
-      <el-form-item 
-        label="详细说明" 
-        prop="cancel_detail"
-        :rules="detailRules"
-      >
+
+      <el-form-item label="详细说明" prop="cancel_detail" :rules="detailRules">
         <el-input
           v-model="formData.cancel_detail"
           type="textarea"
@@ -79,9 +75,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button type="danger" @click="handleSubmit" :loading="loading">
-          确认取消工单
-        </el-button>
+        <el-button type="danger" @click="handleSubmit" :loading="loading"> 确认取消工单 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -115,27 +109,29 @@ const loading = ref(false)
 
 const formData = reactive({
   cancel_reason: '',
-  cancel_detail: ''
+  cancel_detail: '',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  cancel_reason: [
-    { required: true, message: '请选择取消原因', trigger: 'change' }
-  ]
+  cancel_reason: [{ required: true, message: '请选择取消原因', trigger: 'change' }],
 }
 
 const detailRules = computed(() => {
   const rules = [
     { required: true, message: '请输入详细说明', trigger: 'blur' },
-    { min: 10, message: '详细说明至少10个字符', trigger: 'blur' }
+    { min: 10, message: '详细说明至少10个字符', trigger: 'blur' },
   ]
-  
+
   // 如果选择"其他原因"，要求更详细的说明
   if (formData.cancel_reason === '其他原因') {
-    rules.push({ min: 20, message: '选择其他原因时，请提供至少20个字符的详细说明', trigger: 'blur' })
+    rules.push({
+      min: 20,
+      message: '选择其他原因时，请提供至少20个字符的详细说明',
+      trigger: 'blur',
+    })
   }
-  
+
   return rules
 })
 
@@ -147,7 +143,7 @@ const getStatusType = (status: string) => {
     in_progress: 'primary',
     pending_review: 'warning',
     completed: 'success',
-    cancelled: 'danger'
+    cancelled: 'danger',
   }
   return typeMap[status] || 'info'
 }
@@ -161,14 +157,14 @@ const getProgressColor = (percentage: number) => {
 const handleReasonChange = (reason: string) => {
   // 根据选择的原因预填充详细说明
   const templates: Record<string, string> = {
-    '客户要求取消': '客户主动要求取消此工单，原因：',
-    '合同已终止': '相关合同已终止，工单无法继续执行。',
-    '服务内容变更': '服务内容发生重大变更，需要重新制定工单。',
-    '技术问题无法解决': '遇到技术问题无法在预期时间内解决：',
-    '资源不足': '当前资源不足，无法按时完成工单：',
-    '其他原因': '其他原因：'
+    客户要求取消: '客户主动要求取消此工单，原因：',
+    合同已终止: '相关合同已终止，工单无法继续执行。',
+    服务内容变更: '服务内容发生重大变更，需要重新制定工单。',
+    技术问题无法解决: '遇到技术问题无法在预期时间内解决：',
+    资源不足: '当前资源不足，无法按时完成工单：',
+    其他原因: '其他原因：',
   }
-  
+
   if (templates[reason]) {
     formData.cancel_detail = templates[reason]
   }
@@ -179,7 +175,7 @@ const handleSubmit = async () => {
 
   try {
     await formRef.value.validate()
-    
+
     // 确认对话框
     await ElMessageBox.confirm(
       `确认取消工单"${props.order.gongdan_biaoti}"？\n\n取消原因：${formData.cancel_reason}\n\n此操作不可恢复！`,
@@ -188,19 +184,16 @@ const handleSubmit = async () => {
         type: 'error',
         confirmButtonText: '确认取消',
         cancelButtonText: '我再想想',
-        confirmButtonClass: 'el-button--danger'
+        confirmButtonClass: 'el-button--danger',
       }
     )
-    
+
     loading.value = true
-    
+
     const cancelReason = `${formData.cancel_reason}：${formData.cancel_detail}`
-    
-    await serviceOrderStore.cancelServiceOrder(
-      props.order.id,
-      cancelReason
-    )
-    
+
+    await serviceOrderStore.cancelServiceOrder(props.order.id, cancelReason)
+
     emit('success')
   } catch (error) {
     if (error !== 'cancel') {
@@ -219,19 +212,22 @@ const resetForm = () => {
   if (formRef.value) {
     formRef.value.resetFields()
   }
-  
+
   Object.assign(formData, {
     cancel_reason: '',
-    cancel_detail: ''
+    cancel_detail: '',
   })
 }
 
 // 监听
-watch(() => props.visible, (newVal) => {
-  if (newVal) {
-    resetForm()
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      resetForm()
+    }
   }
-})
+)
 </script>
 
 <style scoped>
