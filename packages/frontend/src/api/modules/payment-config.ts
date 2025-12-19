@@ -165,7 +165,7 @@ export function createZhifuPeizhi(data: ZhifuPeizhiCreate) {
   return request<ZhifuPeizhiResponse>({
     url: '/payment-configs/',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -176,7 +176,7 @@ export function getZhifuPeizhiList(params?: ZhifuPeizhiListParams) {
   return request<ZhifuPeizhiListResponse>({
     url: '/payment-configs/',
     method: 'get',
-    params
+    params,
   })
 }
 
@@ -186,7 +186,7 @@ export function getZhifuPeizhiList(params?: ZhifuPeizhiListParams) {
 export function getZhifuPeizhi(id: string) {
   return request<ZhifuPeizhiResponse>({
     url: `/payment-configs/${id}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -196,7 +196,7 @@ export function getZhifuPeizhi(id: string) {
 export function getZhifuPeizhiForEdit(id: string) {
   return request<ZhifuPeizhiDetail>({
     url: `/payment-configs/${id}/edit`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -207,7 +207,7 @@ export function updateZhifuPeizhi(id: string, data: ZhifuPeizhiUpdate) {
   return request<ZhifuPeizhiResponse>({
     url: `/payment-configs/${id}`,
     method: 'put',
-    data
+    data,
   })
 }
 
@@ -217,7 +217,7 @@ export function updateZhifuPeizhi(id: string, data: ZhifuPeizhiUpdate) {
 export function deleteZhifuPeizhi(id: string) {
   return request<{ message: string }>({
     url: `/payment-configs/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -227,6 +227,6 @@ export function deleteZhifuPeizhi(id: string) {
 export function toggleZhifuPeizhiStatus(id: string) {
   return request<ZhifuPeizhiResponse>({
     url: `/payment-configs/${id}/toggle-status`,
-    method: 'post'
+    method: 'post',
   })
 }

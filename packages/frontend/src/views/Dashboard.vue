@@ -7,9 +7,7 @@
           <h1 class="welcome-title">
             欢迎回来，{{ userInfo?.xingming || userInfo?.yonghu_ming || '用户' }}！
           </h1>
-          <p class="welcome-subtitle">
-            今天是 {{ currentDate }}，祝您工作愉快
-          </p>
+          <p class="welcome-subtitle">今天是 {{ currentDate }}，祝您工作愉快</p>
         </div>
         <div class="welcome-avatar animate-scale-in-bounce animate-delay-500">
           <div class="avatar-circle">
@@ -91,7 +89,7 @@
           class="animate-fade-in-left animate-delay-700 hover-scale"
         >
           <div class="quick-actions-grid">
-            <div 
+            <div
               v-if="hasPermission('user:read')"
               class="action-item"
               @click="$router.push('/users')"
@@ -261,14 +259,18 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="permissions-section">
               <div class="section-title">
                 <el-icon><Key /></el-icon>
                 <span>权限列表</span>
               </div>
               <div class="permissions-list">
-                <div v-for="permission in userPermissions.slice(0, 6)" :key="permission" class="permission-tag">
+                <div
+                  v-for="permission in userPermissions.slice(0, 6)"
+                  :key="permission"
+                  class="permission-tag"
+                >
                   {{ permission }}
                 </div>
                 <div v-if="userPermissions.length > 6" class="more-permissions">
@@ -318,17 +320,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAuth } from '@/composables/useAuth'
-import { 
-  User, 
-  UserFilled, 
-  Document, 
-  Star, 
-  Key, 
-  CircleCheck, 
-  ShoppingCart, 
-  Money, 
+import {
+  User,
+  UserFilled,
+  Document,
+  Star,
+  Key,
+  CircleCheck,
+  ShoppingCart,
+  Money,
   List,
-  Warning
+  Warning,
 } from '@element-plus/icons-vue'
 import StatCard from '@/components/ui/StatCard.vue'
 import ModernCard from '@/components/ui/ModernCard.vue'
@@ -343,7 +345,7 @@ const currentDate = computed(() => {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    weekday: 'long'
+    weekday: 'long',
   })
 })
 
@@ -863,29 +865,29 @@ const getStatusText = (status?: string) => {
   .dashboard-container {
     padding: 16px;
   }
-  
+
   .welcome-section {
     padding: 20px;
   }
-  
+
   .welcome-content {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .welcome-title {
     font-size: 24px;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .quick-actions-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .action-item {
     flex-direction: column;
     text-align: center;

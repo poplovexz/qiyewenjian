@@ -30,14 +30,14 @@ export function getLeaveList(params: ListParams) {
   return request({
     url: '/office/leave',
     method: 'get',
-    params
+    params,
   })
 }
 
 export function getLeaveDetail(id: string) {
   return request({
     url: `/office/leave/${id}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -45,7 +45,7 @@ export function createLeave(data: LeaveApplication) {
   return request({
     url: '/office/leave',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -53,14 +53,14 @@ export function updateLeave(id: string, data: Partial<LeaveApplication>) {
   return request({
     url: `/office/leave/${id}`,
     method: 'put',
-    data
+    data,
   })
 }
 
 export function deleteLeave(id: string) {
   return request({
     url: `/office/leave/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -70,7 +70,7 @@ export function deleteLeave(id: string) {
 export function submitLeaveForApproval(id: string) {
   return request({
     url: `/office/leave/${id}/submit`,
-    method: 'post'
+    method: 'post',
   })
 }
 
@@ -81,7 +81,7 @@ export function approveLeave(id: string, shenhe_yijian?: string) {
   return request({
     url: `/office/leave/${id}/approve`,
     method: 'post',
-    params: { shenhe_yijian }
+    params: { shenhe_yijian },
   })
 }
 
@@ -92,6 +92,6 @@ export function rejectLeave(id: string, shenhe_yijian: string) {
   return request({
     url: `/office/leave/${id}/reject`,
     method: 'post',
-    params: { shenhe_yijian }
+    params: { shenhe_yijian },
   })
 }

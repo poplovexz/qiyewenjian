@@ -36,7 +36,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { createBaoxiaoLeibie, updateBaoxiaoLeibie, type BaoxiaoLeibie } from '@/api/modules/finance-settings'
+import {
+  createBaoxiaoLeibie,
+  updateBaoxiaoLeibie,
+  type BaoxiaoLeibie,
+} from '@/api/modules/finance-settings'
 
 const props = defineProps<{
   modelValue: boolean
@@ -57,26 +61,30 @@ const form = ref<BaoxiaoLeibie>({
   bianma: '',
   miaoshu: '',
   paixu: 0,
-  zhuangtai: 'active'
+  zhuangtai: 'active',
 })
 
 const rules: FormRules = {
-  mingcheng: [{ required: true, message: '请输入类别名称', trigger: 'blur' }]
+  mingcheng: [{ required: true, message: '请输入类别名称', trigger: 'blur' }],
 }
 
-watch(() => props.leibie, (val) => {
-  if (val) {
-    form.value = { ...val }
-  } else {
-    form.value = {
-      mingcheng: '',
-      bianma: '',
-      miaoshu: '',
-      paixu: 0,
-      zhuangtai: 'active'
+watch(
+  () => props.leibie,
+  (val) => {
+    if (val) {
+      form.value = { ...val }
+    } else {
+      form.value = {
+        mingcheng: '',
+        bianma: '',
+        miaoshu: '',
+        paixu: 0,
+        zhuangtai: 'active',
+      }
     }
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 const handleClose = () => {
   emit('update:modelValue', false)

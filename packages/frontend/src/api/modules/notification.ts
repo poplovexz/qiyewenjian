@@ -49,20 +49,22 @@ export const notificationApi = {
 
   // 批量标记为已读
   markMultipleAsRead: (ids: string[]) => {
-    return Promise.all(ids.map(id => request.post(`/notifications/${id}/read`)))
+    return Promise.all(ids.map((id) => request.post(`/notifications/${id}/read`)))
   },
 
   // 标记所有通知为已读
   markAllAsRead: () => {
     // 先获取所有未读通知，然后批量标记为已读
-    return request.get('/notifications/my', {
-      params: { tongzhi_zhuangtai: 'unread', size: 100 }
-    }).then((response: NotificationListResponse) => {
-      const unreadIds = response.items?.map((item: NotificationItem) => item.id) || []
-      if (unreadIds.length > 0) {
-        return notificationApi.markMultipleAsRead(unreadIds)
-      }
-      return Promise.resolve()
-    })
-  }
+    return request
+      .get('/notifications/my', {
+        params: { tongzhi_zhuangtai: 'unread', size: 100 },
+      })
+      .then((response: NotificationListResponse) => {
+        const unreadIds = response.items?.map((item: NotificationItem) => item.id) || []
+        if (unreadIds.length > 0) {
+          return notificationApi.markMultipleAsRead(unreadIds)
+        }
+        return Promise.resolve()
+      })
+  },
 }

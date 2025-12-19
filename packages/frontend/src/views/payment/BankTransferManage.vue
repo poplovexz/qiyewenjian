@@ -65,12 +65,7 @@
             >
               上传凭证
             </el-button>
-            <el-button
-              v-else
-              type="info"
-              size="small"
-              @click="handleViewDetail(row)"
-            >
+            <el-button v-else type="info" size="small" @click="handleViewDetail(row)">
               查看详情
             </el-button>
           </template>
@@ -110,19 +105,11 @@
         <el-divider content-position="left">汇款信息</el-divider>
 
         <el-form-item label="汇款人姓名" prop="huikuan_ren">
-          <el-input
-            v-model="uploadForm.huikuan_ren"
-            placeholder="请填写汇款人姓名"
-            clearable
-          />
+          <el-input v-model="uploadForm.huikuan_ren" placeholder="请填写汇款人姓名" clearable />
         </el-form-item>
 
         <el-form-item label="汇款银行" prop="huikuan_yinhang">
-          <el-input
-            v-model="uploadForm.huikuan_yinhang"
-            placeholder="请填写汇款银行"
-            clearable
-          />
+          <el-input v-model="uploadForm.huikuan_yinhang" placeholder="请填写汇款银行" clearable />
         </el-form-item>
 
         <el-form-item label="汇款账户">
@@ -157,7 +144,11 @@
             :before-upload="beforeUpload"
             accept="image/*"
           >
-            <img v-if="uploadForm.voucher_url" :src="uploadForm.voucher_url" class="voucher-image" />
+            <img
+              v-if="uploadForm.voucher_url"
+              :src="uploadForm.voucher_url"
+              class="voucher-image"
+            />
             <el-icon v-else class="voucher-uploader-icon"><Plus /></el-icon>
           </el-upload>
           <div class="upload-tip">支持 JPG、PNG 格式，大小不超过 5MB</div>
@@ -182,19 +173,21 @@
     </el-dialog>
 
     <!-- 详情对话框 -->
-    <el-dialog
-      v-model="detailDialogVisible"
-      title="汇款单据详情"
-      width="700px"
-    >
+    <el-dialog v-model="detailDialogVisible" title="汇款单据详情" width="700px">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="单据编号">{{ currentDanju.danju_bianhao }}</el-descriptions-item>
+        <el-descriptions-item label="单据编号">{{
+          currentDanju.danju_bianhao
+        }}</el-descriptions-item>
         <el-descriptions-item label="汇款金额">
           <span class="amount">¥{{ currentDanju.huikuan_jine }}</span>
         </el-descriptions-item>
         <el-descriptions-item label="汇款人">{{ currentDanju.huikuan_ren }}</el-descriptions-item>
-        <el-descriptions-item label="汇款银行">{{ currentDanju.huikuan_yinhang }}</el-descriptions-item>
-        <el-descriptions-item label="汇款账号">{{ currentDanju.huikuan_zhanghu }}</el-descriptions-item>
+        <el-descriptions-item label="汇款银行">{{
+          currentDanju.huikuan_yinhang
+        }}</el-descriptions-item>
+        <el-descriptions-item label="汇款账号">{{
+          currentDanju.huikuan_zhanghu
+        }}</el-descriptions-item>
         <el-descriptions-item label="汇款日期">
           {{ formatDateTime(currentDanju.huikuan_riqi) }}
         </el-descriptions-item>
@@ -266,7 +259,7 @@ const uploadFormRef = ref()
 const queryParams = reactive({
   page: 1,
   size: 20,
-  status: 'waiting_voucher'  // 默认筛选"待上传凭证"状态
+  status: 'waiting_voucher', // 默认筛选"待上传凭证"状态
 })
 
 // 待处理数量
@@ -281,28 +274,20 @@ const uploadForm = reactive({
   huikuan_ren: '',
   huikuan_yinhang: '',
   huikuan_zhanghu: '',
-  huikuan_riqi: ''
+  huikuan_riqi: '',
 })
 
 const uploadRules = {
-  voucher_url: [
-    { required: true, message: '请上传凭证图片', trigger: 'change' }
-  ],
-  huikuan_ren: [
-    { required: true, message: '请填写汇款人姓名', trigger: 'blur' }
-  ],
-  huikuan_yinhang: [
-    { required: true, message: '请填写汇款银行', trigger: 'blur' }
-  ],
-  huikuan_riqi: [
-    { required: true, message: '请选择汇款日期', trigger: 'change' }
-  ]
+  voucher_url: [{ required: true, message: '请上传凭证图片', trigger: 'change' }],
+  huikuan_ren: [{ required: true, message: '请填写汇款人姓名', trigger: 'blur' }],
+  huikuan_yinhang: [{ required: true, message: '请填写汇款银行', trigger: 'blur' }],
+  huikuan_riqi: [{ required: true, message: '请选择汇款日期', trigger: 'change' }],
 }
 
 // 上传配置
 const uploadAction = `${import.meta.env.VITE_API_BASE_URL}/upload/image`
 const uploadHeaders = {
-  Authorization: `Bearer ${authStore.accessToken}`
+  Authorization: `Bearer ${authStore.accessToken}`,
 }
 
 // 加载数据
@@ -311,7 +296,7 @@ const loadData = async () => {
     loading.value = true
     const params: Record<string, string | number> = {
       page: queryParams.page,
-      size: queryParams.size
+      size: queryParams.size,
     }
     if (queryParams.status) {
       params.shenhe_zhuangtai = queryParams.status
@@ -338,12 +323,11 @@ const loadPendingCount = async () => {
       params: {
         page: 1,
         size: 1,
-        shenhe_zhuangtai: 'waiting_voucher'
-      }
+        shenhe_zhuangtai: 'waiting_voucher',
+      },
     })
     pendingCount.value = response.data?.total || response.total || 0
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 // 查询
@@ -354,7 +338,7 @@ const handleSearch = () => {
 
 // 重置
 const handleReset = () => {
-  queryParams.status = 'waiting_voucher'  // 重置为默认筛选"待上传凭证"
+  queryParams.status = 'waiting_voucher' // 重置为默认筛选"待上传凭证"
   queryParams.page = 1
   loadData()
 }
@@ -410,17 +394,14 @@ const handleSubmitVoucher = async () => {
     await uploadFormRef.value.validate()
 
     submitting.value = true
-    await request.post(
-      `/bank-transfers/${currentDanju.value.id}/upload-voucher`,
-      {
-        voucher_url: uploadForm.voucher_url,
-        beizhu: uploadForm.beizhu,
-        huikuan_ren: uploadForm.huikuan_ren,
-        huikuan_yinhang: uploadForm.huikuan_yinhang,
-        huikuan_zhanghu: uploadForm.huikuan_zhanghu,
-        huikuan_riqi: uploadForm.huikuan_riqi
-      }
-    )
+    await request.post(`/bank-transfers/${currentDanju.value.id}/upload-voucher`, {
+      voucher_url: uploadForm.voucher_url,
+      beizhu: uploadForm.beizhu,
+      huikuan_ren: uploadForm.huikuan_ren,
+      huikuan_yinhang: uploadForm.huikuan_yinhang,
+      huikuan_zhanghu: uploadForm.huikuan_zhanghu,
+      huikuan_riqi: uploadForm.huikuan_riqi,
+    })
 
     ElMessage.success('凭证上传成功，汇款信息已更新，已提交财务审核')
     uploadDialogVisible.value = false
@@ -444,7 +425,7 @@ const formatDateTime = (dateStr: string) => {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
@@ -454,7 +435,7 @@ const getStatusType = (status: string) => {
     waiting_voucher: 'warning',
     pending_audit: 'info',
     approved: 'success',
-    rejected: 'danger'
+    rejected: 'danger',
   }
   return typeMap[status] || 'info'
 }
@@ -465,7 +446,7 @@ const getStatusText = (status: string) => {
     waiting_voucher: '待上传凭证',
     pending_audit: '待审核',
     approved: '已通过',
-    rejected: '已拒绝'
+    rejected: '已拒绝',
   }
   return textMap[status] || status
 }
@@ -510,7 +491,8 @@ onMounted(() => {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

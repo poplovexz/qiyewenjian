@@ -82,5 +82,5 @@ export const refundApi = {
    */
   getDetail: (id: string) => {
     return request.get<Refund>(`/payment-refunds/${id}`)
-  }
+  },
 }

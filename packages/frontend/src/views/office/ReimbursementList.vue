@@ -52,9 +52,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="baoxiao_jine" label="报销金额" width="120">
-          <template #default="{ row }">
-            ¥{{ row.baoxiao_jine }}
-          </template>
+          <template #default="{ row }"> ¥{{ row.baoxiao_jine }} </template>
         </el-table-column>
         <el-table-column prop="baoxiao_yuanyin" label="报销原因" show-overflow-tooltip />
         <el-table-column prop="shenhe_zhuangtai" label="审核状态" width="100">
@@ -72,28 +70,28 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" size="small" @click="handleView(row)">查看</el-button>
-            <el-button 
-              link 
-              type="primary" 
-              size="small" 
+            <el-button
+              link
+              type="primary"
+              size="small"
               @click="handleEdit(row)"
               v-if="row.shenhe_zhuangtai === 'daishehe'"
             >
               编辑
             </el-button>
-            <el-button 
-              link 
-              type="danger" 
-              size="small" 
+            <el-button
+              link
+              type="danger"
+              size="small"
               @click="handleDelete(row)"
               v-if="row.shenhe_zhuangtai === 'daishehe'"
             >
               删除
             </el-button>
-            <el-button 
-              link 
-              type="success" 
-              size="small" 
+            <el-button
+              link
+              type="success"
+              size="small"
               @click="handleSubmit(row)"
               v-if="row.shenhe_zhuangtai === 'daishehe'"
             >
@@ -126,7 +124,7 @@ import {
   getMyReimbursementList,
   deleteReimbursement,
   submitReimbursementForApproval,
-  type ReimbursementApplication
+  type ReimbursementApplication,
 } from '@/api/office'
 import { getBaoxiaoLeibieList, type BaoxiaoLeibie } from '@/api/modules/finance-settings'
 
@@ -141,13 +139,13 @@ const baoxiaoLeibieLoading = ref(false)
 const searchForm = reactive({
   shenhe_zhuangtai: '',
   baoxiao_leixing: '',
-  search: ''
+  search: '',
 })
 
 const pagination = reactive({
   page: 1,
   size: 10,
-  total: 0
+  total: 0,
 })
 
 // 加载报销类别列表
@@ -157,7 +155,9 @@ const loadBaoxiaoLeibieOptions = async () => {
     const res = await getBaoxiaoLeibieList({ page: 1, size: 100 })
     const allItems = (res as { items?: BaoxiaoLeibie[] }).items || []
     // 只显示启用状态的类别
-    baoxiaoLeibieOptions.value = allItems.filter((item: BaoxiaoLeibie) => item.zhuangtai === 'active')
+    baoxiaoLeibieOptions.value = allItems.filter(
+      (item: BaoxiaoLeibie) => item.zhuangtai === 'active'
+    )
   } catch (error: unknown) {
     // 静默失败，不影响主要功能
     baoxiaoLeibieOptions.value = []
@@ -173,7 +173,7 @@ const fetchData = async () => {
     const res = await getMyReimbursementList({
       page: pagination.page,
       size: pagination.size,
-      ...searchForm
+      ...searchForm,
     })
     tableData.value = res.items
     pagination.total = res.total
@@ -217,7 +217,7 @@ const handleEdit = (row: ReimbursementApplication) => {
 const handleDelete = async (row: ReimbursementApplication) => {
   try {
     await ElMessageBox.confirm('确定要删除这条报销申请吗？', '提示', {
-      type: 'warning'
+      type: 'warning',
     })
     await deleteReimbursement(row.id!)
     ElMessage.success('删除成功')
@@ -231,7 +231,7 @@ const handleDelete = async (row: ReimbursementApplication) => {
 const handleSubmit = async (row: ReimbursementApplication) => {
   try {
     await ElMessageBox.confirm('确定要提交审批吗？', '提示', {
-      type: 'info'
+      type: 'info',
     })
     await submitReimbursementForApproval(row.id!)
     ElMessage.success('提交成功')
@@ -261,7 +261,7 @@ const getStatusLabel = (status: string) => {
     daishehe: '待审核',
     shenhezhong: '审核中',
     tongguo: '已通过',
-    jujue: '已拒绝'
+    jujue: '已拒绝',
   }
   return map[status] || status
 }
@@ -271,7 +271,7 @@ const getStatusType = (status: string) => {
     daishehe: 'info',
     shenhezhong: 'warning',
     tongguo: 'success',
-    jujue: 'danger'
+    jujue: 'danger',
   }
   return map[status] || 'info'
 }

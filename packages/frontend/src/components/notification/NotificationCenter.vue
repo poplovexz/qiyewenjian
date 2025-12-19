@@ -47,7 +47,9 @@
             </div>
             <div class="notification-content">
               <div class="notification-title">{{ notification.tongzhi_biaoti }}</div>
-              <div class="notification-desc">{{ getNotificationDesc(notification.tongzhi_neirong) }}</div>
+              <div class="notification-desc">
+                {{ getNotificationDesc(notification.tongzhi_neirong) }}
+              </div>
               <div class="notification-time">{{ formatTime(notification.fasong_shijian) }}</div>
             </div>
             <div v-if="notification.tongzhi_zhuangtai === 'unread'" class="unread-dot"></div>
@@ -58,9 +60,7 @@
 
       <!-- 底部 -->
       <div class="notification-footer">
-        <el-button link type="primary" @click="handleViewAll">
-          查看全部通知
-        </el-button>
+        <el-button link type="primary" @click="handleViewAll"> 查看全部通知 </el-button>
       </div>
     </div>
   </el-popover>
@@ -89,14 +89,14 @@ const notificationStore = useNotificationStore()
 // 获取通知图标
 const getNotificationIcon = (type: string) => {
   const iconMap: Record<string, Component> = {
-    'audit_pending': Warning,
-    'audit_approved': SuccessFilled,
-    'audit_rejected': Warning,
-    'payment_success': CircleCheck,
-    'payment_failed': Warning,
-    'contract_signed': Document,
-    'invoice_generated': Document,
-    'task_assigned': Document
+    audit_pending: Warning,
+    audit_approved: SuccessFilled,
+    audit_rejected: Warning,
+    payment_success: CircleCheck,
+    payment_failed: Warning,
+    contract_signed: Document,
+    invoice_generated: Document,
+    task_assigned: Document,
   }
   return iconMap[type] || Bell
 }
@@ -104,7 +104,7 @@ const getNotificationIcon = (type: string) => {
 // 获取通知描述（截取前50个字符）
 const getNotificationDesc = (content: string) => {
   if (!content) return ''
-  const lines = content.split('\n').filter(line => line.trim())
+  const lines = content.split('\n').filter((line) => line.trim())
   const firstLine = lines[0] || ''
   return firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine
 }
@@ -115,11 +115,11 @@ const formatTime = (time: string) => {
   const date = new Date(time)
   const now = new Date()
   const diff = now.getTime() - date.getTime()
-  
+
   const minute = 60 * 1000
   const hour = 60 * minute
   const day = 24 * hour
-  
+
   if (diff < minute) {
     return '刚刚'
   } else if (diff < hour) {
@@ -206,7 +206,7 @@ onUnmounted(() => {
   align-items: center;
   padding: 12px 16px;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  
+
   h3 {
     margin: 0;
     font-size: 16px;
@@ -229,11 +229,11 @@ onUnmounted(() => {
   cursor: pointer;
   transition: background-color 0.2s;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  
+
   &:hover {
     background-color: var(--el-fill-color-light);
   }
-  
+
   &.is-unread {
     background-color: var(--el-color-primary-light-9);
   }
@@ -248,27 +248,27 @@ onUnmounted(() => {
   justify-content: center;
   border-radius: 50%;
   font-size: 18px;
-  
+
   &.type-audit_pending {
     background-color: var(--el-color-warning-light-9);
     color: var(--el-color-warning);
   }
-  
+
   &.type-audit_approved {
     background-color: var(--el-color-success-light-9);
     color: var(--el-color-success);
   }
-  
+
   &.type-audit_rejected {
     background-color: var(--el-color-danger-light-9);
     color: var(--el-color-danger);
   }
-  
+
   &.type-payment_success {
     background-color: var(--el-color-success-light-9);
     color: var(--el-color-success);
   }
-  
+
   &.type-payment_failed {
     background-color: var(--el-color-danger-light-9);
     color: var(--el-color-danger);

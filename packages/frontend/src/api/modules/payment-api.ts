@@ -59,7 +59,7 @@ export function createPayment(data: CreatePaymentRequest) {
   return request<CreatePaymentResponse>({
     url: '/payment-api/create',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -69,7 +69,7 @@ export function createPayment(data: CreatePaymentRequest) {
 export function queryPayment(dingdanId: string) {
   return request<QueryPaymentResponse>({
     url: `/payment-api/query/${dingdanId}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -79,6 +79,6 @@ export function queryPayment(dingdanId: string) {
 export function closePayment(dingdanId: string) {
   return request<{ message: string }>({
     url: `/payment-api/close/${dingdanId}`,
-    method: 'post'
+    method: 'post',
   })
 }

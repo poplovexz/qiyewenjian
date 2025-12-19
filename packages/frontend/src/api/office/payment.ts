@@ -35,14 +35,14 @@ export function getPaymentList(params: ListParams) {
   return request({
     url: '/office/payment',
     method: 'get',
-    params
+    params,
   })
 }
 
 export function getPaymentDetail(id: string) {
   return request({
     url: `/office/payment/${id}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -50,7 +50,7 @@ export function createPayment(data: PaymentApplication) {
   return request({
     url: '/office/payment',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -58,14 +58,14 @@ export function updatePayment(id: string, data: Partial<PaymentApplication>) {
   return request({
     url: `/office/payment/${id}`,
     method: 'put',
-    data
+    data,
   })
 }
 
 export function deletePayment(id: string) {
   return request({
     url: `/office/payment/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -75,7 +75,7 @@ export function deletePayment(id: string) {
 export function submitPaymentForApproval(id: string) {
   return request({
     url: `/office/payment/${id}/submit`,
-    method: 'post'
+    method: 'post',
   })
 }
 
@@ -86,7 +86,7 @@ export function approvePayment(id: string, shenhe_yijian?: string) {
   return request({
     url: `/office/payment/${id}/approve`,
     method: 'post',
-    params: { shenhe_yijian }
+    params: { shenhe_yijian },
   })
 }
 
@@ -97,6 +97,6 @@ export function rejectPayment(id: string, shenhe_yijian: string) {
   return request({
     url: `/office/payment/${id}/reject`,
     method: 'post',
-    params: { shenhe_yijian }
+    params: { shenhe_yijian },
   })
 }

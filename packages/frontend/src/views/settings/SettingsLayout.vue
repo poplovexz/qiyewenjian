@@ -1,11 +1,7 @@
 <template>
   <div class="settings-layout">
     <div class="settings-sidebar">
-      <el-menu
-        :default-active="activeMenu"
-        class="settings-menu"
-        @select="handleMenuSelect"
-      >
+      <el-menu :default-active="activeMenu" class="settings-menu" @select="handleMenuSelect">
         <el-menu-item-group title="个人设置">
           <el-menu-item index="/settings/profile">
             <el-icon><User /></el-icon>
@@ -83,9 +79,12 @@ const isAdmin = computed(() => {
 })
 
 // 监听路由变化
-watch(() => route.path, (newPath) => {
-  activeMenu.value = newPath
-})
+watch(
+  () => route.path,
+  (newPath) => {
+    activeMenu.value = newPath
+  }
+)
 
 // 菜单选择处理
 const handleMenuSelect = (index: string) => {

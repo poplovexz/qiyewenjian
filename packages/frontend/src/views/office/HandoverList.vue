@@ -69,10 +69,20 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click="handleView(row)">查看</el-button>
-            <el-button link type="primary" @click="handleEdit(row)" v-if="row.jiaojie_zhuangtai === 'daiqueren'">
+            <el-button
+              link
+              type="primary"
+              @click="handleEdit(row)"
+              v-if="row.jiaojie_zhuangtai === 'daiqueren'"
+            >
               编辑
             </el-button>
-            <el-button link type="danger" @click="handleDelete(row)" v-if="row.jiaojie_zhuangtai === 'daiqueren'">
+            <el-button
+              link
+              type="danger"
+              @click="handleDelete(row)"
+              v-if="row.jiaojie_zhuangtai === 'daiqueren'"
+            >
               删除
             </el-button>
           </template>
@@ -107,13 +117,13 @@ const tableData = ref<HandoverApplication[]>([])
 const searchForm = reactive({
   jiaojie_bianhao: '',
   jiaojie_yuanyin: '',
-  jiaojie_zhuangtai: ''
+  jiaojie_zhuangtai: '',
 })
 
 const pagination = reactive({
   page: 1,
   page_size: 10,
-  total: 0
+  total: 0,
 })
 
 // 获取数据
@@ -123,7 +133,7 @@ const fetchData = async () => {
     const params = {
       ...searchForm,
       page: pagination.page,
-      page_size: pagination.page_size
+      page_size: pagination.page_size,
     }
     const response = await getHandoverList(params)
     tableData.value = response.items || []
@@ -168,7 +178,7 @@ const handleEdit = (row: HandoverApplication) => {
 const handleDelete = async (row: HandoverApplication) => {
   try {
     await ElMessageBox.confirm('确定要删除这条工作交接单吗？', '确认删除', {
-      type: 'warning'
+      type: 'warning',
     })
 
     await deleteHandover(row.id!)
@@ -187,7 +197,7 @@ const getReasonLabel = (reason: string) => {
     lizhi: '离职',
     diaogang: '调岗',
     xiujia: '休假',
-    qita: '其他'
+    qita: '其他',
   }
   return map[reason] || reason
 }
@@ -196,7 +206,7 @@ const getStatusLabel = (status: string) => {
   const map: Record<string, string> = {
     daiqueren: '待确认',
     yiqueren: '已确认',
-    yijujue: '已拒绝'
+    yijujue: '已拒绝',
   }
   return map[status] || status
 }
@@ -205,7 +215,7 @@ const getStatusType = (status: string) => {
   const map: Record<string, any> = {
     daiqueren: 'warning',
     yiqueren: 'success',
-    yijujue: 'danger'
+    yijujue: 'danger',
   }
   return map[status] || 'info'
 }
