@@ -1,0 +1,64 @@
+{
+  "current_state": "RUN_FIX",
+  "previous_state": "API_CODE",
+  "design_frozen": true,
+  "frozen_at": "2025-12-19T15:40:00Z",
+  "protected_files": [
+    "AI_RULES.md",
+    "ARCHITECTURE.md",
+    "DOMAIN.md",
+    "FLOW.md",
+    "API_SPEC.md"
+  ],
+  "history": [
+    {
+      "state": "INIT",
+      "timestamp": "2025-12-19T00:00:00Z",
+      "action": "系统初始化"
+    },
+    {
+      "state": "ARCH_GEN",
+      "timestamp": "2025-12-19T00:01:00Z",
+      "action": "生成设计文档骨架"
+    },
+    {
+      "state": "ARCH_REVIEW",
+      "timestamp": "2025-12-19T00:02:00Z",
+      "action": "架构审计通过"
+    },
+    {
+      "state": "DESIGN_FREEZE",
+      "timestamp": "2025-12-19T00:03:00Z",
+      "action": "设计文档已冻结"
+    },
+    {
+      "state": "DOMAIN_CODE",
+      "timestamp": "2025-12-19T00:04:00Z",
+      "action": "Domain层代码生成完成"
+    },
+    {
+      "state": "SERVICE_CODE",
+      "timestamp": "2025-12-19T00:05:00Z",
+      "action": "Service层代码生成完成"
+    },
+    {
+      "state": "API_CODE",
+      "timestamp": "2025-12-19T00:06:00Z",
+      "action": "API层代码生成完成"
+    },
+    {
+      "state": "RUN_FIX",
+      "timestamp": "2025-12-19T15:40:00Z",
+      "action": "进入运行修复阶段"
+    }
+  ],
+  "fix_iterations": 0,
+  "max_fix_iterations": 10,
+  "last_error": null,
+  "statistics": {
+    "files_modified": 0,
+    "lines_changed": 0,
+    "errors_fixed": 0
+  }
+}
+

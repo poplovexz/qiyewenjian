@@ -1,0 +1,144 @@
+# ============================================
+# MCP: OneShot-MidSystem-Build
+# 一次成形中台系统构建协议
+# ============================================
+
+mcp:
+  name: OneShot-MidSystem-Build
+  version: 2.0
+  mode: strict
+  rollback: true
+  description: "多阶段、可冻结、可回滚的 AI 开发协议"
+
+# ============================================
+# 状态流定义
+# ============================================
+state_flow:
+  - INIT           # 初始化
+  - ARCH_GEN       # 生成骨架
+  - ARCH_REVIEW    # 架构审计
+  - DESIGN_FREEZE  # 冻结设计
+  - DOMAIN_CODE    # Domain 层代码
+  - SERVICE_CODE   # Service 层代码
+  - API_CODE       # API 层代码
+  - RUN_FIX        # 运行修复
+
+# ============================================
+# 全局不可违反规则
+# ============================================
+global_rules:
+  - id: no_architecture_refactor
+    description: "禁止重构架构"
+    severity: critical
+
+  - id: minimal_diff_only
+    description: "只允许最小差异修改"
+    severity: critical
+    constraints:
+      max_files: 3
+      max_lines_per_file: 50
+      max_total_lines: 100
+
+  - id: no_cross_layer_dependency
+    description: "禁止跨层依赖"
+    severity: critical
+    layers:
+      - api -> service (allowed)
+      - service -> domain (allowed)
+      - domain -> * (forbidden)
+      - api -> domain (forbidden)
+
+  - id: no_assumption_without_definition
+    description: "无定义不假设"
+    severity: high
+
+  - id: stop_if_conflict
+    description: "冲突时立即停止"
+    severity: critical
+
+# ============================================
+# 受保护的设计文档
+# ============================================
+protected_files:
+  - AI_RULES.md
+  - ARCHITECTURE.md
+  - DOMAIN.md
+  - FLOW.md
+  - API_SPEC.md
+
+# ============================================
+# 项目目录结构
+# ============================================
+directory_structure:
+  domain: packages/backend/src/models
+  service: packages/backend/src/services
+  api: packages/backend/src/api
+  schemas: packages/backend/src/schemas
+  frontend: packages/frontend/src
+  tests: packages/backend/tests
+
+# ============================================
+# 角色定义
+# ============================================
+roles:
+  product_architect:
+    description: "产品架构师 - 生成设计文档"
+    can_write:
+      - AI_RULES.md
+      - ARCHITECTURE.md
+      - DOMAIN.md
+      - FLOW.md
+    cannot_write:
+      - "*.py"
+      - "*.ts"
+      - "*.vue"
+
+  architecture_auditor:
+    description: "架构审计师 - 审查设计"
+    can_read:
+      - "*"
+    can_write:
+      - AI_RULES.md
+      - ARCHITECTURE.md
+      - DOMAIN.md
+      - FLOW.md
+    checks:
+      - concept_conflict
+      - responsibility_overlap
+      - state_dead_end
+
+  chief_architect:
+    description: "首席架构师 - 冻结设计"
+    can_freeze:
+      - ARCHITECTURE.md
+    can_append:
+      - ARCHITECTURE.md (DESIGN_FREEZE section only)
+
+  backend_engineer:
+    description: "后端工程师 - 编写代码"
+    can_read:
+      - "*"
+    can_write:
+      - "packages/backend/**/*.py"
+      - "packages/backend/**/*.sql"
+    cannot_write:
+      - AI_RULES.md
+      - ARCHITECTURE.md
+      - DOMAIN.md
+      - FLOW.md
+
+  maintenance_engineer:
+    description: "维护工程师 - 修复错误"
+    can_read:
+      - "*"
+    can_write:
+      - "packages/**/*"
+    constraints:
+      max_files: 3
+      max_lines: 100
+    cannot_write:
+      - AI_RULES.md
+      - ARCHITECTURE.md
+      - DOMAIN.md
+      - FLOW.md
+
