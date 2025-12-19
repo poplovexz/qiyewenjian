@@ -333,13 +333,13 @@ project/
 
 ### 复用优先级
 
-| 优先级 | 来源 | 说明 |
-|--------|------|------|
-| 1️⃣ | `src/core/` | 核心基础设施（必须使用） |
-| 2️⃣ | `src/utils/` | 工具函数（优先使用） |
-| 3️⃣ | `src/components/ui/` | UI 组件（前端优先使用） |
-| 4️⃣ | 业务模块 | 参考已有实现 |
-| 5️⃣ | 新建 | 确认不存在后才新建 |
+| 优先级 | 来源                 | 说明                     |
+| ------ | -------------------- | ------------------------ |
+| 1️⃣     | `src/core/`          | 核心基础设施（必须使用） |
+| 2️⃣     | `src/utils/`         | 工具函数（优先使用）     |
+| 3️⃣     | `src/components/ui/` | UI 组件（前端优先使用）  |
+| 4️⃣     | 业务模块             | 参考已有实现             |
+| 5️⃣     | 新建                 | 确认不存在后才新建       |
 
 ### 编码前必查清单
 
@@ -352,13 +352,13 @@ project/
 
 ### 禁止重复的模式
 
-| 禁止 | 应使用 |
-|------|--------|
-| 直接 `axios.get()` | `@/utils/request` |
-| 自己写权限校验 | `Depends(require_permission())` |
+| 禁止                       | 应使用                              |
+| -------------------------- | ----------------------------------- |
+| 直接 `axios.get()`         | `@/utils/request`                   |
+| 自己写权限校验             | `Depends(require_permission())`     |
 | 直接 `raise HTTPException` | `src/core/exceptions.BusinessError` |
-| 不继承基类的 Model | `Base + Mixins` |
-| 重复的日期格式化 | `@/utils/date.formatDate()` |
+| 不继承基类的 Model         | `Base + Mixins`                     |
+| 重复的日期格式化           | `@/utils/date.formatDate()`         |
 
 ---
 
