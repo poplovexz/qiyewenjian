@@ -22,7 +22,8 @@ def test_finance_settings():
         
         result = conn.execute(text("SELECT mingcheng, leixing FROM shoufukuan_qudao WHERE is_deleted = 'N' LIMIT 5"))
         for row in result:
-        
+            print(f"  {row[0]}: {row[1]}")
+
         # 测试收入类别
         result = conn.execute(text("SELECT COUNT(*) as count FROM shouru_leibie WHERE is_deleted = 'N'"))
         count = result.fetchone()[0]
@@ -44,16 +45,18 @@ def test_finance_settings():
             ORDER BY count DESC
         """))
         for row in result:
-        
+            print(f"  {row[0]}: {row[1]}")
+
         # 显示部分支出类别
         result = conn.execute(text("""
-            SELECT fenlei, mingcheng 
-            FROM zhichu_leibie 
-            WHERE is_deleted = 'N' 
-            ORDER BY paixu 
+            SELECT fenlei, mingcheng
+            FROM zhichu_leibie
+            WHERE is_deleted = 'N'
+            ORDER BY paixu
             LIMIT 10
         """))
         for row in result:
-        
+            print(f"  {row[0]}: {row[1]}")
+
 if __name__ == "__main__":
     test_finance_settings()

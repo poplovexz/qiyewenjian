@@ -131,7 +131,8 @@ def init_contract_permissions():
                 db.add(permission)
                 created_permissions.append(perm_data["quanxian_bianma"])
             else:
-        
+                print(f"权限已存在: {perm_data['quanxian_bianma']}")
+
         db.commit()
         
         # 为管理员角色分配权限
@@ -157,10 +158,12 @@ def init_contract_permissions():
                     )
                     db.add(role_permission)
                 else:
-            
+                    print(f"权限分配已存在")
+
             db.commit()
         else:
-        
+            print("❌ 管理员角色不存在")
+
     except Exception as e:
         db.rollback()
         raise

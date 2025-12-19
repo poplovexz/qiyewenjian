@@ -271,7 +271,8 @@ def init_contract_templates():
                 db.add(template)
                 created_count += 1
             else:
-        
+                print(f"合同模板已存在: {template_info['moban_mingcheng']}")
+
         db.commit()
         
     except Exception as e:

@@ -142,8 +142,10 @@ def add_payment_method_fields():
         
         if results:
             for row in results:
+                print(f"✅ 验证成功: {row}")
         else:
-        
+            print("⚠️ 验证结果为空")
+
         return True
         
     except Exception as e:
@@ -160,6 +162,8 @@ if __name__ == "__main__":
     success = add_payment_method_fields()
     
     if success:
+        print("✅ 支付方式字段添加成功")
     else:
-    
+        print("❌ 支付方式字段添加失败")
+
     sys.exit(0 if success else 1)

@@ -39,7 +39,8 @@ def update_xiansuo_baojia_table():
                 db.execute(text(statement))
             except Exception as e:
                 # 某些操作可能会失败（比如字段已存在），这是正常的
-        
+                logger.warning(f"操作失败: {str(e)}")
+
         # 提交更改
         db.commit()
         
@@ -94,6 +95,7 @@ def verify_table_structure():
         
         for col in required_columns:
             if col in existing_columns:
+                print(f"✅ 字段已存在: {col}")
             else:
                 return False
         

@@ -166,7 +166,8 @@ def init_customer_permissions():
                 )
                 db.add(permission)
             else:
-        
+                print(f"权限已存在: {perm_data['quanxian_bianma']}")
+
         db.commit()
         
     except Exception as e:

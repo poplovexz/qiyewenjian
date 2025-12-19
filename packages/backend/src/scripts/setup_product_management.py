@@ -21,27 +21,32 @@ def main():
     if create_product_tables():
         success_count += 1
     else:
-    
+        print("❌ 创建数据表失败")
+
     # 步骤2: 插入示例数据
     if insert_sample_data():
         success_count += 1
     else:
-    
+        print("❌ 插入示例数据失败")
+
     # 步骤3: 初始化权限
     if init_product_permissions():
         success_count += 1
     else:
-    
+        print("❌ 初始化权限失败")
+
     # 步骤4: 分配管理员权限
     if assign_permissions_to_admin():
         success_count += 1
     else:
-    
+        print("❌ 分配管理员权限失败")
+
     # 总结
-    
+
     if success_count == total_steps:
-        
+        print(f"✅ 所有 {total_steps} 个步骤都成功完成")
     else:
-    
+        print(f"❌ 只有 {success_count}/{total_steps} 个步骤成功")
+
 if __name__ == "__main__":
     main()

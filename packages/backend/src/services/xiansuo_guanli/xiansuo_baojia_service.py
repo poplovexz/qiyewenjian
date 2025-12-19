@@ -614,6 +614,7 @@ class XiansuoBaojiaService:
             )
         except Exception as e:
             # 记录日志但不阻断流程
+            logger.error(f"更新报价失败: {str(e)}")
 
         # 2. 记录转化金额到线索
         try:
@@ -625,6 +626,7 @@ class XiansuoBaojiaService:
                 xiansuo.updated_by = updated_by
                 xiansuo.updated_at = datetime.now()
         except Exception as e:
+            logger.error(f"更新线索转化金额失败: {str(e)}")
 
         # 3. TODO: 可以在这里添加创建客户记录的逻辑
         # 4. TODO: 可以在这里添加创建合同草稿的逻辑

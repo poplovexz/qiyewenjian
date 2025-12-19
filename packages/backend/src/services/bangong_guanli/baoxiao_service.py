@@ -387,6 +387,7 @@ class BaoxiaoService:
             self.db.commit()
         except Exception as e:
             # 通知发送失败不影响主流程
+            logger.error(f"发送报销通知失败: {str(e)}")
 
     def _send_approval_notification(self, shenqing: BaoxiaoShenqing, approver_id: str, result: str):
         """发送审批结果通知"""
@@ -408,6 +409,7 @@ class BaoxiaoService:
             self.db.commit()
         except Exception as e:
             # 通知发送失败不影响主流程
+            logger.error(f"发送审批通知失败: {str(e)}")
 
     def _create_expense_liushui(self, shenqing: BaoxiaoShenqing, approver_id: str):
         """创建报销支出流水记录"""

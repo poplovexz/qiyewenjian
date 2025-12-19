@@ -43,7 +43,8 @@ async def test_product_steps():
         
         if existing_steps:
             for i, step in enumerate(existing_steps, 1):
-        
+                print(f"  步骤 {i}: {step.buzou_mingcheng}")
+
         print_section("3. 测试创建新步骤")
         
         # 测试各种场景
@@ -109,8 +110,10 @@ async def test_product_steps():
                     
             except Exception as e:
                 if not test_case['should_succeed']:
+                    print(f"✅ 预期失败: {test_case['name']}")
                 else:
-        
+                    print(f"❌ 意外失败: {test_case['name']} - {str(e)}")
+
         print_section("4. 测试更新步骤")
         
         if created_ids:
@@ -123,14 +126,16 @@ async def test_product_steps():
                 )
                 result = await service.update_buzou(test_id, update_data, 'test_user')
             except Exception as e:
-        
+                print(f"❌ 更新步骤失败: {str(e)}")
+
         print_section("5. 清理测试数据")
-        
+
         for step_id in created_ids:
             try:
                 await service.delete_buzou(step_id, 'test_user')
             except Exception as e:
-        
+                print(f"❌ 删除步骤失败: {str(e)}")
+
         print_section("测试完成")
         
     except Exception as e:

@@ -211,9 +211,11 @@ def update_zengzhi_products():
 
 def main():
     """主函数"""
-    
+
     if update_zengzhi_products():
+        print("✅ 增值产品更新成功")
     else:
-    
+        print("❌ 增值产品更新失败")
+
 if __name__ == "__main__":
     main()

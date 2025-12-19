@@ -192,8 +192,9 @@ def create_payment_audit_rules(db: Session):
         db.add(rule)
     
     db.commit()
-    
+
     for rule in rules:
+        print(f"✅ 创建支付审核规则: {rule.guize_mingcheng}")
 
 def create_flow_audit_rules(db: Session):
     """创建支付流水审核规则"""
@@ -367,6 +368,7 @@ def create_flow_audit_rules(db: Session):
     db.commit()
 
     for rule in rules:
+        print(f"✅ 创建流水审核规则: {rule.guize_mingcheng}")
 
 def main():
     """主函数"""

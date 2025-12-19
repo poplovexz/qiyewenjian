@@ -183,6 +183,9 @@ function sendToSentry(report: ErrorReport): void {
     method: "POST",
     header: { "Content-Type": "application/json" },
     data: report,
+    success: () => {
+      // 上报成功
+    },
     fail: (err) => {
       console.error("[Sentry] Failed to send error report:", err);
     },

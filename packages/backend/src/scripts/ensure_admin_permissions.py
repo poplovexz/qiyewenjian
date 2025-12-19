@@ -97,6 +97,7 @@ def ensure_admin_user(session, admin_role_id):
     """), {"user_id": admin_user_id, "role_id": admin_role_id}).fetchone()
     
     if result:
+        print("✅ 管理员已拥有管理员角色")
     else:
         # 分配角色
         relation_id = str(uuid.uuid4()).replace('-', '')
@@ -194,6 +195,7 @@ def verify_admin_permissions(session, admin_user_id):
             modules[module].append((perm_code, perm_name))
         
         for module, perms in sorted(modules.items()):
+            print(f"  {module}: {len(perms)} 个权限")
     else:
         return False
     
@@ -221,6 +223,7 @@ def main():
         success = verify_admin_permissions(session, admin_user_id)
         
         if success:
+            print("✅ 管理员权限验证成功")
         else:
             return False
         

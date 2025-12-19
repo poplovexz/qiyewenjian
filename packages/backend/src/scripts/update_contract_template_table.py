@@ -68,7 +68,8 @@ def update_contract_template_table():
                 db.execute(text(statement))
             except Exception as e:
                 # 某些操作可能会失败（比如字段已存在），这是正常的
-        
+                logger.warning(f"操作失败: {str(e)}")
+
         # 提交更改
         db.commit()
         
@@ -81,7 +82,8 @@ def update_contract_template_table():
         """))
         
         for row in result:
-        
+            print(f"  {row[0]}: {row[1]}")
+
     except Exception as e:
         db.rollback()
         raise

@@ -159,7 +159,8 @@ def init_office_permissions():
                 
                 db.commit()
             else:
-            
+                print("❌ 权限分配失败")
+
             return True
         
     except Exception as e:

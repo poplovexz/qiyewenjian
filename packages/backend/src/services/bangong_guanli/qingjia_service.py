@@ -328,6 +328,7 @@ class QingjiaService:
             self.db.add(notification)
             self.db.commit()
         except Exception as e:
+            logger.error(f"发送请假通知失败: {str(e)}")
 
     def _send_approval_notification(self, shenqing: QingjiaShenqing, approver_id: str, result: str):
         """发送审批结果通知"""
@@ -348,3 +349,4 @@ class QingjiaService:
             self.db.add(notification)
             self.db.commit()
         except Exception as e:
+            logger.error(f"发送审批通知失败: {str(e)}")

@@ -633,8 +633,6 @@ class HetongSignService:
                                 "paid_at": hetong.paid_at.isoformat() if hetong.paid_at else None,
                                 "payment_transaction_id": hetong.payment_transaction_id
                             }
-                        else:
-                else:
             except Exception as e:
                 logger.error(f"❌ 查询支付状态失败: {str(e)}")
                 import traceback

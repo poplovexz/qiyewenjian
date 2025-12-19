@@ -85,8 +85,10 @@ async def main():
         db.refresh(xiangmu)
         
         if xiangmu.banshi_tianshu == 192:
+            print("✅ 产品总时长更新成功")
         else:
-        
+            print("❌ 产品总时长更新失败")
+
         # 3. 更新步骤测试
         print_section("3. 更新步骤测试")
         
@@ -102,8 +104,10 @@ async def main():
         db.refresh(xiangmu)
         
         if xiangmu.banshi_tianshu == 183:
+            print("✅ 产品总时长更新成功")
         else:
-        
+            print("❌ 产品总时长更新失败")
+
         # 4. 删除步骤测试
         print_section("4. 删除步骤测试")
         
@@ -113,8 +117,10 @@ async def main():
         db.refresh(xiangmu)
         
         if xiangmu.banshi_tianshu == 180:
+            print("✅ 删除步骤后总时长更新成功")
         else:
-        
+            print("❌ 删除步骤后总时长更新失败")
+
         # 5. 清理测试数据
         print_section("5. 清理测试数据")
         
@@ -124,8 +130,10 @@ async def main():
         db.refresh(xiangmu)
         
         if xiangmu.banshi_tianshu == 0:
+            print("✅ 清理测试数据后总时长为0")
         else:
-        
+            print("❌ 清理测试数据后总时长不为0")
+
         print_section("测试完成")
         
     except Exception as e:

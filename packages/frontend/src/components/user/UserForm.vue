@@ -120,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, nextTick } from 'vue'
+import { ref, reactive, computed, watch, nextTick, withDefaults } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { userApi } from '@/api/modules/user'
 import type { UserCreate, UserUpdate } from '@/types/user'
@@ -136,7 +136,9 @@ interface Emits {
   (e: 'success'): void
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  userId: undefined
+})
 const emit = defineEmits<Emits>()
 
 // 响应式数据
