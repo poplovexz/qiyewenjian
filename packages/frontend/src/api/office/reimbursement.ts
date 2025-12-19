@@ -132,4 +132,3 @@ export function rejectReimbursement(id: string, shenhe_yijian: string) {
     params: { shenhe_yijian }
   })
 }
-

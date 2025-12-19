@@ -19,7 +19,6 @@ from schemas.zhifu_guanli.zhifu_tongzhi_schemas import (
 )
 from core.events import publish, EventNames
 
-
 class ZhifuTongzhiService:
     """支付通知管理服务类"""
     

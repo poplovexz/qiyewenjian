@@ -6,7 +6,6 @@ from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field
 
-
 class ChengbenJiluCreate(BaseModel):
     """创建成本记录的请求模式"""
     hetong_id: Optional[str] = Field(None, description="合同ID")
@@ -29,7 +28,6 @@ class ChengbenJiluCreate(BaseModel):
     fentan_bili: Optional[Decimal] = Field(None, ge=0, le=1, description="分摊比例")
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class ChengbenJiluUpdate(BaseModel):
     """更新成本记录的请求模式"""
@@ -55,7 +53,6 @@ class ChengbenJiluUpdate(BaseModel):
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
     zhuangtai: Optional[str] = Field(None, description="状态")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class ChengbenJiluResponse(BaseModel):
     """成本记录响应模式"""
@@ -97,7 +94,6 @@ class ChengbenJiluResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class ChengbenJiluListParams(BaseModel):
     """成本记录列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -114,7 +110,6 @@ class ChengbenJiluListParams(BaseModel):
     start_date: Optional[datetime] = Field(None, description="开始日期")
     end_date: Optional[datetime] = Field(None, description="结束日期")
 
-
 class ChengbenJiluListResponse(BaseModel):
     """成本记录列表响应模式"""
     items: List[ChengbenJiluResponse]
@@ -123,13 +118,11 @@ class ChengbenJiluListResponse(BaseModel):
     size: int
     pages: int
 
-
 class ChengbenAuditRequest(BaseModel):
     """成本审核请求模式"""
     jilu_id: str = Field(..., description="记录ID")
     shenhe_yijian: Optional[str] = Field(None, description="审核意见")
     shenhe_jieguo: str = Field(..., description="审核结果：approved(通过)、rejected(拒绝)")
-
 
 class ChengbenRecordRequest(BaseModel):
     """成本入账请求模式"""
@@ -138,7 +131,6 @@ class ChengbenRecordRequest(BaseModel):
     jizhangjian: Optional[datetime] = Field(None, description="记账时间")
     kuaiji_kemu: Optional[str] = Field(None, description="会计科目")
     chengben_zhongxin: Optional[str] = Field(None, description="成本中心")
-
 
 class ChengbenStatistics(BaseModel):
     """成本统计信息"""
@@ -154,7 +146,6 @@ class ChengbenStatistics(BaseModel):
     variance_amount: Decimal = Field(..., description="差异金额")
     variance_rate: Decimal = Field(..., description="差异率")
 
-
 class ChengbenAnalysis(BaseModel):
     """成本分析"""
     by_type: List[dict] = Field(..., description="按类型分析")
@@ -162,7 +153,6 @@ class ChengbenAnalysis(BaseModel):
     by_department: List[dict] = Field(..., description="按部门分析")
     by_project: List[dict] = Field(..., description="按项目分析")
     trend_analysis: List[dict] = Field(..., description="趋势分析")
-
 
 class ChengbenBudgetComparison(BaseModel):
     """成本预算对比"""

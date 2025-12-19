@@ -18,7 +18,6 @@ from schemas.fuwu_guanli.fuwu_gongdan_schemas import (
 
 router = APIRouter()
 
-
 @router.get("/my-tasks", response_model=TaskItemListResponse, summary="获取我的任务项列表")
 def get_my_task_items(
     page: int = Query(1, ge=1, description="页码"),
@@ -48,7 +47,6 @@ def get_my_task_items(
         fuwu_leixing=fuwu_leixing
     )
 
-
 @router.post("/{item_id}/start", response_model=FuwuGongdanXiangmuResponse, summary="开始任务项")
 def start_task_item(
     item_id: str,
@@ -67,7 +65,6 @@ def start_task_item(
         item_id=item_id,
         zhixing_ren_id=current_user.id
     )
-
 
 @router.post("/{item_id}/complete", response_model=FuwuGongdanXiangmuResponse, summary="完成任务项")
 def complete_task_item(
@@ -94,7 +91,6 @@ def complete_task_item(
         beizhu=beizhu
     )
 
-
 @router.post("/{item_id}/pause", response_model=FuwuGongdanXiangmuResponse, summary="暂停任务项")
 def pause_task_item(
     item_id: str,
@@ -117,7 +113,6 @@ def pause_task_item(
         beizhu=beizhu
     )
 
-
 @router.get("/statistics", response_model=TaskItemStatistics, summary="获取任务项统计")
 def get_task_item_statistics(
     db: Session = Depends(get_db),
@@ -135,4 +130,3 @@ def get_task_item_statistics(
     """
     service = FuwuGongdanService(db)
     return service.get_task_item_statistics(zhixing_ren_id=current_user.id)
-

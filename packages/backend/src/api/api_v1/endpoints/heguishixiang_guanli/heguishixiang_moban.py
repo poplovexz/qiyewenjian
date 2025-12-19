@@ -20,7 +20,6 @@ from schemas.heguishixiang_guanli.heguishixiang_moban_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=HeguishixiangMobanResponse, summary="创建合规事项模板")
 async def create_heguishixiang_moban(
     moban_data: HeguishixiangMobanCreate,
@@ -34,7 +33,6 @@ async def create_heguishixiang_moban(
     """
     service = HeguishixiangMobanService(db)
     return service.create_moban(moban_data, current_user.id)
-
 
 @router.get("/", response_model=HeguishixiangMobanListResponse, summary="获取合规事项模板列表")
 async def get_heguishixiang_moban_list(
@@ -65,7 +63,6 @@ async def get_heguishixiang_moban_list(
     service = HeguishixiangMobanService(db)
     return service.get_moban_list(params)
 
-
 @router.get("/options", response_model=HeguishixiangMobanOptionsResponse, summary="获取合规事项模板选项")
 async def get_heguishixiang_moban_options(
     db: Session = Depends(get_db),
@@ -77,7 +74,6 @@ async def get_heguishixiang_moban_options(
     service = HeguishixiangMobanService(db)
     return service.get_moban_options()
 
-
 @router.get("/active", response_model=List[HeguishixiangMobanResponse], summary="获取启用的合规事项模板")
 async def get_active_heguishixiang_mobans(
     db: Session = Depends(get_db),
@@ -88,7 +84,6 @@ async def get_active_heguishixiang_mobans(
     """
     service = HeguishixiangMobanService(db)
     return service.get_active_mobans()
-
 
 @router.get("/{moban_id}", response_model=HeguishixiangMobanResponse, summary="获取合规事项模板详情")
 async def get_heguishixiang_moban_detail(
@@ -104,7 +99,6 @@ async def get_heguishixiang_moban_detail(
     service = HeguishixiangMobanService(db)
     return service.get_moban_by_id(moban_id)
 
-
 @router.put("/{moban_id}", response_model=HeguishixiangMobanResponse, summary="更新合规事项模板")
 async def update_heguishixiang_moban(
     moban_id: str,
@@ -119,7 +113,6 @@ async def update_heguishixiang_moban(
     """
     service = HeguishixiangMobanService(db)
     return service.update_moban(moban_id, moban_data, current_user.id)
-
 
 @router.delete("/{moban_id}", summary="删除合规事项模板")
 async def delete_heguishixiang_moban(

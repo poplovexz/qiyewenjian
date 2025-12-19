@@ -13,7 +13,6 @@ from core.config import settings
 from core.database import Base
 from models.chanpin_guanli import ChanpinFenlei, ChanpinXiangmu, ChanpinBuzou
 
-
 def create_product_tables():
     """创建产品管理相关数据表"""
     
@@ -28,12 +27,10 @@ def create_product_tables():
             ChanpinBuzou.__table__
         ])
         
-        
     except Exception as e:
         return False
     
     return True
-
 
 def insert_sample_data():
     """插入示例数据"""
@@ -150,12 +147,10 @@ def insert_sample_data():
             
             conn.commit()
             
-        
     except Exception as e:
         return False
     
     return True
-
 
 def main():
     """主函数"""
@@ -168,7 +163,5 @@ def main():
     if not insert_sample_data():
         return
     
-
-
 if __name__ == "__main__":
     main()

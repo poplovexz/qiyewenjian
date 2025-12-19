@@ -14,7 +14,6 @@ from schemas.kehu_guanli.kehu_schemas import (
     KehuListResponse
 )
 
-
 class KehuService:
     """客户管理服务类"""
     

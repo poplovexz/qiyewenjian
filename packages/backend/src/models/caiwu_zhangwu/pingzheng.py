@@ -3,9 +3,7 @@
 """
 from sqlalchemy import Column, String, Text, Numeric, DateTime, ForeignKey
 
-
 from ..base import BaseModel
-
 
 class Pingzheng(BaseModel):
     """凭证表"""

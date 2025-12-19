@@ -9,7 +9,6 @@ from core.config import settings
 from core.database import engine
 from models import Base
 
-
 def create_database_if_not_exists():
     """如果数据库不存在则创建"""
     try:
@@ -39,7 +38,6 @@ def create_database_if_not_exists():
         else:
             return False
 
-
 def create_tables():
     """创建所有数据表"""
     try:
@@ -47,7 +45,6 @@ def create_tables():
         return True
     except Exception as e:
         return False
-
 
 def init_basic_data():
     """初始化基础数据"""
@@ -96,7 +93,6 @@ def init_basic_data():
     except Exception as e:
         return False
 
-
 def main():
     """主函数"""
     
@@ -113,7 +109,6 @@ def main():
         return False
     
     return True
-
 
 if __name__ == "__main__":
     import sys

@@ -10,7 +10,6 @@ import traceback
 
 logger = logging.getLogger(__name__)
 
-
 class EventBus:
     """轻量级事件总线"""
     
@@ -195,7 +194,6 @@ class EventBus:
                 for event, handlers in self._subscribers.items()
             }
 
-
 # 全局事件总线实例
 event_bus = EventBus()
 
@@ -223,7 +221,6 @@ def get_event_history(limit: int = 100) -> List[Dict[str, Any]]:
 def get_subscribers(event_name: str = None) -> Dict[str, List[str]]:
     """获取订阅者信息"""
     return event_bus.get_subscribers(event_name)
-
 
 # 预定义的事件名称常量
 class EventNames:

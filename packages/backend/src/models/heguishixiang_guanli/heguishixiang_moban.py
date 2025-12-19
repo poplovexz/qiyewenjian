@@ -5,7 +5,6 @@ from sqlalchemy import Column, String, Text, Integer
 from sqlalchemy.orm import relationship
 from models.base import BaseModel
 
-
 class HeguishixiangMoban(BaseModel):
     """合规事项模板表"""
 

@@ -25,7 +25,6 @@ from schemas.hetong_guanli.hetong_schemas import (
 
 logger = logging.getLogger(__name__)
 
-
 class HetongSignService:
     """合同签署服务类"""
     
@@ -424,7 +423,6 @@ class HetongSignService:
                 zhifu_fangshi=zhifu_fangshi
             )
 
-
             # 更新合同支付信息 - 存储支付订单ID而不是订单编号
             hetong.payment_amount = str(normalized_amount)
             hetong.payment_method = payment_request.payment_method
@@ -440,7 +438,6 @@ class HetongSignService:
             qr_code_url = None
             if payment_result.get("payment_data"):
                 qr_code_url = payment_result["payment_data"].get("qr_code") or payment_result["payment_data"].get("code_url")
-
 
             # 返回支付信息
             return {
@@ -550,7 +547,6 @@ class HetongSignService:
         from models.zhifu_guanli import ZhifuDingdan
         from services.zhifu_guanli.zhifu_api_service import ZhifuApiService
 
-
         # 查询合同
         hetong = self.db.query(Hetong).filter(
             Hetong.sign_token == sign_token,
@@ -559,7 +555,6 @@ class HetongSignService:
 
         if not hetong:
             raise HTTPException(status_code=404, detail="签署链接无效")
-
 
         # 如果已经支付成功，直接返回
         if hetong.payment_status == "paid":
@@ -581,7 +576,6 @@ class HetongSignService:
                     ZhifuDingdan.is_deleted == "N"
                 ).first()
 
-
                 if zhifu_dingdan:
 
                     # 如果订单已经是成功状态，直接更新合同
@@ -590,7 +584,6 @@ class HetongSignService:
                         hetong.paid_at = zhifu_dingdan.zhifu_shijian or datetime.now()
                         hetong.updated_at = datetime.now()
                         self.db.commit()
-
 
                         return {
                             "payment_status": "paid",
@@ -605,13 +598,11 @@ class HetongSignService:
                         zhifu_api_service = ZhifuApiService(self.db)
                         query_result = zhifu_api_service.query_payment(zhifu_dingdan.id)
 
-
                         # 从返回结果中提取 trade_status
                         # 支付宝返回格式: {'success': True, 'data': {'trade_status': 'TRADE_SUCCESS'}}
                         trade_status = None
                         if query_result.get("success") and query_result.get("data"):
                             trade_status = query_result["data"].get("trade_status")
-
 
                         # 如果查询到支付成功，更新合同状态和支付订单状态
                         if trade_status in ["TRADE_SUCCESS", "TRADE_FINISHED"]:
@@ -634,7 +625,6 @@ class HetongSignService:
                                     zhifu_dingdan.disanfang_liushui_hao = trade_no
 
                             self.db.commit()
-
 
                             return {
                                 "payment_status": "paid",

@@ -19,7 +19,6 @@ UPLOAD_DIR = "/var/www/uploads"
 ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"]
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
-
 @router.post("/image", summary="上传图片")
 async def upload_image(
     file: UploadFile = File(...),
@@ -81,7 +80,6 @@ async def upload_image(
         "content_type": file.content_type
     }
 
-
 @router.post("/file", summary="上传文件")
 async def upload_file(
     file: UploadFile = File(...),
@@ -135,4 +133,3 @@ async def upload_file(
         "size": file_size,
         "content_type": file.content_type
     }
-

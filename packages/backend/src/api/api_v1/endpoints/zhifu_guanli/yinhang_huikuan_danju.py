@@ -16,7 +16,6 @@ from schemas.zhifu_guanli import (
     HuikuanDanjuAuditRequest
 )
 
-
 class UploadVoucherRequest(BaseModel):
     """上传凭证请求"""
     voucher_url: str = Field(..., description="凭证图片URL")
@@ -28,7 +27,6 @@ class UploadVoucherRequest(BaseModel):
     huikuan_riqi: str = Field(..., description="汇款日期")
 
 router = APIRouter()
-
 
 @router.post("/", summary="上传银行汇款单据")
 async def upload_huikuan_danju(
@@ -54,7 +52,6 @@ async def upload_huikuan_danju(
         "data": result
     }
 
-
 @router.get("/", summary="获取汇款单据列表")
 async def get_huikuan_danju_list(
     page: int = 1,
@@ -75,7 +72,6 @@ async def get_huikuan_danju_list(
         huikuan_yinhang=huikuan_yinhang
     )
 
-
 @router.get("/{danju_id}", summary="获取汇款单据详情")
 async def get_huikuan_danju_by_id(
     danju_id: str,
@@ -90,7 +86,6 @@ async def get_huikuan_danju_by_id(
         "success": True,
         "data": result
     }
-
 
 @router.put("/{danju_id}", summary="更新汇款单据")
 async def update_huikuan_danju(
@@ -108,7 +103,6 @@ async def update_huikuan_danju(
         "message": "汇款单据更新成功",
         "data": result
     }
-
 
 @router.post("/{danju_id}/upload-voucher", summary="上传汇款凭证")
 async def upload_voucher(
@@ -140,7 +134,6 @@ async def upload_voucher(
     )
 
     return result
-
 
 @router.post("/{danju_id}/audit-voucher", summary="审核汇款凭证")
 async def audit_voucher(
@@ -180,7 +173,6 @@ async def audit_voucher(
 
     return result
 
-
 @router.post("/{danju_id}/audit", summary="审核汇款单据")
 async def audit_huikuan_danju(
     danju_id: str,
@@ -203,7 +195,6 @@ async def audit_huikuan_danju(
         "data": result
     }
 
-
 @router.get("/payment/{hetong_zhifu_id}", summary="根据合同支付ID获取汇款单据")
 async def get_danju_by_payment(
     hetong_zhifu_id: str,
@@ -219,7 +210,6 @@ async def get_danju_by_payment(
         "data": result
     }
 
-
 @router.get("/pending-audits/list", summary="获取待审核的汇款单据")
 async def get_pending_audit_danju(
     db: Session = Depends(get_db),
@@ -233,7 +223,6 @@ async def get_pending_audit_danju(
         "success": True,
         "data": result
     }
-
 
 @router.post("/upload-file", summary="上传汇款单据文件")
 async def upload_danju_file(
@@ -276,7 +265,6 @@ async def upload_danju_file(
         "message": "文件上传成功",
         "data": result
     }
-
 
 @router.get("/statistics/overview", summary="获取汇款单据统计概览")
 async def get_danju_statistics(

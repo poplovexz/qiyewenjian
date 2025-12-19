@@ -31,7 +31,6 @@ from schemas.caiwu_guanli.caiwu_shezhi_schemas import (
 
 router = APIRouter()
 
-
 # ==================== 收付款渠道 ====================
 @router.post("/qudao", response_model=ShoufukuanQudaoResponse, summary="创建收付款渠道")
 async def create_qudao(
@@ -42,7 +41,6 @@ async def create_qudao(
     """创建收付款渠道"""
     service = CaiwuShezhiService(db)
     return service.create_qudao(qudao_data, current_user.id)
-
 
 @router.get("/qudao", response_model=ShoufukuanQudaoListResponse, summary="获取收付款渠道列表")
 async def get_qudao_list(
@@ -55,7 +53,6 @@ async def get_qudao_list(
     service = CaiwuShezhiService(db)
     return service.get_qudao_list(page, size, leixing)
 
-
 @router.get("/qudao/{qudao_id}", response_model=ShoufukuanQudaoResponse, summary="获取收付款渠道详情")
 async def get_qudao_detail(
     qudao_id: str,
@@ -65,7 +62,6 @@ async def get_qudao_detail(
     """获取收付款渠道详情"""
     service = CaiwuShezhiService(db)
     return service.get_qudao_by_id(qudao_id)
-
 
 @router.put("/qudao/{qudao_id}", response_model=ShoufukuanQudaoResponse, summary="更新收付款渠道")
 async def update_qudao(
@@ -78,7 +74,6 @@ async def update_qudao(
     service = CaiwuShezhiService(db)
     return service.update_qudao(qudao_id, qudao_data, current_user.id)
 
-
 @router.delete("/qudao/{qudao_id}", summary="删除收付款渠道")
 async def delete_qudao(
     qudao_id: str,
@@ -89,7 +84,6 @@ async def delete_qudao(
     service = CaiwuShezhiService(db)
     service.delete_qudao(qudao_id)
     return {"message": "删除成功"}
-
 
 # ==================== 收入类别 ====================
 @router.post("/shouru-leibie", response_model=ShouruLeibieResponse, summary="创建收入类别")
@@ -102,7 +96,6 @@ async def create_shouru_leibie(
     service = CaiwuShezhiService(db)
     return service.create_shouru_leibie(leibie_data, current_user.id)
 
-
 @router.get("/shouru-leibie", response_model=ShouruLeibieListResponse, summary="获取收入类别列表")
 async def get_shouru_leibie_list(
     page: int = Query(1, ge=1, description="页码"),
@@ -112,7 +105,6 @@ async def get_shouru_leibie_list(
     """获取收入类别列表"""
     service = CaiwuShezhiService(db)
     return service.get_shouru_leibie_list(page, size)
-
 
 @router.put("/shouru-leibie/{leibie_id}", response_model=ShouruLeibieResponse, summary="更新收入类别")
 async def update_shouru_leibie(
@@ -125,7 +117,6 @@ async def update_shouru_leibie(
     service = CaiwuShezhiService(db)
     return service.update_shouru_leibie(leibie_id, leibie_data, current_user.id)
 
-
 @router.delete("/shouru-leibie/{leibie_id}", summary="删除收入类别")
 async def delete_shouru_leibie(
     leibie_id: str,
@@ -136,7 +127,6 @@ async def delete_shouru_leibie(
     service = CaiwuShezhiService(db)
     service.delete_shouru_leibie(leibie_id)
     return {"message": "删除成功"}
-
 
 # ==================== 报销类别 ====================
 @router.post("/baoxiao-leibie", response_model=BaoxiaoLeibieResponse, summary="创建报销类别")
@@ -149,7 +139,6 @@ async def create_baoxiao_leibie(
     service = CaiwuShezhiService(db)
     return service.create_baoxiao_leibie(leibie_data, current_user.id)
 
-
 @router.get("/baoxiao-leibie", response_model=BaoxiaoLeibieListResponse, summary="获取报销类别列表")
 async def get_baoxiao_leibie_list(
     page: int = Query(1, ge=1, description="页码"),
@@ -159,7 +148,6 @@ async def get_baoxiao_leibie_list(
     """获取报销类别列表"""
     service = CaiwuShezhiService(db)
     return service.get_baoxiao_leibie_list(page, size)
-
 
 @router.put("/baoxiao-leibie/{leibie_id}", response_model=BaoxiaoLeibieResponse, summary="更新报销类别")
 async def update_baoxiao_leibie(
@@ -172,7 +160,6 @@ async def update_baoxiao_leibie(
     service = CaiwuShezhiService(db)
     return service.update_baoxiao_leibie(leibie_id, leibie_data, current_user.id)
 
-
 @router.delete("/baoxiao-leibie/{leibie_id}", summary="删除报销类别")
 async def delete_baoxiao_leibie(
     leibie_id: str,
@@ -183,7 +170,6 @@ async def delete_baoxiao_leibie(
     service = CaiwuShezhiService(db)
     service.delete_baoxiao_leibie(leibie_id)
     return {"message": "删除成功"}
-
 
 # ==================== 支出类别 ====================
 @router.post("/zhichu-leibie", response_model=ZhichuLeibieResponse, summary="创建支出类别")
@@ -196,7 +182,6 @@ async def create_zhichu_leibie(
     service = CaiwuShezhiService(db)
     return service.create_zhichu_leibie(leibie_data, current_user.id)
 
-
 @router.get("/zhichu-leibie", response_model=ZhichuLeibieListResponse, summary="获取支出类别列表")
 async def get_zhichu_leibie_list(
     page: int = Query(1, ge=1, description="页码"),
@@ -207,7 +192,6 @@ async def get_zhichu_leibie_list(
     """获取支出类别列表"""
     service = CaiwuShezhiService(db)
     return service.get_zhichu_leibie_list(page, size, fenlei)
-
 
 @router.put("/zhichu-leibie/{leibie_id}", response_model=ZhichuLeibieResponse, summary="更新支出类别")
 async def update_zhichu_leibie(
@@ -220,7 +204,6 @@ async def update_zhichu_leibie(
     service = CaiwuShezhiService(db)
     return service.update_zhichu_leibie(leibie_id, leibie_data, current_user.id)
 
-
 @router.delete("/zhichu-leibie/{leibie_id}", summary="删除支出类别")
 async def delete_zhichu_leibie(
     leibie_id: str,
@@ -231,4 +214,3 @@ async def delete_zhichu_leibie(
     service = CaiwuShezhiService(db)
     service.delete_zhichu_leibie(leibie_id)
     return {"message": "删除成功"}
-

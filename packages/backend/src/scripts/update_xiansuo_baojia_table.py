@@ -12,7 +12,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from core.database import SessionLocal
 
-
 def update_xiansuo_baojia_table():
     """更新线索报价表结构，添加确认相关字段"""
     db: Session = SessionLocal()
@@ -67,7 +66,6 @@ def update_xiansuo_baojia_table():
         """))
         confirmed_count = confirmed_result.scalar()
         
-        
         return True
         
     except Exception as e:
@@ -75,7 +73,6 @@ def update_xiansuo_baojia_table():
         return False
     finally:
         db.close()
-
 
 def verify_table_structure():
     """验证表结构是否正确更新"""
@@ -107,7 +104,6 @@ def verify_table_structure():
     finally:
         db.close()
 
-
 def main():
     """主函数"""
     
@@ -120,7 +116,6 @@ def main():
         return False
     
     return True
-
 
 if __name__ == "__main__":
     success = main()

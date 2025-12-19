@@ -18,7 +18,6 @@ from core.cache_decorator import (
     invalidate_xiansuo_laiyuan_cache
 )
 
-
 class XiansuoLaiyuanService:
     """线索来源管理服务类"""
     

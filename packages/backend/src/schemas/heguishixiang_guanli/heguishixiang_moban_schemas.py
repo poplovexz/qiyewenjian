@@ -5,7 +5,6 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 from pydantic import BaseModel, Field
 
-
 class HeguishixiangMobanBase(BaseModel):
     """合规事项模板基础模式"""
     shixiang_mingcheng: str = Field(..., description="事项名称")
@@ -26,11 +25,9 @@ class HeguishixiangMobanBase(BaseModel):
     fenlei_biaoqian: Optional[str] = Field(None, description="分类标签")
     kuozhan_shuju: Optional[str] = Field(None, description="扩展数据")
 
-
 class HeguishixiangMobanCreate(HeguishixiangMobanBase):
     """创建合规事项模板请求模式"""
     pass
-
 
 class HeguishixiangMobanUpdate(BaseModel):
     """更新合规事项模板请求模式"""
@@ -52,7 +49,6 @@ class HeguishixiangMobanUpdate(BaseModel):
     fenlei_biaoqian: Optional[str] = Field(None, description="分类标签")
     kuozhan_shuju: Optional[str] = Field(None, description="扩展数据")
 
-
 class HeguishixiangMobanResponse(HeguishixiangMobanBase):
     """合规事项模板响应模式"""
     id: str = Field(..., description="模板ID")
@@ -64,7 +60,6 @@ class HeguishixiangMobanResponse(HeguishixiangMobanBase):
     class Config:
         from_attributes = True
 
-
 class HeguishixiangMobanListParams(BaseModel):
     """合规事项模板列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -75,7 +70,6 @@ class HeguishixiangMobanListParams(BaseModel):
     moban_zhuangtai: Optional[str] = Field(None, description="模板状态")
     fengxian_dengji: Optional[str] = Field(None, description="风险等级")
 
-
 class HeguishixiangMobanListResponse(BaseModel):
     """合规事项模板列表响应模式"""
     items: List[HeguishixiangMobanResponse] = Field(..., description="模板列表")
@@ -84,7 +78,6 @@ class HeguishixiangMobanListResponse(BaseModel):
     size: int = Field(..., description="每页数量")
     pages: int = Field(..., description="总页数")
 
-
 class HeguishixiangMobanOptionsResponse(BaseModel):
     """合规事项模板选项响应模式"""
     shixiang_leixing_options: List[Dict[str, str]] = Field(..., description="事项类型选项")
@@ -92,11 +85,9 @@ class HeguishixiangMobanOptionsResponse(BaseModel):
     fengxian_dengji_options: List[Dict[str, str]] = Field(..., description="风险等级选项")
     moban_zhuangtai_options: List[Dict[str, str]] = Field(..., description="模板状态选项")
 
-
 class HeguishixiangMobanBatchCreateRequest(BaseModel):
     """批量创建合规事项模板请求模式"""
     templates: List[HeguishixiangMobanCreate] = Field(..., description="模板列表")
-
 
 class HeguishixiangMobanBatchUpdateRequest(BaseModel):
     """批量更新合规事项模板请求模式"""

@@ -11,7 +11,6 @@ sys.path.insert(0, str(project_root))
 from sqlalchemy import create_engine, text
 from core.config import settings
 
-
 def init_product_permissions():
     """初始化产品管理相关权限"""
     
@@ -119,12 +118,10 @@ def init_product_permissions():
             conn.execute(text(permissions_sql))
             conn.commit()
             
-        
     except Exception as e:
         return False
     
     return True
-
 
 def assign_permissions_to_admin():
     """为管理员角色分配产品管理权限"""
@@ -166,12 +163,10 @@ def assign_permissions_to_admin():
             conn.execute(text(role_permission_sql), {"admin_role_id_1": admin_role_id, "admin_role_id_2": admin_role_id})
             conn.commit()
             
-        
     except Exception as e:
         return False
     
     return True
-
 
 def main():
     """主函数"""
@@ -184,7 +179,5 @@ def main():
     if not assign_permissions_to_admin():
         return
     
-
-
 if __name__ == "__main__":
     main()

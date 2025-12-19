@@ -5,7 +5,6 @@ from sqlalchemy import Column, String, Text
 from sqlalchemy.orm import relationship
 from ..base import BaseModel
 
-
 class HetongYifangZhuti(BaseModel):
     """合同乙方主体表"""
     

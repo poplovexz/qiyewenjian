@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field
 
-
 class SystemConfigResponse(BaseModel):
     """系统配置响应"""
     id: str
@@ -24,16 +23,13 @@ class SystemConfigResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class SystemConfigUpdate(BaseModel):
     """更新系统配置"""
     config_value: str = Field(..., description="配置值")
 
-
 class SystemConfigBatchUpdate(BaseModel):
     """批量更新系统配置"""
     configs: Dict[str, str] = Field(..., description="配置键值对")
-
 
 class SystemInfoResponse(BaseModel):
     """系统信息响应"""
@@ -44,9 +40,7 @@ class SystemInfoResponse(BaseModel):
     redis_status: str = Field(default="connected", description="Redis状态")
     uptime: str = Field(default="", description="运行时间")
 
-
 class CacheClearResponse(BaseModel):
     """清除缓存响应"""
     message: str = Field(default="缓存已清除", description="响应消息")
     cleared_keys: int = Field(default=0, description="清除的键数量")
-

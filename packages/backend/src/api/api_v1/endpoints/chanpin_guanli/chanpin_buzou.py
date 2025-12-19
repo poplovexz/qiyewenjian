@@ -16,9 +16,7 @@ from schemas.chanpin_guanli import (
 )
 from services.chanpin_guanli import ChanpinBuzouService
 
-
 router = APIRouter()
-
 
 @router.get("/products/{xiangmu_id}/steps", response_model=List[ChanpinBuzouResponse], summary="获取产品步骤列表")
 async def get_buzou_list(
@@ -36,7 +34,6 @@ async def get_buzou_list(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"获取产品步骤列表失败: {str(e)}"
         )
-
 
 @router.get("/steps/{buzou_id}", response_model=ChanpinBuzouResponse, summary="获取产品步骤详情")
 async def get_buzou_detail(
@@ -64,7 +61,6 @@ async def get_buzou_detail(
             detail=f"获取产品步骤详情失败: {str(e)}"
         )
 
-
 @router.post("/steps", response_model=ChanpinBuzouResponse, summary="创建产品步骤")
 async def create_buzou(
     buzou_data: ChanpinBuzouCreate,
@@ -86,7 +82,6 @@ async def create_buzou(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"创建产品步骤失败: {str(e)}"
         )
-
 
 @router.put("/steps/{buzou_id}", response_model=ChanpinBuzouResponse, summary="更新产品步骤")
 async def update_buzou(
@@ -112,7 +107,6 @@ async def update_buzou(
             detail=f"更新产品步骤失败: {str(e)}"
         )
 
-
 @router.delete("/steps/{buzou_id}", summary="删除产品步骤")
 async def delete_buzou(
     buzou_id: str,
@@ -134,7 +128,6 @@ async def delete_buzou(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"删除产品步骤失败: {str(e)}"
         )
-
 
 @router.put("/products/{xiangmu_id}/steps", response_model=List[ChanpinBuzouResponse], summary="批量更新产品步骤")
 async def batch_update_buzou(

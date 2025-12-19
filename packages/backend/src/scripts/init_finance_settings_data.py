@@ -198,4 +198,3 @@ def init_sample_data():
 if __name__ == "__main__":
     init_zhichu_leibie_data()
     init_sample_data()
-

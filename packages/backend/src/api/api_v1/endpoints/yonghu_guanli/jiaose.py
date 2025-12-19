@@ -20,7 +20,6 @@ from services.yonghu_guanli.jiaose_service import JiaoseService
 
 router = APIRouter()
 
-
 @router.get("/", response_model=JiaoseListResponse, summary="获取角色列表")
 async def get_jiaose_list(
     page: int = Query(1, ge=1, description="页码"),
@@ -46,7 +45,6 @@ async def get_jiaose_list(
             detail=f"获取角色列表失败: {str(e)}"
         )
 
-
 @router.get("/{jiaose_id}", response_model=JiaoseResponse, summary="获取角色详情")
 async def get_jiaose_detail(
     jiaose_id: str,
@@ -69,7 +67,6 @@ async def get_jiaose_detail(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"获取角色详情失败: {str(e)}"
         )
-
 
 @router.post("/", response_model=JiaoseResponse, summary="创建角色")
 async def create_jiaose(
@@ -103,7 +100,6 @@ async def create_jiaose(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"创建角色失败: {str(e)}"
         )
-
 
 @router.put("/{jiaose_id}", response_model=JiaoseResponse, summary="更新角色")
 async def update_jiaose(
@@ -149,7 +145,6 @@ async def update_jiaose(
             detail=f"更新角色失败: {str(e)}"
         )
 
-
 @router.delete("/{jiaose_id}", summary="删除角色")
 async def delete_jiaose(
     jiaose_id: str,
@@ -184,7 +179,6 @@ async def delete_jiaose(
             detail=f"删除角色失败: {str(e)}"
         )
 
-
 @router.patch("/{jiaose_id}/status", response_model=JiaoseResponse, summary="更新角色状态")
 async def update_jiaose_status(
     jiaose_id: str,
@@ -218,7 +212,6 @@ async def update_jiaose_status(
             detail=f"更新角色状态失败: {str(e)}"
         )
 
-
 @router.get("/{jiaose_id}/permissions", summary="获取角色权限")
 async def get_jiaose_permissions(
     jiaose_id: str,
@@ -244,7 +237,6 @@ async def get_jiaose_permissions(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"获取角色权限失败: {str(e)}"
         )
-
 
 @router.put("/{jiaose_id}/permissions", summary="更新角色权限")
 async def update_jiaose_permissions(

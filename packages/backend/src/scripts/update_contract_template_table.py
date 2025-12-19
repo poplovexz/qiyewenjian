@@ -11,7 +11,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from core.database import SessionLocal
 
-
 def update_contract_template_table():
     """更新合同模板表结构"""
     db: Session = SessionLocal()
@@ -73,7 +72,6 @@ def update_contract_template_table():
         # 提交更改
         db.commit()
         
-        
         # 显示更新后的表结构
         result = db.execute(text("""
             SELECT column_name, data_type, is_nullable, column_default 
@@ -89,7 +87,6 @@ def update_contract_template_table():
         raise
     finally:
         db.close()
-
 
 if __name__ == "__main__":
     update_contract_template_table()

@@ -14,7 +14,6 @@ from schemas.shenhe_guanli import (
     ShenheJiluUpdate
 )
 
-
 class ShenheJiluService:
     """审核记录服务"""
     

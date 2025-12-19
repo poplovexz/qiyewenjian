@@ -8,7 +8,6 @@ from sqlalchemy import Column, DateTime, String
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 import uuid
 
-
 @as_declarative()
 class Base:
     """数据库基础模型类"""
@@ -20,7 +19,6 @@ class Base:
     @declared_attr
     def __tablename__(cls) -> str:
         return cls.__name__.lower()
-
 
 class BaseModel(Base):
     """包含通用字段的基础模型"""

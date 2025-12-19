@@ -13,7 +13,6 @@ from schemas.zhifu_guanli import HetongZhifuCreate, HetongZhifuUpdate, HetongZhi
 
 router = APIRouter()
 
-
 @router.post("/", summary="创建合同支付")
 async def create_hetong_zhifu(
     zhifu_data: HetongZhifuCreate,
@@ -35,7 +34,6 @@ async def create_hetong_zhifu(
         "message": "合同支付创建成功",
         "data": result
     }
-
 
 @router.get("/", summary="获取合同支付列表")
 async def get_hetong_zhifu_list(
@@ -63,7 +61,6 @@ async def get_hetong_zhifu_list(
     service = HetongZhifuService(db)
     return service.get_hetong_zhifu_list(params)
 
-
 @router.get("/{zhifu_id}", summary="获取合同支付详情")
 async def get_hetong_zhifu_by_id(
     zhifu_id: str,
@@ -78,7 +75,6 @@ async def get_hetong_zhifu_by_id(
         "success": True,
         "data": result
     }
-
 
 @router.put("/{zhifu_id}", summary="更新合同支付")
 async def update_hetong_zhifu(
@@ -97,7 +93,6 @@ async def update_hetong_zhifu(
         "data": result
     }
 
-
 @router.get("/contract/{hetong_id}", summary="根据合同ID获取支付记录")
 async def get_zhifu_by_contract(
     hetong_id: str,
@@ -112,7 +107,6 @@ async def get_zhifu_by_contract(
         "success": True,
         "data": result
     }
-
 
 @router.post("/{zhifu_id}/alipay", summary="发起支付宝支付")
 async def initiate_alipay(
@@ -132,7 +126,6 @@ async def initiate_alipay(
         "data": result
     }
 
-
 @router.post("/{zhifu_id}/wechat", summary="发起微信支付")
 async def initiate_wechat_pay(
     zhifu_id: str,
@@ -150,7 +143,6 @@ async def initiate_wechat_pay(
         "data": result
     }
 
-
 @router.post("/{zhifu_id}/bank-transfer", summary="选择银行转账")
 async def select_bank_transfer(
     zhifu_id: str,
@@ -167,7 +159,6 @@ async def select_bank_transfer(
         "data": result
     }
 
-
 @router.post("/notify/alipay", summary="支付宝支付回调")
 async def alipay_notify(
     notify_data: Dict[str, Any],
@@ -182,7 +173,6 @@ async def alipay_notify(
     else:
         return "fail"
 
-
 @router.post("/notify/wechat", summary="微信支付回调")
 async def wechat_notify(
     notify_data: Dict[str, Any],
@@ -196,7 +186,6 @@ async def wechat_notify(
         return {"code": "SUCCESS", "message": "成功"}
     else:
         return {"code": "FAIL", "message": "失败"}
-
 
 @router.get("/status/{hetong_id}", summary="获取合同支付状态")
 async def get_payment_status(

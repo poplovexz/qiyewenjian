@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-
 @router.post("/weixin/notify", summary="微信支付回调")
 async def weixin_payment_notify(
     request: Request,
@@ -283,7 +282,6 @@ async def weixin_payment_notify(
             media_type='application/json'
         )
 
-
 @router.post("/zhifubao/notify", summary="支付宝支付回调")
 async def zhifubao_payment_notify(
     request: Request,
@@ -469,7 +467,6 @@ async def zhifubao_payment_notify(
         logger.error(f"支付宝支付回调异常: {str(e)}")
         return Response(content='fail', media_type='text/plain')
 
-
 @router.post("/weixin/refund-notify", summary="微信退款回调")
 async def weixin_refund_notify(
     request: Request,
@@ -536,7 +533,6 @@ async def weixin_refund_notify(
             media_type='application/json'
         )
 
-
 @router.post("/zhifubao/refund-notify", summary="支付宝退款回调")
 async def zhifubao_refund_notify(
     request: Request,
@@ -593,4 +589,3 @@ async def zhifubao_refund_notify(
     except Exception as e:
         logger.error(f"支付宝退款回调异常: {str(e)}")
         return Response(content='fail', media_type='text/plain')
-

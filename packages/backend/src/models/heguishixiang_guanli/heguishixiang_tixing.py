@@ -5,7 +5,6 @@ from sqlalchemy import Column, String, Text, ForeignKey, DateTime, Boolean, Inte
 from sqlalchemy.orm import relationship
 from models.base import BaseModel
 
-
 class HeguishixiangTixing(BaseModel):
     """合规事项提醒配置表"""
 

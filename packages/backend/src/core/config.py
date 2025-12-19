@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Union
 from pydantic import AnyHttpUrl, PostgresDsn, field_validator
 from pydantic_settings import BaseSettings
 
-
 class Settings(BaseSettings):
     """应用设置"""
     
@@ -81,6 +80,5 @@ class Settings(BaseSettings):
         backend_dir = Path(__file__).parent.parent.parent
         env_file = str(backend_dir / ".env")
         case_sensitive = True
-
 
 settings = Settings()

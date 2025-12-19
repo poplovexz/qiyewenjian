@@ -6,13 +6,11 @@ from typing import Optional
 from datetime import datetime
 from decimal import Decimal
 
-
 class ZhifuTuikuanCreate(BaseModel):
     """创建退款请求"""
     zhifu_dingdan_id: str = Field(..., description="支付订单ID")
     tuikuan_jine: Decimal = Field(..., description="退款金额")
     tuikuan_yuanyin: Optional[str] = Field(None, description="退款原因")
-
 
 class ZhifuTuikuanResponse(BaseModel):
     """退款记录响应"""
@@ -40,11 +38,9 @@ class ZhifuTuikuanResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class ZhifuTuikuanListResponse(BaseModel):
     """退款记录列表响应"""
     total: int
     items: list[ZhifuTuikuanResponse]
     page: int
     page_size: int
-

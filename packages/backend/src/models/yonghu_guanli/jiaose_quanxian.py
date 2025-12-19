@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
 
-
 class JiaoseQuanxian(BaseModel):
     """角色权限关联表"""
     

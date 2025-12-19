@@ -58,8 +58,5 @@ def create_deploy_history_table():
         conn.execute(text(create_table_sql))
         conn.commit()
     
-
-
 if __name__ == "__main__":
     create_deploy_history_table()
-

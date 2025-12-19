@@ -24,7 +24,6 @@ from core.config import settings
 from core.security import get_password_hash
 import uuid
 
-
 def ensure_admin_role(session):
     """确保系统管理员角色存在"""
     
@@ -54,7 +53,6 @@ def ensure_admin_role(session):
         
         session.commit()
         return admin_role_id
-
 
 def ensure_admin_user(session, admin_role_id):
     """确保admin用户存在并分配了管理员角色"""
@@ -118,7 +116,6 @@ def ensure_admin_user(session, admin_role_id):
     
     return admin_user_id
 
-
 def assign_all_permissions_to_admin_role(session, admin_role_id):
     """为系统管理员角色分配所有权限"""
     
@@ -133,7 +130,6 @@ def assign_all_permissions_to_admin_role(session, admin_role_id):
     
     if not all_permissions:
         return
-    
     
     assigned_count = 0
     existing_count = 0
@@ -169,8 +165,6 @@ def assign_all_permissions_to_admin_role(session, admin_role_id):
     
     session.commit()
     
-
-
 def verify_admin_permissions(session, admin_user_id):
     """验证admin用户的权限"""
     
@@ -204,7 +198,6 @@ def verify_admin_permissions(session, admin_user_id):
         return False
     
     return True
-
 
 def main():
     """主函数"""
@@ -241,8 +234,6 @@ def main():
     finally:
         session.close()
 
-
 if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
-

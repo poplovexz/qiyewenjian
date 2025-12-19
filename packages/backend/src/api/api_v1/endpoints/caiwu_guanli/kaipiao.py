@@ -24,7 +24,6 @@ from schemas.caiwu_guanli.kaipiao_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=KaipiaoShenqingResponse, summary="创建开票申请")
 async def create_kaipiao_shenqing(
     shenqing_data: KaipiaoShenqingCreate,
@@ -44,7 +43,6 @@ async def create_kaipiao_shenqing(
     """
     service = KaipiaoService(db)
     return service.create_kaipiao_shenqing(shenqing_data, current_user.id)
-
 
 @router.get("/", response_model=KaipiaoShenqingListResponse, summary="获取开票申请列表")
 async def get_kaipiao_shenqing_list(
@@ -77,7 +75,6 @@ async def get_kaipiao_shenqing_list(
     service = KaipiaoService(db)
     return service.get_kaipiao_shenqing_list(params)
 
-
 @router.get("/{shenqing_id}", response_model=KaipiaoShenqingResponse, summary="获取开票申请详情")
 async def get_kaipiao_shenqing_detail(
     shenqing_id: str,
@@ -89,7 +86,6 @@ async def get_kaipiao_shenqing_detail(
     """
     service = KaipiaoService(db)
     return service.get_kaipiao_shenqing_by_id(shenqing_id)
-
 
 @router.put("/{shenqing_id}", response_model=KaipiaoShenqingResponse, summary="更新开票申请")
 async def update_kaipiao_shenqing(
@@ -106,7 +102,6 @@ async def update_kaipiao_shenqing(
     service = KaipiaoService(db)
     return service.update_kaipiao_shenqing(shenqing_id, shenqing_data, current_user.id)
 
-
 @router.post("/{shenqing_id}/submit", response_model=KaipiaoShenqingResponse, summary="提交开票申请")
 async def submit_kaipiao_shenqing(
     shenqing_id: str,
@@ -120,7 +115,6 @@ async def submit_kaipiao_shenqing(
     """
     service = KaipiaoService(db)
     return service.submit_kaipiao_shenqing(shenqing_id, current_user.id)
-
 
 @router.post("/audit", response_model=KaipiaoShenqingResponse, summary="审核开票申请")
 async def audit_kaipiao_shenqing(
@@ -142,7 +136,6 @@ async def audit_kaipiao_shenqing(
         audit_request.shenhe_yijian,
         current_user.id
     )
-
 
 @router.post("/process", response_model=KaipiaoShenqingResponse, summary="处理开票")
 async def process_invoice(
@@ -167,7 +160,6 @@ async def process_invoice(
         current_user.id
     )
 
-
 @router.get("/statistics/overview", response_model=KaipiaoStatistics, summary="获取开票统计信息")
 async def get_kaipiao_statistics(
     db: Session = Depends(get_db),
@@ -180,7 +172,6 @@ async def get_kaipiao_statistics(
     """
     service = KaipiaoService(db)
     return service.get_kaipiao_statistics()
-
 
 @router.get("/pending/my", response_model=KaipiaoShenqingListResponse, summary="获取我的待处理开票申请")
 async def get_my_pending_invoices(
@@ -212,7 +203,6 @@ async def get_my_pending_invoices(
         pages=(len(user_items) + params.size - 1) // params.size
     )
 
-
 @router.get("/audit/pending", response_model=KaipiaoShenqingListResponse, summary="获取待审核开票申请")
 async def get_pending_audit_invoices(
     page: int = Query(1, ge=1, description="页码"),
@@ -231,7 +221,6 @@ async def get_pending_audit_invoices(
     service = KaipiaoService(db)
     return service.get_kaipiao_shenqing_list(params)
 
-
 @router.get("/process/pending", response_model=KaipiaoShenqingListResponse, summary="获取待开票申请")
 async def get_pending_process_invoices(
     page: int = Query(1, ge=1, description="页码"),
@@ -249,7 +238,6 @@ async def get_pending_process_invoices(
     )
     service = KaipiaoService(db)
     return service.get_kaipiao_shenqing_list(params)
-
 
 @router.delete("/{shenqing_id}", summary="删除开票申请")
 async def delete_kaipiao_shenqing(

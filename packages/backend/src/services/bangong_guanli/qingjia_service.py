@@ -19,7 +19,6 @@ from schemas.bangong_guanli.qingjia_schemas import (
 )
 from services.shenhe_guanli import ShenheWorkflowEngine
 
-
 class QingjiaService:
     """请假申请管理服务类"""
     
@@ -349,4 +348,3 @@ class QingjiaService:
             self.db.add(notification)
             self.db.commit()
         except Exception as e:
-

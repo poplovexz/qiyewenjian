@@ -15,7 +15,6 @@ from schemas.zhifu_guanli.hetong_zhifu_schemas import (
 )
 from core.exceptions import BusinessException, ResourceNotFoundException
 
-
 class HetongZhifuService:
     """合同支付服务类"""
 

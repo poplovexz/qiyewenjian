@@ -7,7 +7,6 @@ from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
 
-
 class Dingdan(BaseModel):
     """订单表"""
     

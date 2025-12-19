@@ -5,7 +5,6 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
 
-
 class XiansuoZhuangtaiBase(BaseModel):
     """线索状态基础模式"""
     zhuangtai_mingcheng: str = Field(..., min_length=1, max_length=50, description="状态名称")
@@ -21,11 +20,9 @@ class XiansuoZhuangtaiBase(BaseModel):
     zhuangtai: Optional[str] = Field("active", description="状态：active-启用，inactive-停用")
     miaoshu: Optional[str] = Field(None, max_length=500, description="描述")
 
-
 class XiansuoZhuangtaiCreate(XiansuoZhuangtaiBase):
     """创建线索状态模式"""
     pass
-
 
 class XiansuoZhuangtaiUpdate(BaseModel):
     """更新线索状态模式"""
@@ -42,7 +39,6 @@ class XiansuoZhuangtaiUpdate(BaseModel):
     zhuangtai: Optional[str] = Field(None, description="状态")
     miaoshu: Optional[str] = Field(None, max_length=500, description="描述")
 
-
 class XiansuoZhuangtaiResponse(XiansuoZhuangtaiBase):
     """线索状态响应模式"""
     id: str
@@ -51,7 +47,6 @@ class XiansuoZhuangtaiResponse(XiansuoZhuangtaiBase):
     
     class Config:
         from_attributes = True
-
 
 class XiansuoZhuangtaiListItem(BaseModel):
     """线索状态列表项模式"""
@@ -68,7 +63,6 @@ class XiansuoZhuangtaiListItem(BaseModel):
     
     class Config:
         from_attributes = True
-
 
 class XiansuoZhuangtaiListResponse(BaseModel):
     """线索状态列表响应模式"""

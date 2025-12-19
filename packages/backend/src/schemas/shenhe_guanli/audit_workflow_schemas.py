@@ -6,7 +6,6 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 from pydantic import BaseModel, Field, model_validator
 
-
 class WorkflowStepBase(BaseModel):
     """工作流步骤基础模型"""
     step_name: str = Field(..., description="步骤名称")
@@ -24,7 +23,6 @@ class WorkflowStepBase(BaseModel):
             raise ValueError('必须指定审核人（approver_user_id 或 approver_role）')
         return self
 
-
 class AuditWorkflowBase(BaseModel):
     """审核工作流基础模型"""
     workflow_name: str = Field(..., min_length=1, max_length=200, description="工作流名称")
@@ -33,11 +31,9 @@ class AuditWorkflowBase(BaseModel):
     status: str = Field(default="active", description="状态")
     steps: List[WorkflowStepBase] = Field(..., description="工作流步骤")
 
-
 class AuditWorkflowCreate(AuditWorkflowBase):
     """创建审核工作流模型"""
     pass
-
 
 class AuditWorkflowUpdate(BaseModel):
     """更新审核工作流模型"""
@@ -46,7 +42,6 @@ class AuditWorkflowUpdate(BaseModel):
     description: Optional[str] = Field(None, description="工作流描述")
     status: Optional[str] = Field(None, description="状态")
     steps: Optional[List[WorkflowStepBase]] = Field(None, description="工作流步骤")
-
 
 class AuditWorkflowResponse(BaseModel):
     """审核工作流响应模型"""
@@ -61,7 +56,6 @@ class AuditWorkflowResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class AuditWorkflowListParams(BaseModel):
     """审核工作流列表查询参数"""

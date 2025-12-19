@@ -5,7 +5,6 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field, validator
 
-
 class ZhifuTongzhiCreate(BaseModel):
     """创建支付通知的请求模式"""
     zhifu_dingdan_id: Optional[str] = Field(None, description="支付订单ID")
@@ -42,7 +41,6 @@ class ZhifuTongzhiCreate(BaseModel):
             raise ValueError(f'发送渠道必须是以下之一: {", ".join(allowed_channels)}')
         return v
 
-
 class ZhifuTongzhiUpdate(BaseModel):
     """更新支付通知的请求模式"""
     tongzhi_biaoti: Optional[str] = Field(None, min_length=1, max_length=200, description="通知标题")
@@ -70,7 +68,6 @@ class ZhifuTongzhiUpdate(BaseModel):
                 raise ValueError(f'优先级必须是以下之一: {", ".join(allowed_priorities)}')
         return v
 
-
 class ZhifuTongzhiResponse(BaseModel):
     """支付通知响应模式"""
     id: str
@@ -95,7 +92,6 @@ class ZhifuTongzhiResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class ZhifuTongzhiListParams(BaseModel):
     """支付通知列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -108,7 +104,6 @@ class ZhifuTongzhiListParams(BaseModel):
     fasong_qudao: Optional[str] = Field(None, description="发送渠道")
     start_date: Optional[datetime] = Field(None, description="开始日期")
     end_date: Optional[datetime] = Field(None, description="结束日期")
-
 
 class ZhifuTongzhiListResponse(BaseModel):
     """支付通知列表响应模式"""

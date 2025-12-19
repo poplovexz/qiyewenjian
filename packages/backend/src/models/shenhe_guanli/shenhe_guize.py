@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
 
-
 class ShenheGuize(BaseModel):
     """审核规则配置表"""
     

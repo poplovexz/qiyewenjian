@@ -4,7 +4,6 @@
 from sqlalchemy import Column, String, Text, Integer
 from models.base import BaseModel
 
-
 class SystemConfig(BaseModel):
     """系统配置表"""
     __tablename__ = 'system_config'
@@ -19,4 +18,3 @@ class SystemConfig(BaseModel):
     value_type = Column(String(50), comment='值类型：string/int/float/bool/json')
     is_editable = Column(String(1), default='Y', comment='是否可编辑：Y/N')
     sort_order = Column(Integer, default=0, comment='排序')
-

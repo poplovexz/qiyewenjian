@@ -23,7 +23,6 @@ from schemas.hetong_guanli.hetong_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/{hetong_id}/generate-sign-link", response_model=GenerateSignLinkResponse, summary="生成客户签署链接")
 async def generate_sign_link(
     hetong_id: str,
@@ -52,7 +51,6 @@ async def generate_sign_link(
 
     return service.generate_sign_link(hetong_id, base_url)
 
-
 @router.get("/sign/{sign_token}", response_model=ContractSignInfoResponse, summary="获取合同签署信息")
 async def get_contract_sign_info(
     sign_token: str,
@@ -67,7 +65,6 @@ async def get_contract_sign_info(
     """
     service = HetongSignService(db)
     return service.get_contract_by_token(sign_token)
-
 
 @router.post("/sign/{sign_token}/sign", response_model=ContractSignInfoResponse, summary="客户签署合同")
 async def customer_sign_contract(
@@ -90,7 +87,6 @@ async def customer_sign_contract(
     
     return service.customer_sign_contract(sign_token, sign_request, client_ip)
 
-
 @router.post("/sign/{sign_token}/pay", response_model=PaymentInitiateResponse, summary="发起支付")
 async def initiate_payment(
     sign_token: str,
@@ -106,7 +102,6 @@ async def initiate_payment(
     """
     service = HetongSignService(db)
     return service.initiate_payment(sign_token, payment_request)
-
 
 @router.post("/sign/{sign_token}/payment-callback", response_model=PaymentCallbackResponse, summary="支付回调")
 async def payment_callback(
@@ -124,7 +119,6 @@ async def payment_callback(
     success = service.handle_payment_callback(sign_token, callback_data)
 
     return {"success": success, "message": "支付状态已更新"}
-
 
 @router.get("/sign/{sign_token}/available-payment-methods", response_model=AvailablePaymentMethodsResponse, summary="获取可用的支付方式")
 async def get_available_payment_methods(
@@ -218,7 +212,6 @@ async def get_available_payment_methods(
         "has_online_payment": has_wechat or has_alipay
     }
 
-
 @router.post("/sign/{sign_token}/bank-payment", response_model=BankPaymentInfoResponse, summary="客户提交银行汇款信息")
 async def submit_bank_payment_info(
     sign_token: str,
@@ -235,7 +228,6 @@ async def submit_bank_payment_info(
     service = HetongSignService(db)
     return service.submit_bank_payment_info(sign_token, payment_info)
 
-
 @router.get("/sign/{sign_token}/payment-status", summary="查询支付状态")
 async def get_payment_status(
     sign_token: str,
@@ -249,7 +241,6 @@ async def get_payment_status(
     """
     service = HetongSignService(db)
     return service.get_payment_status(sign_token)
-
 
 @router.post("/sign/{sign_token}/test-payment-success", summary="测试：模拟支付成功")
 async def test_payment_success(

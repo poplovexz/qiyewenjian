@@ -164,4 +164,3 @@ export function clearCache(pattern?: string) {
     params: pattern ? { pattern } : undefined
   })
 }
-

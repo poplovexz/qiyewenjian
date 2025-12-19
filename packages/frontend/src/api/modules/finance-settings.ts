@@ -194,4 +194,3 @@ export function deleteZhichuLeibie(id: string) {
     method: 'delete'
   })
 }
-

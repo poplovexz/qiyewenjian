@@ -10,7 +10,6 @@ from typing import Any, Dict, Optional, Union
 
 from core.error_codes import ErrorCode
 
-
 class BaseCustomException(Exception):
     """
     基础自定义异常类
@@ -54,7 +53,6 @@ class BaseCustomException(Exception):
             result["details"] = self.details
         return result
 
-
 class BusinessException(BaseCustomException):
     """业务逻辑异常"""
     default_http_status = 400
@@ -67,7 +65,6 @@ class BusinessException(BaseCustomException):
         http_status: Optional[int] = None
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
-
 
 class ValidationException(BaseCustomException):
     """数据验证异常"""
@@ -82,7 +79,6 @@ class ValidationException(BaseCustomException):
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
 
-
 class AuthenticationException(BaseCustomException):
     """认证异常"""
     default_http_status = 401
@@ -95,7 +91,6 @@ class AuthenticationException(BaseCustomException):
         http_status: Optional[int] = None
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
-
 
 class AuthorizationException(BaseCustomException):
     """授权异常"""
@@ -110,7 +105,6 @@ class AuthorizationException(BaseCustomException):
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
 
-
 class ResourceNotFoundException(BaseCustomException):
     """资源未找到异常"""
     default_http_status = 404
@@ -123,7 +117,6 @@ class ResourceNotFoundException(BaseCustomException):
         http_status: Optional[int] = None
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
-
 
 class ResourceConflictException(BaseCustomException):
     """资源冲突异常"""
@@ -138,7 +131,6 @@ class ResourceConflictException(BaseCustomException):
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
 
-
 class DatabaseException(BaseCustomException):
     """数据库异常"""
     default_http_status = 500
@@ -151,7 +143,6 @@ class DatabaseException(BaseCustomException):
         http_status: Optional[int] = None
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
-
 
 class ExternalServiceException(BaseCustomException):
     """外部服务异常"""
@@ -166,7 +157,6 @@ class ExternalServiceException(BaseCustomException):
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
 
-
 class ConfigurationException(BaseCustomException):
     """配置异常"""
     default_http_status = 500
@@ -179,7 +169,6 @@ class ConfigurationException(BaseCustomException):
         http_status: Optional[int] = None
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
-
 
 class RateLimitException(BaseCustomException):
     """频率限制异常"""
@@ -194,7 +183,6 @@ class RateLimitException(BaseCustomException):
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
 
-
 class PaymentException(BaseCustomException):
     """支付异常"""
     default_http_status = 500
@@ -207,7 +195,6 @@ class PaymentException(BaseCustomException):
         http_status: Optional[int] = None
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
-
 
 class AuditException(BaseCustomException):
     """审核异常"""
@@ -222,7 +209,6 @@ class AuditException(BaseCustomException):
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
 
-
 class ContractException(BaseCustomException):
     """合同异常"""
     default_http_status = 400
@@ -235,7 +221,6 @@ class ContractException(BaseCustomException):
         http_status: Optional[int] = None
     ):
         super().__init__(error, error_code, details, http_status or self.default_http_status)
-
 
 class SignatureException(BaseCustomException):
     """签署异常"""

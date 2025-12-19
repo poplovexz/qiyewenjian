@@ -19,7 +19,6 @@ from schemas.shenhe_guanli import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=ShenheGuizeResponse, summary="创建审核规则")
 @require_audit_permission("audit_rule:create")
 async def create_shenhe_guize(
@@ -37,7 +36,6 @@ async def create_shenhe_guize(
     """
     service = ShenheGuizeService(db)
     return service.create_shenhe_guize(guize_data, current_user.id)
-
 
 @router.get("/", summary="获取审核规则列表")
 @require_audit_permission("audit_rule:read")
@@ -66,7 +64,6 @@ async def get_shenhe_guize_list(
     service = ShenheGuizeService(db)
     return service.get_shenhe_guize_list(params)
 
-
 @router.get("/{guize_id}", response_model=ShenheGuizeResponse, summary="获取审核规则详情")
 @require_audit_permission("audit_rule:read", "guize_id")
 async def get_shenhe_guize_by_id(
@@ -77,7 +74,6 @@ async def get_shenhe_guize_by_id(
     """根据ID获取审核规则详情"""
     service = ShenheGuizeService(db)
     return service.get_shenhe_guize_by_id(guize_id)
-
 
 @router.put("/{guize_id}", response_model=ShenheGuizeResponse, summary="更新审核规则")
 @require_audit_permission("audit_rule:update", "guize_id")
@@ -91,7 +87,6 @@ async def update_shenhe_guize(
     service = ShenheGuizeService(db)
     return service.update_shenhe_guize(guize_id, guize_data, current_user.id)
 
-
 @router.delete("/{guize_id}", summary="删除审核规则")
 async def delete_shenhe_guize(
     guize_id: str,
@@ -103,7 +98,6 @@ async def delete_shenhe_guize(
     success = service.delete_shenhe_guize(guize_id)
     return {"success": success, "message": "审核规则删除成功"}
 
-
 @router.get("/type/{guize_leixing}", summary="根据类型获取启用的审核规则")
 async def get_active_rules_by_type(
     guize_leixing: str,
@@ -113,7 +107,6 @@ async def get_active_rules_by_type(
     """根据类型获取启用的审核规则"""
     service = ShenheGuizeService(db)
     return service.get_active_rules_by_type(guize_leixing)
-
 
 @router.get("/workflows/options", summary="获取审核流程选项")
 async def get_workflow_options(

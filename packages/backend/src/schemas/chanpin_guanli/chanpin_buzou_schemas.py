@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from decimal import Decimal
 
-
 class ChanpinBuzouBase(BaseModel):
     """产品步骤基础模式"""
     buzou_mingcheng: str = Field(..., min_length=1, max_length=200, description="步骤名称")
@@ -19,11 +18,9 @@ class ChanpinBuzouBase(BaseModel):
     shi_bixu: Optional[str] = Field("Y", description="是否必须")
     zhuangtai: Optional[str] = Field("active", description="状态")
 
-
 class ChanpinBuzouCreate(ChanpinBuzouBase):
     """创建产品步骤模式"""
     pass
-
 
 class ChanpinBuzouUpdate(BaseModel):
     """更新产品步骤模式"""
@@ -37,7 +34,6 @@ class ChanpinBuzouUpdate(BaseModel):
     shi_bixu: Optional[str] = Field(None, description="是否必须")
     zhuangtai: Optional[str] = Field(None, description="状态")
 
-
 class ChanpinBuzouResponse(ChanpinBuzouBase):
     """产品步骤响应模式"""
     id: str
@@ -50,12 +46,10 @@ class ChanpinBuzouResponse(ChanpinBuzouBase):
             Decimal: lambda v: float(v) if v is not None else 0.0
         }
 
-
 class ChanpinBuzouBatchCreate(BaseModel):
     """批量创建产品步骤模式"""
     xiangmu_id: str = Field(..., description="所属项目ID")
     buzou_list: list[ChanpinBuzouCreate] = Field(..., description="步骤列表")
-
 
 class ChanpinBuzouBatchUpdate(BaseModel):
     """批量更新产品步骤模式"""

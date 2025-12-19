@@ -102,7 +102,5 @@ def create_finance_settings_tables():
         """))
         conn.commit()
         
-
 if __name__ == "__main__":
     create_finance_settings_tables()
-

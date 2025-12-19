@@ -11,24 +11,20 @@ from services.hetong_guanli.hetong_zhifu_public_service import HetongZhifuPublic
 
 router = APIRouter()
 
-
 class ContractPaymentRequest(BaseModel):
     """合同支付请求模型"""
     hetong_id: str = Field(..., description="合同ID")
     zhifu_fangshi: str = Field(..., description="支付方式")
     zhifu_jine: float = Field(..., description="支付金额")
 
-
 class AlipayPaymentRequest(BaseModel):
     """支付宝支付请求模型"""
     return_url: Optional[str] = Field(None, description="支付成功返回URL")
     notify_url: Optional[str] = Field(None, description="支付通知URL")
 
-
 class WechatPaymentRequest(BaseModel):
     """微信支付请求模型"""
     notify_url: Optional[str] = Field(None, description="支付通知URL")
-
 
 @router.get("/{contract_id}/info", summary="获取合同支付信息")
 async def get_contract_payment_info(
@@ -51,7 +47,6 @@ async def get_contract_payment_info(
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.post("/create", summary="创建支付记录")
 async def create_payment(
@@ -79,7 +74,6 @@ async def create_payment(
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.post("/{payment_id}/alipay", summary="发起支付宝支付")
 async def initiate_alipay_payment(
@@ -109,7 +103,6 @@ async def initiate_alipay_payment(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-
 @router.post("/{payment_id}/wechat", summary="发起微信支付")
 async def initiate_wechat_payment(
     payment_id: str,
@@ -137,7 +130,6 @@ async def initiate_wechat_payment(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-
 @router.post("/{payment_id}/bank-transfer", summary="选择银行转账")
 async def select_bank_transfer(
     payment_id: str,
@@ -160,7 +152,6 @@ async def select_bank_transfer(
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.get("/{contract_id}/download", summary="下载合同")
 async def download_contract(
@@ -189,7 +180,6 @@ async def download_contract(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-
 @router.get("/{payment_id}/status", summary="查询支付状态")
 async def get_payment_status(
     payment_id: str,
@@ -211,7 +201,6 @@ async def get_payment_status(
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.post("/alipay/notify", summary="支付宝支付通知")
 async def alipay_notify(
@@ -236,7 +225,6 @@ async def alipay_notify(
         
     except Exception as e:
         return "fail"
-
 
 @router.post("/wechat/notify", summary="微信支付通知")
 async def wechat_notify(

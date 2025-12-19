@@ -14,10 +14,8 @@ from schemas.chanpin_guanli import ChanpinBuzouCreate, ChanpinBuzouUpdate
 from decimal import Decimal
 import asyncio
 
-
 def print_section(title):
     """打印分隔线"""
-
 
 async def test_product_steps():
     """测试产品步骤功能"""
@@ -37,7 +35,6 @@ async def test_product_steps():
         
         if not product:
             return
-        
         
         print_section("2. 查询现有步骤")
         
@@ -142,7 +139,5 @@ async def test_product_steps():
     finally:
         db.close()
 
-
 if __name__ == "__main__":
     asyncio.run(test_product_steps())
-

@@ -16,7 +16,6 @@ from schemas.yonghu_guanli.quanxian_schemas import (
     QuanxianStatistics
 )
 
-
 class QuanxianService:
     """权限管理服务类"""
 

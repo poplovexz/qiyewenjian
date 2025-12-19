@@ -10,7 +10,6 @@ from core.database import get_db
 from .jwt_handler import get_current_user
 from models.yonghu_guanli import Yonghu, Jiaose, Quanxian, JiaoseQuanxian
 
-
 def check_permission(permission_code: str):
     """
     权限检查装饰器
@@ -55,7 +54,6 @@ def check_permission(permission_code: str):
         return wrapper
     return decorator
 
-
 def has_permission(db: Session, user: Yonghu, permission_code: str) -> bool:
     """
     检查用户是否具有指定权限
@@ -96,7 +94,6 @@ def has_permission(db: Session, user: Yonghu, permission_code: str) -> bool:
     
     return False
 
-
 def get_user_permissions(db: Session, user: Yonghu) -> List[str]:
     """
     获取用户的所有权限编码列表
@@ -130,7 +127,6 @@ def get_user_permissions(db: Session, user: Yonghu) -> List[str]:
     
     return [perm.quanxian_bianma for perm in permissions]
 
-
 def require_permission(permission_code: str):
     """
     FastAPI 依赖注入形式的权限检查
@@ -153,7 +149,6 @@ def require_permission(permission_code: str):
         return current_user
     
     return permission_dependency
-
 
 def require_any_permission(permission_codes: List[str]):
     """
@@ -179,7 +174,6 @@ def require_any_permission(permission_codes: List[str]):
         )
     
     return permission_dependency
-
 
 def require_all_permissions(permission_codes: List[str]):
     """

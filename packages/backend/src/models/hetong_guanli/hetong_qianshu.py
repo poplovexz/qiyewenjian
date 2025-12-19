@@ -8,7 +8,6 @@ from core.mixins import TimestampMixin, UUIDMixin
 import uuid
 from datetime import datetime
 
-
 class HetongQianshu(Base, UUIDMixin, TimestampMixin):
     """合同签署模型"""
     __tablename__ = "hetong_qianshu"

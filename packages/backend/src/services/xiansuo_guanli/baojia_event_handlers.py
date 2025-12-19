@@ -13,7 +13,6 @@ from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
 
 logger = logging.getLogger(__name__)
 
-
 def handle_baojia_confirmed(payload: Dict[str, Any]) -> None:
     """处理报价确认事件
     
@@ -79,7 +78,6 @@ def handle_baojia_confirmed(payload: Dict[str, Any]) -> None:
         logger.error(f"处理报价确认事件失败: {e}")
         raise
 
-
 def handle_baojia_rejected(payload: Dict[str, Any]) -> None:
     """处理报价拒绝事件
     
@@ -128,7 +126,6 @@ def handle_baojia_rejected(payload: Dict[str, Any]) -> None:
     except Exception as e:
         logger.error(f"处理报价拒绝事件失败: {e}")
         raise
-
 
 def handle_hetong_draft_triggered(payload: Dict[str, Any]) -> None:
     """处理合同草稿触发事件
@@ -212,7 +209,6 @@ def handle_hetong_draft_triggered(payload: Dict[str, Any]) -> None:
         logger.error(f"处理合同草稿触发事件失败: {e}")
         raise
 
-
 def _log_baojia_business_event(db, baojia_id: str, event_type: str, description: str, operator_id: str = None) -> None:
     """记录报价业务事件日志
     
@@ -243,7 +239,6 @@ def _log_baojia_business_event(db, baojia_id: str, event_type: str, description:
     except Exception as e:
         logger.error(f"记录业务事件日志失败: {e}")
 
-
 # 注册事件处理器
 def register_baojia_event_handlers():
     """注册报价相关事件处理器"""
@@ -252,7 +247,6 @@ def register_baojia_event_handlers():
     subscribe(EventNames.HETONG_DRAFT_TRIGGERED, handle_hetong_draft_triggered)
     
     logger.info("报价事件处理器注册完成")
-
 
 # 自动注册（当模块被导入时）
 register_baojia_event_handlers()

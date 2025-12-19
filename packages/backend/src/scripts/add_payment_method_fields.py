@@ -19,7 +19,6 @@ sys.path.insert(0, str(src_path))
 from sqlalchemy import text
 from core.database import SessionLocal
 
-
 def add_payment_method_fields():
     """添加支付方式表的新字段"""
     
@@ -39,7 +38,6 @@ def add_payment_method_fields():
         
         if not result:
             return False
-        
         
         # 要添加的字段列表
         fields_to_add = [
@@ -157,7 +155,6 @@ def add_payment_method_fields():
     finally:
         db.close()
 
-
 if __name__ == "__main__":
     
     success = add_payment_method_fields()
@@ -166,4 +163,3 @@ if __name__ == "__main__":
     else:
     
     sys.exit(0 if success else 1)
-

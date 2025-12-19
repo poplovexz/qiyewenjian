@@ -145,4 +145,3 @@ const handleMenuSelect = (index: string) => {
   overflow-y: auto;
 }
 </style>
-

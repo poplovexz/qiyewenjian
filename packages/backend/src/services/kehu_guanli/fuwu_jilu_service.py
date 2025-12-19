@@ -14,7 +14,6 @@ from schemas.kehu_guanli.fuwu_jilu_schemas import (
     FuwuJiluListResponse
 )
 
-
 class FuwuJiluService:
     """服务记录管理服务类"""
     

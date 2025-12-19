@@ -4,7 +4,6 @@
 from sqlalchemy import Column, String, Integer, Text
 from models.base import BaseModel
 
-
 class ShoufukuanQudao(BaseModel):
     """收付款渠道表"""
     
@@ -67,7 +66,6 @@ class ShoufukuanQudao(BaseModel):
         comment="状态：active(启用)、inactive(禁用)"
     )
 
-
 class ShouruLeibie(BaseModel):
     """收入类别表"""
     
@@ -107,7 +105,6 @@ class ShouruLeibie(BaseModel):
         comment="状态：active(启用)、inactive(禁用)"
     )
 
-
 class BaoxiaoLeibie(BaseModel):
     """报销类别表"""
     
@@ -146,7 +143,6 @@ class BaoxiaoLeibie(BaseModel):
         nullable=False,
         comment="状态：active(启用)、inactive(禁用)"
     )
-
 
 class ZhichuLeibie(BaseModel):
     """支出类别表"""
@@ -192,4 +188,3 @@ class ZhichuLeibie(BaseModel):
         nullable=False,
         comment="状态：active(启用)、inactive(禁用)"
     )
-

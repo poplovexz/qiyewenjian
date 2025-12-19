@@ -9,7 +9,6 @@ from sqlalchemy.orm import sessionmaker
 from core.config import settings
 from models.chanpin_guanli import ChanpinXiangmu, ChanpinBuzou
 
-
 def convert_to_days(time: Decimal, unit: str) -> float:
     """将时间转换为天数"""
     unit_map = {
@@ -18,7 +17,6 @@ def convert_to_days(time: Decimal, unit: str) -> float:
         'fenzhong': 1.0/480.0  # 分钟 -> 天（480分钟 = 8小时 = 1天）
     }
     return float(time) * unit_map.get(unit, 1.0)
-
 
 async def main():
     engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
@@ -31,7 +29,6 @@ async def main():
         xiangmu_list = db.query(ChanpinXiangmu).filter(
             ChanpinXiangmu.is_deleted == 'N'
         ).all()
-        
         
         updated_count = 0
         unchanged_count = 0
@@ -65,7 +62,6 @@ async def main():
         # 提交所有更改
         db.commit()
         
-        
     except Exception as e:
         import traceback
         traceback.print_exc()
@@ -73,7 +69,5 @@ async def main():
     finally:
         db.close()
 
-
 if __name__ == '__main__':
     asyncio.run(main())
-

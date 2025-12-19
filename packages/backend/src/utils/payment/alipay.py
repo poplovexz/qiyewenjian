@@ -18,7 +18,6 @@ except ImportError:
     ALIPAY_SDK_AVAILABLE = False
     AliPay = None  # 占位符，避免NameError
 
-
 class AlipayUtil:
     """支付宝支付工具类"""
 

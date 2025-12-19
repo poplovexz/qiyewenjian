@@ -6,7 +6,6 @@ from typing import Optional, List
 from decimal import Decimal
 from pydantic import BaseModel, Field
 
-
 class ZhixingRenInfo(BaseModel):
     """执行人简要信息"""
     id: str = Field(..., description="用户ID")
@@ -15,7 +14,6 @@ class ZhixingRenInfo(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class FuwuGongdanXiangmuBase(BaseModel):
     """服务工单项目基础模型"""
@@ -30,11 +28,9 @@ class FuwuGongdanXiangmuBase(BaseModel):
     beizhu: Optional[str] = Field(None, description="备注")
     zhixing_ren_id: Optional[str] = Field(None, description="执行人ID")
 
-
 class FuwuGongdanXiangmuCreate(FuwuGongdanXiangmuBase):
     """创建服务工单项目模型"""
     pass
-
 
 class FuwuGongdanXiangmuUpdate(BaseModel):
     """更新服务工单项目模型"""
@@ -49,7 +45,6 @@ class FuwuGongdanXiangmuUpdate(BaseModel):
     beizhu: Optional[str] = Field(None, description="备注")
     zhixing_ren_id: Optional[str] = Field(None, description="执行人ID")
 
-
 class FuwuGongdanXiangmuResponse(FuwuGongdanXiangmuBase):
     """服务工单项目响应模型"""
     id: str = Field(..., description="项目ID")
@@ -61,18 +56,15 @@ class FuwuGongdanXiangmuResponse(FuwuGongdanXiangmuBase):
     class Config:
         from_attributes = True
 
-
 class FuwuGongdanRizhiBase(BaseModel):
     """服务工单日志基础模型"""
     caozuo_leixing: str = Field(..., description="操作类型")
     caozuo_neirong: str = Field(..., min_length=1, description="操作内容")
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
 
-
 class FuwuGongdanRizhiCreate(FuwuGongdanRizhiBase):
     """创建服务工单日志模型"""
     pass
-
 
 class FuwuGongdanRizhiResponse(FuwuGongdanRizhiBase):
     """服务工单日志响应模型"""
@@ -83,7 +75,6 @@ class FuwuGongdanRizhiResponse(FuwuGongdanRizhiBase):
     
     class Config:
         from_attributes = True
-
 
 class FuwuGongdanBase(BaseModel):
     """服务工单基础模型"""
@@ -99,11 +90,9 @@ class FuwuGongdanBase(BaseModel):
     jihua_jieshu_shijian: datetime = Field(..., description="计划结束时间")
     fenpei_beizhu: Optional[str] = Field(None, description="分配备注")
 
-
 class FuwuGongdanCreate(FuwuGongdanBase):
     """创建服务工单模型"""
     xiangmu_list: Optional[List[FuwuGongdanXiangmuCreate]] = Field(default=[], description="工单项目列表")
-
 
 class FuwuGongdanUpdate(BaseModel):
     """更新服务工单模型"""
@@ -122,7 +111,6 @@ class FuwuGongdanUpdate(BaseModel):
     jiaofei_wenjian: Optional[str] = Field(None, description="交付文件列表")
     kehu_pingjia: Optional[str] = Field(None, description="客户评价")
     kehu_pingjia_neirong: Optional[str] = Field(None, description="客户评价内容")
-
 
 class FuwuGongdanResponse(FuwuGongdanBase):
     """服务工单响应模型"""
@@ -148,12 +136,10 @@ class FuwuGongdanResponse(FuwuGongdanBase):
     class Config:
         from_attributes = True
 
-
 class FuwuGongdanDetailResponse(FuwuGongdanResponse):
     """服务工单详情响应模型"""
     xiangmu_list: List[FuwuGongdanXiangmuResponse] = Field(default=[], description="工单项目列表")
     rizhi_list: List[FuwuGongdanRizhiResponse] = Field(default=[], description="工单日志列表")
-
 
 class FuwuGongdanListParams(BaseModel):
     """服务工单列表查询参数"""
@@ -169,7 +155,6 @@ class FuwuGongdanListParams(BaseModel):
     hetong_id: Optional[str] = Field(None, description="合同ID")
     is_overdue: Optional[bool] = Field(None, description="是否逾期")
 
-
 class FuwuGongdanListResponse(BaseModel):
     """服务工单列表响应模型"""
     total: int = Field(..., description="总数量")
@@ -177,7 +162,6 @@ class FuwuGongdanListResponse(BaseModel):
     page: int = Field(..., description="当前页码")
     size: int = Field(..., description="每页数量")
     pages: int = Field(..., description="总页数")
-
 
 class FuwuGongdanStatistics(BaseModel):
     """服务工单统计模型"""
@@ -192,7 +176,6 @@ class FuwuGongdanStatistics(BaseModel):
     avg_completion_days: float = Field(..., description="平均完成天数")
     completion_rate: float = Field(..., description="完成率")
 
-
 # ==================== 任务项相关 Schema ====================
 
 class KehuInfo(BaseModel):
@@ -202,7 +185,6 @@ class KehuInfo(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class GongdanInfo(BaseModel):
     """工单简要信息"""
@@ -215,7 +197,6 @@ class GongdanInfo(BaseModel):
     class Config:
         from_attributes = True
 
-
 class TaskItemWithGongdanResponse(FuwuGongdanXiangmuResponse):
     """任务项响应模型（包含工单信息）"""
     gongdan: GongdanInfo = Field(..., description="工单信息")
@@ -223,7 +204,6 @@ class TaskItemWithGongdanResponse(FuwuGongdanXiangmuResponse):
 
     class Config:
         from_attributes = True
-
 
 class TaskItemListParams(BaseModel):
     """任务项列表查询参数"""
@@ -233,7 +213,6 @@ class TaskItemListParams(BaseModel):
     gongdan_zhuangtai: Optional[str] = Field(None, description="工单状态筛选")
     fuwu_leixing: Optional[str] = Field(None, description="服务类型筛选")
 
-
 class TaskItemListResponse(BaseModel):
     """任务项列表响应模型"""
     total: int = Field(..., description="总数量")
@@ -241,7 +220,6 @@ class TaskItemListResponse(BaseModel):
     page: int = Field(..., description="当前页码")
     size: int = Field(..., description="每页数量")
     pages: int = Field(..., description="总页数")
-
 
 class TaskItemStatistics(BaseModel):
     """任务项统计模型"""
@@ -254,17 +232,14 @@ class TaskItemStatistics(BaseModel):
     total_shiji_gongshi: float = Field(..., description="总实际工时")
     avg_completion_rate: float = Field(..., description="平均完成率")
 
-
 class TaskItemStartRequest(BaseModel):
     """开始任务项请求模型"""
     pass  # 无需额外参数，从token获取当前用户
-
 
 class TaskItemCompleteRequest(BaseModel):
     """完成任务项请求模型"""
     shiji_gongshi: Decimal = Field(..., ge=0, description="实际工时")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class TaskItemPauseRequest(BaseModel):
     """暂停任务项请求模型"""

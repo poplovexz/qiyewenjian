@@ -12,7 +12,6 @@ from typing import Optional
 
 from core.config import settings
 
-
 class AESEncryption:
     """AES加密工具类"""
     
@@ -145,10 +144,8 @@ class AESEncryption:
                     pass
         return result
 
-
 # 创建全局加密实例
 encryption = AESEncryption()
-
 
 def encrypt_sensitive_data(data: str) -> str:
     """
@@ -162,7 +159,6 @@ def encrypt_sensitive_data(data: str) -> str:
     """
     return encryption.encrypt(data)
 
-
 def decrypt_sensitive_data(data: str) -> str:
     """
     解密敏感数据的便捷函数
@@ -174,4 +170,3 @@ def decrypt_sensitive_data(data: str) -> str:
         解密后的数据
     """
     return encryption.decrypt(data)
-

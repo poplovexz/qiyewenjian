@@ -17,7 +17,6 @@ from schemas.shenhe_guanli import (
 
 router = APIRouter()
 
-
 @router.get("/", summary="获取审核流程列表")
 async def get_shenhe_liucheng_list(
     page: int = 1,
@@ -46,7 +45,6 @@ async def get_shenhe_liucheng_list(
     service = ShenheLiuchengService(db)
     return service.get_shenhe_liucheng_list(params)
 
-
 @router.get("/{liucheng_id}", response_model=ShenheLiuchengResponse, summary="获取审核流程详情")
 async def get_shenhe_liucheng_by_id(
     liucheng_id: str,
@@ -56,7 +54,6 @@ async def get_shenhe_liucheng_by_id(
     """根据ID获取审核流程详情"""
     service = ShenheLiuchengService(db)
     return service.get_shenhe_liucheng_by_id(liucheng_id)
-
 
 @router.get("/pending/my", summary="获取我的待审核任务")
 async def get_my_pending_audits(
@@ -90,7 +87,6 @@ async def get_my_pending_audits(
         }
     ]
 
-
 @router.post("/{liucheng_id}/steps/{step_id}/action", summary="处理审核操作")
 async def process_audit_action(
     liucheng_id: str,
@@ -109,7 +105,6 @@ async def process_audit_action(
         "is_completed": is_completed
     }
 
-
 @router.get("/history/{audit_type}/{related_id}", summary="获取审核历史")
 async def get_audit_history(
     audit_type: str,
@@ -120,7 +115,6 @@ async def get_audit_history(
     """根据关联ID获取审核历史"""
     service = ShenheLiuchengService(db)
     return service.get_audit_history_by_related_id(audit_type, related_id)
-
 
 @router.post("/{liucheng_id}/cancel", summary="取消审核流程")
 async def cancel_audit_workflow(
@@ -137,7 +131,6 @@ async def cancel_audit_workflow(
         "success": success,
         "message": "审核流程取消成功"
     }
-
 
 @router.get("/statistics/overview", summary="获取审核统计概览")
 async def get_audit_statistics_overview(

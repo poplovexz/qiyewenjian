@@ -5,7 +5,6 @@ from sqlalchemy import Column, String, Text, ForeignKey, DateTime, Integer
 from sqlalchemy.orm import relationship
 from models.base import BaseModel
 
-
 class TixingJilu(BaseModel):
     """提醒记录表"""
 

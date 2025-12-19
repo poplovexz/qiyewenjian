@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 from models.yonghu_guanli import Yonghu, Jiaose, YonghuJiaose
 from models.shenhe_guanli import ShenheGuize, ShenheJilu
 
-
 class AuditPermissionChecker:
     """审核权限检查器"""
     
@@ -241,7 +240,6 @@ class AuditPermissionChecker:
         role_authority = approval_authorities.get(role_code, {})
         return role_authority.get(rule_type, {"max_amount": 0})
 
-
 def require_audit_permission(permission: str, resource_id_param: str = None):
     """
     审核权限验证装饰器
@@ -295,7 +293,6 @@ def require_audit_permission(permission: str, resource_id_param: str = None):
             return await func(*args, **kwargs)
         return wrapper
     return decorator
-
 
 def require_amount_approval_authority(rule_type: str, amount_param: str = "amount"):
     """

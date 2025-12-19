@@ -5,7 +5,6 @@ from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field, validator
 
-
 class JiaoseBase(BaseModel):
     """角色基础模型"""
     jiaose_ming: str = Field(..., min_length=2, max_length=50, description="角色名称")
@@ -27,11 +26,9 @@ class JiaoseBase(BaseModel):
             raise ValueError('状态只能是 active 或 inactive')
         return v
 
-
 class JiaoseCreate(JiaoseBase):
     """创建角色请求模型"""
     pass
-
 
 class JiaoseUpdate(BaseModel):
     """更新角色请求模型"""
@@ -54,7 +51,6 @@ class JiaoseUpdate(BaseModel):
             raise ValueError('状态只能是 active 或 inactive')
         return v
 
-
 class JiaoseStatusUpdate(BaseModel):
     """角色状态更新模型"""
     zhuangtai: str = Field(..., description="角色状态：active-启用，inactive-禁用")
@@ -66,7 +62,6 @@ class JiaoseStatusUpdate(BaseModel):
         if v not in ['active', 'inactive']:
             raise ValueError('状态只能是 active 或 inactive')
         return v
-
 
 class JiaosePermissionUpdate(BaseModel):
     """角色权限更新模型"""
@@ -80,7 +75,6 @@ class JiaosePermissionUpdate(BaseModel):
         # 去重
         return list(set(v))
 
-
 class QuanxianSimple(BaseModel):
     """权限简单信息模型"""
     id: str
@@ -92,7 +86,6 @@ class QuanxianSimple(BaseModel):
     class Config:
         from_attributes = True
 
-
 class YonghuSimple(BaseModel):
     """用户简单信息模型"""
     id: str
@@ -102,7 +95,6 @@ class YonghuSimple(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class JiaoseResponse(JiaoseBase):
     """角色响应模型"""
@@ -116,7 +108,6 @@ class JiaoseResponse(JiaoseBase):
 
     class Config:
         from_attributes = True
-
 
 class JiaoseListItem(BaseModel):
     """角色列表项模型"""
@@ -133,7 +124,6 @@ class JiaoseListItem(BaseModel):
     class Config:
         from_attributes = True
 
-
 class JiaoseListResponse(BaseModel):
     """角色列表响应模型"""
     items: List[JiaoseListItem]
@@ -141,7 +131,6 @@ class JiaoseListResponse(BaseModel):
     page: int
     size: int
     pages: int
-
 
 class JiaoseStatistics(BaseModel):
     """角色统计信息模型"""

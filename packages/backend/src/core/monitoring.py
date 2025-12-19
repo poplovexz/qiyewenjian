@@ -17,7 +17,6 @@ from core.logging import get_logger
 
 logger = get_logger(__name__)
 
-
 # ==================== 指标收集器 ====================
 
 @dataclass
@@ -99,10 +98,8 @@ class MetricsCollector:
         
         return "\n".join(lines)
 
-
 # 全局指标收集器
 metrics_collector = MetricsCollector()
-
 
 # ==================== 健康检查服务 ====================
 
@@ -264,4 +261,3 @@ class HealthChecker:
             "timestamp": datetime.now().isoformat(),
             "database": db_result.get("status")
         }
-

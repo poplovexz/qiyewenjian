@@ -15,7 +15,6 @@ from schemas.bangong_guanli.gongzuo_jiaojie_schemas import (
     GongzuoJiaojieListParams
 )
 
-
 class GongzuoJiaojieService:
     """工作交接单管理服务类"""
     
@@ -129,4 +128,3 @@ class GongzuoJiaojieService:
         self.db.commit()
         
         return {"message": "删除成功"}
-

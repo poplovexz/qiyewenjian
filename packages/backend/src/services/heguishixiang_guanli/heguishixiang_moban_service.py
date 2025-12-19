@@ -18,7 +18,6 @@ from schemas.heguishixiang_guanli.heguishixiang_moban_schemas import (
 )
 import uuid
 
-
 class HeguishixiangMobanService:
     """合规事项模板管理服务"""
 

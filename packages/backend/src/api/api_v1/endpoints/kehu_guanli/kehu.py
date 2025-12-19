@@ -18,7 +18,6 @@ from schemas.kehu_guanli.kehu_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=KehuResponse, summary="创建客户")
 async def create_kehu(
     kehu_data: KehuCreate,
@@ -35,7 +34,6 @@ async def create_kehu(
     """
     service = KehuService(db)
     return service.create_kehu(kehu_data, current_user.id)
-
 
 @router.get("/", response_model=KehuListResponse, summary="获取客户列表")
 async def get_kehu_list(
@@ -59,7 +57,6 @@ async def get_kehu_list(
         kehu_zhuangtai=kehu_zhuangtai
     )
 
-
 @router.get("/{kehu_id}", response_model=KehuResponse, summary="获取客户详情")
 async def get_kehu_detail(
     kehu_id: str,
@@ -77,7 +74,6 @@ async def get_kehu_detail(
     
     return kehu
 
-
 @router.put("/{kehu_id}", response_model=KehuResponse, summary="更新客户信息")
 async def update_kehu(
     kehu_id: str,
@@ -93,7 +89,6 @@ async def update_kehu(
     service = KehuService(db)
     return service.update_kehu(kehu_id, kehu_data, current_user.id)
 
-
 @router.delete("/{kehu_id}", summary="删除客户")
 async def delete_kehu(
     kehu_id: str,
@@ -107,7 +102,6 @@ async def delete_kehu(
     success = service.delete_kehu(kehu_id, current_user.id)
     
     return {"message": "客户删除成功" if success else "客户删除失败"}
-
 
 @router.patch("/{kehu_id}/status", response_model=KehuResponse, summary="更新客户状态")
 async def update_kehu_status(
@@ -126,7 +120,6 @@ async def update_kehu_status(
     service = KehuService(db)
     return service.update_kehu_status(kehu_id, new_status, current_user.id)
 
-
 @router.get("/statistics/overview", summary="获取客户统计信息")
 async def get_customer_statistics(
     db: Session = Depends(get_db),
@@ -139,7 +132,6 @@ async def get_customer_statistics(
     """
     service = KehuService(db)
     return service.get_kehu_statistics()
-
 
 @router.post("/batch/status", summary="批量更新客户状态")
 async def batch_update_customer_status(
@@ -157,7 +149,6 @@ async def batch_update_customer_status(
     service = KehuService(db)
     return service.batch_update_status(kehu_ids, new_status, current_user.id)
 
-
 @router.post("/batch/delete", summary="批量删除客户")
 async def batch_delete_customers(
     kehu_ids: list[str],
@@ -171,7 +162,6 @@ async def batch_delete_customers(
     """
     service = KehuService(db)
     return service.batch_delete(kehu_ids, current_user.id)
-
 
 @router.post("/search/advanced", response_model=KehuListResponse, summary="高级搜索客户")
 async def advanced_search_customers(

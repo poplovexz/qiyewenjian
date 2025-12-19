@@ -5,7 +5,6 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, Field, validator
 
-
 class ZhifuPeizhiCreate(BaseModel):
     """创建支付配置的请求模式"""
     peizhi_mingcheng: str = Field(..., min_length=1, max_length=100, description="配置名称")
@@ -60,7 +59,6 @@ class ZhifuPeizhiCreate(BaseModel):
                 raise ValueError(f'环境必须是以下之一: {", ".join(allowed_envs)}')
         return v
 
-
 class ZhifuPeizhiUpdate(BaseModel):
     """更新支付配置的请求模式"""
     peizhi_mingcheng: Optional[str] = Field(None, min_length=1, max_length=100, description="配置名称")
@@ -107,7 +105,6 @@ class ZhifuPeizhiUpdate(BaseModel):
                 raise ValueError(f'环境必须是以下之一: {", ".join(allowed_envs)}')
         return v
 
-
 class ZhifuPeizhiResponse(BaseModel):
     """支付配置响应模式（敏感信息脱敏）"""
     id: str
@@ -148,7 +145,6 @@ class ZhifuPeizhiResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class ZhifuPeizhiDetail(BaseModel):
     """支付配置详情模式（包含解密后的敏感信息，仅用于内部使用）"""
@@ -191,9 +187,7 @@ class ZhifuPeizhiDetail(BaseModel):
     class Config:
         from_attributes = True
 
-
 class ZhifuPeizhiListResponse(BaseModel):
     """支付配置列表响应模式"""
     total: int
     items: list[ZhifuPeizhiResponse]
-

@@ -5,7 +5,6 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
 
-
 class LoginRequest(BaseModel):
     """登录请求模式"""
     yonghu_ming: str = Field(..., alias="username", description="用户名")
@@ -20,7 +19,6 @@ class LoginRequest(BaseModel):
             }
         }
 
-
 class TokenResponse(BaseModel):
     """令牌响应模式"""
     access_token: str
@@ -28,11 +26,9 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     expires_in: int
 
-
 class RefreshTokenRequest(BaseModel):
     """刷新令牌请求模式"""
     refresh_token: str
-
 
 class UserInfo(BaseModel):
     """用户信息模式"""
@@ -49,7 +45,6 @@ class UserInfo(BaseModel):
     
     class Config:
         from_attributes = True
-
 
 class LoginResponse(BaseModel):
     """登录响应模式"""
@@ -81,7 +76,6 @@ class LoginResponse(BaseModel):
                 }
             }
         }
-
 
 class ChangePasswordRequest(BaseModel):
     """修改密码请求模式"""

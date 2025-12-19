@@ -6,7 +6,6 @@ from typing import Optional, List
 from pydantic import BaseModel, Field, field_validator
 import re
 
-
 class KehuBase(BaseModel):
     """客户基础模型"""
     gongsi_mingcheng: str = Field(..., min_length=1, max_length=200, description="公司名称")
@@ -70,11 +69,9 @@ class KehuBase(BaseModel):
             raise ValueError(f'客户状态必须是以下之一: {", ".join(allowed_statuses)}')
         return v
 
-
 class KehuCreate(KehuBase):
     """创建客户模型"""
     pass
-
 
 class KehuUpdate(BaseModel):
     """更新客户模型"""
@@ -102,7 +99,6 @@ class KehuUpdate(BaseModel):
     fuwu_kaishi_riqi: Optional[datetime] = Field(None, description="服务开始日期")
     fuwu_jieshu_riqi: Optional[datetime] = Field(None, description="服务结束日期")
 
-
 class KehuResponse(KehuBase):
     """客户响应模型"""
     id: str = Field(..., description="客户ID")
@@ -112,7 +108,6 @@ class KehuResponse(KehuBase):
     
     class Config:
         from_attributes = True
-
 
 class KehuListResponse(BaseModel):
     """客户列表响应模型"""

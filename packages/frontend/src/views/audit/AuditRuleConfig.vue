@@ -700,8 +700,6 @@ const loadTestTemplate = async () => {
   }
 }
 
-
-
 // 格式化触发条件
 const formatTriggerCondition = (condition: TriggerCondition | string | null) => {
   if (!condition) return '-'

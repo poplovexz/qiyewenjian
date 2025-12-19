@@ -12,7 +12,6 @@ from sqlalchemy.orm import Session
 from core.database import SessionLocal
 from models.hetong_guanli import HetongMoban
 
-
 def init_contract_templates():
     """初始化合同模板示例数据"""
     db: Session = SessionLocal()
@@ -258,7 +257,6 @@ def init_contract_templates():
             }
         ]
         
-        
         # 创建合同模板
         created_count = 0
         for template_info in template_data:
@@ -276,13 +274,11 @@ def init_contract_templates():
         
         db.commit()
         
-        
     except Exception as e:
         db.rollback()
         raise
     finally:
         db.close()
-
 
 if __name__ == "__main__":
     init_contract_templates()

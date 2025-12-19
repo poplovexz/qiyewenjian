@@ -5,7 +5,6 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field, validator, computed_field
 
-
 class HetongBase(BaseModel):
     """合同基础模型"""
     kehu_id: str = Field(..., description="客户ID")
@@ -41,11 +40,9 @@ class HetongBase(BaseModel):
             raise ValueError('是否自动生成必须是Y或N')
         return v
 
-
 class HetongCreate(HetongBase):
     """创建合同的请求模型"""
     pass
-
 
 class HetongUpdate(BaseModel):
     """更新合同的请求模型"""
@@ -84,11 +81,9 @@ class HetongUpdate(BaseModel):
             raise ValueError('是否自动生成必须是Y或N')
         return v
 
-
 class HetongSignRequest(BaseModel):
     """合同签署请求模型"""
     qianming_beizhu: Optional[str] = Field(None, description="签名备注")
-
 
 class KehuBrief(BaseModel):
     """客户简要信息模型（用于合同列表）"""
@@ -98,7 +93,6 @@ class KehuBrief(BaseModel):
     class Config:
         from_attributes = True
 
-
 class HetongMobanBrief(BaseModel):
     """合同模板简要信息模型（用于合同列表）"""
     id: str
@@ -107,7 +101,6 @@ class HetongMobanBrief(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class HetongResponse(BaseModel):
     """合同响应模型"""
@@ -170,7 +163,6 @@ class HetongResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class HetongListResponse(BaseModel):
     """合同列表响应模型"""
     total: int
@@ -178,26 +170,22 @@ class HetongListResponse(BaseModel):
     page: int
     size: int
 
-
 class HetongPreviewRequest(BaseModel):
     """合同预览请求模型"""
     hetong_moban_id: str = Field(..., description="合同模板ID")
     baojia_id: Optional[str] = Field(None, description="报价ID（用于自动填充变量）")
     bianliang_zhis: Optional[dict] = Field(None, description="变量值字典")
 
-
 class HetongPreviewResponse(BaseModel):
     """合同预览响应模型"""
     hetong_neirong: str = Field(..., description="预览的合同内容")
     bianliang_list: List[str] = Field(..., description="模板中的变量列表")
-
 
 class GenerateSignLinkResponse(BaseModel):
     """生成签署链接响应模型"""
     sign_link: str = Field(..., description="签署链接")
     sign_token: str = Field(..., description="签署令牌")
     expires_at: datetime = Field(..., description="过期时间")
-
 
 class ContractSignInfoResponse(BaseModel):
     """合同签署信息响应模型（无需认证）"""
@@ -214,14 +202,12 @@ class ContractSignInfoResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class CustomerSignRequest(BaseModel):
     """客户签署请求模型"""
     signature_data: str = Field(..., description="签名数据（base64）")
     signer_name: str = Field(..., min_length=1, max_length=50, description="签署人姓名")
     signer_phone: Optional[str] = Field(None, max_length=20, description="签署人电话")
     signer_email: Optional[str] = Field(None, max_length=100, description="签署人邮箱")
-
 
 class CustomerPaymentRequest(BaseModel):
     """客户支付请求模型"""
@@ -236,7 +222,6 @@ class CustomerPaymentRequest(BaseModel):
             raise ValueError(f'支付方式必须是以下之一: {", ".join(allowed_methods)}')
         return v
 
-
 class PaymentCallbackRequest(BaseModel):
     """支付回调请求模型"""
     transaction_id: str = Field(..., description="交易号")
@@ -244,13 +229,11 @@ class PaymentCallbackRequest(BaseModel):
     paid_amount: str = Field(..., description="实际支付金额")
     paid_at: datetime = Field(..., description="支付时间")
 
-
 class BankPaymentInfoRequest(BaseModel):
     """客户确认使用银行转账请求模型"""
     # 客户只需要确认使用银行转账，不需要填写汇款信息
     # 汇款信息由业务员后续跟踪获取
     pass
-
 
 class BankPaymentInfoResponse(BaseModel):
     """客户提交银行汇款信息响应模型"""
@@ -259,7 +242,6 @@ class BankPaymentInfoResponse(BaseModel):
     danju_id: str = Field(..., description="单据ID")
     danju_bianhao: str = Field(..., description="单据编号")
 
-
 class PaymentMethodItem(BaseModel):
     """可用支付方式条目模型"""
     method: str = Field(..., description="支付方式标识，如 wechat/alipay/bank")
@@ -267,12 +249,10 @@ class PaymentMethodItem(BaseModel):
     icon: Optional[str] = Field(None, description="图标标识")
     description: Optional[str] = Field(None, description="说明")
 
-
 class AvailablePaymentMethodsResponse(BaseModel):
     """获取可用支付方式响应模型"""
     available_methods: List[PaymentMethodItem] = Field(..., description="可用支付方式列表")
     has_online_payment: bool = Field(..., description="是否存在在线支付方式")
-
 
 class PaymentInitiateResponse(BaseModel):
     """发起支付响应模型，兼容扫码支付与银行确认"""
@@ -283,7 +263,6 @@ class PaymentInitiateResponse(BaseModel):
     amount: Optional[str] = Field(None, description="支付金额（在线支付场景）")
     qr_code: Optional[str] = Field(None, description="二维码内容（扫码场景）")
     payment_config: Optional[str] = Field(None, description="支付配置名称（在线支付场景）")
-
 
 class PaymentCallbackResponse(BaseModel):
     """支付回调响应模型"""

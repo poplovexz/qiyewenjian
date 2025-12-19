@@ -5,7 +5,6 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field, validator
 
-
 class HetongYifangZhutiBase(BaseModel):
     """合同乙方主体基础模型"""
     zhuti_mingcheng: str = Field(..., min_length=1, max_length=200, description="主体名称")
@@ -44,11 +43,9 @@ class HetongYifangZhutiBase(BaseModel):
             raise ValueError(f'主体状态必须是以下之一: {", ".join(allowed_states)}')
         return v
 
-
 class HetongYifangZhutiCreate(HetongYifangZhutiBase):
     """创建合同乙方主体的请求模型"""
     pass
-
 
 class HetongYifangZhutiUpdate(BaseModel):
     """更新合同乙方主体的请求模型"""
@@ -90,7 +87,6 @@ class HetongYifangZhutiUpdate(BaseModel):
                 raise ValueError(f'主体状态必须是以下之一: {", ".join(allowed_states)}')
         return v
 
-
 class HetongYifangZhutiResponse(BaseModel):
     """合同乙方主体响应模型"""
     id: str
@@ -113,7 +109,6 @@ class HetongYifangZhutiResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class HetongYifangZhutiListResponse(BaseModel):
     """合同乙方主体列表响应模型"""

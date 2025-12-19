@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
 
-
 class Yonghu(BaseModel):
     """用户表"""
     

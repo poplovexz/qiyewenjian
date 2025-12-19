@@ -14,7 +14,6 @@ from schemas.chanpin_guanli import (
     ChanpinBuzouResponse
 )
 
-
 class ChanpinBuzouService:
     """产品步骤管理服务类"""
 

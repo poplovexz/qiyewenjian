@@ -18,7 +18,6 @@ from schemas.deploy.deploy_schemas import (
     DeployHistoryItem,
 )
 
-
 class DeployService:
     """部署管理服务"""
 
@@ -697,4 +696,3 @@ class DeployService:
             "message": f"{check_mode}完成: {errors} 个错误, {warnings} 个警告",
             "deep_check": deep_check
         }
-

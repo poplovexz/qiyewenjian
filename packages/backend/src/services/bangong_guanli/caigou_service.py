@@ -15,7 +15,6 @@ from schemas.bangong_guanli.caigou_schemas import (
     CaigouShenqingListParams
 )
 
-
 class CaigouService:
     """采购申请管理服务类"""
     
@@ -129,4 +128,3 @@ class CaigouService:
         self.db.commit()
         
         return {"message": "删除成功"}
-

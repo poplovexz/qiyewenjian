@@ -5,7 +5,6 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 from datetime import datetime
 
-
 # ==================== 收付款渠道 ====================
 class ShoufukuanQudaoBase(BaseModel):
     """收付款渠道基础模式"""
@@ -19,11 +18,9 @@ class ShoufukuanQudaoBase(BaseModel):
     paixu: Optional[int] = Field(0, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field("active", description="状态")
 
-
 class ShoufukuanQudaoCreate(ShoufukuanQudaoBase):
     """创建收付款渠道模式"""
     pass
-
 
 class ShoufukuanQudaoUpdate(BaseModel):
     """更新收付款渠道模式"""
@@ -37,7 +34,6 @@ class ShoufukuanQudaoUpdate(BaseModel):
     paixu: Optional[int] = Field(None, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field(None, description="状态")
 
-
 class ShoufukuanQudaoResponse(ShoufukuanQudaoBase):
     """收付款渠道响应模式"""
     id: str
@@ -47,7 +43,6 @@ class ShoufukuanQudaoResponse(ShoufukuanQudaoBase):
     class Config:
         from_attributes = True
 
-
 class ShoufukuanQudaoListResponse(BaseModel):
     """收付款渠道列表响应"""
     items: List[ShoufukuanQudaoResponse]
@@ -55,7 +50,6 @@ class ShoufukuanQudaoListResponse(BaseModel):
     page: int
     size: int
     pages: int
-
 
 # ==================== 收入类别 ====================
 class ShouruLeibieBase(BaseModel):
@@ -66,11 +60,9 @@ class ShouruLeibieBase(BaseModel):
     paixu: Optional[int] = Field(0, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field("active", description="状态")
 
-
 class ShouruLeibieCreate(ShouruLeibieBase):
     """创建收入类别模式"""
     pass
-
 
 class ShouruLeibieUpdate(BaseModel):
     """更新收入类别模式"""
@@ -79,7 +71,6 @@ class ShouruLeibieUpdate(BaseModel):
     miaoshu: Optional[str] = Field(None, description="描述")
     paixu: Optional[int] = Field(None, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field(None, description="状态")
-
 
 class ShouruLeibieResponse(ShouruLeibieBase):
     """收入类别响应模式"""
@@ -90,7 +81,6 @@ class ShouruLeibieResponse(ShouruLeibieBase):
     class Config:
         from_attributes = True
 
-
 class ShouruLeibieListResponse(BaseModel):
     """收入类别列表响应"""
     items: List[ShouruLeibieResponse]
@@ -98,7 +88,6 @@ class ShouruLeibieListResponse(BaseModel):
     page: int
     size: int
     pages: int
-
 
 # ==================== 报销类别 ====================
 class BaoxiaoLeibieBase(BaseModel):
@@ -109,11 +98,9 @@ class BaoxiaoLeibieBase(BaseModel):
     paixu: Optional[int] = Field(0, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field("active", description="状态")
 
-
 class BaoxiaoLeibieCreate(BaoxiaoLeibieBase):
     """创建报销类别模式"""
     pass
-
 
 class BaoxiaoLeibieUpdate(BaseModel):
     """更新报销类别模式"""
@@ -122,7 +109,6 @@ class BaoxiaoLeibieUpdate(BaseModel):
     miaoshu: Optional[str] = Field(None, description="描述")
     paixu: Optional[int] = Field(None, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field(None, description="状态")
-
 
 class BaoxiaoLeibieResponse(BaoxiaoLeibieBase):
     """报销类别响应模式"""
@@ -133,7 +119,6 @@ class BaoxiaoLeibieResponse(BaoxiaoLeibieBase):
     class Config:
         from_attributes = True
 
-
 class BaoxiaoLeibieListResponse(BaseModel):
     """报销类别列表响应"""
     items: List[BaoxiaoLeibieResponse]
@@ -141,7 +126,6 @@ class BaoxiaoLeibieListResponse(BaseModel):
     page: int
     size: int
     pages: int
-
 
 # ==================== 支出类别 ====================
 class ZhichuLeibieBase(BaseModel):
@@ -153,11 +137,9 @@ class ZhichuLeibieBase(BaseModel):
     paixu: Optional[int] = Field(0, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field("active", description="状态")
 
-
 class ZhichuLeibieCreate(ZhichuLeibieBase):
     """创建支出类别模式"""
     pass
-
 
 class ZhichuLeibieUpdate(BaseModel):
     """更新支出类别模式"""
@@ -168,7 +150,6 @@ class ZhichuLeibieUpdate(BaseModel):
     paixu: Optional[int] = Field(None, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field(None, description="状态")
 
-
 class ZhichuLeibieResponse(ZhichuLeibieBase):
     """支出类别响应模式"""
     id: str
@@ -178,7 +159,6 @@ class ZhichuLeibieResponse(ZhichuLeibieBase):
     class Config:
         from_attributes = True
 
-
 class ZhichuLeibieListResponse(BaseModel):
     """支出类别列表响应"""
     items: List[ZhichuLeibieResponse]
@@ -186,4 +166,3 @@ class ZhichuLeibieListResponse(BaseModel):
     page: int
     size: int
     pages: int
-

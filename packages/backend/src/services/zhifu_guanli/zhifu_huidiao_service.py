@@ -13,7 +13,6 @@ from schemas.zhifu_guanli.zhifu_huidiao_schemas import (
     ZhifuHuidiaoRizhiListResponse
 )
 
-
 class ZhifuHuidiaoService:
     """支付回调日志服务类"""
     
@@ -202,4 +201,3 @@ class ZhifuHuidiaoService:
         return self.db.query(ZhifuHuidiaoRizhi).filter(
             ZhifuHuidiaoRizhi.id == log_id
         ).first()
-

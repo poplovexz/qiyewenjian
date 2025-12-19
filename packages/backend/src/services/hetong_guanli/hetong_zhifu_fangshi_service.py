@@ -14,7 +14,6 @@ from schemas.hetong_guanli import (
     HetongZhifuFangshiListResponse
 )
 
-
 class HetongZhifuFangshiService:
     """合同支付方式服务类"""
     

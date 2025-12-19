@@ -13,7 +13,6 @@ from core.logging import get_logger, request_id_var
 
 logger = get_logger(__name__)
 
-
 def create_error_response(
     request: Request,
     status_code: int,
@@ -61,7 +60,6 @@ def create_error_response(
 
     return response
 
-
 async def custom_exception_handler(request: Request, exc: BaseCustomException) -> JSONResponse:
     """处理自定义业务异常"""
     logger.warning(
@@ -80,7 +78,6 @@ async def custom_exception_handler(request: Request, exc: BaseCustomException) -
         message=exc.message,
         details=exc.details if exc.details else None
     )
-
 
 async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
     """处理 FastAPI HTTPException"""
@@ -115,7 +112,6 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
         message=message
     )
 
-
 async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
     """处理 Pydantic 验证错误"""
     # 格式化验证错误
@@ -144,7 +140,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         details={"errors": errors}
     )
 
-
 async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """处理所有未捕获的异常"""
     logger.error(
@@ -163,4 +158,3 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
         error_code=ErrorCode.INTERNAL_ERROR.code,
         message="服务器内部错误，请稍后重试"
     )
-

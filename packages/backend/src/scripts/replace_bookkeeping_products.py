@@ -64,7 +64,6 @@ def main():
         if not daili_fenlei:
             return
         
-        
         # 2. 删除现有的代理记账产品（软删除）
         existing_products = db.query(ChanpinXiangmu).filter(
             and_(
@@ -112,7 +111,6 @@ def main():
             )
         ).all()
         
-        
     except Exception as e:
         import traceback
         traceback.print_exc()
@@ -122,4 +120,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

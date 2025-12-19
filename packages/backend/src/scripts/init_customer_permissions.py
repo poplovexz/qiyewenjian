@@ -12,7 +12,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.database import SessionLocal
 from models.yonghu_guanli import Quanxian
 
-
 def init_customer_permissions():
     """初始化客户管理模块权限"""
     db: Session = SessionLocal()
@@ -175,7 +174,6 @@ def init_customer_permissions():
         raise
     finally:
         db.close()
-
 
 if __name__ == "__main__":
     init_customer_permissions()

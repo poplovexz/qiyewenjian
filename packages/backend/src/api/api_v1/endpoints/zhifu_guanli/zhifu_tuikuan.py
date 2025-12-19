@@ -17,7 +17,6 @@ from schemas.zhifu_guanli.zhifu_tuikuan_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=ZhifuTuikuanResponse, summary="创建退款申请")
 def create_refund(
     tuikuan_data: ZhifuTuikuanCreate,
@@ -39,7 +38,6 @@ def create_refund(
     """
     service = ZhifuTuikuanService(db)
     return service.create_refund(tuikuan_data, current_user.id)
-
 
 @router.get("/", response_model=ZhifuTuikuanListResponse, summary="获取退款列表")
 def get_refund_list(
@@ -75,7 +73,6 @@ def get_refund_list(
         search=search
     )
 
-
 @router.get("/{tuikuan_id}", response_model=ZhifuTuikuanResponse, summary="获取退款详情")
 def get_refund_detail(
     tuikuan_id: str,
@@ -95,4 +92,3 @@ def get_refund_detail(
     """
     service = ZhifuTuikuanService(db)
     return service.get_refund_by_id(tuikuan_id)
-

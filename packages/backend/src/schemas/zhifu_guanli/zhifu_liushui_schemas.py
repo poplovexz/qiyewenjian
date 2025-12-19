@@ -6,7 +6,6 @@ from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field, validator
 
-
 class ZhifuLiushuiCreate(BaseModel):
     """创建支付流水的请求模式"""
     zhifu_dingdan_id: Optional[str] = Field(None, description="支付订单ID（收入流水必填）")
@@ -36,7 +35,6 @@ class ZhifuLiushuiCreate(BaseModel):
         if v not in allowed_types:
             raise ValueError(f'流水类型必须是以下之一: {", ".join(allowed_types)}')
         return v
-
 
 class ZhifuLiushuiUpdate(BaseModel):
     """更新支付流水的请求模式"""
@@ -74,7 +72,6 @@ class ZhifuLiushuiUpdate(BaseModel):
                 raise ValueError(f'对账状态必须是以下之一: {", ".join(allowed_statuses)}')
         return v
 
-
 class ZhifuLiushuiResponse(BaseModel):
     """支付流水响应模式"""
     id: str
@@ -108,7 +105,6 @@ class ZhifuLiushuiResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class ZhifuLiushuiListParams(BaseModel):
     """支付流水列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -122,7 +118,6 @@ class ZhifuLiushuiListParams(BaseModel):
     duizhang_zhuangtai: Optional[str] = Field(None, description="对账状态")
     start_date: Optional[datetime] = Field(None, description="开始日期")
     end_date: Optional[datetime] = Field(None, description="结束日期")
-
 
 class ZhifuLiushuiListResponse(BaseModel):
     """支付流水列表响应模式"""

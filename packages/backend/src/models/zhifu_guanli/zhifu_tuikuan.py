@@ -4,7 +4,6 @@
 from sqlalchemy import Column, String, Numeric, DateTime, Text, ForeignKey
 from ..base import BaseModel
 
-
 class ZhifuTuikuan(BaseModel):
     """退款记录表"""
     
@@ -115,4 +114,3 @@ class ZhifuTuikuan(BaseModel):
     
     def __repr__(self):
         return f"<ZhifuTuikuan(id={self.id}, danhao={self.tuikuan_danhao}, zhuangtai={self.tuikuan_zhuangtai})>"
-

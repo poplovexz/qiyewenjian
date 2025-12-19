@@ -14,7 +14,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 def create_payment_tables():
     """创建支付管理相关表"""
 
@@ -239,7 +238,6 @@ def create_payment_tables():
     except Exception as e:
         logger.error(f"❌ 创建表失败: {e}")
         raise
-
 
 if __name__ == "__main__":
     create_payment_tables()

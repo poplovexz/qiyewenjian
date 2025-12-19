@@ -6,7 +6,6 @@ from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field, validator
 
-
 class KaipiaoShenqingCreate(BaseModel):
     """创建开票申请的请求模式"""
     hetong_id: Optional[str] = Field(None, description="合同ID")
@@ -42,7 +41,6 @@ class KaipiaoShenqingCreate(BaseModel):
                 raise ValueError('价税合计金额应等于开票金额加税额')
         return v
 
-
 class KaipiaoShenqingUpdate(BaseModel):
     """更新开票申请的请求模式"""
     kaipiao_mingcheng: Optional[str] = Field(None, min_length=1, max_length=200, description="开票名称")
@@ -70,7 +68,6 @@ class KaipiaoShenqingUpdate(BaseModel):
     fapiao_daima: Optional[str] = Field(None, description="发票代码")
     fapiao_wenjian_lujing: Optional[str] = Field(None, description="发票文件路径")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class KaipiaoShenqingResponse(BaseModel):
     """开票申请响应模式"""
@@ -117,7 +114,6 @@ class KaipiaoShenqingResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class KaipiaoShenqingListParams(BaseModel):
     """开票申请列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -131,7 +127,6 @@ class KaipiaoShenqingListParams(BaseModel):
     start_date: Optional[datetime] = Field(None, description="开始日期")
     end_date: Optional[datetime] = Field(None, description="结束日期")
 
-
 class KaipiaoShenqingListResponse(BaseModel):
     """开票申请列表响应模式"""
     items: List[KaipiaoShenqingResponse]
@@ -140,13 +135,11 @@ class KaipiaoShenqingListResponse(BaseModel):
     size: int
     pages: int
 
-
 class KaipiaoAuditRequest(BaseModel):
     """开票审核请求模式"""
     shenqing_id: str = Field(..., description="申请ID")
     shenhe_yijian: Optional[str] = Field(None, description="审核意见")
     shenhe_jieguo: str = Field(..., description="审核结果：approved(通过)、rejected(拒绝)")
-
 
 class KaipiaoProcessRequest(BaseModel):
     """开票处理请求模式"""
@@ -155,7 +148,6 @@ class KaipiaoProcessRequest(BaseModel):
     fapiao_daima: str = Field(..., description="发票代码")
     fapiao_wenjian_lujing: Optional[str] = Field(None, description="发票文件路径")
     kaipiao_shijian: Optional[datetime] = Field(None, description="开票时间")
-
 
 class KaipiaoStatistics(BaseModel):
     """开票统计信息"""

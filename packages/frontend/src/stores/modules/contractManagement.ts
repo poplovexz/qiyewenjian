@@ -169,8 +169,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
     }
   }
 
-
-
   // 更新合同
   const updateContract = async (id: string, data: ContractUpdate) => {
     try {
@@ -445,8 +443,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       partyLoading.value = false
     }
   }
-
-
 
   // ==================== 支付方式管理方法 ====================
 

@@ -5,7 +5,6 @@ from sqlalchemy import Column, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from models.base import BaseModel
 
-
 class UserPreferences(BaseModel):
     """用户偏好设置"""
     __tablename__ = "user_preferences"
@@ -36,4 +35,3 @@ class UserPreferences(BaseModel):
     
     # 关系
     user = relationship("Yonghu", back_populates="preferences")
-

@@ -5,7 +5,6 @@ from sqlalchemy import Column, String, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from ..base import BaseModel
 
-
 class HetongZhifuFangshi(BaseModel):
     """合同支付方式表 - 关联乙方主体和支付配置"""
 

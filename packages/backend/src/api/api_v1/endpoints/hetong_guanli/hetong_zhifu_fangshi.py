@@ -18,7 +18,6 @@ from services.hetong_guanli.hetong_zhifu_fangshi_service import HetongZhifuFangs
 
 router = APIRouter()
 
-
 @router.post("/", response_model=HetongZhifuFangshiResponse)
 def create_zhifu_fangshi(
     fangshi_data: HetongZhifuFangshiCreate,
@@ -28,7 +27,6 @@ def create_zhifu_fangshi(
     """创建支付方式"""
     service = HetongZhifuFangshiService(db)
     return service.create_zhifu_fangshi(fangshi_data, current_user.id)
-
 
 @router.get("/", response_model=HetongZhifuFangshiListResponse)
 def get_zhifu_fangshi_list(
@@ -50,7 +48,6 @@ def get_zhifu_fangshi_list(
         zhifu_zhuangtai=zhifu_zhuangtai
     )
 
-
 @router.get("/by-yifang/{yifang_zhuti_id}", response_model=list[HetongZhifuFangshiResponse])
 def get_zhifu_fangshi_by_yifang_zhuti(
     yifang_zhuti_id: str,
@@ -60,7 +57,6 @@ def get_zhifu_fangshi_by_yifang_zhuti(
     """根据乙方主体ID获取支付方式列表"""
     service = HetongZhifuFangshiService(db)
     return service.get_zhifu_fangshi_by_yifang_zhuti(yifang_zhuti_id)
-
 
 @router.get("/default/{yifang_zhuti_id}", response_model=HetongZhifuFangshiResponse)
 def get_default_zhifu_fangshi(
@@ -76,7 +72,6 @@ def get_default_zhifu_fangshi(
         raise HTTPException(status_code=404, detail="未找到默认支付方式")
     return fangshi
 
-
 @router.patch("/{zhifu_fangshi_id}/set-default", response_model=HetongZhifuFangshiResponse)
 def set_default_zhifu_fangshi(
     zhifu_fangshi_id: str,
@@ -86,7 +81,6 @@ def set_default_zhifu_fangshi(
     """设置默认支付方式"""
     service = HetongZhifuFangshiService(db)
     return service.set_default_zhifu_fangshi(zhifu_fangshi_id, current_user.id)
-
 
 @router.get("/{fangshi_id}", response_model=HetongZhifuFangshiResponse)
 def get_zhifu_fangshi_by_id(
@@ -98,7 +92,6 @@ def get_zhifu_fangshi_by_id(
     service = HetongZhifuFangshiService(db)
     return service.get_zhifu_fangshi_by_id(fangshi_id)
 
-
 @router.put("/{fangshi_id}", response_model=HetongZhifuFangshiResponse)
 def update_zhifu_fangshi(
     fangshi_id: str,
@@ -109,7 +102,6 @@ def update_zhifu_fangshi(
     """更新支付方式"""
     service = HetongZhifuFangshiService(db)
     return service.update_zhifu_fangshi(fangshi_id, fangshi_data)
-
 
 @router.delete("/{fangshi_id}")
 def delete_zhifu_fangshi(

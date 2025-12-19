@@ -16,7 +16,6 @@ from schemas.yonghu_guanli.user_settings_schemas import (
 )
 from core.security.password_handler import verify_password, get_password_hash
 
-
 class UserSettingsService:
     """用户设置服务"""
 
@@ -173,4 +172,3 @@ class UserSettingsService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"更新用户偏好失败: {str(e)}"
             )
-

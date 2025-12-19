@@ -6,7 +6,6 @@ from typing import Optional
 from decimal import Decimal
 from pydantic import BaseModel, Field
 
-
 class DuiwaiFukuanShenqingBase(BaseModel):
     """对外付款申请基础模式"""
     fukuan_duixiang: str = Field(..., description="付款对象")
@@ -19,11 +18,9 @@ class DuiwaiFukuanShenqingBase(BaseModel):
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
     beizhu: Optional[str] = Field(None, description="备注")
 
-
 class DuiwaiFukuanShenqingCreate(DuiwaiFukuanShenqingBase):
     """创建对外付款申请模式"""
     pass
-
 
 class DuiwaiFukuanShenqingUpdate(BaseModel):
     """更新对外付款申请模式"""
@@ -39,7 +36,6 @@ class DuiwaiFukuanShenqingUpdate(BaseModel):
     fukuan_zhuangtai: Optional[str] = Field(None, description="付款状态")
     shiji_fukuan_shijian: Optional[datetime] = Field(None, description="实际付款时间")
     fukuan_liushui_hao: Optional[str] = Field(None, description="付款流水号")
-
 
 class DuiwaiFukuanShenqingResponse(DuiwaiFukuanShenqingBase):
     """对外付款申请响应模式"""
@@ -60,7 +56,6 @@ class DuiwaiFukuanShenqingResponse(DuiwaiFukuanShenqingBase):
     class Config:
         from_attributes = True
 
-
 class DuiwaiFukuanShenqingListParams(BaseModel):
     """对外付款申请列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -71,4 +66,3 @@ class DuiwaiFukuanShenqingListParams(BaseModel):
     kaishi_shijian: Optional[datetime] = Field(None, description="开始时间")
     jieshu_shijian: Optional[datetime] = Field(None, description="结束时间")
     search: Optional[str] = Field(None, description="搜索关键词")
-

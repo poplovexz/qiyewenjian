@@ -22,7 +22,6 @@ from schemas.zhifu_guanli.zhifu_dingdan_schemas import (
 )
 from core.events import publish, EventNames
 
-
 class ZhifuDingdanService:
     """支付订单管理服务类"""
     

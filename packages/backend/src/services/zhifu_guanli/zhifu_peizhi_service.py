@@ -17,7 +17,6 @@ from schemas.zhifu_guanli.zhifu_peizhi_schemas import (
 )
 from core.security.encryption import encryption
 
-
 class ZhifuPeizhiService:
     """支付配置管理服务类"""
     
@@ -373,8 +372,6 @@ class ZhifuPeizhiService:
         peizhi_dict['kaihuhang_mingcheng'] = peizhi.kaihuhang_mingcheng or None
         peizhi_dict['kaihuhang_lianhanghao'] = peizhi.kaihuhang_lianhanghao or None
 
-
         result = ZhifuPeizhiDetail(**peizhi_dict)
 
         return result
-

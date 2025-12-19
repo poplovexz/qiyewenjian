@@ -6,7 +6,6 @@ from sqlalchemy.types import Numeric
 from sqlalchemy.orm import relationship
 from ..base import BaseModel
 
-
 class XiansuoLaiyuan(BaseModel):
     """线索来源表"""
     

@@ -18,7 +18,6 @@ from services.hetong_guanli.hetong_yifang_zhuti_service import HetongYifangZhuti
 
 router = APIRouter()
 
-
 @router.post("/", response_model=HetongYifangZhutiResponse)
 def create_yifang_zhuti(
     zhuti_data: HetongYifangZhutiCreate,
@@ -28,7 +27,6 @@ def create_yifang_zhuti(
     """创建乙方主体"""
     service = HetongYifangZhutiService(db)
     return service.create_yifang_zhuti(zhuti_data, current_user.id)
-
 
 @router.get("/", response_model=HetongYifangZhutiListResponse)
 def get_yifang_zhuti_list(
@@ -50,7 +48,6 @@ def get_yifang_zhuti_list(
         zhuti_zhuangtai=zhuti_zhuangtai
     )
 
-
 @router.get("/active", response_model=list[HetongYifangZhutiResponse])
 def get_active_yifang_zhuti_list(
     db: Session = Depends(get_db),
@@ -59,7 +56,6 @@ def get_active_yifang_zhuti_list(
     """获取所有启用状态的乙方主体（用于下拉选择）"""
     service = HetongYifangZhutiService(db)
     return service.get_active_yifang_zhuti_list()
-
 
 @router.get("/{zhuti_id}", response_model=HetongYifangZhutiResponse)
 def get_yifang_zhuti_by_id(
@@ -71,7 +67,6 @@ def get_yifang_zhuti_by_id(
     service = HetongYifangZhutiService(db)
     return service.get_yifang_zhuti_by_id(zhuti_id)
 
-
 @router.put("/{zhuti_id}", response_model=HetongYifangZhutiResponse)
 def update_yifang_zhuti(
     zhuti_id: str,
@@ -82,7 +77,6 @@ def update_yifang_zhuti(
     """更新乙方主体"""
     service = HetongYifangZhutiService(db)
     return service.update_yifang_zhuti(zhuti_id, zhuti_data)
-
 
 @router.delete("/{zhuti_id}")
 def delete_yifang_zhuti(

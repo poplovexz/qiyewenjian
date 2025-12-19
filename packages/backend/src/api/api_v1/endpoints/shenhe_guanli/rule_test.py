@@ -15,18 +15,15 @@ from services.shenhe_guanli.rule_test_service import RuleTestService
 
 router = APIRouter()
 
-
 class RuleTestRequest(BaseModel):
     """规则测试请求模型"""
     rule_id: str = Field(..., description="规则ID")
     test_data: Dict[str, Any] = Field(..., description="测试数据")
 
-
 class MultiRuleTestRequest(BaseModel):
     """多规则测试请求模型"""
     rule_type: str = Field(..., description="规则类型")
     test_data: Dict[str, Any] = Field(..., description="测试数据")
-
 
 @router.post("/single", summary="测试单个规则")
 @require_audit_permission("audit_rule:test")
@@ -48,7 +45,6 @@ async def test_single_rule(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"规则测试失败: {str(e)}")
 
-
 @router.post("/multiple", summary="测试多个规则")
 @check_permission("audit_config")
 async def test_multiple_rules(
@@ -69,7 +65,6 @@ async def test_multiple_rules(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"多规则测试失败: {str(e)}")
 
-
 @router.get("/templates", summary="获取测试模板")
 @check_permission("audit_config")
 async def get_test_templates(
@@ -83,7 +78,6 @@ async def get_test_templates(
         return {"templates": templates}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取测试模板失败: {str(e)}")
-
 
 @router.post("/batch", summary="批量测试规则")
 @check_permission("audit_config")
@@ -132,7 +126,6 @@ async def batch_test_rules(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"批量测试失败: {str(e)}")
 
-
 @router.get("/rule-types", summary="获取可测试的规则类型")
 @check_permission("audit_config")
 async def get_testable_rule_types(
@@ -168,7 +161,6 @@ async def get_testable_rule_types(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取规则类型失败: {str(e)}")
 
-
 def get_rule_type_description(rule_type: str) -> str:
     """获取规则类型描述"""
     descriptions = {
@@ -183,7 +175,6 @@ def get_rule_type_description(rule_type: str) -> str:
         "quote_amount": "报价金额审核"
     }
     return descriptions.get(rule_type, rule_type)
-
 
 @router.post("/simulate-workflow", summary="模拟工作流执行")
 @check_permission("audit_config")

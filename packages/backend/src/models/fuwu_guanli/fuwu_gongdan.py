@@ -7,7 +7,6 @@ from datetime import datetime
 
 from ..base import BaseModel
 
-
 class FuwuGongdan(BaseModel):
     """服务工单表"""
     
@@ -201,7 +200,6 @@ class FuwuGongdan(BaseModel):
     def __repr__(self) -> str:
         return f"<FuwuGongdan(gongdan_bianhao='{self.gongdan_bianhao}', gongdan_zhuangtai='{self.gongdan_zhuangtai}')>"
 
-
 class FuwuGongdanXiangmu(BaseModel):
     """服务工单项目表"""
     
@@ -284,7 +282,6 @@ class FuwuGongdanXiangmu(BaseModel):
     
     def __repr__(self) -> str:
         return f"<FuwuGongdanXiangmu(xiangmu_mingcheng='{self.xiangmu_mingcheng}', xiangmu_zhuangtai='{self.xiangmu_zhuangtai}')>"
-
 
 class FuwuGongdanRizhi(BaseModel):
     """服务工单日志表"""

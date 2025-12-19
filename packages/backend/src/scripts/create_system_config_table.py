@@ -10,7 +10,6 @@ from datetime import datetime
 from sqlalchemy import create_engine, text
 from core.config import settings
 
-
 def create_system_config_table():
     """创建系统配置表并初始化默认配置"""
     engine = create_engine(str(settings.DATABASE_URL))
@@ -219,14 +218,11 @@ def create_system_config_table():
                     'updated_at': now
                 })
                 
-            
             conn.commit()
             
         except Exception as e:
             conn.rollback()
             raise
 
-
 if __name__ == "__main__":
     create_system_config_table()
-

@@ -382,8 +382,6 @@ const getStatusText = (status?: string) => {
   --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.15);
 }
 
-
-
 /* 欢迎区域 */
 .welcome-section {
   background: var(--bg-glass);

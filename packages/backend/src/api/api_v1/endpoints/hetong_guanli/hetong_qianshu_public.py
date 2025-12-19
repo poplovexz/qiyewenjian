@@ -11,7 +11,6 @@ from services.hetong_guanli.hetong_qianshu_service import HetongQianshuService
 
 router = APIRouter()
 
-
 class ContractSignRequest(BaseModel):
     """合同签署请求模型"""
     qianshu_ren_mingcheng: str = Field(..., description="签署人姓名")
@@ -19,7 +18,6 @@ class ContractSignRequest(BaseModel):
     qianshu_ren_youxiang: str = Field(..., description="签署人邮箱")
     qianming_tupian: str = Field(..., description="签名图片Base64")
     qianming_leixing: str = Field("draw", description="签名类型：draw(手绘)、text(文字)")
-
 
 @router.get("/token/{token}", summary="根据签署令牌获取合同信息")
 async def get_contract_by_token(
@@ -42,7 +40,6 @@ async def get_contract_by_token(
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.post("/sign/{token}", summary="电子签署合同")
 async def sign_contract(
@@ -88,7 +85,6 @@ async def sign_contract(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-
 @router.get("/status/{contract_id}", summary="获取合同签署状态")
 async def get_signing_status(
     contract_id: str,
@@ -110,7 +106,6 @@ async def get_signing_status(
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.post("/create-link/{contract_id}", summary="创建签署链接")
 async def create_signing_link(
@@ -134,7 +129,6 @@ async def create_signing_link(
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.get("/verify/{token}", summary="验证签署令牌")
 async def verify_signing_token(

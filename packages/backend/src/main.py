@@ -35,7 +35,6 @@ setup_logging(
 
 logger = get_logger(__name__)
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """应用生命周期管理"""
@@ -138,12 +137,10 @@ UPLOAD_DIR = "/var/www/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-
 @app.get("/")
 async def root() -> dict[str, str]:
     """根路径健康检查"""
     return {"message": "代理记账营运内部系统 API 服务正常运行"}
-
 
 @app.get("/health")
 async def health_check() -> dict:
@@ -151,20 +148,17 @@ async def health_check() -> dict:
     from core.monitoring import HealthChecker
     return await HealthChecker.full_check()
 
-
 @app.get("/health/live")
 async def liveness_probe() -> dict:
     """Kubernetes 存活探针"""
     from core.monitoring import HealthChecker
     return await HealthChecker.liveness_check()
 
-
 @app.get("/health/ready")
 async def readiness_probe() -> dict:
     """Kubernetes 就绪探针"""
     from core.monitoring import HealthChecker
     return await HealthChecker.readiness_check()
-
 
 @app.get("/metrics")
 async def prometheus_metrics():
@@ -176,7 +170,6 @@ async def prometheus_metrics():
         content=metrics_collector.to_prometheus_format(),
         media_type="text/plain; charset=utf-8"
     )
-
 
 if __name__ == "__main__":
     import uvicorn

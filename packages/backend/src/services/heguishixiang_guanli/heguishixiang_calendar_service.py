@@ -9,7 +9,6 @@ from sqlalchemy import and_, func
 from models.heguishixiang_guanli import HeguishixiangShili, HeguishixiangMoban
 from models.kehu_guanli import Kehu
 
-
 class HeguishixiangCalendarService:
     """合规日历服务"""
 

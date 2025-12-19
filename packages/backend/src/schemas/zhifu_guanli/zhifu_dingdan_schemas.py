@@ -6,7 +6,6 @@ from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field, validator
 
-
 class ZhifuDingdanCreate(BaseModel):
     """创建支付订单的请求模式"""
     hetong_id: str = Field(..., description="合同ID")
@@ -27,7 +26,6 @@ class ZhifuDingdanCreate(BaseModel):
         if v not in allowed_types:
             raise ValueError(f'支付类型必须是以下之一: {", ".join(allowed_types)}')
         return v
-
 
 class ZhifuDingdanUpdate(BaseModel):
     """更新支付订单的请求模式"""
@@ -61,7 +59,6 @@ class ZhifuDingdanUpdate(BaseModel):
             if v not in allowed_statuses:
                 raise ValueError(f'支付状态必须是以下之一: {", ".join(allowed_statuses)}')
         return v
-
 
 class ZhifuDingdanResponse(BaseModel):
     """支付订单响应模式"""
@@ -113,7 +110,6 @@ class ZhifuDingdanResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class ZhifuDingdanListParams(BaseModel):
     """支付订单列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -126,14 +122,12 @@ class ZhifuDingdanListParams(BaseModel):
     start_date: Optional[datetime] = Field(None, description="开始日期")
     end_date: Optional[datetime] = Field(None, description="结束日期")
 
-
 class ZhifuDingdanListResponse(BaseModel):
     """支付订单列表响应模式"""
     total: int
     items: List[ZhifuDingdanResponse]
     page: int
     size: int
-
 
 class ZhifuDingdanStatistics(BaseModel):
     """支付订单统计信息"""
@@ -144,7 +138,6 @@ class ZhifuDingdanStatistics(BaseModel):
     total_amount: Decimal = Field(..., description="总金额")
     paid_amount: Decimal = Field(..., description="已支付金额")
     pending_amount: Decimal = Field(..., description="待支付金额")
-
 
 class CreatePaymentRequest(BaseModel):
     """创建第三方支付请求"""
@@ -169,7 +162,6 @@ class CreatePaymentRequest(BaseModel):
             raise ValueError(f'支付方式必须是以下之一: {", ".join(allowed_methods)}')
         return v
 
-
 class CreatePaymentResponse(BaseModel):
     """创建第三方支付响应"""
     dingdan_id: str
@@ -177,7 +169,6 @@ class CreatePaymentResponse(BaseModel):
     zhifu_pingtai: str
     zhifu_fangshi: str
     payment_data: dict
-
 
 class QueryPaymentResponse(BaseModel):
     """查询支付订单响应"""

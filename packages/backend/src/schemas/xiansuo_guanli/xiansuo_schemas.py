@@ -8,7 +8,6 @@ from decimal import Decimal
 from .xiansuo_laiyuan_schemas import XiansuoLaiyuanResponse
 from .xiansuo_genjin_schemas import XiansuoGenjinListItem
 
-
 class XiansuoBase(BaseModel):
     """线索基础模式"""
     gongsi_mingcheng: str = Field(..., min_length=1, max_length=200, description="公司名称")
@@ -27,11 +26,9 @@ class XiansuoBase(BaseModel):
     laiyuan_id: str = Field(..., description="来源ID")
     laiyuan_xiangxi: Optional[str] = Field(None, max_length=500, description="来源详细信息")
 
-
 class XiansuoCreate(XiansuoBase):
     """创建线索模式"""
     pass
-
 
 class XiansuoUpdate(BaseModel):
     """更新线索模式"""
@@ -51,18 +48,15 @@ class XiansuoUpdate(BaseModel):
     laiyuan_id: Optional[str] = Field(None, description="来源ID")
     laiyuan_xiangxi: Optional[str] = Field(None, max_length=500, description="来源详细信息")
 
-
 class XiansuoStatusUpdate(BaseModel):
     """线索状态更新模式"""
     xiansuo_zhuangtai: str = Field(..., description="线索状态")
     beizhu: Optional[str] = Field(None, max_length=500, description="状态变更备注")
 
-
 class XiansuoAssignUpdate(BaseModel):
     """线索分配更新模式"""
     fenpei_ren_id: str = Field(..., description="分配人ID（销售人员）")
     beizhu: Optional[str] = Field(None, max_length=500, description="分配备注")
-
 
 class XiansuoResponse(XiansuoBase):
     """线索响应模式"""
@@ -84,7 +78,6 @@ class XiansuoResponse(XiansuoBase):
     
     class Config:
         from_attributes = True
-
 
 class XiansuoListItem(BaseModel):
     """线索列表项模式"""
@@ -117,7 +110,6 @@ class XiansuoListItem(BaseModel):
     class Config:
         from_attributes = True
 
-
 class XiansuoListResponse(BaseModel):
     """线索列表响应模式"""
     items: List[XiansuoListItem]
@@ -125,12 +117,10 @@ class XiansuoListResponse(BaseModel):
     page: int
     size: int
 
-
 class XiansuoDetailResponse(XiansuoResponse):
     """线索详情响应模式"""
     laiyuan: Optional[XiansuoLaiyuanResponse] = None
     genjin_jilu_list: List[XiansuoGenjinListItem] = []
-
 
 class XiansuoStatistics(BaseModel):
     """线索统计模式"""

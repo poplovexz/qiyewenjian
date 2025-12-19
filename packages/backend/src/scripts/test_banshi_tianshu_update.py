@@ -22,10 +22,8 @@ from models.chanpin_guanli import ChanpinXiangmu
 from services.chanpin_guanli import ChanpinBuzouService
 from schemas.chanpin_guanli import ChanpinBuzouCreate, ChanpinBuzouUpdate
 
-
 def print_section(title: str):
     """打印分节标题"""
-
 
 async def main():
     """主测试函数"""
@@ -47,7 +45,6 @@ async def main():
         
         if not xiangmu:
             return
-        
         
         # 2. 创建测试步骤
         print_section("2. 创建测试步骤")
@@ -137,7 +134,5 @@ async def main():
     finally:
         db.close()
 
-
 if __name__ == "__main__":
     asyncio.run(main())
-

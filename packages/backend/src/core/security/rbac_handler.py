@@ -9,7 +9,6 @@ from core.database import get_db
 from models import Yonghu, YonghuJiaose, JiaoseQuanxian, Quanxian
 from .jwt_handler import get_current_user
 
-
 def get_user_permissions(user: Yonghu, db: Session) -> Set[str]:
     """
     获取用户权限列表
@@ -47,7 +46,6 @@ def get_user_permissions(user: Yonghu, db: Session) -> Set[str]:
     
     return permissions
 
-
 def check_permission(required_permission: str):
     """
     权限检查装饰器
@@ -75,7 +73,6 @@ def check_permission(required_permission: str):
         return current_user
     
     return permission_checker
-
 
 def check_multiple_permissions(required_permissions: List[str], require_all: bool = True):
     """
@@ -115,7 +112,6 @@ def check_multiple_permissions(required_permissions: List[str], require_all: boo
     
     return permission_checker
 
-
 def has_role(user: Yonghu, role_code: str, db: Session) -> bool:
     """
     检查用户是否有指定角色
@@ -138,7 +134,6 @@ def has_role(user: Yonghu, role_code: str, db: Session) -> bool:
     ).first()
     
     return user_role is not None
-
 
 def check_role(required_role: str):
     """

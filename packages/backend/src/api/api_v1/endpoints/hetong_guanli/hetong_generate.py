@@ -14,14 +14,12 @@ from services.shenhe_guanli.shenhe_workflow_engine import ShenheWorkflowEngine
 
 router = APIRouter()
 
-
 class ContractGenerateRequest(BaseModel):
     """合同生成请求模型"""
     baojia_id: str = Field(..., description="报价ID")
     contract_types: List[str] = Field(..., description="合同类型列表")
     daili_jizhang_config: Optional[Dict[str, Any]] = Field(None, description="代理记账合同配置")
     zengzhi_fuwu_config: Optional[Dict[str, Any]] = Field(None, description="增值服务合同配置")
-
 
 class ContractTypeConfig(BaseModel):
     """合同类型配置"""
@@ -31,13 +29,11 @@ class ContractTypeConfig(BaseModel):
     party_id: Optional[str] = Field(None, description="乙方主体ID")
     price_change_reason: Optional[str] = Field(None, description="价格调整原因")
 
-
 class ContractPreviewRequest(BaseModel):
     """合同预览请求模型"""
     hetong_moban_id: str = Field(..., description="合同模板ID")
     kehu_id: str = Field(..., description="客户ID")
     bianliang_zhis: Dict[str, Any] = Field(..., description="模板变量值")
-
 
 @router.post("/generate", summary="生成合同")
 async def generate_contracts(
@@ -184,7 +180,6 @@ async def generate_contracts(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成合同失败: {str(e)}")
 
-
 @router.post("/preview", summary="预览合同")
 async def preview_contract(
     request: ContractPreviewRequest,
@@ -229,7 +224,6 @@ async def preview_contract(
         logger.error(f"错误堆栈: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"预览合同失败: {str(e)}")
 
-
 @router.get("/check-by-quote/{baojia_id}", summary="检查报价是否已生成合同")
 async def check_contract_by_quote(
     baojia_id: str,
@@ -254,7 +248,6 @@ async def check_contract_by_quote(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"检查合同状态失败: {str(e)}")
 
-
 @router.get("/templates", summary="获取合同模板列表")
 async def get_contract_templates(
     contract_type: str = None,
@@ -275,7 +268,6 @@ async def get_contract_templates(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取模板列表失败: {str(e)}")
-
 
 @router.get("/audit-rules", summary="获取合同审核规则")
 async def get_audit_rules(

@@ -6,9 +6,7 @@ from typing import Any, Callable, Optional
 from core.redis_client import CacheKeys, redis_client
 from core.config import settings
 
-
 logger = logging.getLogger(__name__)
-
 
 def cache_result(
     key_prefix: str,
@@ -59,7 +57,6 @@ def cache_result(
         return wrapper
     return decorator
 
-
 def cache_invalidate(*patterns: str):
     """
     缓存失效装饰器
@@ -84,7 +81,6 @@ def cache_invalidate(*patterns: str):
         return wrapper
     return decorator
 
-
 def cache_key_generator(template: str):
     """
     缓存键生成器
@@ -104,7 +100,6 @@ def cache_key_generator(template: str):
         return key
     
     return key_func
-
 
 # 预定义的缓存装饰器
 
@@ -143,16 +138,13 @@ def cache_xiansuo_laiyuan(ttl: int = settings.CACHE_LONG_TTL):
         return wrapper
     return decorator
 
-
 def cache_xiansuo_zhuangtai(ttl: int = settings.CACHE_LONG_TTL):
     """线索状态缓存装饰器"""
     return cache_result(CacheKeys.XIANSUO_ZHUANGTAI_ACTIVE, ttl, use_args=False)
 
-
 def cache_xiansuo_list(ttl: int = settings.CACHE_DEFAULT_TTL):
     """线索列表缓存装饰器"""
     return cache_result(CacheKeys.XIANSUO_LIST, ttl, use_args=True)
-
 
 def cache_xiansuo_detail(ttl: int = settings.CACHE_DEFAULT_TTL):
     """线索详情缓存装饰器"""
@@ -162,7 +154,6 @@ def cache_xiansuo_detail(ttl: int = settings.CACHE_DEFAULT_TTL):
         key_func=cache_key_generator("xiansuo:detail:{0}")
     )
 
-
 def cache_user_permissions(ttl: int = settings.CACHE_LONG_TTL):
     """用户权限缓存装饰器"""
     return cache_result(
@@ -170,7 +161,6 @@ def cache_user_permissions(ttl: int = settings.CACHE_LONG_TTL):
         ttl,
         key_func=cache_key_generator("user:permissions:{0}")
     )
-
 
 def invalidate_xiansuo_cache():
     """清除线索相关缓存"""
@@ -180,20 +170,17 @@ def invalidate_xiansuo_cache():
         "xiansuo:detail:*"
     )
 
-
 def invalidate_xiansuo_laiyuan_cache():
     """清除线索来源缓存"""
     return cache_invalidate(
         "xiansuo:laiyuan:*"
     )
 
-
 def invalidate_xiansuo_zhuangtai_cache():
     """清除线索状态缓存"""
     return cache_invalidate(
         "xiansuo:zhuangtai:*"
     )
-
 
 # 缓存预热函数
 async def warm_up_cache():
@@ -222,7 +209,6 @@ async def warm_up_cache():
     except Exception as e:
         logger.warning("Cache warm up failed: %s", e)
 
-
 # 缓存清理函数
 async def clear_all_cache():
     """清除所有缓存"""
@@ -238,7 +224,6 @@ async def clear_all_cache():
     except Exception as e:
         logger.warning("Cache flush raised exception: %s", e)
         return False
-
 
 # 缓存健康检查
 async def cache_health_check() -> dict:

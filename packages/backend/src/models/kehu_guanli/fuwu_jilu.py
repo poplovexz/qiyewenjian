@@ -7,7 +7,6 @@ from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
 
-
 class FuwuJilu(BaseModel):
     """服务记录表"""
     

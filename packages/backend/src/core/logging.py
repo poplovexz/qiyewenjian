@@ -21,7 +21,6 @@ request_id_var: ContextVar[str] = ContextVar("request_id", default="-")
 user_id_var: ContextVar[Optional[int]] = ContextVar("user_id", default=None)
 request_path_var: ContextVar[str] = ContextVar("request_path", default="-")
 
-
 class JSONFormatter(logging.Formatter):
     """JSON 格式化器，输出结构化日志"""
 
@@ -57,7 +56,6 @@ class JSONFormatter(logging.Formatter):
 
         return json.dumps(log_data, ensure_ascii=False, default=str)
 
-
 class PrettyFormatter(logging.Formatter):
     """开发环境友好的格式化器"""
 
@@ -87,7 +85,6 @@ class PrettyFormatter(logging.Formatter):
             formatted += f"\n{self.formatException(record.exc_info)}"
 
         return formatted
-
 
 def setup_logging(
     level: str = "INFO",
@@ -134,16 +131,13 @@ def setup_logging(
 
     return root_logger
 
-
 def get_logger(name: str) -> logging.Logger:
     """获取指定名称的日志器"""
     return logging.getLogger(name)
 
-
 def generate_request_id() -> str:
     """生成唯一请求ID"""
     return str(uuid.uuid4())
-
 
 def set_request_context(
     request_id: str,
@@ -155,10 +149,8 @@ def set_request_context(
     user_id_var.set(user_id)
     request_path_var.set(request_path)
 
-
 def clear_request_context() -> None:
     """清除请求上下文"""
     request_id_var.set("-")
     user_id_var.set(None)
     request_path_var.set("-")
-

@@ -3,7 +3,6 @@
 """
 import bcrypt
 
-
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     验证密码
@@ -22,7 +21,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         )
     except Exception as e:
         return False
-
 
 def get_password_hash(password: str) -> str:
     """

@@ -11,7 +11,6 @@ sys.path.insert(0, str(project_root))
 from create_product_tables import create_product_tables, insert_sample_data
 from init_product_permissions import init_product_permissions, assign_permissions_to_admin
 
-
 def main():
     """主函数 - 一键初始化产品管理模块"""
     
@@ -42,13 +41,7 @@ def main():
     
     if success_count == total_steps:
         
-        
-        
-        
-        
     else:
     
-
-
 if __name__ == "__main__":
     main()

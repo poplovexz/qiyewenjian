@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field, field_validator
 
-
 class FuwuJiluBase(BaseModel):
     """服务记录基础模型"""
     kehu_id: str = Field(..., description="客户ID")
@@ -50,11 +49,9 @@ class FuwuJiluBase(BaseModel):
             raise ValueError(f'处理状态必须是以下之一: {", ".join(allowed_statuses)}')
         return v
 
-
 class FuwuJiluCreate(FuwuJiluBase):
     """创建服务记录模型"""
     pass
-
 
 class FuwuJiluUpdate(BaseModel):
     """更新服务记录模型"""
@@ -70,7 +67,6 @@ class FuwuJiluUpdate(BaseModel):
     chuli_jieguo: Optional[str] = Field(None, description="处理结果")
     chuli_ren_id: Optional[str] = Field(None, description="处理人ID")
 
-
 class FuwuJiluResponse(FuwuJiluBase):
     """服务记录响应模型"""
     id: str = Field(..., description="服务记录ID")
@@ -80,7 +76,6 @@ class FuwuJiluResponse(FuwuJiluBase):
     
     class Config:
         from_attributes = True
-
 
 class FuwuJiluListResponse(BaseModel):
     """服务记录列表响应模型"""

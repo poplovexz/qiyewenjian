@@ -8,7 +8,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class WeixinPayUtil:
     """微信支付工具类"""
     
@@ -445,4 +444,3 @@ class WeixinPayUtil:
                 'success': False,
                 'message': f'回调处理失败：{str(e)}'
             }
-

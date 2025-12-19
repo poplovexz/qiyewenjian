@@ -23,7 +23,6 @@ from schemas.fuwu_guanli.fuwu_gongdan_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=FuwuGongdanDetailResponse, summary="创建服务工单")
 def create_gongdan(
     gongdan_data: FuwuGongdanCreate,
@@ -34,7 +33,6 @@ def create_gongdan(
     service = FuwuGongdanService(db)
     return service.create_gongdan(gongdan_data, current_user.id)
 
-
 @router.post("/from-contract/{hetong_id}", response_model=FuwuGongdanDetailResponse, summary="基于合同创建服务工单")
 def create_gongdan_from_hetong(
     hetong_id: str,
@@ -44,7 +42,6 @@ def create_gongdan_from_hetong(
     """基于合同创建服务工单"""
     service = FuwuGongdanService(db)
     return service.create_gongdan_from_hetong(hetong_id, current_user.id)
-
 
 @router.get("/", response_model=FuwuGongdanListResponse, summary="获取服务工单列表")
 def get_gongdan_list(
@@ -80,7 +77,6 @@ def get_gongdan_list(
     service = FuwuGongdanService(db)
     return service.get_gongdan_list(params)
 
-
 @router.get("/{gongdan_id}", response_model=FuwuGongdanDetailResponse, summary="获取服务工单详情")
 def get_gongdan_detail(
     gongdan_id: str,
@@ -90,7 +86,6 @@ def get_gongdan_detail(
     """获取服务工单详情"""
     service = FuwuGongdanService(db)
     return service.get_gongdan_detail(gongdan_id)
-
 
 @router.put("/{gongdan_id}", response_model=FuwuGongdanDetailResponse, summary="更新服务工单")
 def update_gongdan(
@@ -102,7 +97,6 @@ def update_gongdan(
     """更新服务工单"""
     service = FuwuGongdanService(db)
     return service.update_gongdan(gongdan_id, gongdan_data, current_user.id)
-
 
 @router.post("/{gongdan_id}/assign", response_model=FuwuGongdanDetailResponse, summary="分配工单")
 def assign_gongdan(
@@ -116,7 +110,6 @@ def assign_gongdan(
     service = FuwuGongdanService(db)
     return service.assign_gongdan(gongdan_id, zhixing_ren_id, fenpei_beizhu, current_user.id)
 
-
 @router.post("/{gongdan_id}/start", response_model=FuwuGongdanDetailResponse, summary="开始工单")
 def start_gongdan(
     gongdan_id: str,
@@ -126,7 +119,6 @@ def start_gongdan(
     """开始工单"""
     service = FuwuGongdanService(db)
     return service.start_gongdan(gongdan_id, current_user.id)
-
 
 @router.post("/{gongdan_id}/complete", response_model=FuwuGongdanDetailResponse, summary="完成工单")
 def complete_gongdan(
@@ -140,7 +132,6 @@ def complete_gongdan(
     service = FuwuGongdanService(db)
     return service.complete_gongdan(gongdan_id, wancheng_qingkuang, jiaofei_wenjian, current_user.id)
 
-
 @router.post("/{gongdan_id}/cancel", response_model=FuwuGongdanDetailResponse, summary="取消工单")
 def cancel_gongdan(
     gongdan_id: str,
@@ -151,7 +142,6 @@ def cancel_gongdan(
     """取消工单"""
     service = FuwuGongdanService(db)
     return service.cancel_gongdan(gongdan_id, cancel_reason, current_user.id)
-
 
 @router.post("/{gongdan_id}/comments", response_model=FuwuGongdanRizhiResponse, summary="添加工单评论")
 def add_gongdan_comment(
@@ -169,7 +159,6 @@ def add_gongdan_comment(
         comment_data.fujian_lujing
     )
 
-
 @router.get("/statistics/overview", response_model=FuwuGongdanStatistics, summary="获取工单统计信息")
 def get_gongdan_statistics(
     kehu_id: Optional[str] = Query(None, description="客户ID"),
@@ -180,7 +169,6 @@ def get_gongdan_statistics(
     """获取工单统计信息"""
     service = FuwuGongdanService(db)
     return service.get_gongdan_statistics(kehu_id, zhixing_ren_id)
-
 
 @router.post("/{gongdan_id}/items/{item_id}/assign", response_model=FuwuGongdanXiangmuResponse, summary="分配工单任务项")
 def assign_task_item(

@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
 
-
 class GongzuoJiaojieBase(BaseModel):
     """工作交接单基础模式"""
     jieshou_ren_id: str = Field(..., description="接收人ID")
@@ -19,11 +18,9 @@ class GongzuoJiaojieBase(BaseModel):
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
     beizhu: Optional[str] = Field(None, description="备注")
 
-
 class GongzuoJiaojieCreate(GongzuoJiaojieBase):
     """创建工作交接单模式"""
     pass
-
 
 class GongzuoJiaojieUpdate(BaseModel):
     """更新工作交接单模式"""
@@ -39,7 +36,6 @@ class GongzuoJiaojieUpdate(BaseModel):
     jiaojie_zhuangtai: Optional[str] = Field(None, description="交接状态")
     queren_ren_id: Optional[str] = Field(None, description="确认人ID")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class GongzuoJiaojieResponse(GongzuoJiaojieBase):
     """工作交接单响应模式"""
@@ -60,7 +56,6 @@ class GongzuoJiaojieResponse(GongzuoJiaojieBase):
     class Config:
         from_attributes = True
 
-
 class GongzuoJiaojieListParams(BaseModel):
     """工作交接单列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -72,4 +67,3 @@ class GongzuoJiaojieListParams(BaseModel):
     kaishi_shijian: Optional[datetime] = Field(None, description="开始时间")
     jieshu_shijian: Optional[datetime] = Field(None, description="结束时间")
     search: Optional[str] = Field(None, description="搜索关键词")
-

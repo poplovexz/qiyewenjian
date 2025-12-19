@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
 
-
 class ShenheJilu(BaseModel):
     """审核记录表"""
     

@@ -18,7 +18,6 @@ from schemas.xiansuo_guanli import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=XiansuoZhuangtaiResponse, summary="创建线索状态")
 async def create_zhuangtai(
     zhuangtai_data: XiansuoZhuangtaiCreate,
@@ -34,7 +33,6 @@ async def create_zhuangtai(
     """
     service = XiansuoZhuangtaiService(db)
     return service.create_zhuangtai(zhuangtai_data, current_user.id)
-
 
 @router.get("/", response_model=XiansuoZhuangtaiListResponse, summary="获取线索状态列表")
 async def get_zhuangtai_list(
@@ -60,7 +58,6 @@ async def get_zhuangtai_list(
         zhuangtai=zhuangtai
     )
 
-
 @router.get("/active", response_model=List[XiansuoZhuangtaiResponse], summary="获取启用的线索状态")
 async def get_active_zhuangtai_list(
     db: Session = Depends(get_db),
@@ -69,7 +66,6 @@ async def get_active_zhuangtai_list(
     """获取所有启用状态的线索状态"""
     service = XiansuoZhuangtaiService(db)
     return service.get_active_zhuangtai_list()
-
 
 @router.get("/{zhuangtai_id}", response_model=XiansuoZhuangtaiResponse, summary="获取线索状态详情")
 async def get_zhuangtai_detail(
@@ -86,7 +82,6 @@ async def get_zhuangtai_detail(
     
     return zhuangtai
 
-
 @router.put("/{zhuangtai_id}", response_model=XiansuoZhuangtaiResponse, summary="更新线索状态")
 async def update_zhuangtai(
     zhuangtai_id: str,
@@ -102,7 +97,6 @@ async def update_zhuangtai(
     """
     service = XiansuoZhuangtaiService(db)
     return service.update_zhuangtai(zhuangtai_id, zhuangtai_data, current_user.id)
-
 
 @router.delete("/{zhuangtai_id}", summary="删除线索状态")
 async def delete_zhuangtai(

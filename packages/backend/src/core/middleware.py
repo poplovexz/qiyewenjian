@@ -23,7 +23,6 @@ from core.logging import (
 
 logger = get_logger(__name__)
 
-
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
     """
     请求日志中间件
@@ -140,7 +139,6 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
         return "unknown"
 
-
 class PerformanceMiddleware(BaseHTTPMiddleware):
     """
     性能监控中间件
@@ -170,7 +168,6 @@ class PerformanceMiddleware(BaseHTTPMiddleware):
             )
 
         return response
-
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """

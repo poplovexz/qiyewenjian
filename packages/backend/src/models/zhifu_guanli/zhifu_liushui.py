@@ -5,7 +5,6 @@ from sqlalchemy import Column, String, Numeric, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from ..base import BaseModel
 
-
 class ZhifuLiushui(BaseModel):
     """支付流水表"""
     

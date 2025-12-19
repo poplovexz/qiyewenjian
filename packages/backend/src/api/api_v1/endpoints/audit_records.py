@@ -13,7 +13,6 @@ from models.yonghu_guanli import Yonghu
 
 router = APIRouter()
 
-
 class AuditActionRequest(BaseModel):
     """审核操作请求模型"""
     comment: Optional[str] = Field(None, description="审核意见")
@@ -100,7 +99,6 @@ async def get_my_processed_audits(
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"获取已处理任务失败: {str(e)}")
-
 
 @router.get("/statistics/my")
 @check_permission("audit:read")

@@ -6,7 +6,6 @@ from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field, validator
 
-
 class XiansuoBaojiaXiangmuBase(BaseModel):
     """报价项目基础模型"""
     chanpin_xiangmu_id: str = Field(..., description="产品项目ID")
@@ -17,11 +16,9 @@ class XiansuoBaojiaXiangmuBase(BaseModel):
     paixu: int = Field(default=0, description="排序号")
     beizhu: Optional[str] = Field(None, description="备注")
 
-
 class XiansuoBaojiaXiangmuCreate(XiansuoBaojiaXiangmuBase):
     """创建报价项目"""
     pass
-
 
 class XiansuoBaojiaXiangmuUpdate(BaseModel):
     """更新报价项目"""
@@ -31,7 +28,6 @@ class XiansuoBaojiaXiangmuUpdate(BaseModel):
     danwei: Optional[str] = Field(None, description="单位")
     paixu: Optional[int] = Field(None, description="排序号")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class XiansuoBaojiaXiangmuResponse(XiansuoBaojiaXiangmuBase):
     """报价项目响应模型"""
@@ -44,19 +40,16 @@ class XiansuoBaojiaXiangmuResponse(XiansuoBaojiaXiangmuBase):
     class Config:
         from_attributes = True
 
-
 class XiansuoBaojiaBase(BaseModel):
     """报价基础模型"""
     baojia_mingcheng: str = Field(..., description="报价名称")
     youxiao_qi: datetime = Field(..., description="有效期")
     beizhu: Optional[str] = Field(None, description="备注")
 
-
 class XiansuoBaojiaCreate(XiansuoBaojiaBase):
     """创建报价"""
     xiansuo_id: str = Field(..., description="线索ID")
     xiangmu_list: List[XiansuoBaojiaXiangmuCreate] = Field(default=[], description="报价项目列表")
-
 
 class XiansuoBaojiaUpdate(BaseModel):
     """更新报价"""
@@ -71,7 +64,6 @@ class XiansuoBaojiaUpdate(BaseModel):
         if v and v not in ['draft', 'sent', 'accepted', 'rejected', 'expired']:
             raise ValueError('报价状态必须是: draft, sent, accepted, rejected, expired 之一')
         return v
-
 
 class XiansuoBaojiaResponse(XiansuoBaojiaBase):
     """报价响应模型"""
@@ -92,7 +84,6 @@ class XiansuoBaojiaResponse(XiansuoBaojiaBase):
     class Config:
         from_attributes = True
 
-
 class XiansuoBaojiaListItem(BaseModel):
     """报价列表项"""
     id: str
@@ -112,7 +103,6 @@ class XiansuoBaojiaListItem(BaseModel):
     class Config:
         from_attributes = True
 
-
 class XiansuoBaojiaListParams(BaseModel):
     """报价列表查询参数"""
     page: int = Field(default=1, ge=1, description="页码")
@@ -121,7 +111,6 @@ class XiansuoBaojiaListParams(BaseModel):
     baojia_zhuangtai: Optional[str] = Field(None, description="报价状态")
     search: Optional[str] = Field(None, description="搜索关键词")
 
-
 class XiansuoBaojiaListResponse(BaseModel):
     """报价列表响应"""
     items: List[XiansuoBaojiaListItem]
@@ -129,7 +118,6 @@ class XiansuoBaojiaListResponse(BaseModel):
     page: int
     size: int
     pages: int
-
 
 class XiansuoBaojiaStatistics(BaseModel):
     """报价统计"""
@@ -142,7 +130,6 @@ class XiansuoBaojiaStatistics(BaseModel):
     total_amount: Decimal = Field(..., description="总金额")
     accepted_amount: Decimal = Field(..., description="已接受金额")
 
-
 # 产品相关的简化模型（用于报价选择）
 class ChanpinFenleiOption(BaseModel):
     """产品分类选项"""
@@ -152,7 +139,6 @@ class ChanpinFenleiOption(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class ChanpinXiangmuOption(BaseModel):
     """产品项目选项"""
@@ -167,14 +153,12 @@ class ChanpinXiangmuOption(BaseModel):
     class Config:
         from_attributes = True
 
-
 class ChanpinDataForBaojia(BaseModel):
     """报价用产品数据"""
     zengzhi_fenlei: List[ChanpinFenleiOption] = Field(default=[], description="增值服务分类")
     daili_jizhang_fenlei: List[ChanpinFenleiOption] = Field(default=[], description="代理记账分类")
     zengzhi_xiangmu: List[ChanpinXiangmuOption] = Field(default=[], description="增值服务项目")
     daili_jizhang_xiangmu: List[ChanpinXiangmuOption] = Field(default=[], description="代理记账项目")
-
 
 class XiansuoInfoForBaojia(BaseModel):
     """报价单中的线索信息"""
@@ -187,7 +171,6 @@ class XiansuoInfoForBaojia(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class XiansuoBaojiaDetailResponse(XiansuoBaojiaBase):
     """报价详情响应模型（包含线索信息）"""

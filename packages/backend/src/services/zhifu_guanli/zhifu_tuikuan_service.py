@@ -24,7 +24,6 @@ from core.events import publish, EventNames
 
 logger = logging.getLogger(__name__)
 
-
 class ZhifuTuikuanService:
     """退款管理服务类"""
     
@@ -308,4 +307,3 @@ class ZhifuTuikuanService:
         today = datetime.now().strftime("%Y%m%d")
         random_suffix = str(uuid.uuid4().int)[:6]
         return f"TK{today}{random_suffix}"
-

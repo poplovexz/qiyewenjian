@@ -3,9 +3,7 @@
 """
 from sqlalchemy import Column, String, Text, DateTime, ForeignKey
 
-
 from ..base import BaseModel
-
 
 class Renwu(BaseModel):
     """任务表"""

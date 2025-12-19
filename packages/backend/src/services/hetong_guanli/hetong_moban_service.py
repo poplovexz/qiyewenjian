@@ -16,7 +16,6 @@ from schemas.hetong_guanli.hetong_moban_schemas import (
     HetongMobanListResponse
 )
 
-
 class HetongMobanService:
     """合同模板管理服务类"""
     

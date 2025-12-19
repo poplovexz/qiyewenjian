@@ -17,9 +17,7 @@ from schemas.yonghu_guanli.user_settings_schemas import (
 )
 from services.yonghu_guanli.user_settings_service import UserSettingsService
 
-
 router = APIRouter()
-
 
 @router.get("/me/profile", response_model=UserProfileResponse, summary="获取个人信息")
 def get_my_profile(
@@ -31,7 +29,6 @@ def get_my_profile(
     """
     service = UserSettingsService(db)
     return service.get_user_profile(current_user.id)
-
 
 @router.put("/me/profile", response_model=UserProfileResponse, summary="更新个人信息")
 def update_my_profile(
@@ -50,7 +47,6 @@ def update_my_profile(
     service = UserSettingsService(db)
     return service.update_user_profile(current_user.id, profile_update)
 
-
 @router.put("/me/password", response_model=Dict[str, str], summary="修改密码")
 def change_my_password(
     password_change: PasswordChange,
@@ -66,7 +62,6 @@ def change_my_password(
     """
     service = UserSettingsService(db)
     return service.change_password(current_user.id, password_change)
-
 
 @router.get("/me/preferences", response_model=UserPreferences, summary="获取个人偏好设置")
 def get_my_preferences(
@@ -84,7 +79,6 @@ def get_my_preferences(
     service = UserSettingsService(db)
     return service.get_user_preferences(current_user.id)
 
-
 @router.put("/me/preferences", response_model=UserPreferences, summary="更新个人偏好设置")
 def update_my_preferences(
     preferences_update: UserPreferencesUpdate,
@@ -101,4 +95,3 @@ def update_my_preferences(
     """
     service = UserSettingsService(db)
     return service.update_user_preferences(current_user.id, preferences_update)
-

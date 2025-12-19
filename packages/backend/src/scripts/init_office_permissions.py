@@ -12,7 +12,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from sqlalchemy import create_engine, text
 from core.config import settings
 
-
 def init_office_permissions():
     """初始化办公管理模块权限"""
     try:
@@ -168,13 +167,10 @@ def init_office_permissions():
         traceback.print_exc()
         return False
 
-
 def main():
     """主函数"""
     success = init_office_permissions()
     sys.exit(0 if success else 1)
 
-
 if __name__ == "__main__":
     main()
-

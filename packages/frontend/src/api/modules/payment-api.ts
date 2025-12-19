@@ -82,4 +82,3 @@ export function closePayment(dingdanId: string) {
     method: 'post'
   })
 }
-

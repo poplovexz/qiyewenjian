@@ -20,9 +20,7 @@ from services.chanpin_guanli import ChanpinXiangmuService
 
 logger = logging.getLogger(__name__)
 
-
 router = APIRouter()
-
 
 @router.get("/", response_model=ChanpinXiangmuListResponse, response_model_exclude_none=False, summary="获取产品项目列表")
 async def get_xiangmu_list(
@@ -53,7 +51,6 @@ async def get_xiangmu_list(
             detail=f"获取产品项目列表失败: {str(e)}"
         )
 
-
 @router.get("/{xiangmu_id}", response_model=ChanpinXiangmuResponse, summary="获取产品项目详情")
 async def get_xiangmu_detail(
     xiangmu_id: str,
@@ -79,7 +76,6 @@ async def get_xiangmu_detail(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"获取产品项目详情失败: {str(e)}"
         )
-
 
 @router.get("/{xiangmu_id}/detail", response_model=ChanpinXiangmuDetailResponse, summary="获取产品项目完整详情")
 async def get_xiangmu_full_detail(
@@ -107,7 +103,6 @@ async def get_xiangmu_full_detail(
             detail=f"获取产品项目完整详情失败: {str(e)}"
         )
 
-
 @router.post("/", response_model=ChanpinXiangmuResponse, summary="创建产品项目")
 async def create_xiangmu(
     xiangmu_data: ChanpinXiangmuCreate,
@@ -129,7 +124,6 @@ async def create_xiangmu(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"创建产品项目失败: {str(e)}"
         )
-
 
 @router.put("/{xiangmu_id}", response_model=ChanpinXiangmuResponse, summary="更新产品项目")
 async def update_xiangmu(
@@ -154,7 +148,6 @@ async def update_xiangmu(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"更新产品项目失败: {str(e)}"
         )
-
 
 @router.delete("/{xiangmu_id}", summary="删除产品项目")
 async def delete_xiangmu(

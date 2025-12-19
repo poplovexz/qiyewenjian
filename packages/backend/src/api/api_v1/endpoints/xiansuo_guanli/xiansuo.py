@@ -24,7 +24,6 @@ from schemas.xiansuo_guanli import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=XiansuoResponse, summary="创建线索")
 async def create_xiansuo(
     xiansuo_data: XiansuoCreate,
@@ -42,7 +41,6 @@ async def create_xiansuo(
     """
     service = XiansuoService(db)
     return service.create_xiansuo(xiansuo_data, current_user.id)
-
 
 @router.get("/", response_model=XiansuoListResponse, summary="获取线索列表")
 async def get_xiansuo_list(
@@ -85,7 +83,6 @@ async def get_xiansuo_list(
         has_read_all_permission=has_read_all
     )
 
-
 @router.get("/statistics", response_model=XiansuoStatistics, summary="获取线索统计数据")
 async def get_xiansuo_statistics(
     start_date: Optional[datetime] = Query(None, description="开始时间"),
@@ -106,7 +103,6 @@ async def get_xiansuo_statistics(
         fenpei_ren_id=fenpei_ren_id
     )
 
-
 @router.get("/{xiansuo_id}", response_model=XiansuoDetailResponse, summary="获取线索详情")
 async def get_xiansuo_detail(
     xiansuo_id: str,
@@ -121,7 +117,6 @@ async def get_xiansuo_detail(
         raise HTTPException(status_code=404, detail="线索不存在")
     
     return xiansuo
-
 
 @router.put("/{xiansuo_id}", response_model=XiansuoResponse, summary="更新线索")
 async def update_xiansuo(
@@ -144,7 +139,6 @@ async def update_xiansuo(
 
     return service.update_xiansuo(xiansuo_id, xiansuo_data, current_user.id, has_update_all)
 
-
 @router.patch("/{xiansuo_id}/status", response_model=XiansuoResponse, summary="更新线索状态")
 async def update_xiansuo_status(
     xiansuo_id: str,
@@ -161,7 +155,6 @@ async def update_xiansuo_status(
     service = XiansuoService(db)
     return service.update_xiansuo_status(xiansuo_id, status_data, current_user.id)
 
-
 @router.patch("/{xiansuo_id}/assign", response_model=XiansuoResponse, summary="分配线索")
 async def assign_xiansuo(
     xiansuo_id: str,
@@ -177,7 +170,6 @@ async def assign_xiansuo(
     """
     service = XiansuoService(db)
     return service.assign_xiansuo(xiansuo_id, assign_data, current_user.id)
-
 
 @router.delete("/{xiansuo_id}", summary="删除线索")
 async def delete_xiansuo(
@@ -202,7 +194,6 @@ async def delete_xiansuo(
         return {"message": "线索删除成功"}
     else:
         raise HTTPException(status_code=500, detail="删除失败")
-
 
 @router.get("/{xiansuo_id}/contract-status", summary="获取线索的合同状态")
 async def get_xiansuo_contract_status(

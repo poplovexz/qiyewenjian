@@ -8,7 +8,6 @@ from decimal import Decimal
 
 from .chanpin_buzou_schemas import ChanpinBuzouResponse
 
-
 class ChanpinXiangmuBase(BaseModel):
     """产品项目基础模式"""
     xiangmu_mingcheng: str = Field(..., min_length=1, max_length=200, description="项目名称")
@@ -20,7 +19,6 @@ class ChanpinXiangmuBase(BaseModel):
     xiangmu_beizhu: Optional[str] = Field(None, max_length=2000, description="项目备注")
     paixu: Optional[int] = Field(0, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field("active", description="状态")
-
 
 class ChanpinXiangmuCreate(BaseModel):
     """创建产品项目模式"""
@@ -34,7 +32,6 @@ class ChanpinXiangmuCreate(BaseModel):
     paixu: Optional[int] = Field(0, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field("active", description="状态")
 
-
 class ChanpinXiangmuUpdate(BaseModel):
     """更新产品项目模式"""
     xiangmu_mingcheng: Optional[str] = Field(None, min_length=1, max_length=200, description="项目名称")
@@ -47,7 +44,6 @@ class ChanpinXiangmuUpdate(BaseModel):
     paixu: Optional[int] = Field(None, ge=0, description="排序号")
     zhuangtai: Optional[str] = Field(None, description="状态")
 
-
 class ChanpinXiangmuResponse(ChanpinXiangmuBase):
     """产品项目响应模式"""
     id: str
@@ -58,7 +54,6 @@ class ChanpinXiangmuResponse(ChanpinXiangmuBase):
     
     class Config:
         from_attributes = True
-
 
 class ChanpinXiangmuListItem(BaseModel):
     """产品项目列表项模式"""
@@ -80,7 +75,6 @@ class ChanpinXiangmuListItem(BaseModel):
     updated_at: datetime
     buzou_count: int = 0
 
-
 class ChanpinXiangmuListParams(BaseModel):
     """产品项目列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -88,7 +82,6 @@ class ChanpinXiangmuListParams(BaseModel):
     search: Optional[str] = Field(None, description="搜索关键词")
     fenlei_id: Optional[str] = Field(None, description="分类ID筛选")
     zhuangtai: Optional[str] = Field(None, description="状态筛选")
-
 
 class ChanpinXiangmuListResponse(BaseModel):
     """产品项目列表响应模式"""
@@ -99,7 +92,6 @@ class ChanpinXiangmuListResponse(BaseModel):
     page: int
     size: int
     pages: int
-
 
 class ChanpinXiangmuDetailResponse(ChanpinXiangmuResponse):
     """产品项目详情响应模式"""

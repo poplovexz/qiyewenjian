@@ -22,7 +22,6 @@ from schemas.zhifu_guanli.zhifu_tongzhi_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=ZhifuTongzhiResponse, summary="创建支付通知")
 async def create_zhifu_tongzhi(
     tongzhi_data: ZhifuTongzhiCreate,
@@ -39,7 +38,6 @@ async def create_zhifu_tongzhi(
     """
     service = ZhifuTongzhiService(db)
     return service.create_zhifu_tongzhi(tongzhi_data, current_user.id)
-
 
 @router.get("/", response_model=ZhifuTongzhiListResponse, summary="获取支付通知列表")
 async def get_zhifu_tongzhi_list(
@@ -72,7 +70,6 @@ async def get_zhifu_tongzhi_list(
     service = ZhifuTongzhiService(db)
     return service.get_zhifu_tongzhi_list(params)
 
-
 @router.get("/my", response_model=ZhifuTongzhiListResponse, summary="获取我的通知列表")
 async def get_my_tongzhi_list(
     page: int = Query(1, ge=1, description="页码"),
@@ -99,7 +96,6 @@ async def get_my_tongzhi_list(
     service = ZhifuTongzhiService(db)
     return service.get_zhifu_tongzhi_list(params)
 
-
 @router.get("/my/unread-count", summary="获取未读通知数量")
 async def get_unread_count(
     db: Session = Depends(get_db),
@@ -112,7 +108,6 @@ async def get_unread_count(
     count = service.get_unread_count(current_user.id)
     return {"unread_count": count}
 
-
 @router.get("/{tongzhi_id}", response_model=ZhifuTongzhiResponse, summary="获取支付通知详情")
 async def get_zhifu_tongzhi_detail(
     tongzhi_id: str,
@@ -124,7 +119,6 @@ async def get_zhifu_tongzhi_detail(
     """
     service = ZhifuTongzhiService(db)
     return service.get_zhifu_tongzhi_by_id(tongzhi_id)
-
 
 @router.put("/{tongzhi_id}", response_model=ZhifuTongzhiResponse, summary="更新支付通知")
 async def update_zhifu_tongzhi(
@@ -139,7 +133,6 @@ async def update_zhifu_tongzhi(
     service = ZhifuTongzhiService(db)
     return service.update_zhifu_tongzhi(tongzhi_id, tongzhi_data, current_user.id)
 
-
 @router.post("/{tongzhi_id}/read", response_model=ZhifuTongzhiResponse, summary="标记通知为已读")
 async def mark_tongzhi_as_read(
     tongzhi_id: str,
@@ -153,7 +146,6 @@ async def mark_tongzhi_as_read(
     """
     service = ZhifuTongzhiService(db)
     return service.mark_as_read(tongzhi_id, current_user.id)
-
 
 @router.delete("/{tongzhi_id}", summary="删除支付通知")
 async def delete_zhifu_tongzhi(

@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from models.shenhe_guanli import ShenheGuize
 
-
 def create_payment_audit_rules(db: Session):
     """创建支付审核规则"""
     
@@ -196,7 +195,6 @@ def create_payment_audit_rules(db: Session):
     
     for rule in rules:
 
-
 def create_flow_audit_rules(db: Session):
     """创建支付流水审核规则"""
 
@@ -370,7 +368,6 @@ def create_flow_audit_rules(db: Session):
 
     for rule in rules:
 
-
 def main():
     """主函数"""
     # PTC-W0063: 使用 next() 的默认值防止 StopIteration
@@ -384,7 +381,6 @@ def main():
         db.rollback()
     finally:
         db.close()
-
 
 if __name__ == "__main__":
     main()

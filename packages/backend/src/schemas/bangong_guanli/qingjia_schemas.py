@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
 
-
 class QingjiaShenqingBase(BaseModel):
     """请假申请基础模式"""
     qingjia_leixing: str = Field(..., description="请假类型")
@@ -16,11 +15,9 @@ class QingjiaShenqingBase(BaseModel):
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
     beizhu: Optional[str] = Field(None, description="备注")
 
-
 class QingjiaShenqingCreate(QingjiaShenqingBase):
     """创建请假申请模式"""
     pass
-
 
 class QingjiaShenqingUpdate(BaseModel):
     """更新请假申请模式"""
@@ -31,7 +28,6 @@ class QingjiaShenqingUpdate(BaseModel):
     qingjia_yuanyin: Optional[str] = Field(None, description="请假原因")
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class QingjiaShenqingResponse(QingjiaShenqingBase):
     """请假申请响应模式"""
@@ -49,7 +45,6 @@ class QingjiaShenqingResponse(QingjiaShenqingBase):
     class Config:
         from_attributes = True
 
-
 class QingjiaShenqingListParams(BaseModel):
     """请假申请列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -60,4 +55,3 @@ class QingjiaShenqingListParams(BaseModel):
     kaishi_shijian: Optional[datetime] = Field(None, description="开始时间")
     jieshu_shijian: Optional[datetime] = Field(None, description="结束时间")
     search: Optional[str] = Field(None, description="搜索关键词")
-

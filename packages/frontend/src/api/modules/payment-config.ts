@@ -230,4 +230,3 @@ export function toggleZhifuPeizhiStatus(id: string) {
     method: 'post'
   })
 }
-

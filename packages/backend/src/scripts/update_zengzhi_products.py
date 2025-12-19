@@ -15,7 +15,6 @@ from sqlalchemy.orm import sessionmaker
 from core.config import settings
 from models.chanpin_guanli import ChanpinFenlei, ChanpinXiangmu
 
-
 # 增值服务产品数据
 ZENGZHI_DATA = {
     "工商": [
@@ -87,7 +86,6 @@ ZENGZHI_DATA = {
         {"name": "香港公司审计", "price": 2500.00, "unit": "次", "cost": 0.00},
     ],
 }
-
 
 def update_zengzhi_products():
     """更新增值服务产品数据"""
@@ -211,15 +209,11 @@ def update_zengzhi_products():
     finally:
         db.close()
 
-
 def main():
     """主函数"""
     
     if update_zengzhi_products():
     else:
     
-
-
 if __name__ == "__main__":
     main()
-

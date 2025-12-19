@@ -14,7 +14,6 @@ from schemas.xiansuo_guanli import (
     XiansuoZhuangtaiListResponse
 )
 
-
 class XiansuoZhuangtaiService:
     """线索状态管理服务类"""
     

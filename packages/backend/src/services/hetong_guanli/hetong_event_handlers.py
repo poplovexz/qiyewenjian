@@ -10,7 +10,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 @event_handler("hetong_signed")
 async def handle_hetong_signed(payload: Dict[str, Any]):
     """
@@ -70,7 +69,6 @@ async def handle_hetong_signed(payload: Dict[str, Any]):
             "payload": payload,
             "error": str(e)
         })
-
 
 @event_handler("hetong_cancelled")
 async def handle_hetong_cancelled(payload: Dict[str, Any]):

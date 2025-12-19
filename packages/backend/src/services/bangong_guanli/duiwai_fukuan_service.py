@@ -15,7 +15,6 @@ from schemas.bangong_guanli.duiwai_fukuan_schemas import (
     DuiwaiFukuanShenqingListParams
 )
 
-
 class DuiwaiFukuanService:
     """对外付款申请管理服务类"""
     
@@ -129,4 +128,3 @@ class DuiwaiFukuanService:
         self.db.commit()
         
         return {"message": "删除成功"}
-

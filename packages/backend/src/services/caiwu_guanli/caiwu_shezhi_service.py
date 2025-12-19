@@ -32,7 +32,6 @@ from schemas.caiwu_guanli.caiwu_shezhi_schemas import (
     ZhichuLeibieListResponse
 )
 
-
 class CaiwuShezhiService:
     """财务设置服务类"""
 
@@ -342,4 +341,3 @@ class CaiwuShezhiService:
         
         leibie.is_deleted = "Y"
         self.db.commit()
-

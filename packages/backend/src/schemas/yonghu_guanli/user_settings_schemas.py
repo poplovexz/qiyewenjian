@@ -5,7 +5,6 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field, validator
 from datetime import datetime
 
-
 class UserProfileResponse(BaseModel):
     """用户个人信息响应"""
     id: str
@@ -18,7 +17,6 @@ class UserProfileResponse(BaseModel):
     
     class Config:
         from_attributes = True
-
 
 class UserProfileUpdate(BaseModel):
     """更新用户个人信息"""
@@ -35,7 +33,6 @@ class UserProfileUpdate(BaseModel):
             raise ValueError('手机号必须是11位')
         return v
 
-
 class PasswordChange(BaseModel):
     """修改密码"""
     old_password: str = Field(..., min_length=6, description="旧密码")
@@ -48,7 +45,6 @@ class PasswordChange(BaseModel):
             raise ValueError('新密码不能与旧密码相同')
         return v
 
-
 class UserPreferences(BaseModel):
     """用户偏好设置"""
     email_notification: bool = Field(True, description="邮件通知")
@@ -58,10 +54,8 @@ class UserPreferences(BaseModel):
     class Config:
         from_attributes = True
 
-
 class UserPreferencesUpdate(BaseModel):
     """更新用户偏好设置"""
     email_notification: Optional[bool] = Field(None, description="邮件通知")
     sms_notification: Optional[bool] = Field(None, description="短信通知")
     system_notification: Optional[bool] = Field(None, description="系统消息通知")
-

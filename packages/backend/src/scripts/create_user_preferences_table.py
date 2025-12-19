@@ -8,7 +8,6 @@ sys.path.insert(0, 'src')
 from sqlalchemy import create_engine, text
 from core.config import settings
 
-
 def create_user_preferences_table():
     """创建用户偏好设置表"""
     engine = create_engine(str(settings.DATABASE_URL))
@@ -51,7 +50,5 @@ def create_user_preferences_table():
             conn.rollback()
             raise
 
-
 if __name__ == "__main__":
     create_user_preferences_table()
-

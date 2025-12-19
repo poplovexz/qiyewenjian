@@ -4,7 +4,6 @@ from sqlalchemy.sql import func
 from core.database import Base
 import enum
 
-
 class DeployStatus(str, enum.Enum):
     """部署状态枚举"""
     PENDING = "pending"      # 等待中
@@ -12,7 +11,6 @@ class DeployStatus(str, enum.Enum):
     SUCCESS = "success"      # 成功
     FAILED = "failed"        # 失败
     CANCELLED = "cancelled"  # 已取消
-
 
 class DeployHistory(Base):
     """部署历史表"""
@@ -60,4 +58,3 @@ class DeployHistory(Base):
 
     def __repr__(self):
         return f"<DeployHistory(id={self.id}, environment={self.environment}, status={self.status})>"
-

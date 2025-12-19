@@ -24,7 +24,6 @@ from schemas.xiansuo_guanli.xiansuo_baojia_schemas import (
 )
 from core.cache_decorator import invalidate_xiansuo_cache
 
-
 class XiansuoBaojiaService:
     """线索报价管理服务类"""
     

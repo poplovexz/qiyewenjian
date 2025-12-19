@@ -11,7 +11,6 @@ import logging
 
 from core.config import settings
 
-
 def init_sentry() -> bool:
     """
     初始化 Sentry SDK
@@ -59,7 +58,6 @@ def init_sentry() -> bool:
     except Exception as e:
         return False
 
-
 def before_send_filter(event, hint):
     """
     发送前过滤器，用于过滤不需要上报的错误
@@ -84,7 +82,6 @@ def before_send_filter(event, hint):
     
     return event
 
-
 def set_user_context(user_id: int, username: str = None, role: str = None):
     """设置用户上下文"""
     sentry_sdk.set_user({
@@ -93,11 +90,9 @@ def set_user_context(user_id: int, username: str = None, role: str = None):
         "role": role,
     })
 
-
 def clear_user_context():
     """清除用户上下文"""
     sentry_sdk.set_user(None)
-
 
 def capture_exception(error: Exception, **extra):
     """手动捕获异常"""
@@ -106,11 +101,9 @@ def capture_exception(error: Exception, **extra):
             scope.set_extra(key, value)
         sentry_sdk.capture_exception(error)
 
-
 def capture_message(message: str, level: str = "info"):
     """手动捕获消息"""
     sentry_sdk.capture_message(message, level=level)
-
 
 def add_breadcrumb(message: str, category: str = "custom", data: dict = None):
     """添加面包屑"""
@@ -119,4 +112,3 @@ def add_breadcrumb(message: str, category: str = "custom", data: dict = None):
         category=category,
         data=data or {},
     )
-

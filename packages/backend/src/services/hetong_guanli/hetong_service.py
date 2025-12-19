@@ -24,7 +24,6 @@ from schemas.hetong_guanli import (
 )
 from core.events import event_bus
 
-
 class HetongService:
     """合同服务类"""
     

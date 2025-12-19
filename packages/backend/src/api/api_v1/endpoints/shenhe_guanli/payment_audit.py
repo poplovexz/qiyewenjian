@@ -14,12 +14,10 @@ from services.shenhe_guanli.payment_audit_service import PaymentAuditService
 
 router = APIRouter()
 
-
 class PaymentAuditTriggerRequest(BaseModel):
     """触发支付审核请求模型"""
     payment_order_id: str = Field(..., description="支付订单ID")
     trigger_reason: Optional[str] = Field(None, description="触发原因")
-
 
 class PaymentApprovalRequest(BaseModel):
     """支付审批请求模型"""
@@ -27,18 +25,15 @@ class PaymentApprovalRequest(BaseModel):
     approval_comment: Optional[str] = Field(None, description="审批意见")
     approval_data: Optional[Dict[str, Any]] = Field(None, description="审批数据")
 
-
 class PaymentRejectionRequest(BaseModel):
     """支付拒绝请求模型"""
     audit_record_id: str = Field(..., description="审核记录ID")
     rejection_reason: str = Field(..., description="拒绝原因")
 
-
 class FlowAuditTriggerRequest(BaseModel):
     """触发流水审核请求模型"""
     flow_id: str = Field(..., description="支付流水ID")
     trigger_reason: Optional[str] = Field(None, description="触发原因")
-
 
 class FlowApprovalRequest(BaseModel):
     """流水审批请求模型"""
@@ -46,12 +41,10 @@ class FlowApprovalRequest(BaseModel):
     approval_comment: Optional[str] = Field(None, description="审批意见")
     approval_data: Optional[Dict[str, Any]] = Field(None, description="审批数据")
 
-
 class FlowRejectionRequest(BaseModel):
     """流水拒绝请求模型"""
     audit_record_id: str = Field(..., description="审核记录ID")
     rejection_reason: str = Field(..., description="拒绝原因")
-
 
 @router.post("/trigger", summary="触发支付订单审核")
 @require_audit_permission("audit_record:create")
@@ -75,7 +68,6 @@ async def trigger_payment_audit(
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"触发支付审核失败: {str(e)}")
-
 
 @router.post("/approve", summary="审批支付订单")
 @require_audit_permission("approval:approve")
@@ -103,7 +95,6 @@ async def approve_payment(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"支付审批失败: {str(e)}")
 
-
 @router.post("/reject", summary="拒绝支付订单")
 @require_audit_permission("approval:reject")
 async def reject_payment(
@@ -128,7 +119,6 @@ async def reject_payment(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"支付拒绝失败: {str(e)}")
 
-
 @router.get("/status/{payment_order_id}", summary="获取支付订单审核状态")
 @require_audit_permission("audit_record:read")
 async def get_payment_audit_status(
@@ -147,7 +137,6 @@ async def get_payment_audit_status(
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取审核状态失败: {str(e)}")
-
 
 @router.get("/pending/my", summary="获取我的待审批支付订单")
 @require_audit_permission("audit_record:read")
@@ -201,7 +190,6 @@ async def get_my_pending_payment_audits(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取待审批列表失败: {str(e)}")
-
 
 @router.get("/history/{payment_order_id}", summary="获取支付订单审核历史")
 @require_audit_permission("audit_record:read")
@@ -261,7 +249,6 @@ async def get_payment_audit_history(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取审核历史失败: {str(e)}")
 
-
 @router.post("/batch/trigger", summary="批量触发支付审核")
 @require_audit_permission("audit_record:create")
 async def batch_trigger_payment_audit(
@@ -307,7 +294,6 @@ async def batch_trigger_payment_audit(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"批量触发审核失败: {str(e)}")
 
-
 # 支付流水审核相关端点
 @router.post("/flow/trigger", summary="触发支付流水审核")
 @require_audit_permission("audit_record:create")
@@ -331,7 +317,6 @@ async def trigger_flow_audit(
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"触发流水审核失败: {str(e)}")
-
 
 @router.post("/flow/approve", summary="审批支付流水")
 @require_audit_permission("approval:approve")
@@ -359,7 +344,6 @@ async def approve_flow(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"流水审批失败: {str(e)}")
 
-
 @router.post("/flow/reject", summary="拒绝支付流水")
 @require_audit_permission("approval:reject")
 async def reject_flow(
@@ -384,7 +368,6 @@ async def reject_flow(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"流水拒绝失败: {str(e)}")
 
-
 @router.get("/flow/status/{flow_id}", summary="获取支付流水审核状态")
 @require_audit_permission("audit_record:read")
 async def get_flow_audit_status(
@@ -403,7 +386,6 @@ async def get_flow_audit_status(
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取流水审核状态失败: {str(e)}")
-
 
 @router.get("/flow/pending/my", summary="获取我的待审批支付流水")
 @require_audit_permission("audit_record:read")

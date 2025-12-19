@@ -3,9 +3,7 @@
 """
 from sqlalchemy import Column, String, Numeric, DateTime, ForeignKey
 
-
 from ..base import BaseModel
-
 
 class Zhangbu(BaseModel):
     """账簿表"""

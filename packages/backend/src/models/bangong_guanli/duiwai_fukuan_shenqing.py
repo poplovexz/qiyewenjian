@@ -5,7 +5,6 @@ from sqlalchemy import Column, String, Numeric, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from models.base import BaseModel
 
-
 class DuiwaiFukuanShenqing(BaseModel):
     """对外付款申请表"""
     
@@ -127,4 +126,3 @@ class DuiwaiFukuanShenqing(BaseModel):
     
     def __repr__(self) -> str:
         return f"<DuiwaiFukuanShenqing(id={self.id}, shenqing_bianhao={self.shenqing_bianhao}, fukuan_jine={self.fukuan_jine})>"
-

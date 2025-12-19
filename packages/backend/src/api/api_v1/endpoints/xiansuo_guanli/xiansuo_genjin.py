@@ -19,7 +19,6 @@ from schemas.xiansuo_guanli import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=XiansuoGenjinResponse, summary="创建线索跟进记录")
 async def create_genjin(
     genjin_data: XiansuoGenjinCreate,
@@ -37,7 +36,6 @@ async def create_genjin(
     """
     service = XiansuoGenjinService(db)
     return service.create_genjin(genjin_data, current_user.id)
-
 
 @router.get("/", response_model=XiansuoGenjinListResponse, summary="获取线索跟进记录列表")
 async def get_genjin_list(
@@ -67,7 +65,6 @@ async def get_genjin_list(
         end_date=end_date
     )
 
-
 @router.get("/xiansuo/{xiansuo_id}", response_model=List[XiansuoGenjinResponse], summary="获取指定线索的跟进记录")
 async def get_xiansuo_genjin_list(
     xiansuo_id: str,
@@ -77,7 +74,6 @@ async def get_xiansuo_genjin_list(
     """获取指定线索的所有跟进记录"""
     service = XiansuoGenjinService(db)
     return service.get_xiansuo_genjin_list(xiansuo_id)
-
 
 @router.get("/{genjin_id}", response_model=XiansuoGenjinResponse, summary="获取跟进记录详情")
 async def get_genjin_detail(
@@ -94,7 +90,6 @@ async def get_genjin_detail(
     
     return genjin
 
-
 @router.put("/{genjin_id}", response_model=XiansuoGenjinResponse, summary="更新跟进记录")
 async def update_genjin(
     genjin_id: str,
@@ -110,7 +105,6 @@ async def update_genjin(
     """
     service = XiansuoGenjinService(db)
     return service.update_genjin(genjin_id, genjin_data, current_user.id)
-
 
 @router.delete("/{genjin_id}", summary="删除跟进记录")
 async def delete_genjin(

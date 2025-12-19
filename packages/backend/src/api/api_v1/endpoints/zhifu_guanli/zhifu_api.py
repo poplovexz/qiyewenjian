@@ -16,7 +16,6 @@ from schemas.zhifu_guanli.zhifu_dingdan_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/create", response_model=CreatePaymentResponse, summary="创建第三方支付")
 async def create_payment(
     payment_request: CreatePaymentRequest,
@@ -58,7 +57,6 @@ async def create_payment(
     )
     return result
 
-
 @router.get("/query/{dingdan_id}", response_model=QueryPaymentResponse, summary="查询支付订单状态")
 async def query_payment(
     dingdan_id: str,
@@ -95,7 +93,6 @@ async def query_payment(
         query_result=query_result
     )
 
-
 @router.post("/close/{dingdan_id}", summary="关闭支付订单")
 async def close_payment(
     dingdan_id: str,
@@ -113,4 +110,3 @@ async def close_payment(
     service = ZhifuApiService(db)
     result = service.close_payment(dingdan_id)
     return result
-

@@ -27,7 +27,6 @@ spec.loader.exec_module(alipay_module)
 alipay_module.ALIPAY_SDK_AVAILABLE = False
 AlipayUtil = alipay_module.AlipayUtil
 
-
 class StubAlipay:
     """用于模拟支付宝SDK返回的 order_string"""
 
@@ -40,12 +39,10 @@ class StubAlipay:
     def api_alipay_trade_wap_pay(**kwargs):
         return "method=alipay.trade.wap.pay&biz_content=%7B...%7D&timestamp=2025-01-01+00%3A00%3A00"
 
-
 def assert_equal(name: str, actual: str, expected: str):
     if actual != expected:
         return False
     return True
-
 
 def main() -> int:
     ok = True
@@ -129,7 +126,6 @@ def main() -> int:
     else:
 
     return 0 if ok else 1
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -6,7 +6,6 @@ from typing import Optional, List
 from decimal import Decimal
 from pydantic import BaseModel, Field
 
-
 class BaoxiaoShenqingBase(BaseModel):
     """报销申请基础模式"""
     baoxiao_leixing: str = Field(..., description="报销类型")
@@ -16,11 +15,9 @@ class BaoxiaoShenqingBase(BaseModel):
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
     beizhu: Optional[str] = Field(None, description="备注")
 
-
 class BaoxiaoShenqingCreate(BaoxiaoShenqingBase):
     """创建报销申请模式"""
     pass
-
 
 class BaoxiaoShenqingUpdate(BaseModel):
     """更新报销申请模式"""
@@ -30,7 +27,6 @@ class BaoxiaoShenqingUpdate(BaseModel):
     baoxiao_yuanyin: Optional[str] = Field(None, description="报销原因说明")
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class BaoxiaoShenqingResponse(BaoxiaoShenqingBase):
     """报销申请响应模式"""
@@ -48,7 +44,6 @@ class BaoxiaoShenqingResponse(BaoxiaoShenqingBase):
     class Config:
         from_attributes = True
 
-
 class BaoxiaoShenqingListParams(BaseModel):
     """报销申请列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -59,4 +54,3 @@ class BaoxiaoShenqingListParams(BaseModel):
     kaishi_shijian: Optional[datetime] = Field(None, description="开始时间")
     jieshu_shijian: Optional[datetime] = Field(None, description="结束时间")
     search: Optional[str] = Field(None, description="搜索关键词")
-

@@ -19,7 +19,6 @@ from schemas.zhifu_guanli.zhifu_peizhi_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=ZhifuPeizhiResponse, summary="创建支付配置")
 async def create_zhifu_peizhi(
     peizhi_data: ZhifuPeizhiCreate,
@@ -51,7 +50,6 @@ async def create_zhifu_peizhi(
     service = ZhifuPeizhiService(db)
     return service.create_zhifu_peizhi(peizhi_data, current_user.id)
 
-
 @router.get("/", response_model=ZhifuPeizhiListResponse, summary="获取支付配置列表")
 async def get_zhifu_peizhi_list(
     page: int = Query(1, ge=1, description="页码"),
@@ -79,7 +77,6 @@ async def get_zhifu_peizhi_list(
         search=search
     )
 
-
 @router.get("/{peizhi_id}", response_model=ZhifuPeizhiResponse, summary="获取支付配置详情")
 async def get_zhifu_peizhi(
     peizhi_id: str,
@@ -92,7 +89,6 @@ async def get_zhifu_peizhi(
     service = ZhifuPeizhiService(db)
     return service.get_zhifu_peizhi_by_id(peizhi_id)
 
-
 @router.get("/{peizhi_id}/edit", response_model=ZhifuPeizhiDetail, summary="获取支付配置编辑数据")
 async def get_zhifu_peizhi_for_edit(
     peizhi_id: str,
@@ -104,7 +100,6 @@ async def get_zhifu_peizhi_for_edit(
     """
     service = ZhifuPeizhiService(db)
     return service.get_zhifu_peizhi_detail(peizhi_id)
-
 
 @router.put("/{peizhi_id}", response_model=ZhifuPeizhiResponse, summary="更新支付配置")
 async def update_zhifu_peizhi(
@@ -123,7 +118,6 @@ async def update_zhifu_peizhi(
     service = ZhifuPeizhiService(db)
     return service.update_zhifu_peizhi(peizhi_id, peizhi_data, current_user.id)
 
-
 @router.delete("/{peizhi_id}", summary="删除支付配置")
 async def delete_zhifu_peizhi(
     peizhi_id: str,
@@ -136,7 +130,6 @@ async def delete_zhifu_peizhi(
     service = ZhifuPeizhiService(db)
     service.delete_zhifu_peizhi(peizhi_id, current_user.id)
     return {"message": "支付配置删除成功"}
-
 
 @router.post("/{peizhi_id}/toggle-status", response_model=ZhifuPeizhiResponse, summary="切换配置状态")
 async def toggle_zhifu_peizhi_status(
@@ -155,4 +148,3 @@ async def toggle_zhifu_peizhi_status(
     update_data = ZhifuPeizhiUpdate(zhuangtai=new_status)
     
     return service.update_zhifu_peizhi(peizhi_id, update_data, current_user.id)
-

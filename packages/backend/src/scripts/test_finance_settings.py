@@ -55,7 +55,5 @@ def test_finance_settings():
         """))
         for row in result:
         
-
 if __name__ == "__main__":
     test_finance_settings()
-

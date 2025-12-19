@@ -18,9 +18,7 @@ from schemas.xitong_guanli.system_config_schemas import (
 )
 from services.xitong_guanli.system_config_service import SystemConfigService
 
-
 router = APIRouter()
-
 
 @router.get("/info", response_model=SystemInfoResponse, summary="获取系统信息")
 def get_system_info(
@@ -39,7 +37,6 @@ def get_system_info(
     """
     service = SystemConfigService(db)
     return service.get_system_info()
-
 
 @router.get("/configs", response_model=List[SystemConfigResponse], summary="获取所有配置")
 def get_all_configs(
@@ -62,7 +59,6 @@ def get_all_configs(
     
     return configs
 
-
 @router.get("/configs/{config_key}", response_model=SystemConfigResponse, summary="获取单个配置")
 def get_config_by_key(
     config_key: str,
@@ -84,7 +80,6 @@ def get_config_by_key(
     
     return config
 
-
 @router.put("/configs/{config_key}", response_model=SystemConfigResponse, summary="更新配置")
 def update_config(
     config_key: str,
@@ -97,7 +92,6 @@ def update_config(
     """
     service = SystemConfigService(db)
     return service.update_config(config_key, config_update)
-
 
 @router.put("/configs", response_model=Dict, summary="批量更新配置")
 def batch_update_configs(
@@ -121,7 +115,6 @@ def batch_update_configs(
     service = SystemConfigService(db)
     return service.batch_update_configs(batch_update)
 
-
 @router.post("/cache/clear", response_model=CacheClearResponse, summary="清除缓存")
 async def clear_cache(
     pattern: Optional[str] = Query(None, description="缓存键模式，如：user:*"),
@@ -136,4 +129,3 @@ async def clear_cache(
     """
     service = SystemConfigService(db)
     return await service.clear_cache(pattern)
-

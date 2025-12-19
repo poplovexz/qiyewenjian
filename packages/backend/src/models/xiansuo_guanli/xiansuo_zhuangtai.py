@@ -4,7 +4,6 @@
 from sqlalchemy import Column, String, Integer
 from ..base import BaseModel
 
-
 class XiansuoZhuangtai(BaseModel):
     """线索状态表"""
     

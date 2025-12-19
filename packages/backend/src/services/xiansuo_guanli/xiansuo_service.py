@@ -20,7 +20,6 @@ from schemas.xiansuo_guanli import (
     XiansuoStatistics
 )
 
-
 class XiansuoService:
     """线索管理服务类"""
     

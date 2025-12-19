@@ -18,7 +18,6 @@ from schemas.shenhe_guanli import (
 
 router = APIRouter()
 
-
 @router.get("/", summary="获取审核记录列表")
 async def get_shenhe_jilu_list(
     page: int = 1,
@@ -45,7 +44,6 @@ async def get_shenhe_jilu_list(
     service = ShenheJiluService(db)
     return service.get_shenhe_jilu_list(params)
 
-
 @router.get("/workflow/{workflow_id}", summary="根据流程ID获取审核记录")
 async def get_shenhe_jilu_by_workflow(
     workflow_id: str,
@@ -56,7 +54,6 @@ async def get_shenhe_jilu_by_workflow(
     service = ShenheJiluService(db)
     return service.get_shenhe_jilu_by_workflow(workflow_id)
 
-
 @router.get("/{jilu_id}", response_model=ShenheJiluResponse, summary="获取审核记录详情")
 async def get_shenhe_jilu_by_id(
     jilu_id: str,
@@ -66,7 +63,6 @@ async def get_shenhe_jilu_by_id(
     """根据ID获取审核记录详情"""
     service = ShenheJiluService(db)
     return service.get_shenhe_jilu_by_id(jilu_id)
-
 
 @router.put("/{jilu_id}", response_model=ShenheJiluResponse, summary="更新审核记录")
 async def update_shenhe_jilu(
@@ -79,7 +75,6 @@ async def update_shenhe_jilu(
     service = ShenheJiluService(db)
     return service.update_shenhe_jilu(jilu_id, jilu_data, current_user.id)
 
-
 @router.get("/statistics/user/{user_id}", summary="获取用户审核统计")
 async def get_user_audit_statistics(
     user_id: str,
@@ -91,7 +86,6 @@ async def get_user_audit_statistics(
     """获取用户审核统计"""
     service = ShenheJiluService(db)
     return service.get_user_audit_statistics(user_id, start_date, end_date)
-
 
 @router.get("/statistics/my", summary="获取我的审核统计")
 async def get_my_audit_statistics(
@@ -116,7 +110,6 @@ async def get_my_audit_statistics(
         }
     }
 
-
 @router.get("/overdue/list", summary="获取超期审核记录")
 async def get_overdue_audit_records(
     user_id: Optional[str] = Query(None, description="用户ID筛选"),
@@ -126,7 +119,6 @@ async def get_overdue_audit_records(
     """获取超期的审核记录"""
     service = ShenheJiluService(db)
     return service.get_overdue_audit_records(user_id)
-
 
 @router.get("/overdue/my", summary="获取我的超期审核记录")
 async def get_my_overdue_audit_records(

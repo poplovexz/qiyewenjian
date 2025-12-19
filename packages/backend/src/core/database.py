@@ -16,7 +16,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # 创建基础模型类
 Base = declarative_base()
 
-
 def get_db():
     """获取数据库会话"""
     db = SessionLocal()

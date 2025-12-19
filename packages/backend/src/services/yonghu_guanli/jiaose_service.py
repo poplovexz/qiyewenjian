@@ -14,7 +14,6 @@ from schemas.yonghu_guanli.jiaose_schemas import (
     JiaoseListItem
 )
 
-
 class JiaoseService:
     """角色管理服务类"""
 

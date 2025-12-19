@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
 
-
 class ChanpinXiangmu(BaseModel):
     """产品项目模型"""
     

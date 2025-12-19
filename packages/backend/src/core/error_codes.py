@@ -19,13 +19,11 @@
 from enum import Enum
 from typing import NamedTuple
 
-
 class ErrorInfo(NamedTuple):
     """错误信息结构"""
     code: str
     message: str
     http_status: int
-
 
 class ErrorCode(Enum):
     """统一错误码枚举"""
@@ -136,4 +134,3 @@ class ErrorCode(Enum):
     @property
     def http_status(self) -> int:
         return self.value.http_status
-

@@ -17,7 +17,6 @@ from core.events import publish, EventNames
 
 logger = logging.getLogger(__name__)
 
-
 class ZhifuApiService:
     """第三方支付API服务类"""
     
@@ -430,4 +429,3 @@ class ZhifuApiService:
         )
         
         return alipay.close_order(dingdan.dingdan_bianhao)
-

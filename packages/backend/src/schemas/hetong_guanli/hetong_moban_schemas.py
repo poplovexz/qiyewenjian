@@ -5,7 +5,6 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 from pydantic import BaseModel, Field, validator
 
-
 class HetongMobanBase(BaseModel):
     """合同模板基础模型"""
     moban_mingcheng: str = Field(..., min_length=1, max_length=200, description="模板名称")
@@ -40,11 +39,9 @@ class HetongMobanBase(BaseModel):
             raise ValueError('是否当前版本必须是Y或N')
         return v
 
-
 class HetongMobanCreate(HetongMobanBase):
     """创建合同模板的请求模型"""
     pass
-
 
 class HetongMobanUpdate(BaseModel):
     """更新合同模板的请求模型"""
@@ -82,7 +79,6 @@ class HetongMobanUpdate(BaseModel):
             raise ValueError('是否当前版本必须是Y或N')
         return v
 
-
 class HetongMobanResponse(BaseModel):
     """合同模板响应模型"""
     id: str
@@ -109,14 +105,12 @@ class HetongMobanResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class HetongMobanListResponse(BaseModel):
     """合同模板列表响应模型"""
     total: int
     items: List[HetongMobanResponse]
     page: int
     size: int
-
 
 class HetongMobanPreview(BaseModel):
     """合同模板预览模型"""

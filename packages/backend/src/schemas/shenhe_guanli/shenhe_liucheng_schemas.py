@@ -5,7 +5,6 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field
 
-
 class ShenheLiuchengBase(BaseModel):
     """审核流程基础模型"""
     shenhe_leixing: str = Field(..., description="审核类型")
@@ -16,18 +15,15 @@ class ShenheLiuchengBase(BaseModel):
     zonggong_buzhou: int = Field(..., ge=1, description="总共步骤")
     beizhu: Optional[str] = Field(None, description="备注")
 
-
 class ShenheLiuchengCreate(ShenheLiuchengBase):
     """创建审核流程模型"""
     pass
-
 
 class ShenheLiuchengUpdate(BaseModel):
     """更新审核流程模型"""
     shenhe_zhuangtai: Optional[str] = Field(None, description="审核状态")
     dangqian_buzhou: Optional[int] = Field(None, description="当前步骤")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class ShenheLiuchengResponse(BaseModel):
     """审核流程响应模型"""
@@ -51,7 +47,6 @@ class ShenheLiuchengResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class ShenheLiuchengListParams(BaseModel):
     """审核流程列表查询参数"""
     page: int = Field(default=1, ge=1, description="页码")
@@ -62,7 +57,6 @@ class ShenheLiuchengListParams(BaseModel):
     shenqing_ren_id: Optional[str] = Field(None, description="申请人筛选")
     sort_by: Optional[str] = Field(default="created_at", description="排序字段")
     sort_order: Optional[str] = Field(default="desc", description="排序方向")
-
 
 class ShenheActionRequest(BaseModel):
     """审核操作请求模型"""

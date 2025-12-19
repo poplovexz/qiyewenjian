@@ -23,7 +23,6 @@ from core.error_codes import ErrorCode
 
 logger = get_logger(__name__)
 
-
 class RateLimiter:
     """
     滑动窗口限流器
@@ -137,12 +136,10 @@ class RateLimiter:
 
         return rate_info
 
-
 # 预定义的限流器实例
 default_limiter = RateLimiter(max_requests=100, window_seconds=60)
 strict_limiter = RateLimiter(max_requests=10, window_seconds=60)
 auth_limiter = RateLimiter(max_requests=5, window_seconds=60, key_prefix="auth_limit")
-
 
 def rate_limit(
     max_requests: int = 100,
@@ -171,4 +168,3 @@ def rate_limit(
             return await func(*args, **kwargs)
         return wrapper
     return decorator
-

@@ -15,7 +15,6 @@ from schemas.xiansuo_guanli import (
     XiansuoGenjinListResponse
 )
 
-
 class XiansuoGenjinService:
     """线索跟进记录管理服务类"""
     

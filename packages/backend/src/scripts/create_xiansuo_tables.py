@@ -17,7 +17,6 @@ from models.xiansuo_guanli import (
     XiansuoGenjin
 )
 
-
 def create_xiansuo_tables():
     """创建线索管理相关数据表"""
     
@@ -33,12 +32,10 @@ def create_xiansuo_tables():
             XiansuoGenjin.__table__
         ])
         
-        
     except Exception as e:
         return False
     
     return True
-
 
 def insert_sample_data():
     """插入示例数据"""
@@ -189,7 +186,6 @@ def insert_sample_data():
     
     return True
 
-
 def main():
     """主函数"""
     
@@ -202,7 +198,6 @@ def main():
         return False
     
     return True
-
 
 if __name__ == "__main__":
     success = main()

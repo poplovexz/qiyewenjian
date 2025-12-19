@@ -5,7 +5,6 @@ from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field, validator
 
-
 class QuanxianBase(BaseModel):
     """权限基础模型"""
     quanxian_ming: str = Field(..., min_length=2, max_length=50, description="权限名称")
@@ -37,11 +36,9 @@ class QuanxianBase(BaseModel):
             raise ValueError('状态只能是 active 或 inactive')
         return v
 
-
 class QuanxianCreate(QuanxianBase):
     """创建权限请求模型"""
     pass
-
 
 class QuanxianUpdate(BaseModel):
     """更新权限请求模型"""
@@ -75,7 +72,6 @@ class QuanxianUpdate(BaseModel):
             raise ValueError('状态只能是 active 或 inactive')
         return v
 
-
 class QuanxianResponse(QuanxianBase):
     """权限响应模型"""
     id: str
@@ -86,7 +82,6 @@ class QuanxianResponse(QuanxianBase):
 
     class Config:
         from_attributes = True
-
 
 class QuanxianListItem(BaseModel):
     """权限列表项模型"""
@@ -104,7 +99,6 @@ class QuanxianListItem(BaseModel):
     class Config:
         from_attributes = True
 
-
 class QuanxianListResponse(BaseModel):
     """权限列表响应模型"""
     items: List[QuanxianListItem]
@@ -112,7 +106,6 @@ class QuanxianListResponse(BaseModel):
     page: int
     size: int
     pages: int
-
 
 class QuanxianTreeNode(BaseModel):
     """权限树节点模型"""
@@ -126,11 +119,9 @@ class QuanxianTreeNode(BaseModel):
     class Config:
         from_attributes = True
 
-
 class QuanxianTreeResponse(QuanxianTreeNode):
     """权限树响应模型"""
     pass
-
 
 class QuanxianStatistics(BaseModel):
     """权限统计信息模型"""
@@ -142,14 +133,12 @@ class QuanxianStatistics(BaseModel):
     inactive_permissions: int = 0
     permissions_with_roles: int = 0
 
-
 class QuanxianGroupByModule(BaseModel):
     """按模块分组的权限模型"""
     module_name: str
     module_code: str
     permissions: List[QuanxianResponse]
     permission_count: int
-
 
 # 更新前向引用
 QuanxianTreeNode.model_rebuild()

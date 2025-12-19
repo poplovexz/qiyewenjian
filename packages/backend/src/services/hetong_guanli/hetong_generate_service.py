@@ -13,7 +13,6 @@ from models.xiansuo_guanli.xiansuo_baojia import XiansuoBaojia
 from models.kehu_guanli.kehu import Kehu
 from schemas.hetong_guanli.hetong_schemas import HetongResponse
 
-
 class HetongGenerateService:
     """合同生成服务类"""
     

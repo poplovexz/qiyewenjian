@@ -20,7 +20,6 @@ from schemas.zhifu_guanli.zhifu_liushui_schemas import (
 )
 from core.events import publish, EventNames
 
-
 class ZhifuLiushuiService:
     """支付流水管理服务类"""
     

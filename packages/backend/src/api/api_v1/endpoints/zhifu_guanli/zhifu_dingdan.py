@@ -22,7 +22,6 @@ from schemas.zhifu_guanli.zhifu_dingdan_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=ZhifuDingdanResponse, summary="创建支付订单")
 async def create_zhifu_dingdan(
     dingdan_data: ZhifuDingdanCreate,
@@ -41,7 +40,6 @@ async def create_zhifu_dingdan(
     """
     service = ZhifuDingdanService(db)
     return service.create_zhifu_dingdan(dingdan_data, current_user.id)
-
 
 @router.get("/", response_model=ZhifuDingdanListResponse, summary="获取支付订单列表")
 async def get_zhifu_dingdan_list(
@@ -72,7 +70,6 @@ async def get_zhifu_dingdan_list(
     service = ZhifuDingdanService(db)
     return service.get_zhifu_dingdan_list(params)
 
-
 @router.get("/statistics", response_model=ZhifuDingdanStatistics, summary="获取支付订单统计")
 async def get_zhifu_dingdan_statistics(
     db: Session = Depends(get_db),
@@ -86,7 +83,6 @@ async def get_zhifu_dingdan_statistics(
     service = ZhifuDingdanService(db)
     return service.get_zhifu_dingdan_statistics()
 
-
 @router.get("/{dingdan_id}", response_model=ZhifuDingdanResponse, summary="获取支付订单详情")
 async def get_zhifu_dingdan_detail(
     dingdan_id: str,
@@ -98,7 +94,6 @@ async def get_zhifu_dingdan_detail(
     """
     service = ZhifuDingdanService(db)
     return service.get_zhifu_dingdan_by_id(dingdan_id)
-
 
 @router.put("/{dingdan_id}", response_model=ZhifuDingdanResponse, summary="更新支付订单")
 async def update_zhifu_dingdan(
@@ -114,7 +109,6 @@ async def update_zhifu_dingdan(
     """
     service = ZhifuDingdanService(db)
     return service.update_zhifu_dingdan(dingdan_id, dingdan_data, current_user.id)
-
 
 @router.delete("/{dingdan_id}", summary="删除支付订单")
 async def delete_zhifu_dingdan(
@@ -137,7 +131,6 @@ async def delete_zhifu_dingdan(
     db.commit()
     
     return {"message": "支付订单删除成功"}
-
 
 @router.post("/{dingdan_id}/cancel", response_model=ZhifuDingdanResponse, summary="取消支付订单")
 async def cancel_zhifu_dingdan(

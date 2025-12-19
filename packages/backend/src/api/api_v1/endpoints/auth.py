@@ -17,9 +17,7 @@ from schemas.yonghu_guanli import (
 )
 from services.yonghu_guanli import AuthService
 
-
 router = APIRouter()
-
 
 @router.post("/login", response_model=LoginResponse, summary="用户登录")
 async def login(
@@ -37,7 +35,6 @@ async def login(
     auth_service = AuthService(db)
     return auth_service.login(login_data)
 
-
 @router.post("/refresh", response_model=TokenResponse, summary="刷新令牌")
 async def refresh_token(
     refresh_data: RefreshTokenRequest,
@@ -52,7 +49,6 @@ async def refresh_token(
     """
     auth_service = AuthService(db)
     return auth_service.refresh_token(refresh_data.refresh_token)
-
 
 @router.get("/me", response_model=UserInfo, summary="获取当前用户信息")
 async def get_current_user_info(
@@ -84,7 +80,6 @@ async def get_current_user_info(
         permissions=user_permissions
     )
 
-
 @router.post("/change-password", summary="修改密码")
 async def change_password(
     password_data: ChangePasswordRequest,
@@ -115,7 +110,6 @@ async def change_password(
     )
     
     return {"message": "密码修改成功"}
-
 
 @router.post("/logout", summary="用户登出")
 async def logout(

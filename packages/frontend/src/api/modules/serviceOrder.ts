@@ -46,4 +46,3 @@ export const serviceOrderApi = {
     return request.get('/service-orders/', { params })
   }
 }
-

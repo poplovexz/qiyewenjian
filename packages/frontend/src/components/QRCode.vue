@@ -34,4 +34,3 @@ watch(() => props.size, generateQRCode)
 
 onMounted(generateQRCode)
 </script>
-

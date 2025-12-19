@@ -17,7 +17,6 @@ from schemas.shenhe_guanli import (
     ShenheGuizeListParams
 )
 
-
 class ShenheGuizeService:
     """审核规则配置服务"""
     

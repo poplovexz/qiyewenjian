@@ -16,7 +16,6 @@ from schemas.chanpin_guanli import (
     ChanpinFenleiOption
 )
 
-
 class ChanpinFenleiService:
     """产品分类管理服务类"""
     

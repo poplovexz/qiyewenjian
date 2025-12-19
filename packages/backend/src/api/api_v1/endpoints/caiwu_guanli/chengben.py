@@ -25,7 +25,6 @@ from schemas.caiwu_guanli.chengben_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=ChengbenJiluResponse, summary="创建成本记录")
 async def create_chengben_jilu(
     jilu_data: ChengbenJiluCreate,
@@ -43,7 +42,6 @@ async def create_chengben_jilu(
     """
     service = ChengbenService(db)
     return service.create_chengben_jilu(jilu_data, current_user.id)
-
 
 @router.get("/", response_model=ChengbenJiluListResponse, summary="获取成本记录列表")
 async def get_chengben_jilu_list(
@@ -82,7 +80,6 @@ async def get_chengben_jilu_list(
     service = ChengbenService(db)
     return service.get_chengben_jilu_list(params)
 
-
 @router.get("/{jilu_id}", response_model=ChengbenJiluResponse, summary="获取成本记录详情")
 async def get_chengben_jilu_detail(
     jilu_id: str,
@@ -94,7 +91,6 @@ async def get_chengben_jilu_detail(
     """
     service = ChengbenService(db)
     return service.get_chengben_jilu_by_id(jilu_id)
-
 
 @router.put("/{jilu_id}", response_model=ChengbenJiluResponse, summary="更新成本记录")
 async def update_chengben_jilu(
@@ -111,7 +107,6 @@ async def update_chengben_jilu(
     service = ChengbenService(db)
     return service.update_chengben_jilu(jilu_id, jilu_data, current_user.id)
 
-
 @router.post("/{jilu_id}/submit", response_model=ChengbenJiluResponse, summary="提交成本记录")
 async def submit_chengben_jilu(
     jilu_id: str,
@@ -125,7 +120,6 @@ async def submit_chengben_jilu(
     """
     service = ChengbenService(db)
     return service.submit_chengben_jilu(jilu_id, current_user.id)
-
 
 @router.post("/audit", response_model=ChengbenJiluResponse, summary="审核成本记录")
 async def audit_chengben_jilu(
@@ -147,7 +141,6 @@ async def audit_chengben_jilu(
         audit_request.shenhe_yijian,
         current_user.id
     )
-
 
 @router.post("/record", response_model=ChengbenJiluResponse, summary="成本入账")
 async def record_chengben(
@@ -174,7 +167,6 @@ async def record_chengben(
         current_user.id
     )
 
-
 @router.get("/statistics/overview", response_model=ChengbenStatistics, summary="获取成本统计信息")
 async def get_chengben_statistics(
     db: Session = Depends(get_db),
@@ -188,7 +180,6 @@ async def get_chengben_statistics(
     service = ChengbenService(db)
     return service.get_chengben_statistics()
 
-
 @router.get("/analysis/overview", response_model=ChengbenAnalysis, summary="获取成本分析")
 async def get_chengben_analysis(
     db: Session = Depends(get_db),
@@ -201,7 +192,6 @@ async def get_chengben_analysis(
     """
     service = ChengbenService(db)
     return service.get_chengben_analysis()
-
 
 @router.get("/pending/my", response_model=ChengbenJiluListResponse, summary="获取我的待处理成本记录")
 async def get_my_pending_costs(
@@ -233,7 +223,6 @@ async def get_my_pending_costs(
         pages=(len(user_items) + params.size - 1) // params.size
     )
 
-
 @router.get("/audit/pending", response_model=ChengbenJiluListResponse, summary="获取待审核成本记录")
 async def get_pending_audit_costs(
     page: int = Query(1, ge=1, description="页码"),
@@ -252,7 +241,6 @@ async def get_pending_audit_costs(
     service = ChengbenService(db)
     return service.get_chengben_jilu_list(params)
 
-
 @router.get("/record/pending", response_model=ChengbenJiluListResponse, summary="获取待入账成本记录")
 async def get_pending_record_costs(
     page: int = Query(1, ge=1, description="页码"),
@@ -270,7 +258,6 @@ async def get_pending_record_costs(
     )
     service = ChengbenService(db)
     return service.get_chengben_jilu_list(params)
-
 
 @router.delete("/{jilu_id}", summary="删除成本记录")
 async def delete_chengben_jilu(

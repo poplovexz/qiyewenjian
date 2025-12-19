@@ -5,7 +5,6 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
 
-
 class XiansuoGenjinBase(BaseModel):
     """线索跟进记录基础模式"""
     xiansuo_id: str = Field(..., description="线索ID")
@@ -18,11 +17,9 @@ class XiansuoGenjinBase(BaseModel):
     genjin_jieguo: Optional[str] = Field(None, description="跟进结果：interested-有兴趣，considering-考虑中，rejected-拒绝，no_response-无回应")
     fujian_lujing: Optional[str] = Field(None, max_length=500, description="附件路径（多个用逗号分隔）")
 
-
 class XiansuoGenjinCreate(XiansuoGenjinBase):
     """创建线索跟进记录模式"""
     genjin_shijian: Optional[datetime] = Field(None, description="跟进时间（不填则为当前时间）")
-
 
 class XiansuoGenjinUpdate(BaseModel):
     """更新线索跟进记录模式"""
@@ -36,7 +33,6 @@ class XiansuoGenjinUpdate(BaseModel):
     genjin_jieguo: Optional[str] = Field(None, description="跟进结果")
     fujian_lujing: Optional[str] = Field(None, max_length=500, description="附件路径")
 
-
 class XiansuoGenjinResponse(XiansuoGenjinBase):
     """线索跟进记录响应模式"""
     id: str
@@ -48,7 +44,6 @@ class XiansuoGenjinResponse(XiansuoGenjinBase):
     
     class Config:
         from_attributes = True
-
 
 class XiansuoGenjinListItem(BaseModel):
     """线索跟进记录列表项模式"""
@@ -64,7 +59,6 @@ class XiansuoGenjinListItem(BaseModel):
     
     class Config:
         from_attributes = True
-
 
 class XiansuoGenjinListResponse(BaseModel):
     """线索跟进记录列表响应模式"""

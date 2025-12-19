@@ -17,7 +17,6 @@ from schemas.bangong_guanli.caigou_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=CaigouShenqingResponse, summary="创建采购申请")
 async def create_caigou_shenqing(
     shenqing_data: CaigouShenqingCreate,
@@ -27,7 +26,6 @@ async def create_caigou_shenqing(
     """创建采购申请"""
     service = CaigouService(db)
     return service.create_caigou_shenqing(shenqing_data, current_user.id)
-
 
 @router.get("/", response_model=dict, summary="获取采购申请列表")
 async def get_caigou_shenqing_list(
@@ -50,7 +48,6 @@ async def get_caigou_shenqing_list(
         "pages": (total + size - 1) // size
     }
 
-
 @router.get("/{shenqing_id}", response_model=CaigouShenqingResponse, summary="获取采购申请详情")
 async def get_caigou_shenqing(
     shenqing_id: str,
@@ -60,7 +57,6 @@ async def get_caigou_shenqing(
     """获取采购申请详情"""
     service = CaigouService(db)
     return service.get_caigou_shenqing_by_id(shenqing_id)
-
 
 @router.put("/{shenqing_id}", response_model=CaigouShenqingResponse, summary="更新采购申请")
 async def update_caigou_shenqing(
@@ -73,7 +69,6 @@ async def update_caigou_shenqing(
     service = CaigouService(db)
     return service.update_caigou_shenqing(shenqing_id, update_data, current_user.id)
 
-
 @router.delete("/{shenqing_id}", summary="删除采购申请")
 async def delete_caigou_shenqing(
     shenqing_id: str,
@@ -83,7 +78,6 @@ async def delete_caigou_shenqing(
     """删除采购申请"""
     service = CaigouService(db)
     return service.delete_caigou_shenqing(shenqing_id, current_user.id)
-
 
 @router.post("/{shenqing_id}/submit", summary="提交审批")
 async def submit_caigou_for_approval(
@@ -95,7 +89,6 @@ async def submit_caigou_for_approval(
     service = CaigouService(db)
     return service.submit_for_approval(shenqing_id, current_user.id)
 
-
 @router.post("/{shenqing_id}/approve", summary="审批通过")
 async def approve_caigou_shenqing(
     shenqing_id: str,
@@ -106,7 +99,6 @@ async def approve_caigou_shenqing(
     """审批通过采购申请"""
     service = CaigouService(db)
     return service.approve_application(shenqing_id, current_user.id, shenhe_yijian)
-
 
 @router.post("/{shenqing_id}/reject", summary="审批拒绝")
 async def reject_caigou_shenqing(

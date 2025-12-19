@@ -18,7 +18,6 @@ from schemas.hetong_guanli.hetong_moban_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=HetongMobanResponse, summary="创建合同模板")
 async def create_hetong_moban(
     moban_data: HetongMobanCreate,
@@ -36,7 +35,6 @@ async def create_hetong_moban(
     """
     service = HetongMobanService(db)
     return service.create_hetong_moban(moban_data, current_user.id)
-
 
 @router.get("/", response_model=HetongMobanListResponse, summary="获取合同模板列表")
 async def get_hetong_moban_list(
@@ -64,7 +62,6 @@ async def get_hetong_moban_list(
         shi_dangqian_banben=shi_dangqian_banben
     )
 
-
 @router.get("/{moban_id}", response_model=HetongMobanResponse, summary="获取合同模板详情")
 async def get_hetong_moban_detail(
     moban_id: str,
@@ -76,7 +73,6 @@ async def get_hetong_moban_detail(
     """
     service = HetongMobanService(db)
     return service.get_hetong_moban_by_id(moban_id)
-
 
 @router.put("/{moban_id}", response_model=HetongMobanResponse, summary="更新合同模板")
 async def update_hetong_moban(
@@ -91,7 +87,6 @@ async def update_hetong_moban(
     service = HetongMobanService(db)
     return service.update_hetong_moban(moban_id, moban_data)
 
-
 @router.delete("/{moban_id}", summary="删除合同模板")
 async def delete_hetong_moban(
     moban_id: str,
@@ -104,7 +99,6 @@ async def delete_hetong_moban(
     service = HetongMobanService(db)
     service.delete_hetong_moban(moban_id)
     return {"message": "合同模板删除成功"}
-
 
 @router.patch("/{moban_id}/status", response_model=HetongMobanResponse, summary="更新模板状态")
 async def update_moban_status(
@@ -121,7 +115,6 @@ async def update_moban_status(
     service = HetongMobanService(db)
     return service.update_moban_status(moban_id, new_status)
 
-
 @router.post("/{moban_id}/preview", summary="预览合同模板")
 async def preview_hetong_moban(
     moban_id: str,
@@ -136,7 +129,6 @@ async def preview_hetong_moban(
     content = service.preview_hetong_moban(moban_id, bianliang_zhis)
     return {"content": content}
 
-
 @router.get("/{moban_id}/variables", summary="获取模板变量配置")
 async def get_moban_variables(
     moban_id: str,
@@ -149,7 +141,6 @@ async def get_moban_variables(
     service = HetongMobanService(db)
     variables = service.get_moban_bianliang(moban_id)
     return {"variables": variables}
-
 
 @router.get("/statistics/overview", summary="获取合同模板统计信息")
 async def get_hetong_moban_statistics(

@@ -15,7 +15,6 @@ from schemas.deploy.deploy_schemas import (
 
 router = APIRouter()
 
-
 @router.get("/configs", response_model=List[DeployConfigResponse])
 def get_all_configs(
     db: Session = Depends(get_db),
@@ -43,7 +42,6 @@ def get_all_configs(
         )
         for config in configs
     ]
-
 
 @router.get("/configs/{environment}", response_model=DeployConfigResponse)
 def get_config(
@@ -73,7 +71,6 @@ def get_config(
         updated_at=config.updated_at,
     )
 
-
 @router.post("/configs", response_model=DeployConfigResponse)
 def create_config(
     config: DeployConfigCreate,
@@ -101,7 +98,6 @@ def create_config(
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.put("/configs/{environment}", response_model=DeployConfigResponse)
 def update_config(
@@ -132,7 +128,6 @@ def update_config(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-
 @router.delete("/configs/{environment}")
 def delete_config(
     environment: str,
@@ -146,4 +141,3 @@ def delete_config(
         raise HTTPException(status_code=404, detail=f"环境 {environment} 的配置不存在")
     
     return {"message": "配置已删除"}
-

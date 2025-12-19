@@ -17,9 +17,7 @@ from schemas.chanpin_guanli import (
 )
 from services.chanpin_guanli import ChanpinFenleiService
 
-
 router = APIRouter()
-
 
 @router.get("/", response_model=ChanpinFenleiListResponse, summary="获取产品分类列表")
 async def get_fenlei_list(
@@ -48,7 +46,6 @@ async def get_fenlei_list(
             detail=f"获取产品分类列表失败: {str(e)}"
         )
 
-
 @router.get("/options", response_model=List[ChanpinFenleiOption], summary="获取产品分类选项")
 async def get_fenlei_options(
     chanpin_leixing: Optional[str] = Query(None, description="产品类型筛选"),
@@ -65,7 +62,6 @@ async def get_fenlei_options(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"获取产品分类选项失败: {str(e)}"
         )
-
 
 @router.get("/{fenlei_id}", response_model=ChanpinFenleiResponse, summary="获取产品分类详情")
 async def get_fenlei_detail(
@@ -93,7 +89,6 @@ async def get_fenlei_detail(
             detail=f"获取产品分类详情失败: {str(e)}"
         )
 
-
 @router.post("/", response_model=ChanpinFenleiResponse, summary="创建产品分类")
 async def create_fenlei(
     fenlei_data: ChanpinFenleiCreate,
@@ -115,7 +110,6 @@ async def create_fenlei(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"创建产品分类失败: {str(e)}"
         )
-
 
 @router.put("/{fenlei_id}", response_model=ChanpinFenleiResponse, summary="更新产品分类")
 async def update_fenlei(
@@ -140,7 +134,6 @@ async def update_fenlei(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"更新产品分类失败: {str(e)}"
         )
-
 
 @router.delete("/{fenlei_id}", summary="删除产品分类")
 async def delete_fenlei(

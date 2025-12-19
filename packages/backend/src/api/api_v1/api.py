@@ -111,7 +111,6 @@ api_router.include_router(system_config.router, prefix="/system", tags=["系统�
 api_router.include_router(deploy.router, prefix="/deploy", tags=["部署管理"])
 api_router.include_router(deploy_config.router, prefix="/deploy", tags=["部署配置"])
 
-
 @api_router.get("/")
 async def api_info() -> dict[str, str]:
     """API 信息"""

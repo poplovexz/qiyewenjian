@@ -21,7 +21,6 @@ from services.hetong_guanli.hetong_service import HetongService
 
 router = APIRouter()
 
-
 @router.post("/", response_model=HetongResponse)
 def create_hetong(
     hetong_data: HetongCreate,
@@ -32,7 +31,6 @@ def create_hetong(
     service = HetongService(db)
     return service.create_hetong(hetong_data, current_user.id)
 
-
 @router.post("/from-quote/{baojia_id}", response_model=HetongResponse)
 def create_hetong_from_baojia(
     baojia_id: str,
@@ -42,7 +40,6 @@ def create_hetong_from_baojia(
     """基于报价自动生成合同"""
     service = HetongService(db)
     return service.create_hetong_from_baojia(baojia_id, current_user.id)
-
 
 @router.post("/from-quote-direct", response_model=HetongResponse)
 def create_hetong_from_quote_direct(
@@ -58,7 +55,6 @@ def create_hetong_from_quote_direct(
         custom_amount=request.get("custom_amount"),
         change_reason=request.get("change_reason")
     )
-
 
 @router.get("/", response_model=HetongListResponse)
 def get_hetong_list(
@@ -82,7 +78,6 @@ def get_hetong_list(
         hetong_laiyuan=hetong_laiyuan
     )
 
-
 @router.get("/{hetong_id}", response_model=HetongResponse)
 def get_hetong_by_id(
     hetong_id: str,
@@ -92,7 +87,6 @@ def get_hetong_by_id(
     """根据ID获取合同"""
     service = HetongService(db)
     return service.get_hetong_by_id(hetong_id)
-
 
 @router.put("/{hetong_id}", response_model=HetongResponse)
 def update_hetong(
@@ -105,7 +99,6 @@ def update_hetong(
     service = HetongService(db)
     return service.update_hetong(hetong_id, hetong_data)
 
-
 @router.delete("/{hetong_id}")
 def delete_hetong(
     hetong_id: str,
@@ -116,7 +109,6 @@ def delete_hetong(
     service = HetongService(db)
     service.delete_hetong(hetong_id)
     return {"message": "合同删除成功"}
-
 
 @router.post("/{hetong_id}/void", response_model=HetongResponse)
 def void_hetong(
@@ -132,7 +124,6 @@ def void_hetong(
         raise HTTPException(status_code=400, detail="作废原因不能为空")
     return service.void_hetong(hetong_id, void_reason, current_user.id)
 
-
 @router.post("/preview", response_model=HetongPreviewResponse)
 def preview_hetong(
     preview_request: HetongPreviewRequest,
@@ -142,7 +133,6 @@ def preview_hetong(
     """预览合同内容"""
     service = HetongService(db)
     return service.preview_hetong(preview_request)
-
 
 @router.post("/{hetong_id}/sign", response_model=HetongResponse)
 def sign_hetong(
@@ -158,7 +148,6 @@ def sign_hetong(
     
     service = HetongService(db)
     return service.sign_hetong(hetong_id, sign_request, current_user.id, client_ip)
-
 
 @router.get("/by-quote/{baojia_id}", response_model=HetongResponse)
 def get_hetong_by_baojia_id(

@@ -22,7 +22,6 @@ from schemas.xiansuo_guanli.xiansuo_baojia_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=XiansuoBaojiaResponse)
 async def create_baojia(
     baojia_data: XiansuoBaojiaCreate,
@@ -32,7 +31,6 @@ async def create_baojia(
     """创建线索报价"""
     service = XiansuoBaojiaService(db)
     return await service.create_baojia(baojia_data, current_user.id)
-
 
 @router.get("/", response_model=XiansuoBaojiaListResponse)
 async def get_baojia_list(
@@ -57,7 +55,6 @@ async def get_baojia_list(
     service = XiansuoBaojiaService(db)
     return await service.get_baojia_list(params)
 
-
 @router.get("/statistics", response_model=XiansuoBaojiaStatistics)
 async def get_baojia_statistics(
     db: Session = Depends(get_db),
@@ -66,7 +63,6 @@ async def get_baojia_statistics(
     """获取报价统计"""
     service = XiansuoBaojiaService(db)
     return await service.get_baojia_statistics()
-
 
 @router.get("/product-data", response_model=ChanpinDataForBaojia)
 async def get_product_data_for_baojia(
@@ -98,7 +94,6 @@ async def get_product_data_for_baojia(
 
     return result
 
-
 @router.get("/xiansuo/{xiansuo_id}", response_model=List[XiansuoBaojiaResponse])
 async def get_xiansuo_baojia_list(
     xiansuo_id: str,
@@ -109,7 +104,6 @@ async def get_xiansuo_baojia_list(
     service = XiansuoBaojiaService(db)
     return await service.get_baojia_by_xiansuo(xiansuo_id)
 
-
 @router.get("/{baojia_id}", response_model=XiansuoBaojiaResponse)
 async def get_baojia_detail(
     baojia_id: str,
@@ -119,7 +113,6 @@ async def get_baojia_detail(
     """获取报价详情"""
     service = XiansuoBaojiaService(db)
     return await service.get_baojia_detail(baojia_id)
-
 
 @router.get("/{baojia_id}/detail", response_model=XiansuoBaojiaDetailResponse, summary="获取报价详情（包含线索信息）")
 async def get_baojia_detail_with_xiansuo(
@@ -135,7 +128,6 @@ async def get_baojia_detail_with_xiansuo(
     service = XiansuoBaojiaService(db)
     return await service.get_baojia_detail_with_xiansuo(baojia_id)
 
-
 @router.put("/{baojia_id}", response_model=XiansuoBaojiaResponse)
 async def update_baojia(
     baojia_id: str,
@@ -147,7 +139,6 @@ async def update_baojia(
     service = XiansuoBaojiaService(db)
     return await service.update_baojia(baojia_id, baojia_data, current_user.id)
 
-
 @router.patch("/{baojia_id}/status", response_model=XiansuoBaojiaResponse)
 async def update_baojia_status(
     baojia_id: str,
@@ -158,7 +149,6 @@ async def update_baojia_status(
     """更新报价状态"""
     service = XiansuoBaojiaService(db)
     return await service.update_baojia_status(baojia_id, new_status, current_user.id)
-
 
 @router.delete("/{baojia_id}")
 async def delete_baojia(
@@ -178,7 +168,6 @@ async def delete_baojia(
             detail="删除失败"
         )
 
-
 @router.post("/{baojia_id}/confirm", response_model=XiansuoBaojiaResponse)
 async def confirm_baojia(
     baojia_id: str,
@@ -189,7 +178,6 @@ async def confirm_baojia(
     service = XiansuoBaojiaService(db)
     return await service.confirm_baojia(baojia_id, current_user.id)
 
-
 @router.post("/{baojia_id}/reject", response_model=XiansuoBaojiaResponse)
 async def reject_baojia(
     baojia_id: str,
@@ -199,7 +187,6 @@ async def reject_baojia(
     """拒绝报价"""
     service = XiansuoBaojiaService(db)
     return await service.reject_baojia(baojia_id, current_user.id)
-
 
 @router.post("/check-expired")
 async def check_expired_baojia(

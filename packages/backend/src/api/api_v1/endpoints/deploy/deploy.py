@@ -18,7 +18,6 @@ from schemas.deploy.deploy_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/trigger", response_model=DeployStatusResponse, summary="触发部署")
 def trigger_deploy(
     request: DeployTriggerRequest,
@@ -50,7 +49,6 @@ def trigger_deploy(
         error_message=deploy.error_message,
     )
 
-
 @router.get("/status/{deploy_id}", response_model=DeployStatusResponse, summary="获取部署状态")
 def get_deploy_status(
     deploy_id: int,
@@ -65,7 +63,6 @@ def get_deploy_status(
         raise HTTPException(status_code=404, detail="部署记录不存在")
     
     return status
-
 
 @router.get("/logs/{deploy_id}", response_model=DeployLogResponse, summary="获取部署日志")
 def get_deploy_logs(
@@ -88,7 +85,6 @@ def get_deploy_logs(
         is_complete=is_complete
     )
 
-
 @router.get("/history", response_model=DeployHistoryListResponse, summary="获取部署历史")
 def get_deploy_history(
     page: int = Query(1, ge=1, description="页码"),
@@ -108,7 +104,6 @@ def get_deploy_history(
         page=page,
         size=size
     )
-
 
 @router.get("/history/{deploy_id}", response_model=DeployHistoryResponse, summary="获取部署详情")
 def get_deploy_detail(
@@ -144,7 +139,6 @@ def get_deploy_detail(
         updated_at=deploy.updated_at,
     )
 
-
 @router.post("/cancel/{deploy_id}", summary="取消部署")
 def cancel_deploy(
     deploy_id: int,
@@ -167,7 +161,6 @@ def cancel_deploy(
         raise HTTPException(status_code=400, detail="无法取消部署，可能已经完成或不存在")
     
     return {"message": "部署已取消"}
-
 
 @router.post("/rollback", response_model=DeployStatusResponse, summary="回滚到指定版本")
 def rollback_deploy(
@@ -223,7 +216,6 @@ def rollback_deploy(
         error_message=deploy.error_message,
     )
 
-
 @router.get("/branches", summary="获取Git分支列表")
 def get_git_branches(
     db: Session = Depends(get_db),
@@ -236,7 +228,6 @@ def get_git_branches(
     """
     service = DeployService(db)
     return service.get_git_branches()
-
 
 @router.get("/pre-check", summary="部署前检查")
 def pre_deploy_check(
@@ -260,4 +251,3 @@ def pre_deploy_check(
     """
     service = DeployService(db)
     return service.pre_deploy_check(deep_check=deep_check)
-

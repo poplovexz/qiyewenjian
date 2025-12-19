@@ -27,7 +27,6 @@ from schemas.fuwu_guanli.fuwu_gongdan_schemas import (
     FuwuGongdanRizhiResponse
 )
 
-
 class FuwuGongdanService:
     """服务工单管理服务类"""
     

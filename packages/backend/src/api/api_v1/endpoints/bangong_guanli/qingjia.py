@@ -17,7 +17,6 @@ from schemas.bangong_guanli.qingjia_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=QingjiaShenqingResponse, summary="创建请假申请")
 async def create_qingjia_shenqing(
     shenqing_data: QingjiaShenqingCreate,
@@ -31,7 +30,6 @@ async def create_qingjia_shenqing(
     """
     service = QingjiaService(db)
     return service.create_qingjia_shenqing(shenqing_data, current_user.id)
-
 
 @router.get("/", response_model=dict, summary="获取请假申请列表")
 async def get_qingjia_shenqing_list(
@@ -58,7 +56,6 @@ async def get_qingjia_shenqing_list(
         "pages": (total + size - 1) // size
     }
 
-
 @router.get("/{shenqing_id}", response_model=QingjiaShenqingResponse, summary="获取请假申请详情")
 async def get_qingjia_shenqing(
     shenqing_id: str,
@@ -72,7 +69,6 @@ async def get_qingjia_shenqing(
     """
     service = QingjiaService(db)
     return service.get_qingjia_shenqing_by_id(shenqing_id)
-
 
 @router.put("/{shenqing_id}", response_model=QingjiaShenqingResponse, summary="更新请假申请")
 async def update_qingjia_shenqing(
@@ -89,7 +85,6 @@ async def update_qingjia_shenqing(
     service = QingjiaService(db)
     return service.update_qingjia_shenqing(shenqing_id, update_data, current_user.id)
 
-
 @router.delete("/{shenqing_id}", summary="删除请假申请")
 async def delete_qingjia_shenqing(
     shenqing_id: str,
@@ -103,7 +98,6 @@ async def delete_qingjia_shenqing(
     """
     service = QingjiaService(db)
     return service.delete_qingjia_shenqing(shenqing_id, current_user.id)
-
 
 @router.post("/{shenqing_id}/submit", summary="提交审批")
 async def submit_qingjia_for_approval(
@@ -119,7 +113,6 @@ async def submit_qingjia_for_approval(
     service = QingjiaService(db)
     return service.submit_for_approval(shenqing_id, current_user.id)
 
-
 @router.post("/{shenqing_id}/approve", summary="审批通过")
 async def approve_qingjia_shenqing(
     shenqing_id: str,
@@ -134,7 +127,6 @@ async def approve_qingjia_shenqing(
     """
     service = QingjiaService(db)
     return service.approve_application(shenqing_id, current_user.id, shenhe_yijian)
-
 
 @router.post("/{shenqing_id}/reject", summary="审批拒绝")
 async def reject_qingjia_shenqing(

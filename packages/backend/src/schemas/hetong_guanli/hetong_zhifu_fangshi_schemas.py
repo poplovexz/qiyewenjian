@@ -5,7 +5,6 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field, validator, ConfigDict
 
-
 # 简化的关联对象Schema
 class YifangZhutiSimple(BaseModel):
     """乙方主体简化信息"""
@@ -14,7 +13,6 @@ class YifangZhutiSimple(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-
 class ZhifuPeizhiSimple(BaseModel):
     """支付配置简化信息"""
     id: str
@@ -22,7 +20,6 @@ class ZhifuPeizhiSimple(BaseModel):
     peizhi_leixing: str
 
     model_config = ConfigDict(from_attributes=True)
-
 
 class HetongZhifuFangshiBase(BaseModel):
     """合同支付方式基础模型 - 关联到支付配置"""
@@ -47,11 +44,9 @@ class HetongZhifuFangshiBase(BaseModel):
             raise ValueError('是否默认必须是Y或N')
         return v
 
-
 class HetongZhifuFangshiCreate(HetongZhifuFangshiBase):
     """创建合同支付方式的请求模型"""
     pass
-
 
 class HetongZhifuFangshiUpdate(BaseModel):
     """更新合同支付方式的请求模型"""
@@ -76,7 +71,6 @@ class HetongZhifuFangshiUpdate(BaseModel):
             raise ValueError('是否默认必须是Y或N')
         return v
 
-
 class HetongZhifuFangshiResponse(BaseModel):
     """合同支付方式响应模型"""
     id: str
@@ -96,7 +90,6 @@ class HetongZhifuFangshiResponse(BaseModel):
     zhifu_peizhi: Optional[ZhifuPeizhiSimple] = None  # 支付配置信息
 
     model_config = ConfigDict(from_attributes=True)
-
 
 class HetongZhifuFangshiListResponse(BaseModel):
     """合同支付方式列表响应模型"""

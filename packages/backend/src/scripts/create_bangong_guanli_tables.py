@@ -19,13 +19,11 @@ from models.bangong_guanli import (
     GongzuoJiaojie
 )
 
-
 def create_tables():
     """创建办公管理相关数据表"""
     try:
         # 创建数据库引擎
         engine = create_engine(str(settings.DATABASE_URL))
-        
         
         # 创建表
         Base.metadata.create_all(bind=engine, tables=[
@@ -36,20 +34,15 @@ def create_tables():
             GongzuoJiaojie.__table__
         ])
         
-        
     except Exception as e:
         import traceback
         traceback.print_exc()
         sys.exit(1)
-
 
 def main():
     """主函数"""
     
     create_tables()
     
-
-
 if __name__ == "__main__":
     main()
-

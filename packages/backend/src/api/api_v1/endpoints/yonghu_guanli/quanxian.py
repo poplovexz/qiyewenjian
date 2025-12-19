@@ -19,7 +19,6 @@ from services.yonghu_guanli.quanxian_service import QuanxianService
 
 router = APIRouter()
 
-
 @router.get("/", response_model=QuanxianListResponse, summary="获取权限列表")
 async def get_quanxian_list(
     page: int = Query(1, ge=1, description="页码"),
@@ -47,7 +46,6 @@ async def get_quanxian_list(
             detail=f"获取权限列表失败: {str(e)}"
         )
 
-
 @router.get("/tree", response_model=List[QuanxianTreeResponse], summary="获取权限树形结构")
 async def get_quanxian_tree(
     zhuangtai: Optional[str] = Query("active", description="状态筛选"),
@@ -63,7 +61,6 @@ async def get_quanxian_tree(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"获取权限树失败: {str(e)}"
         )
-
 
 @router.get("/{quanxian_id}", response_model=QuanxianResponse, summary="获取权限详情")
 async def get_quanxian_detail(
@@ -87,7 +84,6 @@ async def get_quanxian_detail(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"获取权限详情失败: {str(e)}"
         )
-
 
 @router.post("/", response_model=QuanxianResponse, summary="创建权限")
 async def create_quanxian(
@@ -121,7 +117,6 @@ async def create_quanxian(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"创建权限失败: {str(e)}"
         )
-
 
 @router.put("/{quanxian_id}", response_model=QuanxianResponse, summary="更新权限")
 async def update_quanxian(
@@ -167,7 +162,6 @@ async def update_quanxian(
             detail=f"更新权限失败: {str(e)}"
         )
 
-
 @router.delete("/{quanxian_id}", summary="删除权限")
 async def delete_quanxian(
     quanxian_id: str,
@@ -202,7 +196,6 @@ async def delete_quanxian(
             detail=f"删除权限失败: {str(e)}"
         )
 
-
 @router.get("/by-resource-type/{ziyuan_leixing}", response_model=List[QuanxianResponse], summary="按资源类型获取权限")
 async def get_quanxian_by_resource_type(
     ziyuan_leixing: str,
@@ -233,7 +226,6 @@ async def get_quanxian_by_resource_type(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"获取权限列表失败: {str(e)}"
         )
-
 
 @router.get("/statistics/summary", summary="获取权限统计信息")
 async def get_quanxian_statistics(

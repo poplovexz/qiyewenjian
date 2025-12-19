@@ -17,7 +17,6 @@ from core.security import (
 from core.config import settings
 from schemas.yonghu_guanli import LoginRequest, TokenResponse, UserInfo
 
-
 class AuthService:
     """认证服务类"""
     

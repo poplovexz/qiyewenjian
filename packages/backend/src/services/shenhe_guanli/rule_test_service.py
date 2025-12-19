@@ -9,7 +9,6 @@ from fastapi import HTTPException
 
 from models.shenhe_guanli import ShenheGuize
 
-
 class RuleTestService:
     """规则测试服务"""
     
@@ -46,7 +45,6 @@ class RuleTestService:
 
         # 执行规则测试
         test_result = self._evaluate_trigger_conditions(trigger_conditions, test_data)
-
 
         # 如果触发，模拟流程创建
         workflow_preview = None

@@ -15,7 +15,6 @@ import defusedxml.ElementTree as ET
 
 logger = logging.getLogger(__name__)
 
-
 class WeixinPaySandboxUtil:
     """微信支付沙箱环境工具类 (API v2)"""
     
@@ -507,4 +506,3 @@ class WeixinPaySandboxUtil:
                 "data": None,
                 "message": f"回调验证异常: {str(e)}"
             }
-

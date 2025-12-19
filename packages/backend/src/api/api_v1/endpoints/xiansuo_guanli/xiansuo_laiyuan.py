@@ -18,7 +18,6 @@ from schemas.xiansuo_guanli import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=XiansuoLaiyuanResponse, summary="创建线索来源")
 async def create_laiyuan(
     laiyuan_data: XiansuoLaiyuanCreate,
@@ -35,7 +34,6 @@ async def create_laiyuan(
     """
     service = XiansuoLaiyuanService(db)
     return await service.create_laiyuan(laiyuan_data, current_user.id)
-
 
 @router.get("/", response_model=XiansuoLaiyuanListResponse, summary="获取线索来源列表")
 async def get_laiyuan_list(
@@ -68,7 +66,6 @@ async def get_laiyuan_list(
         has_read_all_permission=has_read_all
     )
 
-
 @router.get("/active", response_model=List[XiansuoLaiyuanResponse], summary="获取启用的线索来源")
 async def get_active_laiyuan_list(
     db: Session = Depends(get_db),
@@ -77,7 +74,6 @@ async def get_active_laiyuan_list(
     """获取所有启用状态的线索来源"""
     service = XiansuoLaiyuanService(db)
     return await service.get_active_laiyuan_list()
-
 
 @router.get("/{laiyuan_id}", response_model=XiansuoLaiyuanResponse, summary="获取线索来源详情")
 async def get_laiyuan_detail(
@@ -94,7 +90,6 @@ async def get_laiyuan_detail(
     
     return laiyuan
 
-
 @router.put("/{laiyuan_id}", response_model=XiansuoLaiyuanResponse, summary="更新线索来源")
 async def update_laiyuan(
     laiyuan_id: str,
@@ -110,7 +105,6 @@ async def update_laiyuan(
     """
     service = XiansuoLaiyuanService(db)
     return await service.update_laiyuan(laiyuan_id, laiyuan_data, current_user.id)
-
 
 @router.delete("/{laiyuan_id}", summary="删除线索来源")
 async def delete_laiyuan(

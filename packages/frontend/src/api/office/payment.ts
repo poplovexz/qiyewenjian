@@ -100,4 +100,3 @@ export function rejectPayment(id: string, shenhe_yijian: string) {
     params: { shenhe_yijian }
   })
 }
-

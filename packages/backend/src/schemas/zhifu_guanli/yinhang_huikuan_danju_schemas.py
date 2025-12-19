@@ -6,7 +6,6 @@ from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field
 
-
 class YinhangHuikuanDanjuBase(BaseModel):
     """银行汇款单据基础模型"""
     hetong_zhifu_id: str = Field(..., description="合同支付ID")
@@ -19,11 +18,9 @@ class YinhangHuikuanDanjuBase(BaseModel):
     huikuan_zhanghu: Optional[str] = Field(None, description="汇款账户")
     beizhu: Optional[str] = Field(None, description="备注")
 
-
 class YinhangHuikuanDanjuCreate(YinhangHuikuanDanjuBase):
     """创建银行汇款单据模型"""
     pass
-
 
 class YinhangHuikuanDanjuUpdate(BaseModel):
     """更新银行汇款单据模型"""
@@ -37,7 +34,6 @@ class YinhangHuikuanDanjuUpdate(BaseModel):
     shenhe_zhuangtai: Optional[str] = Field(None, description="审核状态")
     shenhe_yijian: Optional[str] = Field(None, description="审核意见")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class YinhangHuikuanDanjuResponse(BaseModel):
     """银行汇款单据响应模型"""
@@ -65,14 +61,12 @@ class YinhangHuikuanDanjuResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class YinhangHuikuanDanjuListResponse(BaseModel):
     """银行汇款单据列表响应模型"""
     total: int = Field(..., description="总数量")
     items: List[YinhangHuikuanDanjuResponse] = Field(..., description="汇款单据列表")
     page: int = Field(..., description="当前页码")
     size: int = Field(..., description="每页大小")
-
 
 class YinhangHuikuanDanjuListParams(BaseModel):
     """银行汇款单据列表查询参数"""
@@ -84,7 +78,6 @@ class YinhangHuikuanDanjuListParams(BaseModel):
     shenhe_ren_id: Optional[str] = Field(None, description="审核人筛选")
     sort_by: Optional[str] = Field(default="created_at", description="排序字段")
     sort_order: Optional[str] = Field(default="desc", description="排序方向")
-
 
 class HuikuanDanjuAuditRequest(BaseModel):
     """汇款单据审核请求模型"""

@@ -20,7 +20,6 @@ from schemas.caiwu_guanli.chengben_schemas import (
     ChengbenAnalysis
 )
 
-
 class ChengbenService:
     """成本记录管理服务类"""
     

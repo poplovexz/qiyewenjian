@@ -16,7 +16,6 @@ from schemas.chanpin_guanli import (
     ChanpinXiangmuDetailResponse
 )
 
-
 class ChanpinXiangmuService:
     """产品项目管理服务类"""
     

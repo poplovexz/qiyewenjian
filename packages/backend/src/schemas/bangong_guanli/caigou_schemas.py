@@ -6,7 +6,6 @@ from typing import Optional
 from decimal import Decimal
 from pydantic import BaseModel, Field
 
-
 class CaigouShenqingBase(BaseModel):
     """采购申请基础模式"""
     caigou_leixing: str = Field(..., description="采购类型")
@@ -20,11 +19,9 @@ class CaigouShenqingBase(BaseModel):
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
     beizhu: Optional[str] = Field(None, description="备注")
 
-
 class CaigouShenqingCreate(CaigouShenqingBase):
     """创建采购申请模式"""
     pass
-
 
 class CaigouShenqingUpdate(BaseModel):
     """更新采购申请模式"""
@@ -40,7 +37,6 @@ class CaigouShenqingUpdate(BaseModel):
     fujian_lujing: Optional[str] = Field(None, description="附件路径")
     caigou_zhuangtai: Optional[str] = Field(None, description="采购状态")
     beizhu: Optional[str] = Field(None, description="备注")
-
 
 class CaigouShenqingResponse(CaigouShenqingBase):
     """采购申请响应模式"""
@@ -60,7 +56,6 @@ class CaigouShenqingResponse(CaigouShenqingBase):
     class Config:
         from_attributes = True
 
-
 class CaigouShenqingListParams(BaseModel):
     """采购申请列表查询参数"""
     page: int = Field(1, ge=1, description="页码")
@@ -72,4 +67,3 @@ class CaigouShenqingListParams(BaseModel):
     kaishi_shijian: Optional[datetime] = Field(None, description="开始时间")
     jieshu_shijian: Optional[datetime] = Field(None, description="结束时间")
     search: Optional[str] = Field(None, description="搜索关键词")
-

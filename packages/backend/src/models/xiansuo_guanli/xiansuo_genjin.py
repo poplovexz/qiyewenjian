@@ -6,7 +6,6 @@ from sqlalchemy import Column, String, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from ..base import BaseModel
 
-
 class XiansuoGenjin(BaseModel):
     """线索跟进记录表"""
     

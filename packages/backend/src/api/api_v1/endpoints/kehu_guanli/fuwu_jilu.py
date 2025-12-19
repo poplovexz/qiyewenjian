@@ -19,7 +19,6 @@ from schemas.kehu_guanli.fuwu_jilu_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=FuwuJiluResponse, summary="创建服务记录")
 async def create_fuwu_jilu(
     fuwu_jilu_data: FuwuJiluCreate,
@@ -36,7 +35,6 @@ async def create_fuwu_jilu(
     """
     service = FuwuJiluService(db)
     return service.create_fuwu_jilu(fuwu_jilu_data, current_user.id)
-
 
 @router.get("/", response_model=FuwuJiluListResponse, summary="获取服务记录列表")
 async def get_fuwu_jilu_list(
@@ -66,7 +64,6 @@ async def get_fuwu_jilu_list(
         search=search
     )
 
-
 @router.get("/{fuwu_jilu_id}", response_model=FuwuJiluResponse, summary="获取服务记录详情")
 async def get_fuwu_jilu_detail(
     fuwu_jilu_id: str,
@@ -84,7 +81,6 @@ async def get_fuwu_jilu_detail(
     
     return fuwu_jilu
 
-
 @router.put("/{fuwu_jilu_id}", response_model=FuwuJiluResponse, summary="更新服务记录")
 async def update_fuwu_jilu(
     fuwu_jilu_id: str,
@@ -100,7 +96,6 @@ async def update_fuwu_jilu(
     service = FuwuJiluService(db)
     return service.update_fuwu_jilu(fuwu_jilu_id, fuwu_jilu_data, current_user.id)
 
-
 @router.delete("/{fuwu_jilu_id}", summary="删除服务记录")
 async def delete_fuwu_jilu(
     fuwu_jilu_id: str,
@@ -115,7 +110,6 @@ async def delete_fuwu_jilu(
     
     return {"message": "服务记录删除成功" if success else "服务记录删除失败"}
 
-
 @router.get("/kehu/{kehu_id}/records", response_model=FuwuJiluListResponse, summary="获取客户服务记录")
 async def get_kehu_fuwu_jilu_list(
     kehu_id: str,
@@ -129,7 +123,6 @@ async def get_kehu_fuwu_jilu_list(
     """
     service = FuwuJiluService(db)
     return service.get_kehu_fuwu_jilu_list(kehu_id, page, size)
-
 
 @router.patch("/{fuwu_jilu_id}/status", response_model=FuwuJiluResponse, summary="更新处理状态")
 async def update_chuli_zhuangtai(
@@ -150,7 +143,6 @@ async def update_chuli_zhuangtai(
     service = FuwuJiluService(db)
     return service.update_chuli_zhuangtai(fuwu_jilu_id, new_status, chuli_jieguo, current_user.id)
 
-
 @router.get("/statistics/overview", summary="获取服务记录统计信息")
 async def get_service_statistics(
     kehu_id: Optional[str] = Query(None, description="客户ID（可选，不传则统计全部）"),
@@ -164,7 +156,6 @@ async def get_service_statistics(
     """
     service = FuwuJiluService(db)
     return service.get_service_statistics(kehu_id)
-
 
 @router.post("/batch/status", summary="批量更新服务记录状态")
 async def batch_update_service_status(
@@ -184,7 +175,6 @@ async def batch_update_service_status(
     service = FuwuJiluService(db)
     return service.batch_update_status(record_ids, new_status, chuli_jieguo, current_user.id)
 
-
 @router.post("/batch/delete", summary="批量删除服务记录")
 async def batch_delete_service_records(
     record_ids: list[str],
@@ -198,7 +188,6 @@ async def batch_delete_service_records(
     """
     service = FuwuJiluService(db)
     return service.batch_delete(record_ids, current_user.id)
-
 
 @router.get("/kehu/{kehu_id}/summary", summary="获取客户服务记录摘要")
 async def get_customer_service_summary(

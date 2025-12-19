@@ -21,7 +21,6 @@ from schemas.caiwu_guanli.kaipiao_schemas import (
     KaipiaoStatistics
 )
 
-
 class KaipiaoService:
     """开票申请管理服务类"""
     

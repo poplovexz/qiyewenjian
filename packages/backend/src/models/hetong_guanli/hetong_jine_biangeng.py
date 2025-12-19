@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
 
-
 class HetongJineBiangeng(BaseModel):
     """合同金额变更记录表"""
     

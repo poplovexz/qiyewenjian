@@ -12,7 +12,6 @@ sys.path.insert(0, str(project_root))
 from sqlalchemy import create_engine, text
 from core.config import settings
 
-
 def init_system_permissions():
     """初始化系统设置相关权限"""
     
@@ -90,7 +89,5 @@ def init_system_permissions():
     except Exception as e:
         raise
 
-
 if __name__ == "__main__":
     init_system_permissions()
-

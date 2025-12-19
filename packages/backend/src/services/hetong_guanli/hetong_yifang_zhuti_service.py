@@ -15,7 +15,6 @@ from schemas.hetong_guanli import (
     HetongYifangZhutiListResponse
 )
 
-
 class HetongYifangZhutiService:
     """合同乙方主体服务类"""
     

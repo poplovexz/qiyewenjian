@@ -11,7 +11,6 @@ from sqlalchemy.orm import Session
 from core.database import SessionLocal
 from models.yonghu_guanli import Quanxian, Jiaose, JiaoseQuanxian
 
-
 def init_contract_permissions():
     """初始化合同模板管理权限"""
     db: Session = SessionLocal()
@@ -119,7 +118,6 @@ def init_contract_permissions():
             }
         ]
         
-        
         # 创建权限
         created_permissions = []
         for perm_data in contract_permissions:
@@ -163,13 +161,11 @@ def init_contract_permissions():
             db.commit()
         else:
         
-        
     except Exception as e:
         db.rollback()
         raise
     finally:
         db.close()
-
 
 if __name__ == "__main__":
     init_contract_permissions()

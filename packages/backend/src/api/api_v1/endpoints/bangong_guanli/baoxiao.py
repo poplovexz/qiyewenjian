@@ -19,7 +19,6 @@ from schemas.bangong_guanli.baoxiao_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=BaoxiaoShenqingResponse, summary="创建报销申请")
 async def create_baoxiao_shenqing(
     shenqing_data: BaoxiaoShenqingCreate,
@@ -40,7 +39,6 @@ async def create_baoxiao_shenqing(
     """
     service = BaoxiaoService(db)
     return service.create_baoxiao_shenqing(shenqing_data, current_user.id)
-
 
 @router.get("/", response_model=dict, summary="获取报销申请列表")
 async def get_baoxiao_shenqing_list(
@@ -79,7 +77,6 @@ async def get_baoxiao_shenqing_list(
         "pages": (total + size - 1) // size
     }
 
-
 @router.get("/my", response_model=dict, summary="获取我的报销申请列表")
 async def get_my_baoxiao_shenqing_list(
     page: int = Query(1, ge=1, description="页码"),
@@ -109,7 +106,6 @@ async def get_my_baoxiao_shenqing_list(
         "pages": (total + size - 1) // size
     }
 
-
 @router.get("/{shenqing_id}", response_model=BaoxiaoShenqingResponse, summary="获取报销申请详情")
 async def get_baoxiao_shenqing(
     shenqing_id: str,
@@ -123,7 +119,6 @@ async def get_baoxiao_shenqing(
     """
     service = BaoxiaoService(db)
     return service.get_baoxiao_shenqing_by_id(shenqing_id)
-
 
 @router.put("/{shenqing_id}", response_model=BaoxiaoShenqingResponse, summary="更新报销申请")
 async def update_baoxiao_shenqing(
@@ -141,7 +136,6 @@ async def update_baoxiao_shenqing(
     service = BaoxiaoService(db)
     return service.update_baoxiao_shenqing(shenqing_id, update_data, current_user.id)
 
-
 @router.delete("/{shenqing_id}", summary="删除报销申请")
 async def delete_baoxiao_shenqing(
     shenqing_id: str,
@@ -157,7 +151,6 @@ async def delete_baoxiao_shenqing(
     service = BaoxiaoService(db)
     return service.delete_baoxiao_shenqing(shenqing_id, current_user.id)
 
-
 @router.post("/{shenqing_id}/submit", summary="提交审批")
 async def submit_baoxiao_for_approval(
     shenqing_id: str,
@@ -171,7 +164,6 @@ async def submit_baoxiao_for_approval(
     """
     service = BaoxiaoService(db)
     return service.submit_for_approval(shenqing_id, current_user.id)
-
 
 @router.post("/{shenqing_id}/approve", summary="审批通过")
 async def approve_baoxiao_shenqing(
@@ -188,7 +180,6 @@ async def approve_baoxiao_shenqing(
     service = BaoxiaoService(db)
     return service.approve_application(shenqing_id, current_user.id, shenhe_yijian)
 
-
 @router.post("/{shenqing_id}/reject", summary="审批拒绝")
 async def reject_baoxiao_shenqing(
     shenqing_id: str,
@@ -203,4 +194,3 @@ async def reject_baoxiao_shenqing(
     """
     service = BaoxiaoService(db)
     return service.reject_application(shenqing_id, current_user.id, shenhe_yijian)
-

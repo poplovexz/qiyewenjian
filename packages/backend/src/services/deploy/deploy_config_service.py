@@ -9,7 +9,6 @@ from schemas.deploy.deploy_schemas import (
     DeployConfigUpdate,
     )
 
-
 class DeployConfigService:
     """部署配置服务"""
     
@@ -81,4 +80,3 @@ class DeployConfigService:
         self.db.commit()
         
         return True
-

@@ -15,13 +15,11 @@ from models.shenhe_guanli import ShenheGuize, ShenheLiucheng, ShenheJilu
 from models.zhifu_guanli import HetongZhifu, YinhangHuikuanDanju
 from models.hetong_guanli import HetongJineBiangeng
 
-
 def create_tables():
     """创建审核工作流相关表"""
     try:
         # 创建数据库引擎
         engine = create_engine(settings.DATABASE_URL)
-        
         
         # 创建表
         Base.metadata.create_all(bind=engine, tables=[
@@ -33,10 +31,8 @@ def create_tables():
             HetongJineBiangeng.__table__
         ])
         
-        
     except Exception as e:
         sys.exit(1)
-
 
 def init_default_audit_rules():
     """初始化默认审核规则"""
@@ -49,7 +45,6 @@ def init_default_audit_rules():
         engine = create_engine(settings.DATABASE_URL)
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         db = SessionLocal()
-        
         
         # 合同金额修正审核规则
         hetong_rule = ShenheGuize(
@@ -111,12 +106,10 @@ def init_default_audit_rules():
         db.add(baojia_rule)
         db.commit()
         
-        
     except Exception as e:
         db.rollback()
     finally:
         db.close()
-
 
 if __name__ == "__main__":
     create_tables()

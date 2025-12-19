@@ -11,7 +11,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sqlalchemy import text
 from core.database import engine
 
-
 def update_hetong_table():
     """更新合同表结构"""
     
@@ -159,10 +158,8 @@ def update_hetong_table():
                 connection.execute(text(sql))
                 connection.commit()
         
-        
     except Exception as e:
         raise
-
 
 if __name__ == "__main__":
     update_hetong_table()

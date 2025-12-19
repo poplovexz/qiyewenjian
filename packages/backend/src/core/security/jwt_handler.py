@@ -12,10 +12,8 @@ from core.config import settings
 from core.database import get_db
 from models import Yonghu
 
-
 # JWT 安全方案
 security = HTTPBearer()
-
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     """
@@ -44,7 +42,6 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
     )
     
     return encoded_jwt
-
 
 def verify_token(token: str) -> Dict[str, Any]:
     """
@@ -82,7 +79,6 @@ def verify_token(token: str) -> Dict[str, Any]:
             detail="令牌无效",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
@@ -126,7 +122,6 @@ async def get_current_user(
         )
     
     return user
-
 
 def create_refresh_token(yonghu_ming: str) -> str:
     """

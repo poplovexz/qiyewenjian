@@ -16,10 +16,8 @@ from schemas.xitong_guanli.system_config_schemas import (
 )
 from core.redis_client import redis_client
 
-
 # 系统启动时间
 _start_time = time.time()
-
 
 class SystemConfigService:
     """系统配置服务"""
@@ -188,4 +186,3 @@ class SystemConfigService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"值类型验证失败: {str(e)}"
             )
-

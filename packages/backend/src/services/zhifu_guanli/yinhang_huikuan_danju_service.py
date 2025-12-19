@@ -20,7 +20,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class YinhangHuikuanDanjuService:
     """银行汇款单据服务类"""
 

@@ -15,7 +15,6 @@ from schemas.yonghu_guanli import (
 )
 from core.security import get_password_hash
 
-
 class YonghuService:
     """用户管理服务类"""
     

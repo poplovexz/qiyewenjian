@@ -5,7 +5,6 @@ from sqlalchemy import Column, String, Text, ForeignKey, DateTime, Boolean, Inte
 from sqlalchemy.orm import relationship
 from models.base import BaseModel
 
-
 class KehuHeguishixiang(BaseModel):
     """客户合规事项配置表"""
 

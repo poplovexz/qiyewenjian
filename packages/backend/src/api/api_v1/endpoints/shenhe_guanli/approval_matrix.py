@@ -14,26 +14,22 @@ from services.shenhe_guanli.approval_matrix_service import ApprovalMatrixService
 
 router = APIRouter()
 
-
 class ApproverAssignRequest(BaseModel):
     """审批人分配请求模型"""
     role_code: str = Field(..., description="角色代码")
     amount: float = Field(default=0, description="金额")
     department: Optional[str] = Field(None, description="部门")
 
-
 class ApprovalChainRequest(BaseModel):
     """审批链请求模型"""
     rule_type: str = Field(..., description="规则类型")
     amount: float = Field(default=0, description="金额")
-
 
 class ApproverValidationRequest(BaseModel):
     """审批人权限验证请求模型"""
     user_id: str = Field(..., description="用户ID")
     role_code: str = Field(..., description="角色代码")
     amount: float = Field(default=0, description="金额")
-
 
 @router.get("/matrix", summary="获取审批权责矩阵")
 @check_permission("audit_config")
@@ -52,7 +48,6 @@ async def get_approval_matrix(
         return matrix
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取审批矩阵失败: {str(e)}")
-
 
 @router.post("/assign-approver", summary="分配审批人")
 @check_permission("audit_config")
@@ -97,7 +92,6 @@ async def assign_approver(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"分配审批人失败: {str(e)}")
 
-
 @router.post("/approval-chain", summary="获取审批链")
 @check_permission("audit_config")
 async def get_approval_chain(
@@ -123,7 +117,6 @@ async def get_approval_chain(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取审批链失败: {str(e)}")
-
 
 @router.post("/validate-approver", summary="验证审批人权限")
 @check_permission("audit_config")
@@ -156,7 +149,6 @@ async def validate_approver_authority(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"验证审批权限失败: {str(e)}")
-
 
 @router.get("/roles", summary="获取审批角色列表")
 @check_permission("audit_config")
@@ -196,7 +188,6 @@ async def get_approval_roles(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取审批角色失败: {str(e)}")
 
-
 @router.get("/departments", summary="获取部门列表")
 @check_permission("audit_config")
 async def get_departments(
@@ -229,7 +220,6 @@ async def get_departments(
         return {"departments": dept_list}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取部门列表失败: {str(e)}")
-
 
 @router.get("/approval-levels/{rule_type}", summary="获取规则类型的审批级别")
 @check_permission("audit_config")

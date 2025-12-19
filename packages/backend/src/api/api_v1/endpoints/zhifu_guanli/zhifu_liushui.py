@@ -21,7 +21,6 @@ from schemas.zhifu_guanli.zhifu_liushui_schemas import (
 
 router = APIRouter()
 
-
 @router.post("/", response_model=ZhifuLiushuiResponse, summary="创建支付流水")
 async def create_zhifu_liushui(
     liushui_data: ZhifuLiushuiCreate,
@@ -39,7 +38,6 @@ async def create_zhifu_liushui(
     """
     service = ZhifuLiushuiService(db)
     return service.create_zhifu_liushui(liushui_data, current_user.id)
-
 
 @router.get("/", response_model=ZhifuLiushuiListResponse, summary="获取支付流水列表")
 async def get_zhifu_liushui_list(
@@ -74,7 +72,6 @@ async def get_zhifu_liushui_list(
     service = ZhifuLiushuiService(db)
     return service.get_zhifu_liushui_list(params)
 
-
 @router.get("/{liushui_id}", response_model=ZhifuLiushuiResponse, summary="获取支付流水详情")
 async def get_zhifu_liushui_detail(
     liushui_id: str,
@@ -86,7 +83,6 @@ async def get_zhifu_liushui_detail(
     """
     service = ZhifuLiushuiService(db)
     return service.get_zhifu_liushui_by_id(liushui_id)
-
 
 @router.put("/{liushui_id}", response_model=ZhifuLiushuiResponse, summary="更新支付流水")
 async def update_zhifu_liushui(
@@ -103,7 +99,6 @@ async def update_zhifu_liushui(
     service = ZhifuLiushuiService(db)
     return service.update_zhifu_liushui(liushui_id, liushui_data, current_user.id)
 
-
 @router.post("/{liushui_id}/confirm", response_model=ZhifuLiushuiResponse, summary="财务确认流水")
 async def confirm_zhifu_liushui(
     liushui_id: str,
@@ -117,7 +112,6 @@ async def confirm_zhifu_liushui(
     """
     service = ZhifuLiushuiService(db)
     return service.confirm_liushui_by_finance(liushui_id, current_user.id)
-
 
 @router.delete("/{liushui_id}", summary="删除支付流水")
 async def delete_zhifu_liushui(

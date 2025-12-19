@@ -5,7 +5,6 @@ from typing import Optional, Dict, Any
 from datetime import datetime
 from pydantic import BaseModel, Field
 
-
 class ShenheGuizeBase(BaseModel):
     """审核规则基础模型"""
     guize_mingcheng: str = Field(..., min_length=1, max_length=200, description="规则名称")
@@ -16,11 +15,9 @@ class ShenheGuizeBase(BaseModel):
     paixu: int = Field(default=0, description="排序号")
     guize_miaoshu: Optional[str] = Field(None, description="规则描述")
 
-
 class ShenheGuizeCreate(ShenheGuizeBase):
     """创建审核规则模型"""
     pass
-
 
 class ShenheGuizeUpdate(BaseModel):
     """更新审核规则模型"""
@@ -31,7 +28,6 @@ class ShenheGuizeUpdate(BaseModel):
     shi_qiyong: Optional[str] = Field(None, description="是否启用")
     paixu: Optional[int] = Field(None, description="排序号")
     guize_miaoshu: Optional[str] = Field(None, description="规则描述")
-
 
 class ShenheGuizeResponse(BaseModel):
     """审核规则响应模型"""
@@ -49,7 +45,6 @@ class ShenheGuizeResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class ShenheGuizeListParams(BaseModel):
     """审核规则列表查询参数"""

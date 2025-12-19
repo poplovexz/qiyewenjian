@@ -12,7 +12,6 @@ from services.hetong_guanli.hetong_qianshu_service import HetongQianshuService
 
 router = APIRouter()
 
-
 @router.post("/create-link/{hetong_id}", summary="创建合同签署链接")
 async def create_qianshu_link(
     hetong_id: str,
@@ -39,7 +38,6 @@ async def create_qianshu_link(
         "data": result
     }
 
-
 @router.get("/verify/{qianshu_token}", summary="验证签署令牌")
 async def verify_qianshu_token(
     qianshu_token: str,
@@ -60,7 +58,6 @@ async def verify_qianshu_token(
         "success": True,
         "data": qianshu_info
     }
-
 
 @router.post("/sign/{qianshu_token}", summary="提交合同签署")
 async def submit_qianshu(
@@ -94,7 +91,6 @@ async def submit_qianshu(
     else:
         raise HTTPException(status_code=400, detail="合同签署失败")
 
-
 @router.get("/contract/{hetong_id}", summary="获取合同签署信息")
 async def get_qianshu_by_contract(
     hetong_id: str,
@@ -109,7 +105,6 @@ async def get_qianshu_by_contract(
         "success": True,
         "data": qianshu_info
     }
-
 
 @router.post("/cancel/{hetong_id}", summary="取消合同签署")
 async def cancel_qianshu(
@@ -129,7 +124,6 @@ async def cancel_qianshu(
         }
     else:
         raise HTTPException(status_code=400, detail="取消合同签署失败")
-
 
 @router.get("/status/{hetong_id}", summary="获取合同签署状态")
 async def get_qianshu_status(

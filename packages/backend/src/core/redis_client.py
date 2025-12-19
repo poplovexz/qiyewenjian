@@ -8,9 +8,7 @@ import redis.asyncio as redis
 
 from core.config import settings
 
-
 logger = logging.getLogger(__name__)
-
 
 class RedisClient:
     """Redis客户端类"""
@@ -221,7 +219,6 @@ class RedisClient:
         else:
             return prefix
 
-
 class CacheManager:
     """缓存管理器"""
     
@@ -302,11 +299,9 @@ class CacheManager:
         hit_rate = (hits / total) * 100
         return f"{hit_rate:.2f}%"
 
-
 # 全局Redis客户端实例
 redis_client = RedisClient()
 cache_manager = CacheManager(redis_client)
-
 
 # 缓存键常量
 class CacheKeys:

@@ -5,7 +5,6 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
-
 class ZhifuHuidiaoRizhiCreate(BaseModel):
     """创建回调日志请求"""
     zhifu_peizhi_id: Optional[str] = Field(None, description="支付配置ID")
@@ -22,7 +21,6 @@ class ZhifuHuidiaoRizhiCreate(BaseModel):
     cuowu_xinxi: Optional[str] = Field(None, description="错误信息")
     jieshou_shijian: Optional[datetime] = Field(None, description="接收时间")
     chuli_shijian: Optional[datetime] = Field(None, description="处理时间")
-
 
 class ZhifuHuidiaoRizhiResponse(BaseModel):
     """回调日志响应"""
@@ -47,11 +45,9 @@ class ZhifuHuidiaoRizhiResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class ZhifuHuidiaoRizhiListResponse(BaseModel):
     """回调日志列表响应"""
     total: int
     items: list[ZhifuHuidiaoRizhiResponse]
     page: int
     page_size: int
-

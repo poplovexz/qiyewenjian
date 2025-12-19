@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 
 from ..base import BaseModel
 
-
 class Quanxian(BaseModel):
     """权限表"""
     

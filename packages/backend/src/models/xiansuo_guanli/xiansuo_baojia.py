@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 
 from ..base import BaseModel
 
-
 class XiansuoBaojia(BaseModel):
     """线索报价模型"""
     
@@ -116,7 +115,6 @@ class XiansuoBaojia(BaseModel):
     
     def __repr__(self):
         return f"<XiansuoBaojia(id={self.id}, baojia_bianma={self.baojia_bianma})>"
-
 
 class XiansuoBaojiaXiangmu(BaseModel):
     """线索报价项目模型"""
