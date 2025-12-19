@@ -86,7 +86,7 @@ class TestContractWorkflow:
             lianxi_dianhua="13800138000",
             lianxi_youxiang="zhangsan@test.com",
             hangye_leixing="IT服务",
-            gongsi_guimo="50-100人",
+            gongsi_guimo="medium",
             fuwu_leixing="代理记账服务",
             yusuan_fanwei="10000-50000",
             laiyuan_id="test-source-001"

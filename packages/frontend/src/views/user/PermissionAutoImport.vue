@@ -306,13 +306,10 @@ const importPermissions = async () => {
         successCount++
       } catch (error: unknown) {
         const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
-        console.error(`❌ 导入权限失败: ${permission.quanxian_bianma}`, error)
-        console.error('错误详情:', axiosError.response?.data)
 
         if (axiosError.response?.data?.detail?.includes('已存在')) {
           // 权限已存在，不算失败
           successCount++
-          console.log(`⚠️ 权限已存在，跳过: ${permission.quanxian_bianma}`)
         } else {
           failCount++
           failedPermissions.push(
