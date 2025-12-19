@@ -7,7 +7,6 @@
 
 import sys
 from pathlib import Path
-import importlib
 import importlib.util
 
 # 确保可导入 backend 源码（指向 packages/backend/src）
@@ -16,12 +15,19 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # 直接按文件路径加载 alipay.py，避免触发 utils/payment/__init__.py 的依赖
 ALIPAY_PATH = Path(__file__).parent.parent / 'utils' / 'payment' / 'alipay.py'
 spec = importlib.util.spec_from_file_location('alipay_util_module', ALIPAY_PATH)
-alipay_module = importlib.util.module_from_spec(spec)
-sys.modules['alipay_util_module'] = alipay_module
-# BAN-B101: 使用显式检查替代 assert
+
+# BAN-B102: 使用显式检查替代 exec_module，避免安全风险
 if not spec or not spec.loader:
     raise ImportError(f"无法加载模块 spec: {ALIPAY_PATH}")
-spec.loader.exec_module(alipay_module)
+
+alipay_module = importlib.util.module_from_spec(spec)
+sys.modules['alipay_util_module'] = alipay_module
+
+# 安全地加载模块
+try:
+    spec.loader.exec_module(alipay_module)
+except (ImportError, AttributeError) as e:
+    raise ImportError(f"无法加载模块: {ALIPAY_PATH}") from e
 
 # 关闭真实SDK初始化，避免对环境和密钥的依赖
 alipay_module.ALIPAY_SDK_AVAILABLE = False
@@ -105,10 +111,12 @@ def main() -> int:
     expected_prefix = "https://openapi.alipaydev.com/gateway.do?"
     actual_url = page_res.get("pay_url", "")
     if not actual_url.startswith(expected_prefix):
+        print(
             f"❌ 网页支付URL网关前缀错误\n   期望前缀: {expected_prefix}\n   实际: {actual_url}"
         )
         ok = False
     else:
+        print("✅ 网页支付URL网关前缀正确")
 
     wap_res = util_sandbox.create_wap_pay(
         out_trade_no="ORDER456",
@@ -120,10 +128,12 @@ def main() -> int:
     )
     actual_wap_url = wap_res.get("data", {}).get("pay_url", "")
     if not actual_wap_url.startswith(expected_prefix):
+        print(
             f"❌ 手机网站支付URL网关前缀错误\n   期望前缀: {expected_prefix}\n   实际: {actual_wap_url}"
         )
         ok = False
     else:
+        print("✅ 手机网站支付URL网关前缀正确")
 
     return 0 if ok else 1
 
