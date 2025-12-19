@@ -91,8 +91,6 @@ ZENGZHI_DATA = {
 
 def update_zengzhi_products():
     """更新增值服务产品数据"""
-    print("🚀 开始更新增值服务产品数据...")
-    print("=" * 60)
     
     # 创建数据库连接
     engine = create_engine(str(settings.DATABASE_URL))
@@ -120,12 +118,10 @@ def update_zengzhi_products():
         # 处理每个分类
         paixu = 1
         for category_name, products in ZENGZHI_DATA.items():
-            print(f"\n📁 处理分类: {category_name}")
             
             # 检查分类是否存在
             if category_name in existing_category_names:
                 category = existing_category_names[category_name]
-                print("  ✓ 分类已存在，更新排序")
                 category.paixu = paixu
                 updated_categories += 1
             else:
@@ -143,7 +139,6 @@ def update_zengzhi_products():
                 )
                 db.add(category)
                 db.flush()  # 获取ID
-                print("  ✓ 创建新分类")
                 created_categories += 1
             
             # 获取该分类下的现有产品
@@ -162,7 +157,6 @@ def update_zengzhi_products():
                 if prod_name not in current_product_names:
                     prod.is_deleted = "Y"
                     deleted_products += 1
-                    print(f"  ✗ 删除产品: {prod_name}")
             
             # 处理每个产品
             product_paixu = 1
@@ -178,7 +172,6 @@ def update_zengzhi_products():
                     # 更新成本价（如果有）
                     if hasattr(product, 'chengben_jia'):
                         product.chengben_jia = Decimal(str(product_data["cost"]))
-                    print(f"  ↻ 更新产品: {product_name} - ¥{product_data['price']}/{product_data['unit']}")
                     updated_products += 1
                 else:
                     # 创建新产品
@@ -197,7 +190,6 @@ def update_zengzhi_products():
                         is_deleted="N"
                     )
                     db.add(product)
-                    print(f"  + 创建产品: {product_name} - ¥{product_data['price']}/{product_data['unit']}")
                     created_products += 1
                 
                 product_paixu += 1
@@ -208,24 +200,11 @@ def update_zengzhi_products():
         db.commit()
         
         # 打印总结
-        print("\n" + "=" * 60)
-        print("✅ 增值服务产品数据更新完成！")
-        print("=" * 60)
-        print("\n📊 统计信息:")
-        print("  分类:")
-        print(f"    • 新建: {created_categories} 个")
-        print(f"    • 更新: {updated_categories} 个")
-        print("  产品:")
-        print(f"    • 新建: {created_products} 个")
-        print(f"    • 更新: {updated_products} 个")
-        print(f"    • 删除: {deleted_products} 个")
-        print(f"\n  总计: {len(ZENGZHI_DATA)} 个分类, {sum(len(prods) for prods in ZENGZHI_DATA.values())} 个产品")
         
         return True
         
     except Exception as e:
         db.rollback()
-        print(f"\n❌ 更新失败: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -235,19 +214,10 @@ def update_zengzhi_products():
 
 def main():
     """主函数"""
-    print("\n" + "=" * 60)
-    print("  增值服务产品数据更新工具")
-    print("=" * 60)
     
     if update_zengzhi_products():
-        print("\n🎉 所有操作完成！")
-        print("\n💡 提示:")
-        print("  • 请重启后端服务以清除缓存")
-        print("  • 刷新前端页面查看最新数据")
     else:
-        print("\n⚠️  更新失败，请检查错误信息")
     
-    print("\n" + "=" * 60)
 
 
 if __name__ == "__main__":

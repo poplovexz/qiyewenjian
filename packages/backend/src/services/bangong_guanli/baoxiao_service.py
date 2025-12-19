@@ -275,7 +275,6 @@ class BaoxiaoService:
                 self._create_expense_liushui(shenqing, submitted_by)
             except Exception as e:
                 # 流水创建失败不影响审批流程
-                print(f"创建报销支出流水失败: {e}")
                 import traceback
                 traceback.print_exc()
 
@@ -321,7 +320,6 @@ class BaoxiaoService:
                 self._create_expense_liushui(shenqing, approver_id)
             except Exception as e:
                 # 流水创建失败不影响审批流程
-                print(f"创建报销支出流水失败: {e}")
                 import traceback
                 traceback.print_exc()
 
@@ -390,7 +388,6 @@ class BaoxiaoService:
             self.db.commit()
         except Exception as e:
             # 通知发送失败不影响主流程
-            print(f"发送通知失败: {e}")
 
     def _send_approval_notification(self, shenqing: BaoxiaoShenqing, approver_id: str, result: str):
         """发送审批结果通知"""
@@ -412,7 +409,6 @@ class BaoxiaoService:
             self.db.commit()
         except Exception as e:
             # 通知发送失败不影响主流程
-            print(f"发送通知失败: {e}")
 
     def _create_expense_liushui(self, shenqing: BaoxiaoShenqing, approver_id: str):
         """创建报销支出流水记录"""
@@ -423,7 +419,6 @@ class BaoxiaoService:
         ).first()
 
         if existing_liushui:
-            print(f"报销申请 {shenqing.shenqing_bianhao} 已有流水记录，跳过创建")
             return
 
         # 创建支付流水服务
@@ -450,5 +445,4 @@ class BaoxiaoService:
 
         # 创建流水记录
         liushui_service.create_zhifu_liushui(liushui_data, "system")
-        print(f"为报销申请 {shenqing.shenqing_bianhao} 创建支出流水记录成功")
 

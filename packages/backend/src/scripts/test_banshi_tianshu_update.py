@@ -25,9 +25,6 @@ from schemas.chanpin_guanli import ChanpinBuzouCreate, ChanpinBuzouUpdate
 
 def print_section(title: str):
     """打印分节标题"""
-    print("\n" + "=" * 60)
-    print(f"  {title}")
-    print("=" * 60)
 
 
 async def main():
@@ -49,12 +46,8 @@ async def main():
         ).first()
         
         if not xiangmu:
-            print("  ❌ 没有找到可用的产品项目")
             return
         
-        print(f"  ✅ 找到测试产品: {xiangmu.xiangmu_mingcheng}")
-        print(f"     产品ID: {xiangmu.id}")
-        print(f"     当前办事天数: {xiangmu.banshi_tianshu} 天")
         
         # 2. 创建测试步骤
         print_section("2. 创建测试步骤")
@@ -73,12 +66,9 @@ async def main():
         )
         
         step1 = await service.create_buzou(step1_data, "test_user")
-        print(f"  ✅ 创建步骤1: {step1.buzou_mingcheng}")
-        print(f"     预估时长: {step1.yugu_shichang} {step1.shichang_danwei}")
         
         # 刷新产品信息
         db.refresh(xiangmu)
-        print(f"  📊 产品办事天数已更新: {xiangmu.banshi_tianshu} 天")
         
         # 创建第二个步骤：180天
         step2_data = ChanpinBuzouCreate(
@@ -93,18 +83,12 @@ async def main():
         )
         
         step2 = await service.create_buzou(step2_data, "test_user")
-        print(f"  ✅ 创建步骤2: {step2.buzou_mingcheng}")
-        print(f"     预估时长: {step2.yugu_shichang} {step2.shichang_danwei}")
         
         # 刷新产品信息
         db.refresh(xiangmu)
-        print(f"  📊 产品办事天数已更新: {xiangmu.banshi_tianshu} 天")
-        print("     预期值: 12 + 180 = 192 天")
         
         if xiangmu.banshi_tianshu == 192:
-            print("  ✅ 办事天数计算正确！")
         else:
-            print(f"  ❌ 办事天数计算错误！预期 192，实际 {xiangmu.banshi_tianshu}")
         
         # 3. 更新步骤测试
         print_section("3. 更新步骤测试")
@@ -116,56 +100,38 @@ async def main():
         )
         
         updated_step1 = await service.update_buzou(step1.id, update_data, "test_user")
-        print(f"  ✅ 更新步骤1: {updated_step1.buzou_mingcheng}")
-        print(f"     新预估时长: {updated_step1.yugu_shichang} {updated_step1.shichang_danwei}")
         
         # 刷新产品信息
         db.refresh(xiangmu)
-        print(f"  📊 产品办事天数已更新: {xiangmu.banshi_tianshu} 天")
-        print("     预期值: 3 (24小时÷8) + 180 = 183 天")
         
         if xiangmu.banshi_tianshu == 183:
-            print("  ✅ 办事天数计算正确！")
         else:
-            print(f"  ❌ 办事天数计算错误！预期 183，实际 {xiangmu.banshi_tianshu}")
         
         # 4. 删除步骤测试
         print_section("4. 删除步骤测试")
         
         await service.delete_buzou(step1.id, "test_user")
-        print(f"  ✅ 删除步骤1: {step1.buzou_mingcheng}")
         
         # 刷新产品信息
         db.refresh(xiangmu)
-        print(f"  📊 产品办事天数已更新: {xiangmu.banshi_tianshu} 天")
-        print("     预期值: 180 天（只剩步骤2）")
         
         if xiangmu.banshi_tianshu == 180:
-            print("  ✅ 办事天数计算正确！")
         else:
-            print(f"  ❌ 办事天数计算错误！预期 180，实际 {xiangmu.banshi_tianshu}")
         
         # 5. 清理测试数据
         print_section("5. 清理测试数据")
         
         await service.delete_buzou(step2.id, "test_user")
-        print(f"  ✅ 删除步骤2: {step2.buzou_mingcheng}")
         
         # 刷新产品信息
         db.refresh(xiangmu)
-        print(f"  📊 产品办事天数已更新: {xiangmu.banshi_tianshu} 天")
-        print("     预期值: 0 天（所有步骤已删除）")
         
         if xiangmu.banshi_tianshu == 0:
-            print("  ✅ 办事天数计算正确！")
         else:
-            print(f"  ❌ 办事天数计算错误！预期 0，实际 {xiangmu.banshi_tianshu}")
         
         print_section("测试完成")
-        print("✅ 所有测试已完成")
         
     except Exception as e:
-        print(f"\n❌ 测试过程中发生错误: {str(e)}")
         import traceback
         traceback.print_exc()
     finally:

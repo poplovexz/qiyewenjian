@@ -14,7 +14,6 @@ from core.config import settings
 
 def init_product_permissions():
     """初始化产品管理相关权限"""
-    print("开始初始化产品管理权限...")
     
     engine = create_engine(str(settings.DATABASE_URL))
     
@@ -120,15 +119,8 @@ def init_product_permissions():
             conn.execute(text(permissions_sql))
             conn.commit()
             
-        print("✅ 产品管理权限初始化成功！")
-        print("已创建权限：")
-        print("  - 产品管理主权限")
-        print("  - 产品分类管理权限 (4个操作权限)")
-        print("  - 产品项目管理权限 (4个操作权限)")
-        print("  - 产品步骤管理权限 (4个操作权限)")
         
     except Exception as e:
-        print(f"❌ 初始化产品管理权限失败: {e}")
         return False
     
     return True
@@ -136,7 +128,6 @@ def init_product_permissions():
 
 def assign_permissions_to_admin():
     """为管理员角色分配产品管理权限"""
-    print("\n开始为管理员角色分配产品管理权限...")
     
     engine = create_engine(str(settings.DATABASE_URL))
     
@@ -148,7 +139,6 @@ def assign_permissions_to_admin():
             """)).fetchone()
             
             if not admin_role_result:
-                print("⚠️  未找到管理员角色，跳过权限分配")
                 return True
             
             admin_role_id = admin_role_result[0]
@@ -176,10 +166,8 @@ def assign_permissions_to_admin():
             conn.execute(text(role_permission_sql), {"admin_role_id_1": admin_role_id, "admin_role_id_2": admin_role_id})
             conn.commit()
             
-        print("✅ 管理员角色权限分配成功！")
         
     except Exception as e:
-        print(f"❌ 分配管理员权限失败: {e}")
         return False
     
     return True
@@ -187,9 +175,6 @@ def assign_permissions_to_admin():
 
 def main():
     """主函数"""
-    print("=" * 50)
-    print("产品管理权限初始化")
-    print("=" * 50)
     
     # 初始化权限
     if not init_product_permissions():
@@ -199,11 +184,6 @@ def main():
     if not assign_permissions_to_admin():
         return
     
-    print("\n🎉 产品管理权限初始化完成！")
-    print("\n接下来您可以：")
-    print("1. 重新登录系统以获取最新权限")
-    print("2. 在角色管理中为其他角色分配产品管理权限")
-    print("3. 访问产品管理页面进行操作")
 
 
 if __name__ == "__main__":

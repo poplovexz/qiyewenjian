@@ -17,9 +17,6 @@ import asyncio
 
 def print_section(title):
     """打印分隔线"""
-    print("\n" + "=" * 70)
-    print(f"  {title}")
-    print("=" * 70)
 
 
 async def test_product_steps():
@@ -39,23 +36,16 @@ async def test_product_steps():
         ).first()
         
         if not product:
-            print("❌ 未找到产品")
             return
         
-        print("✅ 找到产品")
-        print(f"   产品名称: {product.xiangmu_mingcheng}")
-        print(f"   产品编码: {product.xiangmu_bianma}")
-        print(f"   产品ID: {product.id}")
         
         print_section("2. 查询现有步骤")
         
         service = ChanpinBuzouService(db)
         existing_steps = await service.get_buzou_list(product.id)
         
-        print(f"现有步骤数量: {len(existing_steps)}")
         if existing_steps:
             for i, step in enumerate(existing_steps, 1):
-                print(f"  {i}. {step.buzou_mingcheng} - ¥{step.buzou_feiyong}")
         
         print_section("3. 测试创建新步骤")
         
@@ -111,29 +101,23 @@ async def test_product_steps():
         created_ids = []
         
         for test_case in test_cases:
-            print(f"\n测试: {test_case['name']}")
             try:
                 buzou_data = ChanpinBuzouCreate(**test_case['data'])
                 result = await service.create_buzou(buzou_data, 'test_user')
                 
                 if test_case['should_succeed']:
-                    print(f"  ✅ 创建成功 (ID: {result.id})")
                     created_ids.append(result.id)
                 else:
-                    print(f"  ⚠️  预期失败但成功了 (ID: {result.id})")
                     created_ids.append(result.id)
                     
             except Exception as e:
                 if not test_case['should_succeed']:
-                    print(f"  ✅ 预期失败: {str(e)}")
                 else:
-                    print(f"  ❌ 意外失败: {str(e)}")
         
         print_section("4. 测试更新步骤")
         
         if created_ids:
             test_id = created_ids[0]
-            print(f"更新步骤 ID: {test_id}")
             
             try:
                 update_data = ChanpinBuzouUpdate(
@@ -141,26 +125,18 @@ async def test_product_steps():
                     buzou_feiyong=Decimal("200.00")
                 )
                 result = await service.update_buzou(test_id, update_data, 'test_user')
-                print("  ✅ 更新成功")
-                print(f"     新名称: {result.buzou_mingcheng}")
-                print(f"     新费用: ¥{result.buzou_feiyong}")
             except Exception as e:
-                print(f"  ❌ 更新失败: {str(e)}")
         
         print_section("5. 清理测试数据")
         
         for step_id in created_ids:
             try:
                 await service.delete_buzou(step_id, 'test_user')
-                print(f"  ✅ 删除步骤 {step_id}")
             except Exception as e:
-                print(f"  ❌ 删除失败 {step_id}: {str(e)}")
         
         print_section("测试完成")
-        print("✅ 所有测试已完成")
         
     except Exception as e:
-        print(f"\n❌ 测试过程中出错: {str(e)}")
         import traceback
         traceback.print_exc()
     finally:

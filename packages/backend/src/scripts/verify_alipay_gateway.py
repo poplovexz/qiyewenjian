@@ -43,9 +43,7 @@ class StubAlipay:
 
 def assert_equal(name: str, actual: str, expected: str):
     if actual != expected:
-        print(f"❌ {name} 不匹配\n   期望: {expected}\n   实际: {actual}")
         return False
-    print(f"✓ {name} 正确: {actual}")
     return True
 
 
@@ -110,12 +108,10 @@ def main() -> int:
     expected_prefix = "https://openapi.alipaydev.com/gateway.do?"
     actual_url = page_res.get("pay_url", "")
     if not actual_url.startswith(expected_prefix):
-        print(
             f"❌ 网页支付URL网关前缀错误\n   期望前缀: {expected_prefix}\n   实际: {actual_url}"
         )
         ok = False
     else:
-        print(f"✓ 网页支付URL前缀正确: {actual_url[:len(expected_prefix)+20]}...")
 
     wap_res = util_sandbox.create_wap_pay(
         out_trade_no="ORDER456",
@@ -127,14 +123,11 @@ def main() -> int:
     )
     actual_wap_url = wap_res.get("data", {}).get("pay_url", "")
     if not actual_wap_url.startswith(expected_prefix):
-        print(
             f"❌ 手机网站支付URL网关前缀错误\n   期望前缀: {expected_prefix}\n   实际: {actual_wap_url}"
         )
         ok = False
     else:
-        print(f"✓ 手机网站支付URL前缀正确: {actual_wap_url[:len(expected_prefix)+20]}...")
 
-    print("\n验证结果：" + ("✅ 通过" if ok else "❌ 未通过"))
     return 0 if ok else 1
 
 

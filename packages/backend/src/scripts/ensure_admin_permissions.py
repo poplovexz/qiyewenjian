@@ -27,9 +27,6 @@ import uuid
 
 def ensure_admin_role(session):
     """确保系统管理员角色存在"""
-    print("\n" + "=" * 60)
-    print("【步骤1】检查系统管理员角色")
-    print("=" * 60)
     
     # 检查角色是否存在
     result = session.execute(text("""
@@ -41,8 +38,6 @@ def ensure_admin_role(session):
     
     if result:
         admin_role_id = result[0]
-        print(f"✅ 系统管理员角色已存在: {result[1]} ({result[2]})")
-        print(f"   角色ID: {admin_role_id}")
         return admin_role_id
     else:
         # 创建系统管理员角色
@@ -58,16 +53,11 @@ def ensure_admin_role(session):
         """), {"id": admin_role_id})
         
         session.commit()
-        print("✅ 已创建系统管理员角色")
-        print(f"   角色ID: {admin_role_id}")
         return admin_role_id
 
 
 def ensure_admin_user(session, admin_role_id):
     """确保admin用户存在并分配了管理员角色"""
-    print("\n" + "=" * 60)
-    print("【步骤2】检查admin用户")
-    print("=" * 60)
     
     # 检查用户是否存在
     result = session.execute(text("""
@@ -79,8 +69,6 @@ def ensure_admin_user(session, admin_role_id):
     
     if result:
         admin_user_id = result[0]
-        print(f"✅ admin用户已存在: {result[2]} ({result[1]})")
-        print(f"   用户ID: {admin_user_id}")
     else:
         # 创建admin用户
         admin_user_id = str(uuid.uuid4()).replace('-', '')
@@ -100,15 +88,8 @@ def ensure_admin_user(session, admin_role_id):
         })
         
         session.commit()
-        print("✅ 已创建admin用户")
-        print(f"   用户ID: {admin_user_id}")
-        print("   用户名: admin")
-        print("   密码: admin123")
     
     # 检查是否已分配角色
-    print("\n" + "=" * 60)
-    print("【步骤3】检查admin用户角色分配")
-    print("=" * 60)
     
     result = session.execute(text("""
         SELECT id FROM yonghu_jiaose
@@ -118,7 +99,6 @@ def ensure_admin_user(session, admin_role_id):
     """), {"user_id": admin_user_id, "role_id": admin_role_id}).fetchone()
     
     if result:
-        print("✅ admin用户已分配系统管理员角色")
     else:
         # 分配角色
         relation_id = str(uuid.uuid4()).replace('-', '')
@@ -135,16 +115,12 @@ def ensure_admin_user(session, admin_role_id):
         })
         
         session.commit()
-        print("✅ 已为admin用户分配系统管理员角色")
     
     return admin_user_id
 
 
 def assign_all_permissions_to_admin_role(session, admin_role_id):
     """为系统管理员角色分配所有权限"""
-    print("\n" + "=" * 60)
-    print("【步骤4】为系统管理员角色分配所有权限")
-    print("=" * 60)
     
     # 获取所有活动权限
     all_permissions = session.execute(text("""
@@ -156,10 +132,8 @@ def assign_all_permissions_to_admin_role(session, admin_role_id):
     """)).fetchall()
     
     if not all_permissions:
-        print("⚠️  系统中没有任何权限，请先运行权限初始化脚本")
         return
     
-    print(f"📊 系统中共有 {len(all_permissions)} 个权限")
     
     assigned_count = 0
     existing_count = 0
@@ -195,18 +169,10 @@ def assign_all_permissions_to_admin_role(session, admin_role_id):
     
     session.commit()
     
-    print("\n📊 权限分配统计:")
-    print(f"  - 新分配: {assigned_count} 个")
-    print(f"  - 已存在: {existing_count} 个")
-    print(f"  - 总计: {len(all_permissions)} 个")
-    print("\n✅ 系统管理员角色现在拥有所有权限")
 
 
 def verify_admin_permissions(session, admin_user_id):
     """验证admin用户的权限"""
-    print("\n" + "=" * 60)
-    print("【步骤5】验证admin用户权限")
-    print("=" * 60)
     
     # 获取admin用户的所有权限
     permissions = session.execute(text("""
@@ -224,7 +190,6 @@ def verify_admin_permissions(session, admin_user_id):
     """), {"user_id": admin_user_id}).fetchall()
     
     if permissions:
-        print(f"✅ admin用户拥有 {len(permissions)} 个权限")
         
         # 按模块分组显示
         modules = {}
@@ -234,11 +199,8 @@ def verify_admin_permissions(session, admin_user_id):
                 modules[module] = []
             modules[module].append((perm_code, perm_name))
         
-        print("\n📋 权限模块统计:")
         for module, perms in sorted(modules.items()):
-            print(f"  - {module}: {len(perms)} 个权限")
     else:
-        print("❌ admin用户没有任何权限！")
         return False
     
     return True
@@ -246,9 +208,6 @@ def verify_admin_permissions(session, admin_user_id):
 
 def main():
     """主函数"""
-    print("\n" + "=" * 60)
-    print("确保admin用户拥有完整的系统管理员权限")
-    print("=" * 60)
     
     # 创建数据库连接
     engine = create_engine(str(settings.DATABASE_URL))
@@ -269,23 +228,12 @@ def main():
         success = verify_admin_permissions(session, admin_user_id)
         
         if success:
-            print("\n" + "=" * 60)
-            print("✅ admin用户权限配置完成！")
-            print("=" * 60)
-            print("\n登录信息:")
-            print("  用户名: admin")
-            print("  密码: admin123")
-            print("\n⚠️  请在首次登录后立即修改密码！")
         else:
-            print("\n" + "=" * 60)
-            print("❌ admin用户权限配置失败！")
-            print("=" * 60)
             return False
         
         return True
         
     except Exception as e:
-        print(f"\n❌ 错误: {e}")
         import traceback
         traceback.print_exc()
         session.rollback()

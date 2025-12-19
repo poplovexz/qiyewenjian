@@ -235,7 +235,6 @@ async def alipay_notify(
         return "success" if result else "fail"
         
     except Exception as e:
-        print(f"支付宝通知处理失败: {e}")
         return "fail"
 
 
@@ -263,7 +262,6 @@ async def wechat_notify(
         }
         
     except Exception as e:
-        print(f"微信支付通知处理失败: {e}")
         return {
             "code": "FAIL",
             "message": "处理失败"

@@ -22,7 +22,6 @@ def create_tables():
         # 创建数据库引擎
         engine = create_engine(settings.DATABASE_URL)
         
-        print("开始创建审核工作流相关数据库表...")
         
         # 创建表
         Base.metadata.create_all(bind=engine, tables=[
@@ -34,17 +33,8 @@ def create_tables():
             HetongJineBiangeng.__table__
         ])
         
-        print("✅ 审核工作流相关数据库表创建成功！")
-        print("创建的表包括：")
-        print("- shenhe_guize (审核规则配置表)")
-        print("- shenhe_liucheng (审核流程表)")
-        print("- shenhe_jilu (审核记录表)")
-        print("- hetong_zhifu (合同支付表)")
-        print("- yinhang_huikuan_danju (银行汇款单据表)")
-        print("- hetong_jine_biangeng (合同金额变更记录表)")
         
     except Exception as e:
-        print(f"❌ 创建数据库表失败: {e}")
         sys.exit(1)
 
 
@@ -60,7 +50,6 @@ def init_default_audit_rules():
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         db = SessionLocal()
         
-        print("开始初始化默认审核规则...")
         
         # 合同金额修正审核规则
         hetong_rule = ShenheGuize(
@@ -122,10 +111,8 @@ def init_default_audit_rules():
         db.add(baojia_rule)
         db.commit()
         
-        print("✅ 默认审核规则初始化成功！")
         
     except Exception as e:
-        print(f"❌ 初始化默认审核规则失败: {e}")
         db.rollback()
     finally:
         db.close()
@@ -134,4 +121,3 @@ def init_default_audit_rules():
 if __name__ == "__main__":
     create_tables()
     init_default_audit_rules()
-    print("\n🎉 审核工作流数据库初始化完成！")

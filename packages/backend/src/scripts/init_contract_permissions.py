@@ -119,7 +119,6 @@ def init_contract_permissions():
             }
         ]
         
-        print("开始初始化合同模板管理权限...")
         
         # 创建权限
         created_permissions = []
@@ -133,16 +132,13 @@ def init_contract_permissions():
                 permission = Quanxian(**perm_data)
                 db.add(permission)
                 created_permissions.append(perm_data["quanxian_bianma"])
-                print(f"创建权限: {perm_data['quanxian_ming']} ({perm_data['quanxian_bianma']})")
             else:
-                print(f"权限已存在: {perm_data['quanxian_ming']} ({perm_data['quanxian_bianma']})")
         
         db.commit()
         
         # 为管理员角色分配权限
         admin_role = db.query(Jiaose).filter(Jiaose.jiaose_bianma == "admin").first()
         if admin_role:
-            print("\n为管理员角色分配合同模板管理权限...")
             
             # 获取所有合同模板相关权限
             contract_permissions_db = db.query(Quanxian).filter(
@@ -162,20 +158,13 @@ def init_contract_permissions():
                         quanxian_id=permission.id
                     )
                     db.add(role_permission)
-                    print(f"  分配权限: {permission.quanxian_ming}")
                 else:
-                    print(f"  权限已分配: {permission.quanxian_ming}")
             
             db.commit()
         else:
-            print("警告: 未找到管理员角色")
         
-        print("\n合同模板管理权限初始化完成!")
-        print(f"新创建权限数量: {len(created_permissions)}")
-        print(f"总权限数量: {len(contract_permissions)}")
         
     except Exception as e:
-        print(f"初始化权限时发生错误: {e}")
         db.rollback()
         raise
     finally:

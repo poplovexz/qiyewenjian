@@ -291,7 +291,6 @@ async def approve_audit(
                 # 更新合同状态为生效
                 hetong.hetong_zhuangtai = "active"
                 hetong.updated_at = datetime.now()
-                print(f"✅ 审核通过，合同 {hetong.hetong_bianhao} 状态更新为 active")
 
         db.commit()
 
@@ -371,7 +370,6 @@ async def reject_audit(
                 hetong.is_deleted = "Y"
                 hetong.hetong_zhuangtai = "rejected"  # 保留状态记录
                 hetong.updated_at = datetime.now()
-                print(f"❌ 审核拒绝，合同 {hetong.hetong_bianhao} 已删除（软删除）")
 
         db.commit()
 

@@ -184,7 +184,6 @@ def create_payment_audit_rules(db: Session):
     ).all()
     
     if existing_rules:
-        print("支付审核规则已存在，跳过创建")
         return
     
     # 添加规则到数据库
@@ -195,9 +194,7 @@ def create_payment_audit_rules(db: Session):
     
     db.commit()
     
-    print(f"成功创建 {len(rules)} 个支付审核规则")
     for rule in rules:
-        print(f"- {rule.guize_mingcheng}")
 
 
 def create_flow_audit_rules(db: Session):
@@ -361,7 +358,6 @@ def create_flow_audit_rules(db: Session):
     ).all()
 
     if existing_rules:
-        print("支付流水审核规则已存在，跳过创建")
         return
 
     # 添加规则到数据库
@@ -372,9 +368,7 @@ def create_flow_audit_rules(db: Session):
 
     db.commit()
 
-    print(f"成功创建 {len(rules)} 个支付流水审核规则")
     for rule in rules:
-        print(f"- {rule.guize_mingcheng}")
 
 
 def main():
@@ -382,14 +376,11 @@ def main():
     # PTC-W0063: 使用 next() 的默认值防止 StopIteration
     db = next(get_db(), None)
     if db is None:
-        print("无法获取数据库连接")
         return
     try:
         create_payment_audit_rules(db)
         create_flow_audit_rules(db)
-        print("支付审核规则初始化完成")
     except Exception as e:
-        print(f"初始化失败: {str(e)}")
         db.rollback()
     finally:
         db.close()

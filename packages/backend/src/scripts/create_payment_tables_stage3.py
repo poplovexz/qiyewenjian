@@ -243,4 +243,3 @@ def create_payment_tables():
 
 if __name__ == "__main__":
     create_payment_tables()
-    print("✅ 阶段3支付管理表创建完成！")

@@ -166,16 +166,12 @@ def init_customer_permissions():
                     **perm_data
                 )
                 db.add(permission)
-                print(f"创建权限: {perm_data['quanxian_ming']} ({perm_data['quanxian_bianma']})")
             else:
-                print(f"权限已存在: {perm_data['quanxian_ming']} ({perm_data['quanxian_bianma']})")
         
         db.commit()
-        print("客户管理模块权限初始化完成！")
         
     except Exception as e:
         db.rollback()
-        print(f"权限初始化失败: {e}")
         raise
     finally:
         db.close()

@@ -598,7 +598,6 @@ class HetongService:
         except Exception as e:
             self.db.rollback()
             # 记录错误但不阻止合同更新
-            print(f"触发审核失败: {e}")
             return None
 
     def create_hetong_from_quote_direct(self, baojia_id: str, created_by: str,

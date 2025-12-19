@@ -26,7 +26,6 @@ def add_payment_method_fields():
     db = SessionLocal()
     
     try:
-        print("开始添加支付方式表字段...")
         
         # 检查表是否存在
         check_table_sql = text("""
@@ -39,10 +38,8 @@ def add_payment_method_fields():
         result = db.execute(check_table_sql).scalar()
         
         if not result:
-            print("❌ 表 hetong_zhifu_fangshi 不存在")
             return False
         
-        print("✓ 表 hetong_zhifu_fangshi 存在")
         
         # 要添加的字段列表
         fields_to_add = [
@@ -118,27 +115,21 @@ def add_payment_method_fields():
                 column_exists = db.execute(check_column_sql).scalar()
                 
                 if column_exists:
-                    print(f"  ⊙ 字段 {field['name']} 已存在，跳过")
                     continue
                 
                 # 添加字段
                 db.execute(text(field['sql']))
-                print(f"  ✓ 添加字段 {field['name']}")
                 
                 # 添加注释
                 db.execute(text(field['comment']))
-                print(f"  ✓ 添加字段 {field['name']} 的注释")
                 
             except Exception as e:
-                print(f"  ✗ 添加字段 {field['name']} 失败: {str(e)}")
                 raise
         
         # 提交事务
         db.commit()
-        print("\n✅ 所有字段添加完成！")
         
         # 验证字段
-        print("\n验证新增字段...")
         verify_sql = text("""
             SELECT column_name, data_type, character_maximum_length
             FROM information_schema.columns
@@ -152,17 +143,13 @@ def add_payment_method_fields():
         results = db.execute(verify_sql).fetchall()
         
         if results:
-            print("\n新增字段列表:")
             for row in results:
-                print(f"  - {row[0]}: {row[1]}({row[2]})")
         else:
-            print("  ⚠️  未找到新增字段")
         
         return True
         
     except Exception as e:
         db.rollback()
-        print(f"\n❌ 执行失败: {str(e)}")
         import traceback
         traceback.print_exc()
         return False
@@ -172,20 +159,11 @@ def add_payment_method_fields():
 
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("添加支付方式表的微信和支付宝字段")
-    print("=" * 60)
-    print()
     
     success = add_payment_method_fields()
     
-    print()
-    print("=" * 60)
     if success:
-        print("✅ 迁移成功完成！")
     else:
-        print("❌ 迁移失败！")
-    print("=" * 60)
     
     sys.exit(0 if success else 1)
 

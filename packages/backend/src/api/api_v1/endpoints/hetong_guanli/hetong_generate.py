@@ -56,9 +56,6 @@ async def generate_contracts(
     """
     try:
         # 调试：打印接收到的数据
-        print(f"接收到的合同生成请求: {request.model_dump()}")
-        print(f"代理记账配置: {request.daili_jizhang_config}")
-        print(f"增值服务配置: {request.zengzhi_fuwu_config}")
         service = HetongGenerateService(db)
         workflow_engine = ShenheWorkflowEngine(db)
         

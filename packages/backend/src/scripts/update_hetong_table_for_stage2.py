@@ -156,14 +156,11 @@ def update_hetong_table():
     try:
         with engine.connect() as connection:
             for sql in sql_statements:
-                print(f"执行SQL: {sql[:100]}...")
                 connection.execute(text(sql))
                 connection.commit()
         
-        print("✅ 合同表结构更新完成")
         
     except Exception as e:
-        print(f"❌ 更新失败: {e}")
         raise
 
 

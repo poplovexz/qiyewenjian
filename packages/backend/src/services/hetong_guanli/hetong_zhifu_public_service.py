@@ -366,7 +366,6 @@ class HetongZhifuPublicService:
             return True
             
         except Exception as e:
-            print(f"处理支付宝通知失败: {e}")
             return False
     
     @staticmethod
@@ -389,5 +388,4 @@ class HetongZhifuPublicService:
             return True
             
         except Exception as e:
-            print(f"处理微信支付通知失败: {e}")
             return False

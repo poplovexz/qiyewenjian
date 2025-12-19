@@ -258,7 +258,6 @@ def init_contract_templates():
             }
         ]
         
-        print("开始初始化合同模板示例数据...")
         
         # 创建合同模板
         created_count = 0
@@ -273,18 +272,12 @@ def init_contract_templates():
                 template = HetongMoban(**template_info)
                 db.add(template)
                 created_count += 1
-                print(f"创建合同模板: {template_info['moban_mingcheng']} ({template_info['moban_bianma']})")
             else:
-                print(f"合同模板已存在: {template_info['moban_mingcheng']} ({template_info['moban_bianma']})")
         
         db.commit()
         
-        print("\n合同模板示例数据初始化完成!")
-        print(f"新创建模板数量: {created_count}")
-        print(f"总模板数量: {len(template_data)}")
         
     except Exception as e:
-        print(f"初始化合同模板时发生错误: {e}")
         db.rollback()
         raise
     finally:

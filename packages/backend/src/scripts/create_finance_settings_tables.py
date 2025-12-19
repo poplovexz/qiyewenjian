@@ -16,7 +16,6 @@ def create_finance_settings_tables():
     
     with engine.connect() as conn:
         # 创建收付款渠道表
-        print("创建收付款渠道表...")
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS shoufukuan_qudao (
                 id VARCHAR(36) PRIMARY KEY,
@@ -40,10 +39,8 @@ def create_finance_settings_tables():
             CREATE INDEX IF NOT EXISTS idx_qudao_created_at ON shoufukuan_qudao(created_at);
         """))
         conn.commit()
-        print("收付款渠道表创建成功")
         
         # 创建收入类别表
-        print("创建收入类别表...")
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS shouru_leibie (
                 id VARCHAR(36) PRIMARY KEY,
@@ -62,10 +59,8 @@ def create_finance_settings_tables():
             CREATE INDEX IF NOT EXISTS idx_shouru_created_at ON shouru_leibie(created_at);
         """))
         conn.commit()
-        print("收入类别表创建成功")
         
         # 创建报销类别表
-        print("创建报销类别表...")
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS baoxiao_leibie (
                 id VARCHAR(36) PRIMARY KEY,
@@ -84,10 +79,8 @@ def create_finance_settings_tables():
             CREATE INDEX IF NOT EXISTS idx_baoxiao_created_at ON baoxiao_leibie(created_at);
         """))
         conn.commit()
-        print("报销类别表创建成功")
         
         # 创建支出类别表
-        print("创建支出类别表...")
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS zhichu_leibie (
                 id VARCHAR(36) PRIMARY KEY,
@@ -108,9 +101,7 @@ def create_finance_settings_tables():
             CREATE INDEX IF NOT EXISTS idx_zhichu_created_at ON zhichu_leibie(created_at);
         """))
         conn.commit()
-        print("支出类别表创建成功")
         
-    print("\n所有财务设置表创建完成！")
 
 if __name__ == "__main__":
     create_finance_settings_tables()

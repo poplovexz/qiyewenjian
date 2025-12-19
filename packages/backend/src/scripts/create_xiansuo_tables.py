@@ -20,7 +20,6 @@ from models.xiansuo_guanli import (
 
 def create_xiansuo_tables():
     """创建线索管理相关数据表"""
-    print("开始创建线索管理数据表...")
     
     # 创建数据库引擎
     engine = create_engine(str(settings.DATABASE_URL))
@@ -34,15 +33,8 @@ def create_xiansuo_tables():
             XiansuoGenjin.__table__
         ])
         
-        print("✅ 线索管理数据表创建成功！")
-        print("已创建的表：")
-        print("  - xiansuo_laiyuan (线索来源表)")
-        print("  - xiansuo_zhuangtai (线索状态表)")
-        print("  - xiansuo (线索主表)")
-        print("  - xiansuo_genjin (线索跟进记录表)")
         
     except Exception as e:
-        print(f"❌ 创建数据表失败: {e}")
         return False
     
     return True
@@ -50,7 +42,6 @@ def create_xiansuo_tables():
 
 def insert_sample_data():
     """插入示例数据"""
-    print("\n开始插入示例数据...")
     
     engine = create_engine(str(settings.DATABASE_URL))
     from sqlalchemy.orm import sessionmaker
@@ -189,10 +180,8 @@ def insert_sample_data():
                 db.add(zhuangtai)
         
         db.commit()
-        print("✅ 示例数据插入成功！")
         
     except Exception as e:
-        print(f"❌ 插入示例数据失败: {e}")
         db.rollback()
         return False
     finally:
@@ -203,23 +192,15 @@ def insert_sample_data():
 
 def main():
     """主函数"""
-    print("=" * 50)
-    print("线索管理模块 - 数据库初始化")
-    print("=" * 50)
     
     # 步骤1：创建数据表
     if not create_xiansuo_tables():
-        print("数据表创建失败，退出初始化")
         return False
     
     # 步骤2：插入示例数据
     if not insert_sample_data():
-        print("示例数据插入失败，退出初始化")
         return False
     
-    print("=" * 50)
-    print("✓ 线索管理模块数据库初始化完成！")
-    print("=" * 50)
     return True
 
 

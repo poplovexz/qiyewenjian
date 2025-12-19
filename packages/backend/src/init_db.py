@@ -16,11 +16,9 @@ def create_database_if_not_exists():
         # 尝试连接数据库
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
-        print("✓ 数据库连接成功")
         return True
     except OperationalError as e:
         if "database" in str(e) and "does not exist" in str(e):
-            print("数据库不存在，尝试创建...")
             
             # 从完整的数据库URL中提取数据库名
             db_url = str(settings.DATABASE_URL)
@@ -35,25 +33,19 @@ def create_database_if_not_exists():
                     # 设置自动提交模式
                     conn.execute(text("COMMIT"))
                     conn.execute(text(f"CREATE DATABASE {db_name}"))
-                print(f"✓ 数据库 {db_name} 创建成功")
                 return True
             except Exception as create_error:
-                print(f"✗ 创建数据库失败: {create_error}")
                 return False
         else:
-            print(f"✗ 数据库连接失败: {e}")
             return False
 
 
 def create_tables():
     """创建所有数据表"""
     try:
-        print("开始创建数据表...")
         Base.metadata.create_all(bind=engine)
-        print("✓ 数据表创建成功")
         return True
     except Exception as e:
-        print(f"✗ 创建数据表失败: {e}")
         return False
 
 
@@ -66,7 +58,6 @@ def init_basic_data():
     
     try:
         with SessionLocal() as db:
-            print("开始初始化基础数据...")
             
             # 创建基础角色
             roles_data = [
@@ -100,38 +91,27 @@ def init_basic_data():
                     db.add(permission)
             
             db.commit()
-            print("✓ 基础数据初始化成功")
             return True
             
     except Exception as e:
-        print(f"✗ 初始化基础数据失败: {e}")
         return False
 
 
 def main():
     """主函数"""
-    print("=" * 50)
-    print("代理记账营运内部系统 - 数据库初始化")
-    print("=" * 50)
     
     # 步骤1：检查并创建数据库
     if not create_database_if_not_exists():
-        print("数据库创建失败，退出初始化")
         return False
     
     # 步骤2：创建数据表
     if not create_tables():
-        print("数据表创建失败，退出初始化")
         return False
     
     # 步骤3：初始化基础数据
     if not init_basic_data():
-        print("基础数据初始化失败，退出初始化")
         return False
     
-    print("=" * 50)
-    print("✓ 数据库初始化完成！")
-    print("=" * 50)
     return True
 
 

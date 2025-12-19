@@ -52,9 +52,6 @@ def main():
     db = Session()
     
     try:
-        print('=' * 80)
-        print('代理记账产品数据替换脚本')
-        print('=' * 80)
         
         # 1. 查找代理记账分类
         daili_fenlei = db.query(ChanpinFenlei).filter(
@@ -65,10 +62,8 @@ def main():
         ).first()
         
         if not daili_fenlei:
-            print('❌ 未找到代理记账分类')
             return
         
-        print(f'\n✅ 找到代理记账分类: {daili_fenlei.fenlei_mingcheng} (ID: {daili_fenlei.id})')
         
         # 2. 删除现有的代理记账产品（软删除）
         existing_products = db.query(ChanpinXiangmu).filter(
@@ -78,16 +73,12 @@ def main():
             )
         ).all()
         
-        print(f'\n📋 找到 {len(existing_products)} 个现有产品，准备删除...')
         for product in existing_products:
             product.is_deleted = 'Y'
-            print(f'  - 删除: {product.xiangmu_mingcheng}')
         
         db.commit()
-        print('✅ 现有产品已删除')
         
         # 3. 创建真实的产品数据
-        print(f'\n📝 创建 {len(REAL_PRODUCTS)} 个真实产品...')
         for idx, product_data in enumerate(REAL_PRODUCTS, 1):
             # 提取单位（如果有的话）
             unit = product_data.get('unit', 'yuan')
@@ -110,10 +101,8 @@ def main():
                 created_by='system'
             )
             db.add(product)
-            print(f'  {idx}. {product_data["name"]} - {product_data["price"]} {unit}')
 
         db.commit()
-        print('\n✅ 真实产品数据创建完成！')
         
         # 4. 验证
         new_products = db.query(ChanpinXiangmu).filter(
@@ -123,11 +112,8 @@ def main():
             )
         ).all()
         
-        print(f'\n📊 验证: 现在有 {len(new_products)} 个代理记账产品')
-        print('=' * 80)
         
     except Exception as e:
-        print(f'\n❌ 错误: {str(e)}')
         import traceback
         traceback.print_exc()
         db.rollback()

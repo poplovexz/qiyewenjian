@@ -122,14 +122,12 @@ def init_zhichu_leibie_data():
     ]
     
     with engine.connect() as conn:
-        print("开始初始化支出类别数据...")
         
         # 检查是否已有数据
         result = conn.execute(text("SELECT COUNT(*) as count FROM zhichu_leibie WHERE is_deleted = 'N'"))
         count = result.fetchone()[0]
         
         if count > 0:
-            print(f"支出类别表已有 {count} 条数据，跳过初始化")
             return
         
         # 插入数据
@@ -152,7 +150,6 @@ def init_zhichu_leibie_data():
             })
         
         conn.commit()
-        print(f"成功初始化 {len(zhichu_data)} 条支出类别数据")
 
 def init_sample_data():
     """初始化示例数据"""
@@ -160,7 +157,6 @@ def init_sample_data():
     
     with engine.connect() as conn:
         # 初始化收付款渠道示例数据
-        print("初始化收付款渠道示例数据...")
         qudao_data = [
             {
                 "id": str(uuid.uuid4()),
@@ -198,10 +194,8 @@ def init_sample_data():
             """), qudao)
         
         conn.commit()
-        print(f"成功初始化 {len(qudao_data)} 条收付款渠道数据")
 
 if __name__ == "__main__":
     init_zhichu_leibie_data()
     init_sample_data()
-    print("\n财务设置数据初始化完成！")
 

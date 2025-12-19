@@ -16,7 +16,6 @@ from models.chanpin_guanli import ChanpinFenlei, ChanpinXiangmu, ChanpinBuzou
 
 def create_product_tables():
     """创建产品管理相关数据表"""
-    print("开始创建产品管理数据表...")
     
     # 创建数据库引擎
     engine = create_engine(str(settings.DATABASE_URL))
@@ -29,14 +28,8 @@ def create_product_tables():
             ChanpinBuzou.__table__
         ])
         
-        print("✅ 产品管理数据表创建成功！")
-        print("已创建的表：")
-        print("  - chanpin_fenlei (产品分类表)")
-        print("  - chanpin_xiangmu (产品项目表)")
-        print("  - chanpin_buzou (产品步骤表)")
         
     except Exception as e:
-        print(f"❌ 创建数据表失败: {e}")
         return False
     
     return True
@@ -44,7 +37,6 @@ def create_product_tables():
 
 def insert_sample_data():
     """插入示例数据"""
-    print("\n开始插入示例数据...")
     
     engine = create_engine(str(settings.DATABASE_URL))
     
@@ -158,14 +150,8 @@ def insert_sample_data():
             
             conn.commit()
             
-        print("✅ 示例数据插入成功！")
-        print("已插入：")
-        print("  - 4个产品分类")
-        print("  - 5个产品项目")
-        print("  - 6个产品步骤")
         
     except Exception as e:
-        print(f"❌ 插入示例数据失败: {e}")
         return False
     
     return True
@@ -173,9 +159,6 @@ def insert_sample_data():
 
 def main():
     """主函数"""
-    print("=" * 50)
-    print("产品管理模块数据库初始化")
-    print("=" * 50)
     
     # 创建数据表
     if not create_product_tables():
@@ -185,11 +168,6 @@ def main():
     if not insert_sample_data():
         return
     
-    print("\n🎉 产品管理模块数据库初始化完成！")
-    print("\n接下来您可以：")
-    print("1. 启动后端服务")
-    print("2. 在前端访问产品管理页面")
-    print("3. 根据需要添加产品管理相关权限")
 
 
 if __name__ == "__main__":

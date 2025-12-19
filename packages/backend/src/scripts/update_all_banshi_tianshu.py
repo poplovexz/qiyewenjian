@@ -26,16 +26,12 @@ async def main():
     db = SessionLocal()
     
     try:
-        print('=' * 80)
-        print('  更新所有产品的办事天数')
-        print('=' * 80)
         
         # 获取所有未删除的产品
         xiangmu_list = db.query(ChanpinXiangmu).filter(
             ChanpinXiangmu.is_deleted == 'N'
         ).all()
         
-        print(f'\n找到 {len(xiangmu_list)} 个产品需要更新')
         
         updated_count = 0
         unchanged_count = 0
@@ -63,24 +59,14 @@ async def main():
                 old_value = xiangmu.banshi_tianshu
                 xiangmu.banshi_tianshu = total_days_int
                 updated_count += 1
-                print(f'  ✅ 更新: {xiangmu.xiangmu_mingcheng}')
-                print(f'     {old_value} 天 → {total_days_int} 天 (步骤数: {len(buzou_list)})')
             else:
                 unchanged_count += 1
         
         # 提交所有更改
         db.commit()
         
-        print('\n' + '=' * 80)
-        print('  更新完成')
-        print('=' * 80)
-        print(f'  ✅ 已更新: {updated_count} 个产品')
-        print(f'  ⏭️  未变化: {unchanged_count} 个产品')
-        print(f'  📊 总计: {len(xiangmu_list)} 个产品')
-        print('=' * 80)
         
     except Exception as e:
-        print(f'\n❌ 更新过程中发生错误: {str(e)}')
         import traceback
         traceback.print_exc()
         db.rollback()

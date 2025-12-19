@@ -15,7 +15,6 @@ from core.config import settings
 
 def init_system_permissions():
     """初始化系统设置相关权限"""
-    print("开始初始化系统设置权限...")
     
     engine = create_engine(str(settings.DATABASE_URL))
     
@@ -65,10 +64,8 @@ def init_system_permissions():
             
             conn.execute(text(permissions_sql))
             conn.commit()
-            print("✅ 系统设置权限初始化成功")
             
             # 为管理员角色分配权限
-            print("\n为管理员角色分配系统设置权限...")
             role_permissions_sql = """
             INSERT INTO jiaose_quanxian (id, jiaose_id, quanxian_id, created_at, updated_at, is_deleted)
             SELECT 
@@ -89,14 +86,11 @@ def init_system_permissions():
             
             conn.execute(text(role_permissions_sql))
             conn.commit()
-            print("✅ 管理员角色权限分配成功")
             
     except Exception as e:
-        print(f"❌ 初始化失败: {e}")
         raise
 
 
 if __name__ == "__main__":
     init_system_permissions()
-    print("\n✅ 系统设置权限初始化完成！")
 

@@ -183,13 +183,10 @@ def create_system_config_table():
     
     with engine.connect() as conn:
         try:
-            print("正在创建 system_config 表...")
             conn.execute(text(create_table_sql))
             conn.commit()
-            print("✅ system_config 表创建成功！")
             
             # 插入默认配置
-            print("\n正在插入默认配置...")
             for config in default_configs:
                 config_id = str(uuid.uuid4())
                 now = datetime.now()
@@ -222,13 +219,10 @@ def create_system_config_table():
                     'updated_at': now
                 })
                 
-                print(f"  ✓ {config['config_name']}")
             
             conn.commit()
-            print(f"\n✅ 成功插入 {len(default_configs)} 条默认配置！")
             
         except Exception as e:
-            print(f"❌ 操作失败: {e}")
             conn.rollback()
             raise
 

@@ -325,11 +325,6 @@ class ZhifuPeizhiService:
     @staticmethod
     def _to_detail(peizhi: ZhifuPeizhi) -> ZhifuPeizhiDetail:
         """转换为详情模型（解密，不脱敏）"""
-        print(f"🔍 _to_detail 开始处理配置: {peizhi.peizhi_mingcheng}, 类型: {peizhi.peizhi_leixing}")
-        print("🔍 数据库中的支付宝字段:")
-        print(f"  - zhifubao_appid: {peizhi.zhifubao_appid[:20] if peizhi.zhifubao_appid else None}...")
-        print(f"  - zhifubao_shanghu_siyao: {peizhi.zhifubao_shanghu_siyao[:20] if peizhi.zhifubao_shanghu_siyao else None}...")
-        print(f"  - zhifubao_wangguan: {peizhi.zhifubao_wangguan}")
 
         peizhi_dict = {
             'id': peizhi.id,
@@ -362,11 +357,8 @@ class ZhifuPeizhiService:
                 try:
                     decrypted_value = encryption.decrypt(encrypted_value)
                     peizhi_dict[field_name] = decrypted_value
-                    print(f"  ✅ {field_name} 解密成功: {decrypted_value[:20] if decrypted_value and len(decrypted_value) > 20 else decrypted_value}...")
                 except Exception as e:
                     # 解密失败，可能是明文数据，直接返回原值
-                    print(f"  ⚠️  {field_name} 解密失败（可能是明文数据）: {str(e)}")
-                    print(f"  ℹ️  使用原值（明文）: {encrypted_value[:20] if len(encrypted_value) > 20 else encrypted_value}...")
                     peizhi_dict[field_name] = encrypted_value
             else:
                 peizhi_dict[field_name] = None
@@ -381,16 +373,8 @@ class ZhifuPeizhiService:
         peizhi_dict['kaihuhang_mingcheng'] = peizhi.kaihuhang_mingcheng or None
         peizhi_dict['kaihuhang_lianhanghao'] = peizhi.kaihuhang_lianhanghao or None
 
-        print("🔍 解密后的字典内容:")
-        print(f"  - zhifubao_appid: {peizhi_dict.get('zhifubao_appid', 'NOT_SET')}")
-        print(f"  - zhifubao_shanghu_siyao: {peizhi_dict.get('zhifubao_shanghu_siyao', 'NOT_SET')[:20] if peizhi_dict.get('zhifubao_shanghu_siyao') else 'NOT_SET'}...")
-        print(f"  - zhifubao_wangguan: {peizhi_dict.get('zhifubao_wangguan', 'NOT_SET')}")
 
         result = ZhifuPeizhiDetail(**peizhi_dict)
-        print("🔍 返回的 ZhifuPeizhiDetail 对象:")
-        print(f"  - zhifubao_appid: {result.zhifubao_appid}")
-        print(f"  - zhifubao_shanghu_siyao: {result.zhifubao_shanghu_siyao[:20] if result.zhifubao_shanghu_siyao else None}...")
-        print(f"  - zhifubao_wangguan: {result.zhifubao_wangguan}")
 
         return result
 

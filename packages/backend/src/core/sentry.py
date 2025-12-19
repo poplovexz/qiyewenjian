@@ -22,7 +22,6 @@ def init_sentry() -> bool:
     dsn = settings.SENTRY_DSN
     
     if not dsn:
-        print("[Sentry] DSN not configured, error reporting disabled")
         return False
     
     try:
@@ -55,11 +54,9 @@ def init_sentry() -> bool:
             attach_stacktrace=True,
         )
         
-        print(f"[Sentry] Initialized for {settings.SENTRY_ENVIRONMENT} environment")
         return True
         
     except Exception as e:
-        print(f"[Sentry] Failed to initialize: {e}")
         return False
 
 

@@ -102,7 +102,6 @@ class ApprovalMatrixService:
             
             return None
         except Exception as e:
-            print(f"分配审批人失败: {str(e)}")
             return None
     
     def get_approval_chain(self, rule_type: str, amount: float = 0) -> List[Dict[str, Any]]:
@@ -170,7 +169,6 @@ class ApprovalMatrixService:
             
             return True
         except Exception as e:
-            print(f"验证审批权限失败: {str(e)}")
             return False
     
     @staticmethod

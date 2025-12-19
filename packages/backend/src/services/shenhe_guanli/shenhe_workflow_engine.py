@@ -393,7 +393,6 @@ class ShenheWorkflowEngine:
             return None
 
         except Exception as e:
-            print(f"查找审核人失败: {e}")
             import traceback
             traceback.print_exc()
             return None
@@ -474,7 +473,6 @@ class ShenheWorkflowEngine:
             self.db.commit()
 
         except Exception as e:
-            print(f"发送审核通知失败: {e}")
             import traceback
             traceback.print_exc()
 
@@ -553,7 +551,6 @@ class ShenheWorkflowEngine:
             self.db.commit()
 
         except Exception as e:
-            print(f"发送下一步审核通知失败: {e}")
             import traceback
             traceback.print_exc()
 
@@ -622,7 +619,6 @@ class ShenheWorkflowEngine:
             self.db.commit()
 
         except Exception as e:
-            print(f"发送审核通过通知失败: {e}")
             import traceback
             traceback.print_exc()
 
@@ -693,6 +689,5 @@ class ShenheWorkflowEngine:
             self.db.commit()
 
         except Exception as e:
-            print(f"发送审核拒绝通知失败: {e}")
             import traceback
             traceback.print_exc()

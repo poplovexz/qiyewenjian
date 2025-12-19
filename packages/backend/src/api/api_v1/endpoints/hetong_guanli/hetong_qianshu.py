@@ -161,7 +161,6 @@ async def get_qianshu_status(
             }
     except Exception as e:
         # 如果表不存在或其他错误，返回未创建状态
-        print(f"获取签署状态失败: {str(e)}")
         return {
             "success": True,
             "data": {

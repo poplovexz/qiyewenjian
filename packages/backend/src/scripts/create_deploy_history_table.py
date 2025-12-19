@@ -58,11 +58,8 @@ def create_deploy_history_table():
         conn.execute(text(create_table_sql))
         conn.commit()
     
-    print("✓ 部署历史表创建成功")
 
 
 if __name__ == "__main__":
-    print("创建部署历史表...")
     create_deploy_history_table()
-    print("\n部署历史表创建完成！")
 

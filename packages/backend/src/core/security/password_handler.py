@@ -21,7 +21,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
             hashed_password.encode('utf-8')
         )
     except Exception as e:
-        print(f"Password verification error: {e}")
         return False
 
 

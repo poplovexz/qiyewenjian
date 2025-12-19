@@ -20,9 +20,6 @@ def init_office_permissions():
         engine = create_engine(str(settings.DATABASE_URL))
         
         with engine.connect() as db:
-            print("=" * 60)
-            print("办公管理模块权限初始化")
-            print("=" * 60)
             
             # 定义办公管理权限
             office_permissions = [
@@ -110,19 +107,12 @@ def init_office_permissions():
                         "lujing": ziyuan_lujing
                     })
                     created_count += 1
-                    print(f"✅ 创建权限: {quanxian_ming} ({quanxian_bianma})")
                 else:
                     existing_count += 1
-                    print(f"⚪ 权限已存在: {quanxian_ming} ({quanxian_bianma})")
             
             db.commit()
-            print("\n📊 权限创建统计:")
-            print(f"  - 新创建: {created_count} 个")
-            print(f"  - 已存在: {existing_count} 个")
-            print(f"  - 总计: {len(office_permissions)} 个")
             
             # 为管理员角色分配所有办公管理权限
-            print("\n🔧 为管理员角色分配办公管理权限...")
 
             # 获取管理员角色ID
             admin_role = db.execute(text(
@@ -165,26 +155,15 @@ def init_office_permissions():
                             "perm_id": perm_id
                         })
                         assigned_count += 1
-                        print(f"  ✅ 为管理员分配权限: {perm_name}")
                     else:
                         existing_assign_count += 1
-                        print(f"  ⚪ 管理员已有权限: {perm_name}")
                 
                 db.commit()
-                print("\n📊 权限分配统计:")
-                print(f"  - 新分配: {assigned_count} 个")
-                print(f"  - 已分配: {existing_assign_count} 个")
-                print("🎉 管理员办公管理权限分配完成！")
             else:
-                print("❌ 未找到管理员角色")
             
-            print("\n" + "=" * 60)
-            print("✅ 办公管理模块权限初始化完成！")
-            print("=" * 60)
             return True
         
     except Exception as e:
-        print(f"❌ 初始化权限失败: {str(e)}")
         import traceback
         traceback.print_exc()
         return False

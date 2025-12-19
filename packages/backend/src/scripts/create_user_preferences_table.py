@@ -45,12 +45,9 @@ def create_user_preferences_table():
     
     with engine.connect() as conn:
         try:
-            print("正在创建 user_preferences 表...")
             conn.execute(text(create_table_sql))
             conn.commit()
-            print("✅ user_preferences 表创建成功！")
         except Exception as e:
-            print(f"❌ 创建表失败: {e}")
             conn.rollback()
             raise
 

@@ -17,7 +17,6 @@ def update_contract_template_table():
     db: Session = SessionLocal()
     
     try:
-        print("开始更新合同模板表结构...")
         
         # 添加缺失的字段
         alter_statements = [
@@ -68,18 +67,14 @@ def update_contract_template_table():
         for statement in alter_statements:
             try:
                 db.execute(text(statement))
-                print(f"执行成功: {statement}")
             except Exception as e:
                 # 某些操作可能会失败（比如字段已存在），这是正常的
-                print(f"执行跳过: {statement} - {str(e)}")
         
         # 提交更改
         db.commit()
         
-        print("\n合同模板表结构更新完成!")
         
         # 显示更新后的表结构
-        print("\n更新后的表结构:")
         result = db.execute(text("""
             SELECT column_name, data_type, is_nullable, column_default 
             FROM information_schema.columns 
@@ -88,10 +83,8 @@ def update_contract_template_table():
         """))
         
         for row in result:
-            print(f"  {row[0]}: {row[1]} (nullable: {row[2]}, default: {row[3]})")
         
     except Exception as e:
-        print(f"更新表结构时发生错误: {e}")
         db.rollback()
         raise
     finally:

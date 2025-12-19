@@ -424,8 +424,6 @@ class HetongSignService:
                 zhifu_fangshi=zhifu_fangshi
             )
 
-            print(f"🔍 支付API返回结果: {payment_result}")
-            print(f"🔍 payment_data: {payment_result.get('payment_data')}")
 
             # 更新合同支付信息 - 存储支付订单ID而不是订单编号
             hetong.payment_amount = str(normalized_amount)
@@ -443,7 +441,6 @@ class HetongSignService:
             if payment_result.get("payment_data"):
                 qr_code_url = payment_result["payment_data"].get("qr_code") or payment_result["payment_data"].get("code_url")
 
-            print(f"🔍 提取的二维码URL: {qr_code_url}")
 
             # 返回支付信息
             return {
@@ -553,8 +550,6 @@ class HetongSignService:
         from models.zhifu_guanli import ZhifuDingdan
         from services.zhifu_guanli.zhifu_api_service import ZhifuApiService
 
-        print(f"\n{'='*60}")
-        print(f"🔍 开始查询支付状态: sign_token={sign_token}")
 
         # 查询合同
         hetong = self.db.query(Hetong).filter(
@@ -565,12 +560,9 @@ class HetongSignService:
         if not hetong:
             raise HTTPException(status_code=404, detail="签署链接无效")
 
-        print(f"🔍 合同信息: 编号={hetong.hetong_bianhao}, 支付状态={hetong.payment_status}, 订单ID={hetong.payment_transaction_id}")
 
         # 如果已经支付成功，直接返回
         if hetong.payment_status == "paid":
-            print("✅ 合同已支付，直接返回")
-            print(f"{'='*60}\n")
             return {
                 "payment_status": "paid",
                 "payment_method": hetong.payment_method,
@@ -582,7 +574,6 @@ class HetongSignService:
         # 如果有支付订单ID，主动查询支付宝
         if hetong.payment_transaction_id:
             try:
-                print(f"🔍 准备查询支付订单，订单ID: {hetong.payment_transaction_id}")
 
                 # 使用支付订单ID直接查询（payment_transaction_id现在存储的是订单ID）
                 zhifu_dingdan = self.db.query(ZhifuDingdan).filter(
@@ -590,20 +581,16 @@ class HetongSignService:
                     ZhifuDingdan.is_deleted == "N"
                 ).first()
 
-                print(f"🔍 查询结果: zhifu_dingdan={'找到' if zhifu_dingdan else '未找到'}")
 
                 if zhifu_dingdan:
-                    print(f"🔍 查询支付订单状态: 订单ID={zhifu_dingdan.id}, 订单号={zhifu_dingdan.dingdan_bianhao}, 当前状态={zhifu_dingdan.zhifu_zhuangtai}")
 
                     # 如果订单已经是成功状态，直接更新合同
                     if zhifu_dingdan.zhifu_zhuangtai == "success":
-                        print("✅ 订单已成功，直接更新合同状态")
                         hetong.payment_status = "paid"
                         hetong.paid_at = zhifu_dingdan.zhifu_shijian or datetime.now()
                         hetong.updated_at = datetime.now()
                         self.db.commit()
 
-                        print(f"✅ 合同 {hetong.hetong_bianhao} 支付状态已更新为已支付")
 
                         return {
                             "payment_status": "paid",
@@ -615,11 +602,9 @@ class HetongSignService:
 
                     # 如果订单不是成功状态（pending、paying等），主动查询支付宝
                     else:
-                        print(f"🔍 订单状态为{zhifu_dingdan.zhifu_zhuangtai}，主动查询支付宝...")
                         zhifu_api_service = ZhifuApiService(self.db)
                         query_result = zhifu_api_service.query_payment(zhifu_dingdan.id)
 
-                        print(f"🔍 支付宝查询结果: {query_result}")
 
                         # 从返回结果中提取 trade_status
                         # 支付宝返回格式: {'success': True, 'data': {'trade_status': 'TRADE_SUCCESS'}}
@@ -627,11 +612,9 @@ class HetongSignService:
                         if query_result.get("success") and query_result.get("data"):
                             trade_status = query_result["data"].get("trade_status")
 
-                        print(f"🔍 提取的交易状态: {trade_status}")
 
                         # 如果查询到支付成功，更新合同状态和支付订单状态
                         if trade_status in ["TRADE_SUCCESS", "TRADE_FINISHED"]:
-                            print("✅ 支付宝返回支付成功，更新合同状态和支付订单状态")
 
                             # 更新合同状态
                             hetong.payment_status = "paid"
@@ -652,7 +635,6 @@ class HetongSignService:
 
                             self.db.commit()
 
-                            print(f"✅ 合同 {hetong.hetong_bianhao} 和订单 {zhifu_dingdan.dingdan_bianhao} 支付状态已更新为已支付")
 
                             return {
                                 "payment_status": "paid",
@@ -662,9 +644,7 @@ class HetongSignService:
                                 "payment_transaction_id": hetong.payment_transaction_id
                             }
                         else:
-                            print(f"⏳ 支付宝返回状态: {trade_status}，继续等待...")
                 else:
-                    print(f"❌ 未找到支付订单！订单ID: {hetong.payment_transaction_id}")
             except Exception as e:
                 logger.error(f"❌ 查询支付状态失败: {str(e)}")
                 import traceback
@@ -679,8 +659,6 @@ class HetongSignService:
             "paid_at": hetong.paid_at.isoformat() if hetong.paid_at else None,
             "payment_transaction_id": hetong.payment_transaction_id
         }
-        print(f"📤 返回支付状态: {result}")
-        print(f"{'='*60}\n")
         return result
 
     def submit_bank_payment_info(
