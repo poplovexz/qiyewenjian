@@ -123,7 +123,7 @@ class SystemConfigService:
         
         # 检查Redis状态
         try:
-            if redis_client._connected and redis_client.redis:
+            if redis_client.is_connected:
                 redis_status = "正常"
             else:
                 redis_status = "未连接"
@@ -144,7 +144,7 @@ class SystemConfigService:
         """清除缓存"""
         try:
             cleared = 0
-            if redis_client._connected and redis_client.redis:
+            if redis_client.is_connected:
                 if pattern:
                     # 查找匹配的键
                     keys = await redis_client.redis.keys(pattern)
