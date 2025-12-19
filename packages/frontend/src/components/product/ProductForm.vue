@@ -130,10 +130,7 @@
       </el-row>
 
       <el-form-item label="状态" prop="zhuangtai">
-        <el-radio-group
-          v-model="formData.zhuangtai"
-          :disabled="mode === 'view'"
-        >
+        <el-radio-group v-model="formData.zhuangtai" :disabled="mode === 'view'">
           <el-radio
             v-for="option in productStatusOptions"
             :key="option.value"
@@ -210,11 +207,7 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { useProductStore } from '@/stores/modules/product'
 import { formatDateTime } from '@/utils/date'
 import { productTypeOptions, productStatusOptions, priceUnitOptions } from '@/api/modules/product'
-import type {
-  Product,
-  ProductCreate,
-  ProductUpdate
-} from '@/types/product'
+import type { Product, ProductCreate, ProductUpdate } from '@/types/product'
 
 // Props
 interface Props {
@@ -224,7 +217,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  product: null
+  product: null,
 })
 
 // Emits
@@ -250,38 +243,32 @@ const formData = reactive<ProductCreate>({
   banshi_tianshu: 1,
   xiangmu_beizhu: '',
   paixu: 0,
-  zhuangtai: 'active'
+  zhuangtai: 'active',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
   xiangmu_mingcheng: [
     { required: true, message: '请输入项目名称', trigger: 'blur' },
-    { min: 1, max: 100, message: '项目名称长度在 1 到 100 个字符', trigger: 'blur' }
+    { min: 1, max: 100, message: '项目名称长度在 1 到 100 个字符', trigger: 'blur' },
   ],
   xiangmu_bianma: [
     // 编码由系统自动生成，不需要验证
   ],
-  fenlei_id: [
-    { required: true, message: '请选择产品分类', trigger: 'change' }
-  ],
+  fenlei_id: [{ required: true, message: '请选择产品分类', trigger: 'change' }],
   yewu_baojia: [
     { required: true, message: '请输入业务报价', trigger: 'blur' },
-    { type: 'number', min: 0, message: '业务报价不能小于0', trigger: 'blur' }
+    { type: 'number', min: 0, message: '业务报价不能小于0', trigger: 'blur' },
   ],
-  baojia_danwei: [
-    { required: true, message: '请选择报价单位', trigger: 'change' }
-  ],
+  baojia_danwei: [{ required: true, message: '请选择报价单位', trigger: 'change' }],
   banshi_tianshu: [
     { required: true, message: '请输入办事天数', trigger: 'blur' },
-    { type: 'number', min: 1, max: 365, message: '办事天数必须在 1 到 365 之间', trigger: 'blur' }
+    { type: 'number', min: 1, max: 365, message: '办事天数必须在 1 到 365 之间', trigger: 'blur' },
   ],
   paixu: [
-    { type: 'number', min: 0, max: 9999, message: '排序号必须在 0 到 9999 之间', trigger: 'blur' }
+    { type: 'number', min: 0, max: 9999, message: '排序号必须在 0 到 9999 之间', trigger: 'blur' },
   ],
-  zhuangtai: [
-    { required: true, message: '请选择状态', trigger: 'change' }
-  ]
+  zhuangtai: [{ required: true, message: '请选择状态', trigger: 'change' }],
 }
 
 // 计算属性
@@ -289,7 +276,7 @@ const dialogTitle = computed(() => {
   const titles = {
     create: '新增产品项目',
     edit: '编辑产品项目',
-    view: '查看产品项目'
+    view: '查看产品项目',
   }
   return titles[props.mode]
 })
@@ -298,21 +285,24 @@ const dialogTitle = computed(() => {
 const { categoryOptions } = storeToRefs(productStore)
 
 // 监听器
-watch(() => props.visible, async (newVal) => {
-  if (newVal) {
-    // 加载分类选项
-    await productStore.fetchCategoryOptions()
+watch(
+  () => props.visible,
+  async (newVal) => {
+    if (newVal) {
+      // 加载分类选项
+      await productStore.fetchCategoryOptions()
 
-    resetForm()
-    if (props.product && (props.mode === 'edit' || props.mode === 'view')) {
-      loadProductData()
+      resetForm()
+      if (props.product && (props.mode === 'edit' || props.mode === 'view')) {
+        loadProductData()
+      }
     }
   }
-})
+)
 
 // 方法
 const getProductTypeLabel = (type: string) => {
-  const option = productTypeOptions.find(opt => opt.value === type)
+  const option = productTypeOptions.find((opt) => opt.value === type)
   return option?.label || type
 }
 
@@ -326,9 +316,9 @@ const resetForm = () => {
     banshi_tianshu: 1,
     xiangmu_beizhu: '',
     paixu: 0,
-    zhuangtai: 'active'
+    zhuangtai: 'active',
   })
-  
+
   nextTick(() => {
     formRef.value?.clearValidate()
   })
@@ -345,7 +335,7 @@ const loadProductData = () => {
       banshi_tianshu: props.product.banshi_tianshu,
       xiangmu_beizhu: props.product.xiangmu_beizhu || '',
       paixu: props.product.paixu,
-      zhuangtai: props.product.zhuangtai
+      zhuangtai: props.product.zhuangtai,
     })
   }
 }
@@ -372,7 +362,7 @@ const handleSubmit = async () => {
         banshi_tianshu: formData.banshi_tianshu,
         xiangmu_beizhu: formData.xiangmu_beizhu,
         paixu: formData.paixu,
-        zhuangtai: formData.zhuangtai
+        zhuangtai: formData.zhuangtai,
       }
       await productStore.createProduct(createData)
       ElMessage.success('产品项目创建成功')
@@ -387,7 +377,7 @@ const handleSubmit = async () => {
         banshi_tianshu: formData.banshi_tianshu,
         xiangmu_beizhu: formData.xiangmu_beizhu,
         paixu: formData.paixu,
-        zhuangtai: formData.zhuangtai
+        zhuangtai: formData.zhuangtai,
       }
 
       await productStore.updateProduct(props.product!.id, updateData)

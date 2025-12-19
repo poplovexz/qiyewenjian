@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
-    title="报价详情"
-    width="800px"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="dialogVisible" title="报价详情" width="800px" :before-close="handleClose">
     <div v-loading="loading" class="baojia-detail">
       <div v-if="baojia" class="detail-content">
         <!-- 基本信息 -->
@@ -12,7 +7,7 @@
           <template #header>
             <span class="section-title">基本信息</span>
           </template>
-          
+
           <el-descriptions :column="2" border>
             <el-descriptions-item label="报价编码">
               {{ baojia.baojia_bianma }}
@@ -21,7 +16,7 @@
               <el-tag :type="getStatusTagType(baojia.baojia_zhuangtai)">
                 {{ getStatusText(baojia.baojia_zhuangtai) }}
               </el-tag>
-              <el-tag v-if="baojia.is_expired" type="danger" style="margin-left: 8px;">
+              <el-tag v-if="baojia.is_expired" type="danger" style="margin-left: 8px">
                 已过期
               </el-tag>
             </el-descriptions-item>
@@ -45,8 +40,12 @@
                 <div class="company">{{ baojia.xiansuo_info.gongsi_mingcheng }}</div>
                 <div class="contact">
                   <span>{{ baojia.xiansuo_info.lianxi_ren }}</span>
-                  <span v-if="baojia.xiansuo_info.lianxi_dianhua"> · {{ baojia.xiansuo_info.lianxi_dianhua }}</span>
-                  <span v-if="baojia.xiansuo_info.lianxi_youxiang"> · {{ baojia.xiansuo_info.lianxi_youxiang }}</span>
+                  <span v-if="baojia.xiansuo_info.lianxi_dianhua">
+                    · {{ baojia.xiansuo_info.lianxi_dianhua }}</span
+                  >
+                  <span v-if="baojia.xiansuo_info.lianxi_youxiang">
+                    · {{ baojia.xiansuo_info.lianxi_youxiang }}</span
+                  >
                 </div>
               </div>
             </el-descriptions-item>
@@ -58,7 +57,7 @@
           <template #header>
             <span class="section-title">服务项目明细</span>
           </template>
-          
+
           <el-table :data="baojia.xiangmu_list" border>
             <el-table-column prop="xiangmu_mingcheng" label="服务名称" min-width="200">
               <template #default="{ row }">
@@ -70,9 +69,7 @@
             </el-table-column>
             <el-table-column prop="shuliang" label="数量" width="100" align="center" />
             <el-table-column prop="danjia" label="单价" width="120" align="right">
-              <template #default="{ row }">
-                ¥{{ row.danjia.toFixed(2) }}
-              </template>
+              <template #default="{ row }"> ¥{{ row.danjia.toFixed(2) }} </template>
             </el-table-column>
             <el-table-column prop="xiaoji" label="小计" width="120" align="right">
               <template #default="{ row }">
@@ -99,7 +96,7 @@
           <template #header>
             <span class="section-title">操作记录</span>
           </template>
-          
+
           <el-timeline>
             <el-timeline-item
               v-for="(log, index) in operationLogs"
@@ -121,20 +118,14 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">关闭</el-button>
-        <el-button 
-          v-if="baojia && !baojia.is_expired" 
-          type="primary" 
-          @click="handleEdit"
-        >
+        <el-button v-if="baojia && !baojia.is_expired" type="primary" @click="handleEdit">
           编辑报价
         </el-button>
         <el-button type="success" @click="handleExport">
           <el-icon><Download /></el-icon>
           导出/打印
         </el-button>
-        <el-button type="info" @click="handleCopyLink">
-          复制分享链接
-        </el-button>
+        <el-button type="info" @click="handleCopyLink"> 复制分享链接 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -173,7 +164,7 @@ const operationLogs = ref<any[]>([])
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 // 方法
@@ -196,7 +187,7 @@ const getStatusTagType = (status: string) => {
     sent: 'warning',
     accepted: 'success',
     rejected: 'danger',
-    expired: 'danger'
+    expired: 'danger',
   }
   return types[status] || 'info'
 }
@@ -207,7 +198,7 @@ const getStatusText = (status: string) => {
     sent: '已发送',
     accepted: '已接受',
     rejected: '已拒绝',
-    expired: '已过期'
+    expired: '已过期',
   }
   return texts[status] || status
 }
@@ -234,7 +225,9 @@ const handleExport = async () => {
 const handleCopyLink = async () => {
   if (!baojia.value) return
   try {
-    const payload = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(baojia.value)))))
+    const payload = encodeURIComponent(
+      btoa(unescape(encodeURIComponent(JSON.stringify(baojia.value))))
+    )
     const link = `${window.location.origin}/quote-preview/${baojia.value.id}?payload=${payload}`
     await navigator.clipboard.writeText(link)
     ElMessage.success('分享链接已复制，可发送给客户查看报价')
@@ -249,17 +242,23 @@ const handleClose = () => {
 }
 
 // 监听器
-watch(() => props.visible, (visible) => {
-  if (visible && props.baojiaId) {
-    loadBaojiaDetail()
+watch(
+  () => props.visible,
+  (visible) => {
+    if (visible && props.baojiaId) {
+      loadBaojiaDetail()
+    }
   }
-})
+)
 
-watch(() => props.baojiaId, (baojiaId) => {
-  if (props.visible && baojiaId) {
-    loadBaojiaDetail()
+watch(
+  () => props.baojiaId,
+  (baojiaId) => {
+    if (props.visible && baojiaId) {
+      loadBaojiaDetail()
+    }
   }
-})
+)
 </script>
 
 <style scoped>
@@ -285,7 +284,7 @@ watch(() => props.baojiaId, (baojiaId) => {
 }
 
 .total-amount {
-  color: #E6A23C;
+  color: #e6a23c;
   font-weight: 700;
   font-size: 18px;
 }
@@ -302,12 +301,12 @@ watch(() => props.baojiaId, (baojiaId) => {
 }
 
 .xiaoji-amount {
-  color: #E6A23C;
+  color: #e6a23c;
   font-weight: 600;
 }
 
 .no-remark {
-  color: #C0C4CC;
+  color: #c0c4cc;
 }
 
 .total-row {
@@ -316,7 +315,7 @@ watch(() => props.baojiaId, (baojiaId) => {
   align-items: center;
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid #EBEEF5;
+  border-top: 1px solid #ebeef5;
   gap: 16px;
 }
 
@@ -329,7 +328,7 @@ watch(() => props.baojiaId, (baojiaId) => {
 .total-value {
   font-size: 20px;
   font-weight: 700;
-  color: #E6A23C;
+  color: #e6a23c;
 }
 
 .customer-info .company {

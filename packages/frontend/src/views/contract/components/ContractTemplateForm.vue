@@ -41,7 +41,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          
+
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="合同类型" prop="hetong_leixing">
@@ -71,7 +71,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          
+
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="模板分类">
@@ -109,14 +109,11 @@
               </el-form-item>
             </el-col>
           </el-row>
-          
+
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="当前版本">
-                <el-radio-group 
-                  v-model="formData.shi_dangqian_banben"
-                  :disabled="mode === 'view'"
-                >
+                <el-radio-group v-model="formData.shi_dangqian_banben" :disabled="mode === 'view'">
                   <el-radio label="Y">是</el-radio>
                   <el-radio label="N">否</el-radio>
                 </el-radio-group>
@@ -134,7 +131,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          
+
           <el-form-item label="备注">
             <el-input
               v-model="formData.beizhu"
@@ -147,27 +144,18 @@
             />
           </el-form-item>
         </el-tab-pane>
-        
+
         <!-- 模板内容 -->
         <el-tab-pane label="模板内容" name="content">
           <el-form-item label="模板内容" prop="moban_neirong">
             <div class="editor-container">
               <div class="editor-toolbar">
-                <el-button 
-                  size="small" 
-                  @click="insertVariable"
-                  :disabled="mode === 'view'"
-                >
+                <el-button size="small" @click="insertVariable" :disabled="mode === 'view'">
                   插入变量
                 </el-button>
-                <el-button 
-                  size="small" 
-                  @click="showVariableHelp"
-                >
-                  变量说明
-                </el-button>
+                <el-button size="small" @click="showVariableHelp"> 变量说明 </el-button>
               </div>
-              
+
               <!-- 富文本编辑器 -->
               <el-input
                 v-model="formData.moban_neirong"
@@ -180,25 +168,20 @@
             </div>
           </el-form-item>
         </el-tab-pane>
-        
+
         <!-- 变量配置 -->
         <el-tab-pane label="变量配置" name="variables">
           <el-form-item label="变量配置">
             <div class="variables-container">
               <div class="variables-help">
-                <el-alert
-                  title="变量配置说明"
-                  type="info"
-                  :closable="false"
-                  show-icon
-                >
+                <el-alert title="变量配置说明" type="info" :closable="false" show-icon>
                   <template #default>
                     <p>在此配置模板中可用的变量，格式为JSON。例如：</p>
                     <pre>{{ variableExample }}</pre>
                   </template>
                 </el-alert>
               </div>
-              
+
               <el-input
                 v-model="formData.bianliang_peizhi"
                 type="textarea"
@@ -212,13 +195,13 @@
         </el-tab-pane>
       </el-tabs>
     </el-form>
-    
+
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button 
-          v-if="mode !== 'view'" 
-          type="primary" 
+        <el-button
+          v-if="mode !== 'view'"
+          type="primary"
           @click="handleSubmit"
           :loading="submitting"
         >
@@ -226,13 +209,9 @@
         </el-button>
       </div>
     </template>
-    
+
     <!-- 变量插入对话框 -->
-    <el-dialog
-      v-model="variableDialogVisible"
-      title="插入变量"
-      width="500px"
-    >
+    <el-dialog v-model="variableDialogVisible" title="插入变量" width="500px">
       <el-form label-width="100px">
         <el-form-item label="变量名称">
           <el-input v-model="newVariableName" placeholder="请输入变量名称" />
@@ -241,19 +220,15 @@
           <el-input v-model="newVariableDesc" placeholder="请输入变量描述" />
         </el-form-item>
       </el-form>
-      
+
       <template #footer>
         <el-button @click="variableDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="confirmInsertVariable">插入</el-button>
       </template>
     </el-dialog>
-    
+
     <!-- 变量说明对话框 -->
-    <el-dialog
-      v-model="helpDialogVisible"
-      title="变量使用说明"
-      width="600px"
-    >
+    <el-dialog v-model="helpDialogVisible" title="变量使用说明" width="600px">
       <div class="help-content">
         <h4>常用变量</h4>
         <el-table :data="commonVariables" size="small">
@@ -261,21 +236,18 @@
           <el-table-column prop="desc" label="说明" />
           <el-table-column label="操作" width="80">
             <template #default="{ row }">
-              <el-button 
-                type="primary" 
-                link 
-                size="small"
-                @click="insertCommonVariable(row.name)"
-              >
+              <el-button type="primary" link size="small" @click="insertCommonVariable(row.name)">
                 插入
               </el-button>
             </template>
           </el-table-column>
         </el-table>
-        
+
         <h4 style="margin-top: 20px">使用说明</h4>
         <ul>
-          <li>在模板内容中使用 <code>{{变量名}}</code> 格式插入变量</li>
+          <li>
+            在模板内容中使用 <code>{{ 变量名 }}</code> 格式插入变量
+          </li>
           <li>变量名区分大小写，建议使用下划线命名</li>
           <li>可在变量配置中定义变量的默认值和类型</li>
           <li>预览时会自动替换变量为实际值</li>
@@ -289,13 +261,13 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useContractStore } from '@/stores/modules/contract'
-import { 
-  contractTypeOptions, 
-  templateStatusOptions, 
+import {
+  contractTypeOptions,
+  templateStatusOptions,
   templateCategoryOptions,
   type ContractTemplate,
   type ContractTemplateCreate,
-  type ContractTemplateUpdate
+  type ContractTemplateUpdate,
 } from '@/api/modules/contract'
 
 // Props
@@ -306,13 +278,13 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  template: null
+  template: null,
 })
 
 // Emits
 const emit = defineEmits<{
   'update:visible': [value: boolean]
-  'success': []
+  success: []
 }>()
 
 // Store
@@ -338,25 +310,21 @@ const formData = reactive({
   moban_fenlei: '',
   moban_zhuangtai: 'draft',
   beizhu: '',
-  paixu: 0
+  paixu: 0,
 })
 
 // 表单验证规则
 const formRules = {
   moban_mingcheng: [
     { required: true, message: '请输入模板名称', trigger: 'blur' },
-    { min: 1, max: 200, message: '模板名称长度在 1 到 200 个字符', trigger: 'blur' }
+    { min: 1, max: 200, message: '模板名称长度在 1 到 200 个字符', trigger: 'blur' },
   ],
   moban_bianma: [
     { required: true, message: '请输入模板编码', trigger: 'blur' },
-    { min: 1, max: 100, message: '模板编码长度在 1 到 100 个字符', trigger: 'blur' }
+    { min: 1, max: 100, message: '模板编码长度在 1 到 100 个字符', trigger: 'blur' },
   ],
-  hetong_leixing: [
-    { required: true, message: '请选择合同类型', trigger: 'change' }
-  ],
-  moban_neirong: [
-    { required: true, message: '请输入模板内容', trigger: 'blur' }
-  ]
+  hetong_leixing: [{ required: true, message: '请选择合同类型', trigger: 'change' }],
+  moban_neirong: [{ required: true, message: '请输入模板内容', trigger: 'blur' }],
 }
 
 // 变量配置示例
@@ -387,7 +355,7 @@ const commonVariables = [
   { name: 'fuwu_jiage', desc: '服务价格' },
   { name: 'hetong_qixian', desc: '合同期限' },
   { name: 'qianyue_riqi', desc: '签约日期' },
-  { name: 'shengxiao_riqi', desc: '生效日期' }
+  { name: 'shengxiao_riqi', desc: '生效日期' },
 ]
 
 // 计算属性
@@ -395,33 +363,36 @@ const dialogTitle = computed(() => {
   const titleMap = {
     create: '新建合同模板',
     edit: '编辑合同模板',
-    view: '查看合同模板'
+    view: '查看合同模板',
   }
   return titleMap[props.mode]
 })
 
 // 监听器
-watch(() => props.visible, (visible) => {
-  if (visible && props.template) {
-    // 编辑或查看模式，填充表单数据
-    Object.assign(formData, {
-      moban_mingcheng: props.template.moban_mingcheng,
-      moban_bianma: props.template.moban_bianma,
-      hetong_leixing: props.template.hetong_leixing,
-      moban_neirong: props.template.moban_neirong,
-      bianliang_peizhi: props.template.bianliang_peizhi || '',
-      banben_hao: props.template.banben_hao,
-      shi_dangqian_banben: props.template.shi_dangqian_banben,
-      moban_fenlei: props.template.moban_fenlei || '',
-      moban_zhuangtai: props.template.moban_zhuangtai,
-      beizhu: props.template.beizhu || '',
-      paixu: props.template.paixu
-    })
-  } else if (visible) {
-    // 新建模式，重置表单
-    resetForm()
+watch(
+  () => props.visible,
+  (visible) => {
+    if (visible && props.template) {
+      // 编辑或查看模式，填充表单数据
+      Object.assign(formData, {
+        moban_mingcheng: props.template.moban_mingcheng,
+        moban_bianma: props.template.moban_bianma,
+        hetong_leixing: props.template.hetong_leixing,
+        moban_neirong: props.template.moban_neirong,
+        bianliang_peizhi: props.template.bianliang_peizhi || '',
+        banben_hao: props.template.banben_hao,
+        shi_dangqian_banben: props.template.shi_dangqian_banben,
+        moban_fenlei: props.template.moban_fenlei || '',
+        moban_zhuangtai: props.template.moban_zhuangtai,
+        beizhu: props.template.beizhu || '',
+        paixu: props.template.paixu,
+      })
+    } else if (visible) {
+      // 新建模式，重置表单
+      resetForm()
+    }
   }
-})
+)
 
 // 方法
 const resetForm = () => {
@@ -436,9 +407,9 @@ const resetForm = () => {
     moban_fenlei: '',
     moban_zhuangtai: 'draft',
     beizhu: '',
-    paixu: 0
+    paixu: 0,
   })
-  
+
   nextTick(() => {
     formRef.value?.clearValidate()
   })
@@ -452,7 +423,7 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate()
     submitting.value = true
-    
+
     if (props.mode === 'create') {
       // 创建合同模板
       const createData: ContractTemplateCreate = { ...formData }
@@ -464,7 +435,7 @@ const handleSubmit = async () => {
       await contractStore.updateTemplate(props.template!.id, updateData)
       ElMessage.success('合同模板更新成功')
     }
-    
+
     emit('success')
   } catch (error) {
   } finally {
@@ -483,7 +454,7 @@ const confirmInsertVariable = () => {
     ElMessage.warning('请输入变量名称')
     return
   }
-  
+
   const variable = `{{ ${newVariableName.value.trim()} }}`
   formData.moban_neirong += variable
   variableDialogVisible.value = false

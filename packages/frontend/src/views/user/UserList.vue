@@ -7,9 +7,9 @@
         <p class="page-description">管理系统用户账户、角色和权限</p>
       </div>
       <div class="header-right">
-        <el-button 
-          type="primary" 
-          :icon="Plus" 
+        <el-button
+          type="primary"
+          :icon="Plus"
           @click="handleCreate"
           v-if="hasPermission('user:create')"
         >
@@ -49,34 +49,22 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch">
-            搜索
-          </el-button>
-          <el-button :icon="Refresh" @click="handleReset">
-            重置
-          </el-button>
+          <el-button type="primary" :icon="Search" @click="handleSearch"> 搜索 </el-button>
+          <el-button :icon="Refresh" @click="handleReset"> 重置 </el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
     <!-- 用户列表 -->
     <el-card class="table-card" shadow="never">
-      <el-table
-        v-loading="loading"
-        :data="userList"
-        stripe
-        style="width: 100%"
-      >
+      <el-table v-loading="loading" :data="userList" stripe style="width: 100%">
         <el-table-column prop="yonghu_ming" label="用户名" width="120" />
         <el-table-column prop="xingming" label="姓名" width="100" />
         <el-table-column prop="youxiang" label="邮箱" width="200" />
         <el-table-column prop="shouji" label="手机号" width="130" />
         <el-table-column prop="zhuangtai" label="状态" width="80">
           <template #default="{ row }">
-            <el-tag
-              :type="row.zhuangtai === 'active' ? 'success' : 'danger'"
-              size="small"
-            >
+            <el-tag :type="row.zhuangtai === 'active' ? 'success' : 'danger'" size="small">
               {{ row.zhuangtai === 'active' ? '启用' : '禁用' }}
             </el-tag>
           </template>
@@ -187,14 +175,14 @@ const searchForm = reactive<UserListParams>({
   size: 20,
   yonghu_ming: '',
   xingming: '',
-  zhuangtai: ''
+  zhuangtai: '',
 })
 
 // 分页信息
 const pagination = reactive({
   page: 1,
   size: 20,
-  total: 0
+  total: 0,
 })
 
 // 获取用户列表
@@ -204,9 +192,9 @@ const fetchUserList = async () => {
     const params = {
       ...searchForm,
       page: pagination.page,
-      size: pagination.size
+      size: pagination.size,
     }
-    
+
     const response = await userApi.getUserList(params)
     userList.value = response.items
     pagination.total = response.total
@@ -230,7 +218,7 @@ const handleReset = () => {
     size: 20,
     yonghu_ming: '',
     xingming: '',
-    zhuangtai: ''
+    zhuangtai: '',
   })
   pagination.page = 1
   fetchUserList()
@@ -268,15 +256,11 @@ const handleEdit = (row: User) => {
 
 const handleDelete = async (row: User) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除用户 "${row.xingming}" 吗？`,
-      '删除确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm(`确定要删除用户 "${row.xingming}" 吗？`, '删除确认', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     await userApi.deleteUser(row.id)
     ElMessage.success('删除成功')

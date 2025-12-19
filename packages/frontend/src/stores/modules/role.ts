@@ -9,7 +9,7 @@ import type {
   RoleCreateRequest,
   RoleUpdateRequest,
   RoleStatusRequest,
-  RolePermissionRequest
+  RolePermissionRequest,
 } from '@/api/modules/role'
 import { roleAPI } from '@/api/modules/role'
 import { ElMessage } from 'element-plus'
@@ -23,15 +23,15 @@ export const useRoleStore = defineStore('role', () => {
   const pageSize = ref(20)
 
   // 计算属性
-  const activeRoles = computed(() => 
-    roles.value.filter(role => role.zhuangtai === 'active').length
+  const activeRoles = computed(
+    () => roles.value.filter((role) => role.zhuangtai === 'active').length
   )
 
-  const inactiveRoles = computed(() => 
-    roles.value.filter(role => role.zhuangtai === 'inactive').length
+  const inactiveRoles = computed(
+    () => roles.value.filter((role) => role.zhuangtai === 'inactive').length
   )
 
-  const totalUsers = computed(() => 
+  const totalUsers = computed(() =>
     roles.value.reduce((sum, role) => sum + (role.users?.length || 0), 0)
   )
 
@@ -43,7 +43,7 @@ export const useRoleStore = defineStore('role', () => {
       const response = await roleAPI.getRoleList({
         page: currentPage.value,
         size: pageSize.value,
-        ...params
+        ...params,
       })
 
       roles.value = response.items
@@ -199,6 +199,6 @@ export const useRoleStore = defineStore('role', () => {
     },
     updatePageSize: (size: number) => {
       pageSize.value = size
-    }
+    },
   }
 })

@@ -143,21 +143,21 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
     in_progress: '进行中',
     pending_review: '待审核',
     completed: '已完成',
-    cancelled: '已取消'
+    cancelled: '已取消',
   }
 
   const priorityMap = {
     low: '低',
     medium: '中',
     high: '高',
-    urgent: '紧急'
+    urgent: '紧急',
   }
 
   const serviceTypeMap = {
     daili_jizhang: '代理记账',
     shuiwu_shenbao: '税务申报',
     caiwu_zixun: '财务咨询',
-    qita_fuwu: '其他服务'
+    qita_fuwu: '其他服务',
   }
 
   // 获取服务工单列表
@@ -244,7 +244,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
     try {
       // 后端API使用查询参数，不是请求体
       const params: Record<string, string> = {
-        zhixing_ren_id: zhixingRenId
+        zhixing_ren_id: zhixingRenId,
       }
       if (fenpeiBeizhu) {
         params.fenpei_beizhu = fenpeiBeizhu
@@ -278,12 +278,16 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
   }
 
   // 完成工单
-  const completeServiceOrder = async (id: string, wanchengQingkuang: string, jiaofeiWenjian?: string) => {
+  const completeServiceOrder = async (
+    id: string,
+    wanchengQingkuang: string,
+    jiaofeiWenjian?: string
+  ) => {
     loading.value = true
     try {
       // 后端API使用查询参数，不是请求体
       const params: Record<string, string> = {
-        wancheng_qingkuang: wanchengQingkuang
+        wancheng_qingkuang: wanchengQingkuang,
       }
       if (jiaofeiWenjian) {
         params.jiaofei_wenjian = jiaofeiWenjian
@@ -306,7 +310,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
     loading.value = true
     try {
       const response = await request.post(`/service-orders/${id}/cancel`, {
-        cancel_reason: cancelReason
+        cancel_reason: cancelReason,
       })
       ElMessage.success('取消工单成功')
       return response.data
@@ -324,7 +328,7 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
     try {
       const response = await request.post(`/service-orders/${id}/comments`, {
         caozuo_neirong: comment,
-        fujian_lujing: fujianLujing
+        fujian_lujing: fujianLujing,
       })
       ElMessage.success('添加评论成功')
       return response.data
@@ -345,8 +349,8 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
         null,
         {
           params: {
-            zhixing_ren_id: zhixingRenId
-          }
+            zhixing_ren_id: zhixingRenId,
+          },
         }
       )
       ElMessage.success('分配任务项成功')
@@ -396,14 +400,14 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
     total,
     currentPage,
     pageSize,
-    
+
     // 计算属性
     hasServiceOrders,
     totalPages,
     statusMap,
     priorityMap,
     serviceTypeMap,
-    
+
     // 方法
     fetchServiceOrders,
     fetchServiceOrderDetail,
@@ -417,6 +421,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
     addServiceOrderComment,
     assignTaskItem,
     fetchStatistics,
-    resetState
+    resetState,
   }
 })

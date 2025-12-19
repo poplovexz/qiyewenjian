@@ -8,16 +8,10 @@
     </el-card>
 
     <el-card>
-      <el-form 
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="120px"
-        v-loading="loading"
-      >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" v-loading="loading">
         <!-- 基本信息 -->
         <el-divider content-position="left">基本信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="成本名称" prop="chengben_mingcheng">
@@ -26,7 +20,11 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="成本类型" prop="chengben_leixing">
-              <el-select v-model="form.chengben_leixing" placeholder="请选择成本类型" style="width: 100%">
+              <el-select
+                v-model="form.chengben_leixing"
+                placeholder="请选择成本类型"
+                style="width: 100%"
+              >
                 <el-option label="人工成本" value="rengong" />
                 <el-option label="材料成本" value="cailiao" />
                 <el-option label="设备成本" value="shebei" />
@@ -40,7 +38,11 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="成本分类" prop="chengben_fenlei">
-              <el-select v-model="form.chengben_fenlei" placeholder="请选择成本分类" style="width: 100%">
+              <el-select
+                v-model="form.chengben_fenlei"
+                placeholder="请选择成本分类"
+                style="width: 100%"
+              >
                 <el-option label="直接成本" value="zhijie" />
                 <el-option label="间接成本" value="jianjie" />
                 <el-option label="固定成本" value="guding" />
@@ -61,9 +63,9 @@
         </el-row>
 
         <el-form-item label="成本描述" prop="chengben_miaoshu">
-          <el-input 
-            v-model="form.chengben_miaoshu" 
-            type="textarea" 
+          <el-input
+            v-model="form.chengben_miaoshu"
+            type="textarea"
             :rows="3"
             placeholder="请输入成本描述"
           />
@@ -71,12 +73,12 @@
 
         <!-- 金额信息 -->
         <el-divider content-position="left">金额信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="成本金额" prop="chengben_jine">
-              <el-input-number 
-                v-model="form.chengben_jine" 
+              <el-input-number
+                v-model="form.chengben_jine"
                 :precision="2"
                 :min="0"
                 style="width: 100%"
@@ -86,8 +88,8 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="预算金额" prop="yusuan_jine">
-              <el-input-number 
-                v-model="form.yusuan_jine" 
+              <el-input-number
+                v-model="form.yusuan_jine"
                 :precision="2"
                 :min="0"
                 style="width: 100%"
@@ -109,7 +111,7 @@
 
         <!-- 供应商信息 -->
         <el-divider content-position="left">供应商信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="供应商名称" prop="gongyingshang_mingcheng">
@@ -138,12 +140,18 @@
 
         <!-- 关联信息 -->
         <el-divider content-position="left">关联信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="关联合同" prop="hetong_id">
-              <el-select v-model="form.hetong_id" placeholder="请选择关联合同" style="width: 100%" filterable clearable>
-                <el-option 
+              <el-select
+                v-model="form.hetong_id"
+                placeholder="请选择关联合同"
+                style="width: 100%"
+                filterable
+                clearable
+              >
+                <el-option
                   v-for="contract in contracts"
                   :key="contract.id"
                   :label="contract.hetong_mingcheng"
@@ -154,8 +162,14 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="关联项目" prop="xiangmu_id">
-              <el-select v-model="form.xiangmu_id" placeholder="请选择关联项目" style="width: 100%" filterable clearable>
-                <el-option 
+              <el-select
+                v-model="form.xiangmu_id"
+                placeholder="请选择关联项目"
+                style="width: 100%"
+                filterable
+                clearable
+              >
+                <el-option
                   v-for="project in projects"
                   :key="project.id"
                   :label="project.xiangmu_mingcheng"
@@ -166,8 +180,14 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="所属部门" prop="bumen_id">
-              <el-select v-model="form.bumen_id" placeholder="请选择所属部门" style="width: 100%" filterable clearable>
-                <el-option 
+              <el-select
+                v-model="form.bumen_id"
+                placeholder="请选择所属部门"
+                style="width: 100%"
+                filterable
+                clearable
+              >
+                <el-option
                   v-for="dept in departments"
                   :key="dept.id"
                   :label="dept.bumen_mingcheng"
@@ -180,7 +200,7 @@
 
         <!-- 发票信息 -->
         <el-divider content-position="left">发票信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="发票号" prop="fapiao_hao">
@@ -194,7 +214,11 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="发票状态" prop="fapiao_zhuangtai">
-              <el-select v-model="form.fapiao_zhuangtai" placeholder="请选择发票状态" style="width: 100%">
+              <el-select
+                v-model="form.fapiao_zhuangtai"
+                placeholder="请选择发票状态"
+                style="width: 100%"
+              >
                 <el-option label="未开票" value="not_issued" />
                 <el-option label="已开票" value="issued" />
                 <el-option label="已收票" value="received" />
@@ -217,8 +241,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="发票金额" prop="fapiao_jine">
-              <el-input-number 
-                v-model="form.fapiao_jine" 
+              <el-input-number
+                v-model="form.fapiao_jine"
                 :precision="2"
                 :min="0"
                 style="width: 100%"
@@ -230,7 +254,7 @@
 
         <!-- 会计信息 -->
         <el-divider content-position="left">会计信息</el-divider>
-        
+
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="会计科目" prop="kuaiji_kemu">
@@ -244,7 +268,11 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="分摊方式" prop="fentan_fangshi">
-              <el-select v-model="form.fentan_fangshi" placeholder="请选择分摊方式" style="width: 100%">
+              <el-select
+                v-model="form.fentan_fangshi"
+                placeholder="请选择分摊方式"
+                style="width: 100%"
+              >
                 <el-option label="直接分摊" value="direct" />
                 <el-option label="按比例分摊" value="proportional" />
                 <el-option label="平均分摊" value="average" />
@@ -255,12 +283,7 @@
         </el-row>
 
         <el-form-item label="备注" prop="beizhu">
-          <el-input 
-            v-model="form.beizhu" 
-            type="textarea" 
-            :rows="3"
-            placeholder="请输入备注信息"
-          />
+          <el-input v-model="form.beizhu" type="textarea" :rows="3" placeholder="请输入备注信息" />
         </el-form-item>
 
         <!-- 操作按钮 -->
@@ -268,9 +291,7 @@
           <el-button type="primary" @click="handleSubmit" :loading="submitLoading">
             {{ isEdit ? '更新' : '创建' }}
           </el-button>
-          <el-button @click="handleSaveAsDraft" :loading="draftLoading">
-            保存为草稿
-          </el-button>
+          <el-button @click="handleSaveAsDraft" :loading="draftLoading"> 保存为草稿 </el-button>
           <el-button @click="handleCancel">取消</el-button>
         </el-form-item>
       </el-form>
@@ -323,29 +344,19 @@ const form = reactive({
   kuaiji_kemu: '',
   chengben_zhongxin: '',
   fentan_fangshi: 'direct',
-  beizhu: ''
+  beizhu: '',
 })
 
 const rules = {
-  chengben_mingcheng: [
-    { required: true, message: '请输入成本名称', trigger: 'blur' }
-  ],
-  chengben_leixing: [
-    { required: true, message: '请选择成本类型', trigger: 'change' }
-  ],
-  chengben_fenlei: [
-    { required: true, message: '请选择成本分类', trigger: 'change' }
-  ],
+  chengben_mingcheng: [{ required: true, message: '请输入成本名称', trigger: 'blur' }],
+  chengben_leixing: [{ required: true, message: '请选择成本类型', trigger: 'change' }],
+  chengben_fenlei: [{ required: true, message: '请选择成本分类', trigger: 'change' }],
   chengben_jine: [
     { required: true, message: '请输入成本金额', trigger: 'blur' },
-    { type: 'number', min: 0.01, message: '成本金额必须大于0', trigger: 'blur' }
+    { type: 'number', min: 0.01, message: '成本金额必须大于0', trigger: 'blur' },
   ],
-  fasheng_shijian: [
-    { required: true, message: '请选择发生时间', trigger: 'change' }
-  ],
-  bizhong: [
-    { required: true, message: '请选择币种', trigger: 'change' }
-  ]
+  fasheng_shijian: [{ required: true, message: '请选择发生时间', trigger: 'change' }],
+  bizhong: [{ required: true, message: '请选择币种', trigger: 'change' }],
 }
 
 // 方法
@@ -371,8 +382,7 @@ const fetchOptions = async () => {
       const deptData = await deptResponse.json()
       departments.value = deptData.items || []
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const fetchCostDetail = async () => {
@@ -382,7 +392,7 @@ const fetchCostDetail = async () => {
   try {
     const response = await fetch(`/costs/${costId.value}`)
     const data = await response.json()
-    
+
     if (response.ok) {
       Object.assign(form, data)
     } else {
@@ -400,25 +410,23 @@ const fetchCostDetail = async () => {
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
-    
+
     submitLoading.value = true
-    
-    const url = isEdit.value 
-      ? `/costs/${costId.value}`
-      : '/costs'
-    
+
+    const url = isEdit.value ? `/costs/${costId.value}` : '/costs'
+
     const method = isEdit.value ? 'PUT' : 'POST'
-    
+
     const response = await fetch(url, {
       method,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(form)
+      body: JSON.stringify(form),
     })
-    
+
     const data = await response.json()
-    
+
     if (response.ok) {
       ElMessage.success(isEdit.value ? '更新成功' : '创建成功')
       router.push('/finance/costs')
@@ -441,28 +449,26 @@ const handleSaveAsDraft = async () => {
       ElMessage.warning('请至少填写成本名称和成本类型')
       return
     }
-    
+
     draftLoading.value = true
-    
-    const url = isEdit.value 
-      ? `/costs/${costId.value}`
-      : '/costs'
-    
+
+    const url = isEdit.value ? `/costs/${costId.value}` : '/costs'
+
     const method = isEdit.value ? 'PUT' : 'POST'
-    
+
     const response = await fetch(url, {
       method,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...form,
-        shenhe_zhuangtai: 'draft'
-      })
+        shenhe_zhuangtai: 'draft',
+      }),
     })
-    
+
     const data = await response.json()
-    
+
     if (response.ok) {
       ElMessage.success('保存草稿成功')
       router.push('/finance/costs')

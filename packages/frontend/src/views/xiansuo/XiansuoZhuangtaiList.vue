@@ -18,7 +18,7 @@
             @keyup.enter="handleSearch"
           />
         </el-form-item>
-        
+
         <el-form-item label="状态类型">
           <el-select
             v-model="searchForm.zhuangtai_leixing"
@@ -32,7 +32,7 @@
             <el-option label="失败状态" value="failed" />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item label="状态">
           <el-select
             v-model="searchForm.zhuangtai"
@@ -44,7 +44,7 @@
             <el-option label="禁用" value="inactive" />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
             <el-icon><Search /></el-icon>
@@ -67,7 +67,7 @@
             新增状态
           </el-button>
         </div>
-        
+
         <div class="action-right">
           <el-button @click="handleRefresh">
             <el-icon><Refresh /></el-icon>
@@ -79,15 +79,11 @@
 
     <!-- 状态表格 -->
     <el-card class="table-card">
-      <el-table
-        v-loading="loading"
-        :data="zhuangtai_list"
-        style="width: 100%"
-      >
+      <el-table v-loading="loading" :data="zhuangtai_list" style="width: 100%">
         <el-table-column prop="zhuangtai_bianma" label="状态编码" width="120" />
-        
+
         <el-table-column prop="zhuangtai_mingcheng" label="状态名称" min-width="150" />
-        
+
         <el-table-column prop="zhuangtai_leixing" label="状态类型" width="120">
           <template #default="{ row }">
             <el-tag :type="getTypeTagType(row.zhuangtai_leixing)" size="small">
@@ -95,16 +91,16 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="yanse_bianma" label="颜色" width="80">
           <template #default="{ row }">
-            <div 
-              class="color-block" 
+            <div
+              class="color-block"
               :style="{ backgroundColor: row.yanse_bianma || '#409eff' }"
             ></div>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="shi_chenggong_zhuangtai" label="成功状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.shi_chenggong_zhuangtai === 'Y' ? 'success' : 'info'" size="small">
@@ -112,7 +108,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="shi_zhongzhong_zhuangtai" label="终止状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.shi_zhongzhong_zhuangtai === 'Y' ? 'danger' : 'info'" size="small">
@@ -120,9 +116,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="paixu" label="排序" width="80" />
-        
+
         <el-table-column prop="zhuangtai" label="状态" width="80">
           <template #default="{ row }">
             <el-tag :type="row.zhuangtai === 'active' ? 'success' : 'danger'" size="small">
@@ -130,21 +126,17 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="created_at" label="创建时间" width="120">
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)">
-              编辑
-            </el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">
-              删除
-            </el-button>
+            <el-button type="primary" size="small" @click="handleEdit(row)"> 编辑 </el-button>
+            <el-button type="danger" size="small" @click="handleDelete(row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -176,11 +168,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import {
-  Search,
-  Refresh,
-  Plus
-} from '@element-plus/icons-vue'
+import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import { useXiansuoStore } from '@/stores/modules/xiansuo'
 import XiansuoZhuangtaiForm from '@/components/xiansuo/XiansuoZhuangtaiForm.vue'
 import type { XiansuoZhuangtai } from '@/types/xiansuo'
@@ -192,7 +180,7 @@ const xiansuoStore = useXiansuoStore()
 const searchForm = ref({
   search: '',
   zhuangtai_leixing: '',
-  zhuangtai: ''
+  zhuangtai: '',
 })
 
 const formVisible = ref(false)
@@ -200,13 +188,7 @@ const formMode = ref<'create' | 'edit'>('create')
 const currentZhuangtai = ref<XiansuoZhuangtai | null>(null)
 
 // 计算属性
-const { 
-  zhuangtai_list, 
-  loading, 
-  total, 
-  currentPage, 
-  pageSize
-} = xiansuoStore
+const { zhuangtai_list, loading, total, currentPage, pageSize } = xiansuoStore
 
 // 方法
 const handleSearch = async () => {
@@ -216,7 +198,7 @@ const handleSearch = async () => {
       size: pageSize.value,
       search: searchForm.value.search,
       zhuangtai_leixing: searchForm.value.zhuangtai_leixing,
-      zhuangtai: searchForm.value.zhuangtai
+      zhuangtai: searchForm.value.zhuangtai,
     })
   } catch (error) {
     ElMessage.error('获取状态列表失败')
@@ -227,7 +209,7 @@ const handleReset = async () => {
   searchForm.value = {
     search: '',
     zhuangtai_leixing: '',
-    zhuangtai: ''
+    zhuangtai: '',
   }
   await handleSearch()
 }
@@ -256,10 +238,10 @@ const handleDelete = async (zhuangtai: XiansuoZhuangtai) => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
-    
+
     await xiansuoStore.deleteZhuangtai(zhuangtai.id)
     ElMessage.success('删除成功')
     await handleSearch()
@@ -289,7 +271,7 @@ const getTypeTagType = (type: string) => {
     initial: 'info',
     processing: 'primary',
     success: 'success',
-    failed: 'danger'
+    failed: 'danger',
   }
   return types[type] || ''
 }
@@ -299,7 +281,7 @@ const getTypeText = (type: string) => {
     initial: '初始状态',
     processing: '处理中',
     success: '成功状态',
-    failed: '失败状态'
+    failed: '失败状态',
   }
   return texts[type] || type
 }

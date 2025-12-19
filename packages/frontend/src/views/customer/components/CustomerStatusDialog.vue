@@ -67,9 +67,9 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button 
-          type="primary" 
-          :loading="loading" 
+        <el-button
+          type="primary"
+          :loading="loading"
           :disabled="!formData.newStatus || formData.newStatus === customer?.kehu_zhuangtai"
           @click="handleSubmit"
         >
@@ -97,7 +97,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  customer: null
+  customer: null,
 })
 
 const emit = defineEmits<Emits>()
@@ -109,7 +109,7 @@ const loading = ref(false)
 // 表单数据
 const formData = ref({
   newStatus: '',
-  reason: ''
+  reason: '',
 })
 
 // 状态选项
@@ -117,31 +117,29 @@ const statusOptions = [
   {
     value: 'active',
     label: '活跃',
-    description: '客户正常服务中，合同有效'
+    description: '客户正常服务中，合同有效',
   },
   {
     value: 'renewing',
     label: '续约中',
-    description: '客户正在办理续约手续'
+    description: '客户正在办理续约手续',
   },
   {
     value: 'terminated',
     label: '已终止',
-    description: '客户服务已终止，合同到期或主动终止'
-  }
+    description: '客户服务已终止，合同到期或主动终止',
+  },
 ]
 
 // 表单验证规则
 const formRules: FormRules = {
-  newStatus: [
-    { required: true, message: '请选择新状态', trigger: 'change' }
-  ]
+  newStatus: [{ required: true, message: '请选择新状态', trigger: 'change' }],
 }
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 // 监听对话框显示状态
@@ -158,7 +156,7 @@ watch(
 const resetForm = () => {
   formData.value = {
     newStatus: '',
-    reason: ''
+    reason: '',
   }
   formRef.value?.clearValidate()
 }
@@ -167,7 +165,7 @@ const getStatusType = (status: string) => {
   const statusMap = {
     active: 'success',
     renewing: 'warning',
-    terminated: 'danger'
+    terminated: 'danger',
   }
   return statusMap[status as keyof typeof statusMap] || 'info'
 }
@@ -176,7 +174,7 @@ const getStatusText = (status: string) => {
   const statusMap = {
     active: '活跃',
     renewing: '续约中',
-    terminated: '已终止'
+    terminated: '已终止',
   }
   return statusMap[status as keyof typeof statusMap] || status
 }
@@ -185,34 +183,30 @@ const getStatusDescription = (status: string) => {
   const descriptions = {
     active: '客户将恢复正常服务状态，可以进行所有业务操作',
     renewing: '客户将进入续约流程，需要完成合同续签手续',
-    terminated: '客户服务将被终止，相关数据将被归档保存'
+    terminated: '客户服务将被终止，相关数据将被归档保存',
   }
   return descriptions[status as keyof typeof descriptions] || ''
 }
 
 const handleSubmit = async () => {
   if (!formRef.value || !props.customer) return
-  
+
   try {
     await formRef.value.validate()
-    
+
     // 确认对话框
     const confirmMessage = `确定要将客户"${props.customer.gongsi_mingcheng}"的状态从"${getStatusText(props.customer.kehu_zhuangtai)}"变更为"${getStatusText(formData.value.newStatus)}"吗？`
-    
-    await ElMessageBox.confirm(
-      confirmMessage,
-      '确认状态变更',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
-    
+
+    await ElMessageBox.confirm(confirmMessage, '确认状态变更', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+
     loading.value = true
-    
+
     await customerStore.updateCustomerStatus(props.customer.id, formData.value.newStatus)
-    
+
     emit('success')
     ElMessage.success('客户状态变更成功')
   } catch (error) {

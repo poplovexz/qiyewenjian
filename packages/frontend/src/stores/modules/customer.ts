@@ -4,17 +4,17 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import { 
-  customerApi, 
+import {
+  customerApi,
   serviceRecordApi,
-  type Customer, 
-  type CustomerCreate, 
+  type Customer,
+  type CustomerCreate,
   type CustomerUpdate,
   type CustomerListParams,
   type ServiceRecord,
   type ServiceRecordCreate,
   type ServiceRecordUpdate,
-  type ServiceRecordListParams
+  type ServiceRecordListParams,
 } from '@/api/modules/customer'
 
 export const useCustomerStore = defineStore('customer', () => {
@@ -23,23 +23,23 @@ export const useCustomerStore = defineStore('customer', () => {
   const currentCustomer = ref<Customer | null>(null)
   const serviceRecords = ref<ServiceRecord[]>([])
   const currentServiceRecord = ref<ServiceRecord | null>(null)
-  
+
   const loading = ref(false)
   const total = ref(0)
   const currentPage = ref(1)
   const pageSize = ref(20)
 
   // 计算属性
-  const activeCustomers = computed(() => 
-    customers.value.filter(customer => customer.kehu_zhuangtai === 'active')
+  const activeCustomers = computed(() =>
+    customers.value.filter((customer) => customer.kehu_zhuangtai === 'active')
   )
-  
-  const renewingCustomers = computed(() => 
-    customers.value.filter(customer => customer.kehu_zhuangtai === 'renewing')
+
+  const renewingCustomers = computed(() =>
+    customers.value.filter((customer) => customer.kehu_zhuangtai === 'renewing')
   )
-  
-  const terminatedCustomers = computed(() => 
-    customers.value.filter(customer => customer.kehu_zhuangtai === 'terminated')
+
+  const terminatedCustomers = computed(() =>
+    customers.value.filter((customer) => customer.kehu_zhuangtai === 'terminated')
   )
 
   // 客户管理方法
@@ -49,7 +49,7 @@ export const useCustomerStore = defineStore('customer', () => {
       const response = await customerApi.getList({
         page: currentPage.value,
         size: pageSize.value,
-        ...params
+        ...params,
       })
 
       customers.value = response.items
@@ -84,11 +84,11 @@ export const useCustomerStore = defineStore('customer', () => {
     try {
       loading.value = true
       const response = await customerApi.create(customerData)
-      
+
       // 添加到列表中
       customers.value.unshift(response.data)
       total.value += 1
-      
+
       ElMessage.success('客户创建成功')
       return response.data
     } catch (error) {
@@ -103,18 +103,18 @@ export const useCustomerStore = defineStore('customer', () => {
     try {
       loading.value = true
       const response = await customerApi.update(id, customerData)
-      
+
       // 更新列表中的数据
-      const index = customers.value.findIndex(customer => customer.id === id)
+      const index = customers.value.findIndex((customer) => customer.id === id)
       if (index !== -1) {
         customers.value[index] = response.data
       }
-      
+
       // 更新当前客户
       if (currentCustomer.value?.id === id) {
         currentCustomer.value = response.data
       }
-      
+
       ElMessage.success('客户信息更新成功')
       return response.data
     } catch (error) {
@@ -129,19 +129,19 @@ export const useCustomerStore = defineStore('customer', () => {
     try {
       loading.value = true
       await customerApi.delete(id)
-      
+
       // 从列表中移除
-      const index = customers.value.findIndex(customer => customer.id === id)
+      const index = customers.value.findIndex((customer) => customer.id === id)
       if (index !== -1) {
         customers.value.splice(index, 1)
         total.value -= 1
       }
-      
+
       // 清除当前客户
       if (currentCustomer.value?.id === id) {
         currentCustomer.value = null
       }
-      
+
       ElMessage.success('客户删除成功')
       return true
     } catch (error) {
@@ -156,18 +156,18 @@ export const useCustomerStore = defineStore('customer', () => {
     try {
       loading.value = true
       const response = await customerApi.updateStatus(id, status)
-      
+
       // 更新列表中的数据
-      const index = customers.value.findIndex(customer => customer.id === id)
+      const index = customers.value.findIndex((customer) => customer.id === id)
       if (index !== -1) {
         customers.value[index] = response.data
       }
-      
+
       // 更新当前客户
       if (currentCustomer.value?.id === id) {
         currentCustomer.value = response.data
       }
-      
+
       ElMessage.success('客户状态更新成功')
       return response.data
     } catch (error) {
@@ -193,7 +193,10 @@ export const useCustomerStore = defineStore('customer', () => {
     }
   }
 
-  const fetchCustomerServiceRecords = async (customerId: string, params: { page?: number; size?: number } = {}) => {
+  const fetchCustomerServiceRecords = async (
+    customerId: string,
+    params: { page?: number; size?: number } = {}
+  ) => {
     try {
       loading.value = true
       const response = await serviceRecordApi.getCustomerRecords(customerId, params)
@@ -211,10 +214,10 @@ export const useCustomerStore = defineStore('customer', () => {
     try {
       loading.value = true
       const response = await serviceRecordApi.create(recordData)
-      
+
       // 添加到列表中
       serviceRecords.value.unshift(response.data)
-      
+
       ElMessage.success('服务记录创建成功')
       return response.data
     } catch (error) {
@@ -229,13 +232,13 @@ export const useCustomerStore = defineStore('customer', () => {
     try {
       loading.value = true
       const response = await serviceRecordApi.update(id, recordData)
-      
+
       // 更新列表中的数据
-      const index = serviceRecords.value.findIndex(record => record.id === id)
+      const index = serviceRecords.value.findIndex((record) => record.id === id)
       if (index !== -1) {
         serviceRecords.value[index] = response.data
       }
-      
+
       ElMessage.success('服务记录更新成功')
       return response.data
     } catch (error) {
@@ -250,13 +253,13 @@ export const useCustomerStore = defineStore('customer', () => {
     try {
       loading.value = true
       const response = await serviceRecordApi.updateStatus(id, status, result)
-      
+
       // 更新列表中的数据
-      const index = serviceRecords.value.findIndex(record => record.id === id)
+      const index = serviceRecords.value.findIndex((record) => record.id === id)
       if (index !== -1) {
         serviceRecords.value[index] = response.data
       }
-      
+
       ElMessage.success('处理状态更新成功')
       return response.data
     } catch (error) {
@@ -289,12 +292,12 @@ export const useCustomerStore = defineStore('customer', () => {
     total,
     currentPage,
     pageSize,
-    
+
     // 计算属性
     activeCustomers,
     renewingCustomers,
     terminatedCustomers,
-    
+
     // 客户管理方法
     fetchCustomers,
     fetchCustomerDetail,
@@ -302,15 +305,15 @@ export const useCustomerStore = defineStore('customer', () => {
     updateCustomer,
     deleteCustomer,
     updateCustomerStatus,
-    
+
     // 服务记录管理方法
     fetchServiceRecords,
     fetchCustomerServiceRecords,
     createServiceRecord,
     updateServiceRecord,
     updateServiceRecordStatus,
-    
+
     // 工具方法
-    resetState
+    resetState,
   }
 })

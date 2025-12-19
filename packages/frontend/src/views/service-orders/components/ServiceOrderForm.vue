@@ -238,8 +238,7 @@ const loadData = async () => {
     contracts.value = []
     customers.value = []
     users.value = []
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const handleContractChange = (contractId: string) => {

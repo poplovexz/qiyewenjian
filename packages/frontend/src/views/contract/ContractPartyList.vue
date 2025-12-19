@@ -67,7 +67,11 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="tongyi_shehui_xinyong_daima" label="统一社会信用代码" width="180" />
+          <el-table-column
+            prop="tongyi_shehui_xinyong_daima"
+            label="统一社会信用代码"
+            width="180"
+          />
           <el-table-column prop="faren_daibiao" label="法人代表" width="120" />
           <el-table-column prop="lianxi_dianhua" label="联系电话" width="130" />
           <el-table-column prop="lianxi_youxiang" label="联系邮箱" width="180" />
@@ -83,27 +87,9 @@
           </el-table-column>
           <el-table-column label="操作" width="200" fixed="right">
             <template #default="{ row }">
-              <el-button
-                type="primary"
-                size="small"
-                @click="handleView(row)"
-              >
-                查看
-              </el-button>
-              <el-button
-                type="warning"
-                size="small"
-                @click="handleEdit(row)"
-              >
-                编辑
-              </el-button>
-              <el-button
-                type="danger"
-                size="small"
-                @click="handleDelete(row)"
-              >
-                删除
-              </el-button>
+              <el-button type="primary" size="small" @click="handleView(row)"> 查看 </el-button>
+              <el-button type="warning" size="small" @click="handleEdit(row)"> 编辑 </el-button>
+              <el-button type="danger" size="small" @click="handleDelete(row)"> 删除 </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -132,11 +118,7 @@
         >
           <template #default>
             <div class="batch-buttons">
-              <el-button
-                type="danger"
-                size="small"
-                @click="handleBatchDelete"
-              >
+              <el-button type="danger" size="small" @click="handleBatchDelete">
                 批量删除
               </el-button>
             </div>
@@ -203,7 +185,17 @@
             <el-table-column prop="zhifu_mingcheng" label="支付方式" min-width="120" />
             <el-table-column prop="zhifu_leixing" label="类型" width="120">
               <template #default="{ row }">
-                <el-tag :type="row.zhifu_leixing === 'yinhangzhuanzhang' ? 'primary' : row.zhifu_leixing === 'weixin' ? 'success' : row.zhifu_leixing === 'zhifubao' ? 'warning' : 'info'">
+                <el-tag
+                  :type="
+                    row.zhifu_leixing === 'yinhangzhuanzhang'
+                      ? 'primary'
+                      : row.zhifu_leixing === 'weixin'
+                        ? 'success'
+                        : row.zhifu_leixing === 'zhifubao'
+                          ? 'warning'
+                          : 'info'
+                  "
+                >
                   {{ getPaymentTypeText(row.zhifu_leixing) }}
                 </el-tag>
               </template>
@@ -212,21 +204,19 @@
             <el-table-column prop="zhanghu_haoma" label="账户号" min-width="150" />
             <el-table-column prop="shi_moren" label="默认" width="80" align="center">
               <template #default="{ row }">
-                <el-tag :type="row.shi_moren ? 'success' : 'info'">{{ row.shi_moren ? '是' : '否' }}</el-tag>
+                <el-tag :type="row.shi_moren ? 'success' : 'info'">{{
+                  row.shi_moren ? '是' : '否'
+                }}</el-tag>
               </template>
             </el-table-column>
           </el-table>
         </div>
       </div>
-      
+
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="detailDialogVisible = false">关闭</el-button>
-          <el-button 
-            type="primary" 
-            @click="handleEditFromDetail"
-            v-if="currentParty"
-          >
+          <el-button type="primary" @click="handleEditFromDetail" v-if="currentParty">
             编辑
           </el-button>
         </div>
@@ -250,7 +240,7 @@ const contractStore = useContractManagementStore()
 // 响应式数据
 const searchForm = reactive({
   search: '',
-  zhuti_leixing: ''
+  zhuti_leixing: '',
 })
 
 const selectedParties = ref<ContractParty[]>([])
@@ -262,11 +252,11 @@ const loading = computed(() => contractStore.partyLoading)
 const partyTotal = computed(() => contractStore.partyTotal)
 const partyPage = computed({
   get: () => contractStore.partyPage,
-  set: (value) => contractStore.setPartyPage(value)
+  set: (value) => contractStore.setPartyPage(value),
 })
 const partySize = computed({
   get: () => contractStore.partySize,
-  set: (value) => contractStore.setPartySize(value)
+  set: (value) => contractStore.setPartySize(value),
 })
 const currentParty = computed(() => contractStore.currentParty)
 
@@ -276,7 +266,7 @@ const getPaymentTypeText = (type: string) => {
     weixin: '微信支付',
     zhifubao: '支付宝',
     xianjin: '现金',
-    qita: '其他'
+    qita: '其他',
   }
   return map[type] || type
 }
@@ -286,10 +276,9 @@ const fetchParties = async () => {
   try {
     await contractStore.fetchParties({
       search: searchForm.search || undefined,
-      zhuti_leixing: searchForm.zhuti_leixing || undefined
+      zhuti_leixing: searchForm.zhuti_leixing || undefined,
     })
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const handleSearch = () => {
@@ -312,8 +301,7 @@ const handleView = async (party: ContractParty) => {
   try {
     await contractStore.fetchPartyDetail(party.id)
     detailDialogVisible.value = true
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const handleEdit = (party: ContractParty) => {
@@ -329,16 +317,12 @@ const handleEditFromDetail = () => {
 
 const handleDelete = async (party: ContractParty) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除主体"${party.zhuti_mingcheng}"吗？`,
-      '确认删除',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
-    
+    await ElMessageBox.confirm(`确定要删除主体"${party.zhuti_mingcheng}"吗？`, '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+
     await contractStore.deleteParty(party.id)
     await fetchParties()
   } catch (error) {
@@ -355,11 +339,11 @@ const handleBatchDelete = async () => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
-    
-    const ids = selectedParties.value.map(item => item.id)
+
+    const ids = selectedParties.value.map((item) => item.id)
     await contractStore.batchDeleteParties(ids)
     selectedParties.value = []
     await fetchParties()
@@ -385,15 +369,15 @@ const handleSizeChange = (size: number) => {
 
 // 辅助方法
 const getPartyTypeLabel = (type: string) => {
-  const option = partyTypeOptions.find(item => item.value === type)
+  const option = partyTypeOptions.find((item) => item.value === type)
   return option?.label || type
 }
 
 const getPartyTypeTagType = (type: string) => {
   const typeMap: Record<string, string> = {
-    'enterprise': 'primary',
-    'individual_business': 'success',
-    'individual': 'warning'
+    enterprise: 'primary',
+    individual_business: 'success',
+    individual: 'warning',
   }
   return typeMap[type] || 'info'
 }

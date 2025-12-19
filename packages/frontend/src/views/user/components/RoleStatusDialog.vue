@@ -11,24 +11,17 @@
         <h4>角色信息</h4>
         <p><strong>角色名称：</strong>{{ role.jiaose_ming }}</p>
         <p><strong>角色编码：</strong>{{ role.jiaose_bianma }}</p>
-        <p><strong>当前状态：</strong>
-          <el-tag 
-            :type="role.zhuangtai === 'active' ? 'success' : 'danger'"
-            size="small"
-          >
+        <p>
+          <strong>当前状态：</strong>
+          <el-tag :type="role.zhuangtai === 'active' ? 'success' : 'danger'" size="small">
             {{ role.zhuangtai === 'active' ? '启用' : '禁用' }}
           </el-tag>
         </p>
       </div>
-      
+
       <el-divider />
-      
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="formRules"
-        label-width="100px"
-      >
+
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
         <el-form-item label="新状态" prop="zhuangtai">
           <el-radio-group v-model="formData.zhuangtai">
             <el-radio label="active">
@@ -47,7 +40,7 @@
             </el-radio>
           </el-radio-group>
         </el-form-item>
-        
+
         <el-form-item label="变更原因" prop="reason">
           <el-input
             v-model="formData.reason"
@@ -59,7 +52,7 @@
           />
         </el-form-item>
       </el-form>
-      
+
       <div v-if="role.zhuangtai !== formData.zhuangtai" class="warning-info">
         <el-alert
           :title="getWarningTitle()"
@@ -70,12 +63,12 @@
         />
       </div>
     </div>
-    
+
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button 
-          type="primary" 
+        <el-button
+          type="primary"
           :loading="loading"
           :disabled="role?.zhuangtai === formData.zhuangtai"
           @click="handleSubmit"
@@ -104,7 +97,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  role: null
+  role: null,
 })
 
 const emit = defineEmits<Emits>()
@@ -115,29 +108,25 @@ const loading = ref(false)
 
 const formData = ref({
   zhuangtai: 'active',
-  reason: ''
+  reason: '',
 })
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  zhuangtai: [
-    { required: true, message: '请选择状态', trigger: 'change' }
-  ],
-  reason: [
-    { max: 200, message: '变更原因不能超过 200 个字符', trigger: 'blur' }
-  ]
+  zhuangtai: [{ required: true, message: '请选择状态', trigger: 'change' }],
+  reason: [{ max: 200, message: '变更原因不能超过 200 个字符', trigger: 'blur' }],
 }
 
 // 获取警告标题
 const getWarningTitle = () => {
   if (!props.role) return ''
-  
+
   if (props.role.zhuangtai === 'active' && formData.value.zhuangtai === 'inactive') {
     return '禁用角色警告'
   } else if (props.role.zhuangtai === 'inactive' && formData.value.zhuangtai === 'active') {
@@ -149,7 +138,7 @@ const getWarningTitle = () => {
 // 获取警告描述
 const getWarningDescription = () => {
   if (!props.role) return ''
-  
+
   if (props.role.zhuangtai === 'active' && formData.value.zhuangtai === 'inactive') {
     return '禁用此角色后，所有拥有此角色的用户将立即失去相关权限，可能影响其正常使用系统。请确认是否继续？'
   } else if (props.role.zhuangtai === 'inactive' && formData.value.zhuangtai === 'active') {
@@ -159,20 +148,24 @@ const getWarningDescription = () => {
 }
 
 // 监听角色变化
-watch(() => props.role, (newRole) => {
-  if (newRole) {
-    formData.value = {
-      zhuangtai: newRole.zhuangtai || 'active',
-      reason: ''
+watch(
+  () => props.role,
+  (newRole) => {
+    if (newRole) {
+      formData.value = {
+        zhuangtai: newRole.zhuangtai || 'active',
+        reason: '',
+      }
     }
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 // 重置表单
 const resetForm = () => {
   formData.value = {
     zhuangtai: 'active',
-    reason: ''
+    reason: '',
   }
   formRef.value?.clearValidate()
 }
@@ -186,22 +179,22 @@ const handleClose = () => {
 // 处理提交
 const handleSubmit = async () => {
   if (!formRef.value || !props.role) return
-  
+
   try {
     await formRef.value.validate()
     loading.value = true
-    
+
     // 调用API更新角色状态
     const response = await fetch(`/roles/${props.role.id}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify({
         zhuangtai: formData.value.zhuangtai,
-        reason: formData.value.reason
-      })
+        reason: formData.value.reason,
+      }),
     })
 
     if (!response.ok) {

@@ -18,7 +18,12 @@
           />
         </el-form-item>
         <el-form-item label="流水类型">
-          <el-select v-model="searchForm.liushui_leixing" placeholder="全部类型" clearable style="width: 120px">
+          <el-select
+            v-model="searchForm.liushui_leixing"
+            placeholder="全部类型"
+            clearable
+            style="width: 120px"
+          >
             <el-option label="收入" value="income" />
             <el-option label="支出" value="expense" />
             <el-option label="退款" value="refund" />
@@ -26,14 +31,24 @@
           </el-select>
         </el-form-item>
         <el-form-item label="流水状态">
-          <el-select v-model="searchForm.liushui_zhuangtai" placeholder="全部状态" clearable style="width: 120px">
+          <el-select
+            v-model="searchForm.liushui_zhuangtai"
+            placeholder="全部状态"
+            clearable
+            style="width: 120px"
+          >
             <el-option label="成功" value="success" />
             <el-option label="失败" value="failed" />
             <el-option label="处理中" value="processing" />
           </el-select>
         </el-form-item>
         <el-form-item label="对账状态">
-          <el-select v-model="searchForm.duizhang_zhuangtai" placeholder="全部状态" clearable style="width: 120px">
+          <el-select
+            v-model="searchForm.duizhang_zhuangtai"
+            placeholder="全部状态"
+            clearable
+            style="width: 120px"
+          >
             <el-option label="待对账" value="pending" />
             <el-option label="已对账" value="matched" />
             <el-option label="未对账" value="unmatched" />
@@ -119,20 +134,18 @@
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleView(row)">
-              查看
-            </el-button>
-            <el-button 
-              type="success" 
-              size="small" 
+            <el-button type="primary" size="small" @click="handleView(row)"> 查看 </el-button>
+            <el-button
+              type="success"
+              size="small"
               @click="handleConfirm(row)"
               v-if="row.duizhang_zhuangtai === 'pending'"
             >
               财务确认
             </el-button>
-            <el-button 
-              type="warning" 
-              size="small" 
+            <el-button
+              type="warning"
+              size="small"
               @click="handleEdit(row)"
               v-if="row.duizhang_zhuangtai === 'pending'"
             >
@@ -185,14 +198,14 @@ const searchForm = reactive({
   search: '',
   liushui_leixing: '',
   liushui_zhuangtai: '',
-  duizhang_zhuangtai: ''
+  duizhang_zhuangtai: '',
 })
 
 // 分页信息
 const pagination = reactive({
   page: 1,
   size: 20,
-  total: 0
+  total: 0,
 })
 
 // 获取流水列表
@@ -205,7 +218,7 @@ const fetchRecordList = async () => {
       search: searchForm.search || undefined,
       liushui_leixing: searchForm.liushui_leixing || undefined,
       liushui_zhuangtai: searchForm.liushui_zhuangtai || undefined,
-      duizhang_zhuangtai: searchForm.duizhang_zhuangtai || undefined
+      duizhang_zhuangtai: searchForm.duizhang_zhuangtai || undefined,
     }
 
     const response = await request.get('/payment-records/', { params })
@@ -230,7 +243,7 @@ const handleReset = () => {
     search: '',
     liushui_leixing: '',
     liushui_zhuangtai: '',
-    duizhang_zhuangtai: ''
+    duizhang_zhuangtai: '',
   })
   pagination.page = 1
   fetchRecordList()
@@ -251,15 +264,11 @@ const handleView = (row: PaymentRecord) => {
 // 财务确认
 const handleConfirm = async (row: PaymentRecord) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要财务确认流水 ${row.liushui_bianhao} 吗？`,
-      '财务确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm(`确定要财务确认流水 ${row.liushui_bianhao} 吗？`, '财务确认', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     await request.post(`/payment-records/${row.id}/confirm`)
     ElMessage.success('财务确认成功')
@@ -297,7 +306,7 @@ const getTypeTagType = (type: string) => {
     income: 'success',
     expense: 'danger',
     refund: 'warning',
-    fee: 'info'
+    fee: 'info',
   }
   return typeMap[type] || 'info'
 }
@@ -308,7 +317,7 @@ const getTypeText = (type: string) => {
     income: '收入',
     expense: '支出',
     refund: '退款',
-    fee: '手续费'
+    fee: '手续费',
   }
   return typeMap[type] || type
 }
@@ -322,7 +331,7 @@ const getPaymentTypeText = (type: string) => {
     baoxiao: '报销',
     offline: '线下支付',
     xianjin: '现金',
-    qita: '其他'
+    qita: '其他',
   }
   return typeMap[type] || type
 }
@@ -332,7 +341,7 @@ const getStatusType = (status: string) => {
   const statusMap: Record<string, string> = {
     success: 'success',
     failed: 'danger',
-    processing: 'warning'
+    processing: 'warning',
   }
   return statusMap[status] || 'info'
 }
@@ -342,7 +351,7 @@ const getStatusText = (status: string) => {
   const statusMap: Record<string, string> = {
     success: '成功',
     failed: '失败',
-    processing: '处理中'
+    processing: '处理中',
   }
   return statusMap[status] || status
 }
@@ -352,7 +361,7 @@ const getReconcileType = (status: string) => {
   const statusMap: Record<string, string> = {
     pending: 'warning',
     matched: 'success',
-    unmatched: 'danger'
+    unmatched: 'danger',
   }
   return statusMap[status] || 'info'
 }
@@ -362,7 +371,7 @@ const getReconcileText = (status: string) => {
   const statusMap: Record<string, string> = {
     pending: '待对账',
     matched: '已对账',
-    unmatched: '未对账'
+    unmatched: '未对账',
   }
   return statusMap[status] || status
 }

@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
-    :title="dialogTitle"
-    width="500px"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px" :before-close="handleClose">
     <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
       <el-form-item label="审批结果" prop="shenhe_jieguo">
         <el-radio-group v-model="form.shenhe_jieguo">
@@ -24,7 +19,9 @@
           v-model="form.shenhe_yijian"
           type="textarea"
           :rows="4"
-          :placeholder="form.shenhe_jieguo === 'jujue' ? '拒绝时必须填写审批意见' : '请输入审批意见（选填）'"
+          :placeholder="
+            form.shenhe_jieguo === 'jujue' ? '拒绝时必须填写审批意见' : '请输入审批意见（选填）'
+          "
           maxlength="500"
           show-word-limit
         />
@@ -57,9 +54,7 @@
 
     <template #footer>
       <el-button @click="handleClose">取消</el-button>
-      <el-button type="primary" @click="handleSubmit" :loading="submitting">
-        确定
-      </el-button>
+      <el-button type="primary" @click="handleSubmit" :loading="submitting"> 确定 </el-button>
     </template>
   </el-dialog>
 </template>
@@ -82,12 +77,12 @@ const props = withDefaults(defineProps<Props>(), {
   visible: false,
   title: '审批操作',
   showAttachment: false,
-  defaultAction: 'tongguo'
+  defaultAction: 'tongguo',
 })
 
 const emit = defineEmits<{
   'update:visible': [value: boolean]
-  'submit': [data: { shenhe_jieguo: string; shenhe_yijian: string; fujian_lujing?: string }]
+  submit: [data: { shenhe_jieguo: string; shenhe_yijian: string; fujian_lujing?: string }]
 }>()
 
 const authStore = useAuthStore()
@@ -99,12 +94,12 @@ const fileList = ref<UploadUserFile[]>([])
 const form = reactive({
   shenhe_jieguo: props.defaultAction,
   shenhe_yijian: '',
-  fujian_lujing: ''
+  fujian_lujing: '',
 })
 
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 const dialogTitle = computed(() => {
@@ -118,9 +113,7 @@ const dialogTitle = computed(() => {
 
 // 表单验证规则
 const rules: FormRules = {
-  shenhe_jieguo: [
-    { required: true, message: '请选择审批结果', trigger: 'change' }
-  ],
+  shenhe_jieguo: [{ required: true, message: '请选择审批结果', trigger: 'change' }],
   shenhe_yijian: [
     {
       validator: (rule, value, callback) => {
@@ -130,27 +123,30 @@ const rules: FormRules = {
           callback()
         }
       },
-      trigger: 'blur'
-    }
-  ]
+      trigger: 'blur',
+    },
+  ],
 }
 
 // 上传配置
 const uploadAction = computed(() => `${import.meta.env.VITE_API_BASE_URL}/upload/file`)
 const uploadHeaders = computed(() => ({
-  Authorization: `Bearer ${authStore.accessToken}`
+  Authorization: `Bearer ${authStore.accessToken}`,
 }))
 
 // 监听 visible 变化，重置表单
-watch(() => props.visible, (newVal) => {
-  if (newVal) {
-    form.shenhe_jieguo = props.defaultAction
-    form.shenhe_yijian = ''
-    form.fujian_lujing = ''
-    fileList.value = []
-    formRef.value?.clearValidate()
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      form.shenhe_jieguo = props.defaultAction
+      form.shenhe_yijian = ''
+      form.fujian_lujing = ''
+      fileList.value = []
+      formRef.value?.clearValidate()
+    }
   }
-})
+)
 
 // 上传前检查
 const beforeUpload: UploadProps['beforeUpload'] = (file) => {
@@ -160,7 +156,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
     'image/jpg',
     'image/png',
     'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   ]
   const isAllowedType = allowedTypes.includes(file.type)
   const isLt10M = file.size / 1024 / 1024 < 10
@@ -179,7 +175,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
 // 上传成功
 const handleUploadSuccess: UploadProps['onSuccess'] = (response, file, fileList) => {
   if (response.url) {
-    const urls = fileList.map(f => f.response?.url || f.url).filter(Boolean)
+    const urls = fileList.map((f) => f.response?.url || f.url).filter(Boolean)
     form.fujian_lujing = urls.join(',')
     ElMessage.success('文件上传成功')
   }
@@ -196,14 +192,14 @@ const handleSubmit = async () => {
 
   try {
     await formRef.value.validate()
-    
+
     submitting.value = true
-    
+
     // 触发提交事件
     emit('submit', {
       shenhe_jieguo: form.shenhe_jieguo,
       shenhe_yijian: form.shenhe_yijian,
-      fujian_lujing: form.fujian_lujing
+      fujian_lujing: form.fujian_lujing,
     })
   } catch (error) {
   } finally {
@@ -221,7 +217,7 @@ defineExpose({
   resetForm: () => {
     formRef.value?.resetFields()
     fileList.value = []
-  }
+  },
 })
 </script>
 
@@ -244,4 +240,3 @@ defineExpose({
   margin-top: 8px;
 }
 </style>
-

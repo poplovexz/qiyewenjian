@@ -17,7 +17,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="header-actions">
         <el-button type="primary" @click="handleEdit">
           <el-icon><Edit /></el-icon>
@@ -52,7 +52,7 @@
             <el-icon><OfficeBuilding /></el-icon>
           </div>
         </template>
-        
+
         <div class="info-grid">
           <div class="info-item">
             <label>公司名称</label>
@@ -87,7 +87,7 @@
             <el-icon><User /></el-icon>
           </div>
         </template>
-        
+
         <div class="info-grid">
           <div class="info-item">
             <label>法人姓名</label>
@@ -112,7 +112,7 @@
             <el-icon><Phone /></el-icon>
           </div>
         </template>
-        
+
         <div class="info-grid">
           <div class="info-item">
             <label>联系电话</label>
@@ -137,19 +137,27 @@
             <el-icon><Calendar /></el-icon>
           </div>
         </template>
-        
+
         <div class="info-grid">
           <div class="info-item">
             <label>服务开始日期</label>
-            <span>{{ customer?.fuwu_kaishi_riqi ? formatDate(customer.fuwu_kaishi_riqi) : '-' }}</span>
+            <span>{{
+              customer?.fuwu_kaishi_riqi ? formatDate(customer.fuwu_kaishi_riqi) : '-'
+            }}</span>
           </div>
           <div class="info-item">
             <label>服务结束日期</label>
-            <span>{{ customer?.fuwu_jieshu_riqi ? formatDate(customer.fuwu_jieshu_riqi) : '-' }}</span>
+            <span>{{
+              customer?.fuwu_jieshu_riqi ? formatDate(customer.fuwu_jieshu_riqi) : '-'
+            }}</span>
           </div>
           <div class="info-item">
             <label>营业执照有效期</label>
-            <span>{{ customer?.yingye_zhizhao_youxiao_qi ? formatDate(customer.yingye_zhizhao_youxiao_qi) : '-' }}</span>
+            <span>{{
+              customer?.yingye_zhizhao_youxiao_qi
+                ? formatDate(customer.yingye_zhizhao_youxiao_qi)
+                : '-'
+            }}</span>
           </div>
           <div class="info-item">
             <label>创建时间</label>
@@ -164,22 +172,16 @@
       <template #header>
         <div class="card-header">
           <span>最近服务记录</span>
-          <el-button type="primary" size="small" @click="viewAllRecords">
-            查看全部
-          </el-button>
+          <el-button type="primary" size="small" @click="viewAllRecords"> 查看全部 </el-button>
         </div>
       </template>
-      
+
       <div v-if="serviceRecords.length === 0" class="empty-records">
         <el-empty description="暂无服务记录" />
       </div>
-      
+
       <div v-else class="records-list">
-        <div
-          v-for="record in serviceRecords.slice(0, 5)"
-          :key="record.id"
-          class="record-item"
-        >
+        <div v-for="record in serviceRecords.slice(0, 5)" :key="record.id" class="record-item">
           <div class="record-header">
             <el-tag :type="getCommunicationType(record.goutong_fangshi)" size="small">
               {{ getCommunicationText(record.goutong_fangshi) }}
@@ -234,7 +236,7 @@ import {
   OfficeBuilding,
   User,
   Phone,
-  Calendar
+  Calendar,
 } from '@element-plus/icons-vue'
 import { useCustomerStore } from '@/stores/modules/customer'
 import CustomerForm from './components/CustomerForm.vue'
@@ -258,13 +260,16 @@ const loading = ref(false)
 const fetchCustomerDetail = async () => {
   const customerId = route.params.id as string
   if (!customerId) return
-  
+
   try {
     loading.value = true
     customer.value = await customerStore.fetchCustomerDetail(customerId)
-    
+
     // 获取最近的服务记录
-    const recordsResponse = await customerStore.fetchCustomerServiceRecords(customerId, { page: 1, size: 10 })
+    const recordsResponse = await customerStore.fetchCustomerServiceRecords(customerId, {
+      page: 1,
+      size: 10,
+    })
     serviceRecords.value = recordsResponse.items
   } catch (error) {
     ElMessage.error('获取客户详情失败')
@@ -302,7 +307,7 @@ const handleDropdownCommand = (command: string) => {
 
 const handleDelete = async () => {
   if (!customer.value) return
-  
+
   try {
     await ElMessageBox.confirm(
       `确定要删除客户"${customer.value.gongsi_mingcheng}"吗？此操作不可恢复。`,
@@ -310,10 +315,10 @@ const handleDelete = async () => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
-    
+
     await customerStore.deleteCustomer(customer.value.id)
     ElMessage.success('客户删除成功')
     router.push('/customers')
@@ -343,7 +348,7 @@ const getStatusType = (status?: string) => {
   const statusMap = {
     active: 'success',
     renewing: 'warning',
-    terminated: 'danger'
+    terminated: 'danger',
   }
   return statusMap[status as keyof typeof statusMap] || 'info'
 }
@@ -352,7 +357,7 @@ const getStatusText = (status?: string) => {
   const statusMap = {
     active: '活跃',
     renewing: '续约中',
-    terminated: '已终止'
+    terminated: '已终止',
   }
   return statusMap[status as keyof typeof statusMap] || status || '-'
 }
@@ -362,7 +367,7 @@ const getCommunicationType = (type: string) => {
     phone: 'warning',
     email: 'success',
     online: 'primary',
-    meeting: 'info'
+    meeting: 'info',
   }
   return typeMap[type as keyof typeof typeMap] || 'info'
 }
@@ -372,7 +377,7 @@ const getCommunicationText = (type: string) => {
     phone: '电话',
     email: '邮件',
     online: '在线',
-    meeting: '会议'
+    meeting: '会议',
   }
   return typeMap[type as keyof typeof typeMap] || type
 }
@@ -382,7 +387,7 @@ const getProblemTypeText = (type: string) => {
     zhangwu: '账务类',
     shuiwu: '税务类',
     zixun: '咨询类',
-    other: '其他'
+    other: '其他',
   }
   return typeMap[type as keyof typeof typeMap] || type
 }
@@ -392,7 +397,7 @@ const getProcessStatusType = (status: string) => {
     pending: 'warning',
     processing: 'primary',
     completed: 'success',
-    cancelled: 'danger'
+    cancelled: 'danger',
   }
   return statusMap[status as keyof typeof statusMap] || 'info'
 }
@@ -402,7 +407,7 @@ const getProcessStatusText = (status: string) => {
     pending: '待处理',
     processing: '处理中',
     completed: '已完成',
-    cancelled: '已取消'
+    cancelled: '已取消',
   }
   return statusMap[status as keyof typeof statusMap] || status
 }

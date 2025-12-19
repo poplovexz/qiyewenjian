@@ -7,9 +7,9 @@
         <p class="page-description">管理增值产品和代理记账产品的具体项目</p>
       </div>
       <div class="header-right">
-        <el-button 
-          type="primary" 
-          :icon="Plus" 
+        <el-button
+          type="primary"
+          :icon="Plus"
           @click="handleCreate"
           v-if="hasPermission('product:create')"
         >
@@ -87,25 +87,15 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch">
-            搜索
-          </el-button>
-          <el-button :icon="Refresh" @click="handleReset">
-            重置
-          </el-button>
+          <el-button type="primary" :icon="Search" @click="handleSearch"> 搜索 </el-button>
+          <el-button :icon="Refresh" @click="handleReset"> 重置 </el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
     <!-- 产品列表 -->
     <el-card class="table-card" shadow="never">
-      <el-table
-        v-loading="productLoading"
-        :data="products"
-        stripe
-        border
-        style="width: 100%"
-      >
+      <el-table v-loading="productLoading" :data="products" stripe border style="width: 100%">
         <el-table-column prop="xiangmu_mingcheng" label="项目名称" width="200">
           <template #default="{ row }">
             <div class="product-name">
@@ -136,14 +126,16 @@
             <el-tag type="warning" size="small">{{ row.buzou_count || 0 }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="xiangmu_beizhu" label="项目备注" min-width="200" show-overflow-tooltip />
+        <el-table-column
+          prop="xiangmu_beizhu"
+          label="项目备注"
+          min-width="200"
+          show-overflow-tooltip
+        />
         <el-table-column prop="paixu" label="排序" width="80" align="center" />
         <el-table-column prop="zhuangtai" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag
-              :type="row.zhuangtai === 'active' ? 'success' : 'danger'"
-              size="small"
-            >
+            <el-tag :type="row.zhuangtai === 'active' ? 'success' : 'danger'" size="small">
               {{ row.zhuangtai === 'active' ? '启用' : '禁用' }}
             </el-tag>
           </template>
@@ -260,22 +252,22 @@ const searchForm = reactive<ProductListParams>({
   search: '',
   fenlei_id: '',
   chanpin_leixing: '',
-  zhuangtai: ''
+  zhuangtai: '',
 })
 
 // 计算属性
-const { 
-  products, 
-  productLoading, 
-  productTotal, 
-  productCurrentPage, 
+const {
+  products,
+  productLoading,
+  productTotal,
+  productCurrentPage,
   productPageSize,
-  categoryOptions
+  categoryOptions,
 } = productStore
 
 // 方法
 const getProductTypeLabel = (type: string) => {
-  const option = productTypeOptions.find(opt => opt.value === type)
+  const option = productTypeOptions.find((opt) => opt.value === type)
   return option?.label || type
 }
 
@@ -290,7 +282,7 @@ const formatPrice = (price: number, unit: string) => {
     ge: '个',
     ci: '次',
     nian: '年',
-    yue: '月'
+    yue: '月',
   }
   return `${price} ${unitMap[unit] || unit}`
 }
@@ -306,7 +298,7 @@ const handleReset = async () => {
     search: '',
     fenlei_id: '',
     chanpin_leixing: '',
-    zhuangtai: ''
+    zhuangtai: '',
   })
   await productStore.fetchProducts()
 }
@@ -342,10 +334,10 @@ const handleDelete = async (product: Product) => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
-    
+
     await productStore.deleteProduct(product.id)
   } catch (error) {
     // 用户取消操作时不显示错误

@@ -612,8 +612,7 @@ const startPolling = () => {
         ElMessage.warning('部署已取消')
         loadHistory()
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   }, 3000) // 每3秒轮询一次
 }
 

@@ -358,24 +358,21 @@ const fetchAuditHistory = async (contractId: string) => {
   try {
     const history = await auditStore.fetchAuditHistory('hetong', contractId)
     auditHistory.value = history
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const fetchSigningInfo = async (contractId: string) => {
   try {
     const response = await contractSignApi.getByContract(contractId)
     signingInfo.value = response.data
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const fetchPaymentInfo = async (contractId: string) => {
   try {
     const response = await contractPaymentApi.getByContract(contractId)
     paymentInfo.value = response.data
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const handleBack = () => {

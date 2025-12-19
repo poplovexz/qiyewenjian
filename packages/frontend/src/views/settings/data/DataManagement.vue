@@ -7,12 +7,7 @@
         </div>
       </template>
 
-      <el-alert
-        title="基础数据说明"
-        type="info"
-        :closable="false"
-        style="margin-bottom: 20px"
-      >
+      <el-alert title="基础数据说明" type="info" :closable="false" style="margin-bottom: 20px">
         基础数据是系统运行的基础配置，包括产品目录、线索来源、合同模板等。这些数据相对固定，是业务操作的基础。
       </el-alert>
 
@@ -129,7 +124,7 @@ const router = useRouter()
 // 统计数据
 const productStats = ref({
   categories: 0,
-  products: 0
+  products: 0,
 })
 
 // 导航到指定页面
@@ -154,10 +149,9 @@ const loadStats = async () => {
     // 这里暂时使用模拟数据
     productStats.value = {
       categories: 8,
-      products: 24
+      products: 24,
     }
-  } catch (error: unknown) {
-  }
+  } catch (error: unknown) {}
 }
 
 onMounted(() => {
@@ -245,4 +239,3 @@ onMounted(() => {
   }
 }
 </style>
-

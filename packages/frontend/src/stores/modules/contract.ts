@@ -27,7 +27,7 @@ import {
   type PaymentMethod,
   type PaymentMethodCreate,
   type PaymentMethodUpdate,
-  type PaymentMethodListParams
+  type PaymentMethodListParams,
 } from '@/api/modules/contract'
 
 export const useContractStore = defineStore('contract', () => {
@@ -89,7 +89,7 @@ export const useContractStore = defineStore('contract', () => {
       const response = await contractTemplateApi.getList({
         page: templatePage.value,
         size: templateSize.value,
-        ...params
+        ...params,
       })
 
       templates.value = response.items
@@ -146,18 +146,18 @@ export const useContractStore = defineStore('contract', () => {
     try {
       loading.value = true
       const response = await contractTemplateApi.update(id, data)
-      
+
       // 更新列表中的数据
-      const index = templates.value.findIndex(item => item.id === id)
+      const index = templates.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         templates.value[index] = response
       }
-      
+
       // 更新当前模板
       if (currentTemplate.value?.id === id) {
         currentTemplate.value = response
       }
-      
+
       ElMessage.success('合同模板更新成功')
       return response
     } catch (error) {
@@ -173,19 +173,19 @@ export const useContractStore = defineStore('contract', () => {
     try {
       loading.value = true
       await contractTemplateApi.delete(id)
-      
+
       // 从列表中移除
-      const index = templates.value.findIndex(item => item.id === id)
+      const index = templates.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         templates.value.splice(index, 1)
         templateTotal.value -= 1
       }
-      
+
       // 清空当前模板
       if (currentTemplate.value?.id === id) {
         currentTemplate.value = null
       }
-      
+
       ElMessage.success('合同模板删除成功')
     } catch (error) {
       ElMessage.error('删除合同模板失败')
@@ -200,18 +200,18 @@ export const useContractStore = defineStore('contract', () => {
     try {
       loading.value = true
       const response = await contractTemplateApi.updateStatus(id, status)
-      
+
       // 更新列表中的数据
-      const index = templates.value.findIndex(item => item.id === id)
+      const index = templates.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         templates.value[index] = response
       }
-      
+
       // 更新当前模板
       if (currentTemplate.value?.id === id) {
         currentTemplate.value = response
       }
-      
+
       ElMessage.success('模板状态更新成功')
       return response
     } catch (error) {
@@ -264,11 +264,11 @@ export const useContractStore = defineStore('contract', () => {
     try {
       loading.value = true
       await contractTemplateApi.batchDelete(ids)
-      
+
       // 从列表中移除
-      templates.value = templates.value.filter(item => !ids.includes(item.id))
+      templates.value = templates.value.filter((item) => !ids.includes(item.id))
       templateTotal.value -= ids.length
-      
+
       ElMessage.success(`成功删除 ${ids.length} 个合同模板`)
     } catch (error) {
       ElMessage.error('批量删除合同模板失败')
@@ -283,14 +283,14 @@ export const useContractStore = defineStore('contract', () => {
     try {
       loading.value = true
       await contractTemplateApi.batchUpdateStatus(ids, status)
-      
+
       // 更新列表中的数据
-      templates.value.forEach(item => {
+      templates.value.forEach((item) => {
         if (ids.includes(item.id)) {
           item.moban_zhuangtai = status
         }
       })
-      
+
       ElMessage.success(`成功更新 ${ids.length} 个合同模板状态`)
     } catch (error) {
       ElMessage.error('批量更新状态失败')
@@ -334,7 +334,7 @@ export const useContractStore = defineStore('contract', () => {
     // 计算属性
     hasTemplates,
     templateTotalPages,
-    
+
     // 方法
     fetchTemplates,
     fetchTemplateDetail,
@@ -349,6 +349,6 @@ export const useContractStore = defineStore('contract', () => {
     batchUpdateStatus,
     setPage,
     setSize,
-    resetState
+    resetState,
   }
 })

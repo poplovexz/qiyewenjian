@@ -54,7 +54,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      
+
       <el-form-item label="分配备注" prop="beizhu">
         <el-input
           v-model="formData.beizhu"
@@ -68,9 +68,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="submitting">
-          确认分配
-        </el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="submitting"> 确认分配 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -108,14 +106,12 @@ const salesUsers = ref<any[]>([])
 
 const formData = reactive({
   fenpei_ren_id: '',
-  beizhu: ''
+  beizhu: '',
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  fenpei_ren_id: [
-    { required: true, message: '请选择分配人员', trigger: 'change' }
-  ]
+  fenpei_ren_id: [{ required: true, message: '请选择分配人员', trigger: 'change' }],
 }
 
 // 方法
@@ -123,10 +119,10 @@ const loadSalesUsers = async () => {
   try {
     loadingUsers.value = true
     // 获取销售人员列表
-    const response = await userApi.getUserList({ 
+    const response = await userApi.getUserList({
       page: 1,
       size: 100,
-      zhuangtai: 'active'
+      zhuangtai: 'active',
     })
     salesUsers.value = response.items || []
   } catch (error) {
@@ -135,7 +131,7 @@ const loadSalesUsers = async () => {
     salesUsers.value = [
       { id: '1', xingming: '张销售', yonghu_ming: 'zhang_sales' },
       { id: '2', xingming: '李销售', yonghu_ming: 'li_sales' },
-      { id: '3', xingming: '王销售', yonghu_ming: 'wang_sales' }
+      { id: '3', xingming: '王销售', yonghu_ming: 'wang_sales' },
     ]
   } finally {
     loadingUsers.value = false
@@ -148,7 +144,7 @@ const getStatusType = (status: string) => {
     following: 'warning',
     quoted: 'primary',
     success: 'success',
-    failed: 'danger'
+    failed: 'danger',
   }
   return typeMap[status] || 'info'
 }
@@ -159,7 +155,7 @@ const getStatusText = (status: string) => {
     following: '跟进中',
     quoted: '已报价',
     success: '已成交',
-    failed: '已失败'
+    failed: '已失败',
   }
   return textMap[status] || status
 }
@@ -169,17 +165,14 @@ const handleSubmit = async () => {
 
   try {
     await formRef.value.validate()
-    
+
     submitting.value = true
-    
-    await xiansuoStore.assignXiansuo(
-      props.xiansuo.id,
-      {
-        fenpei_ren_id: formData.fenpei_ren_id,
-        beizhu: formData.beizhu
-      }
-    )
-    
+
+    await xiansuoStore.assignXiansuo(props.xiansuo.id, {
+      fenpei_ren_id: formData.fenpei_ren_id,
+      beizhu: formData.beizhu,
+    })
+
     ElMessage.success('线索分配成功')
     emit('success')
     handleClose()
@@ -204,11 +197,14 @@ const resetForm = () => {
 }
 
 // 监听对话框显示状态
-watch(() => props.visible, (newVisible) => {
-  if (newVisible) {
-    loadSalesUsers()
+watch(
+  () => props.visible,
+  (newVisible) => {
+    if (newVisible) {
+      loadSalesUsers()
+    }
   }
-})
+)
 
 // 组件挂载时加载销售人员列表
 onMounted(() => {

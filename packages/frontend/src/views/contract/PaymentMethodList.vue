@@ -17,98 +17,92 @@
 
         <!-- 搜索筛选 -->
         <div class="search-bar">
-      <el-form :model="searchForm" inline>
-        <el-form-item label="搜索">
-          <el-input
-            v-model="searchForm.search"
-            placeholder="支付方式名称"
-            clearable
-            style="width: 200px"
-          />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select
-            v-model="searchForm.zhifu_zhuangtai"
-            placeholder="请选择状态"
-            clearable
-            style="width: 150px"
-          >
-            <el-option label="启用" value="active" />
-            <el-option label="停用" value="inactive" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+          <el-form :model="searchForm" inline>
+            <el-form-item label="搜索">
+              <el-input
+                v-model="searchForm.search"
+                placeholder="支付方式名称"
+                clearable
+                style="width: 200px"
+              />
+            </el-form-item>
+            <el-form-item label="状态">
+              <el-select
+                v-model="searchForm.zhifu_zhuangtai"
+                placeholder="请选择状态"
+                clearable
+                style="width: 150px"
+              >
+                <el-option label="启用" value="active" />
+                <el-option label="停用" value="inactive" />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="handleSearch">搜索</el-button>
+              <el-button @click="handleReset">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
 
-    <!-- 数据表格 -->
-    <el-table
-      v-loading="loading"
-      :data="tableData"
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column label="乙方主体" width="200">
-        <template #default="{ row }">
-          {{ row.yifang_zhuti?.zhuti_mingcheng || '-' }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="zhifu_mingcheng" label="支付方式" width="200" />
-      <el-table-column label="支付配置" width="200">
-        <template #default="{ row }">
-          {{ row.zhifu_peizhi?.peizhi_mingcheng || '-' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="配置类型" width="120">
-        <template #default="{ row }">
-          <el-tag v-if="row.zhifu_peizhi" :type="getPaymentTypeTagType(row.zhifu_peizhi.peizhi_leixing)">
-            {{ getPaymentTypeLabel(row.zhifu_peizhi.peizhi_leixing) }}
-          </el-tag>
-          <span v-else>-</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="shi_moren" label="默认支付" width="100">
-        <template #default="{ row }">
-          <el-tag :type="row.shi_moren === 'Y' ? 'success' : 'info'">
-            {{ row.shi_moren === 'Y' ? '是' : '否' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="zhifu_zhuangtai" label="状态" width="100">
-        <template #default="{ row }">
-          <el-tag :type="row.zhifu_zhuangtai === 'active' ? 'success' : 'danger'">
-            {{ row.zhifu_zhuangtai === 'active' ? '启用' : '停用' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="paixu" label="排序" width="80" />
-      <el-table-column prop="created_at" label="创建时间" width="180">
-        <template #default="{ row }">
-          {{ formatDate(row.created_at) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="200" fixed="right">
-        <template #default="{ row }">
-          <el-button type="primary" size="small" @click="handleEdit(row)">
-            编辑
-          </el-button>
-          <el-button
-            v-if="row.shi_moren !== 'Y'"
-            type="success"
-            size="small"
-            @click="handleSetDefault(row)"
-          >
-            设为默认
-          </el-button>
-          <el-button type="danger" size="small" @click="handleDelete(row)">
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <!-- 数据表格 -->
+        <el-table v-loading="loading" :data="tableData" stripe style="width: 100%">
+          <el-table-column label="乙方主体" width="200">
+            <template #default="{ row }">
+              {{ row.yifang_zhuti?.zhuti_mingcheng || '-' }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="zhifu_mingcheng" label="支付方式" width="200" />
+          <el-table-column label="支付配置" width="200">
+            <template #default="{ row }">
+              {{ row.zhifu_peizhi?.peizhi_mingcheng || '-' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="配置类型" width="120">
+            <template #default="{ row }">
+              <el-tag
+                v-if="row.zhifu_peizhi"
+                :type="getPaymentTypeTagType(row.zhifu_peizhi.peizhi_leixing)"
+              >
+                {{ getPaymentTypeLabel(row.zhifu_peizhi.peizhi_leixing) }}
+              </el-tag>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="shi_moren" label="默认支付" width="100">
+            <template #default="{ row }">
+              <el-tag :type="row.shi_moren === 'Y' ? 'success' : 'info'">
+                {{ row.shi_moren === 'Y' ? '是' : '否' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="zhifu_zhuangtai" label="状态" width="100">
+            <template #default="{ row }">
+              <el-tag :type="row.zhifu_zhuangtai === 'active' ? 'success' : 'danger'">
+                {{ row.zhifu_zhuangtai === 'active' ? '启用' : '停用' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="paixu" label="排序" width="80" />
+          <el-table-column prop="created_at" label="创建时间" width="180">
+            <template #default="{ row }">
+              {{ formatDate(row.created_at) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="200" fixed="right">
+            <template #default="{ row }">
+              <el-button type="primary" size="small" @click="handleEdit(row)"> 编辑 </el-button>
+              <el-button
+                v-if="row.shi_moren !== 'Y'"
+                type="success"
+                size="small"
+                @click="handleSetDefault(row)"
+              >
+                设为默认
+              </el-button>
+              <el-button type="danger" size="small" @click="handleDelete(row)"> 删除 </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
 
         <!-- 分页 -->
         <div class="pagination">
@@ -154,14 +148,14 @@ const tableData = ref<PaymentMethod[]>([])
 // 搜索表单
 const searchForm = reactive({
   search: '',
-  zhifu_zhuangtai: ''
+  zhifu_zhuangtai: '',
 })
 
 // 分页
 const pagination = reactive({
   page: 1,
   size: 20,
-  total: 0
+  total: 0,
 })
 
 // 格式化日期
@@ -177,7 +171,7 @@ const loadData = async () => {
       page: pagination.page,
       size: pagination.size,
       search: searchForm.search || undefined,
-      zhifu_zhuangtai: searchForm.zhifu_zhuangtai || undefined
+      zhifu_zhuangtai: searchForm.zhifu_zhuangtai || undefined,
     }
     const response = await contractStore.fetchPaymentMethods(params)
     tableData.value = response.items
@@ -199,7 +193,7 @@ const handleSearch = () => {
 const handleReset = () => {
   Object.assign(searchForm, {
     search: '',
-    zhifu_zhuangtai: ''
+    zhifu_zhuangtai: '',
   })
   pagination.page = 1
   loadData()
@@ -229,15 +223,11 @@ const handleSetDefault = async (row: PaymentMethod) => {
 // 删除
 const handleDelete = async (row: PaymentMethod) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除支付方式"${row.zhifu_mingcheng}"吗？`,
-      '确认删除',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm(`确定要删除支付方式"${row.zhifu_mingcheng}"吗？`, '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     await contractStore.deletePaymentMethod(row.id)
     ElMessage.success('删除成功')
@@ -267,7 +257,7 @@ const getPaymentTypeLabel = (type: string) => {
     weixin: '微信支付',
     zhifubao: '支付宝',
     yinhang: '银行汇款',
-    xianjin: '现金支付'
+    xianjin: '现金支付',
   }
   return map[type] || type
 }
@@ -278,7 +268,7 @@ const getPaymentTypeTagType = (type: string) => {
     weixin: 'success',
     zhifubao: 'primary',
     yinhang: 'warning',
-    xianjin: 'info'
+    xianjin: 'info',
   }
   return map[type] || ''
 }

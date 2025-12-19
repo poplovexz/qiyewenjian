@@ -4,7 +4,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import { 
+import {
   contractApi,
   contractPartyApi,
   paymentMethodApi,
@@ -21,7 +21,7 @@ import {
   type PaymentMethod,
   type PaymentMethodCreate,
   type PaymentMethodUpdate,
-  type PaymentMethodListParams
+  type PaymentMethodListParams,
 } from '@/api/modules/contract'
 
 export const useContractManagementStore = defineStore('contractManagement', () => {
@@ -52,15 +52,15 @@ export const useContractManagementStore = defineStore('contractManagement', () =
   // ==================== 计算属性 ====================
   const hasContracts = computed(() => contracts.value.length > 0)
   const contractTotalPages = computed(() => Math.ceil(contractTotal.value / contractSize.value))
-  
+
   const hasParties = computed(() => parties.value.length > 0)
   const partyTotalPages = computed(() => Math.ceil(partyTotal.value / partySize.value))
-  
+
   const hasPaymentMethods = computed(() => paymentMethods.value.length > 0)
   const paymentTotalPages = computed(() => Math.ceil(paymentTotal.value / paymentSize.value))
 
   // ==================== 合同管理方法 ====================
-  
+
   // 获取合同列表
   const fetchContracts = async (params: ContractListParams = {}) => {
     try {
@@ -68,14 +68,14 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       const response = await contractApi.getList({
         page: contractPage.value,
         size: contractSize.value,
-        ...params
+        ...params,
       })
-      
+
       contracts.value = response.items
       contractTotal.value = response.total
       contractPage.value = response.page
       contractSize.value = response.size
-      
+
       return response
     } catch (error) {
       ElMessage.error('获取合同列表失败')
@@ -105,11 +105,11 @@ export const useContractManagementStore = defineStore('contractManagement', () =
     try {
       contractLoading.value = true
       const response = await contractApi.create(data)
-      
+
       // 添加到列表开头
       contracts.value.unshift(response)
       contractTotal.value += 1
-      
+
       ElMessage.success('合同创建成功')
       return response
     } catch (error) {
@@ -132,16 +132,16 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       if (options.customAmount !== undefined || options.changeReason) {
         response = await contractApi.createFromQuoteDirect(baojiaId, {
           custom_amount: options.customAmount,
-          change_reason: options.changeReason
+          change_reason: options.changeReason,
         })
       } else {
         response = await contractApi.createFromQuote(baojiaId)
       }
-      
+
       // 添加到列表开头
       contracts.value.unshift(response)
       contractTotal.value += 1
-      
+
       ElMessage.success('基于报价生成合同成功')
       return response
     } catch (error: unknown) {
@@ -169,25 +169,23 @@ export const useContractManagementStore = defineStore('contractManagement', () =
     }
   }
 
-
-
   // 更新合同
   const updateContract = async (id: string, data: ContractUpdate) => {
     try {
       contractLoading.value = true
       const response = await contractApi.update(id, data)
-      
+
       // 更新列表中的数据
-      const index = contracts.value.findIndex(item => item.id === id)
+      const index = contracts.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         contracts.value[index] = response
       }
-      
+
       // 更新当前合同
       if (currentContract.value?.id === id) {
         currentContract.value = response
       }
-      
+
       ElMessage.success('合同更新成功')
       return response
     } catch (error) {
@@ -203,19 +201,19 @@ export const useContractManagementStore = defineStore('contractManagement', () =
     try {
       contractLoading.value = true
       await contractApi.delete(id)
-      
+
       // 从列表中移除
-      const index = contracts.value.findIndex(item => item.id === id)
+      const index = contracts.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         contracts.value.splice(index, 1)
         contractTotal.value -= 1
       }
-      
+
       // 清空当前合同
       if (currentContract.value?.id === id) {
         currentContract.value = null
       }
-      
+
       ElMessage.success('合同删除成功')
     } catch (error) {
       ElMessage.error('删除合同失败')
@@ -244,18 +242,18 @@ export const useContractManagementStore = defineStore('contractManagement', () =
     try {
       contractLoading.value = true
       const response = await contractApi.sign(id, signature)
-      
+
       // 更新列表中的数据
-      const index = contracts.value.findIndex(item => item.id === id)
+      const index = contracts.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         contracts.value[index] = response
       }
-      
+
       // 更新当前合同
       if (currentContract.value?.id === id) {
         currentContract.value = response
       }
-      
+
       ElMessage.success('合同签署成功')
       return response
     } catch (error) {
@@ -271,18 +269,18 @@ export const useContractManagementStore = defineStore('contractManagement', () =
     try {
       contractLoading.value = true
       const response = await contractApi.updateStatus(id, status)
-      
+
       // 更新列表中的数据
-      const index = contracts.value.findIndex(item => item.id === id)
+      const index = contracts.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         contracts.value[index] = response
       }
-      
+
       // 更新当前合同
       if (currentContract.value?.id === id) {
         currentContract.value = response
       }
-      
+
       ElMessage.success('合同状态更新成功')
       return response
     } catch (error) {
@@ -298,11 +296,11 @@ export const useContractManagementStore = defineStore('contractManagement', () =
     try {
       contractLoading.value = true
       await contractApi.batchDelete(ids)
-      
+
       // 从列表中移除
-      contracts.value = contracts.value.filter(item => !ids.includes(item.id))
+      contracts.value = contracts.value.filter((item) => !ids.includes(item.id))
       contractTotal.value -= ids.length
-      
+
       ElMessage.success(`成功删除 ${ids.length} 个合同`)
     } catch (error) {
       ElMessage.error('批量删除合同失败')
@@ -321,7 +319,7 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       const response = await contractPartyApi.getList({
         page: partyPage.value,
         size: partySize.value,
-        ...params
+        ...params,
       })
 
       parties.value = response.items
@@ -380,7 +378,7 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       const response = await contractPartyApi.update(id, data)
 
       // 更新列表中的数据
-      const index = parties.value.findIndex(item => item.id === id)
+      const index = parties.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         parties.value[index] = response
       }
@@ -407,7 +405,7 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       await contractPartyApi.delete(id)
 
       // 从列表中移除
-      const index = parties.value.findIndex(item => item.id === id)
+      const index = parties.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         parties.value.splice(index, 1)
         partyTotal.value -= 1
@@ -434,7 +432,7 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       await contractPartyApi.batchDelete(ids)
 
       // 从列表中移除
-      parties.value = parties.value.filter(item => !ids.includes(item.id))
+      parties.value = parties.value.filter((item) => !ids.includes(item.id))
       partyTotal.value -= ids.length
 
       ElMessage.success(`成功删除 ${ids.length} 个乙方主体`)
@@ -445,8 +443,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       partyLoading.value = false
     }
   }
-
-
 
   // ==================== 支付方式管理方法 ====================
 
@@ -462,7 +458,7 @@ export const useContractManagementStore = defineStore('contractManagement', () =
         search: params.search,
         yifang_zhuti_id: params.yifang_zhuti_id,
         zhifu_leixing: params.zhifu_leixing,
-        zhifu_zhuangtai: params.zhifu_zhuangtai
+        zhifu_zhuangtai: params.zhifu_zhuangtai,
       }
 
       const response = await paymentMethodApi.getList(requestParams)
@@ -529,7 +525,7 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       const response = await paymentMethodApi.update(id, data)
 
       // 更新列表中的数据
-      const index = paymentMethods.value.findIndex(item => item.id === id)
+      const index = paymentMethods.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         paymentMethods.value[index] = response
       }
@@ -556,7 +552,7 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       await paymentMethodApi.delete(id)
 
       // 从列表中移除
-      const index = paymentMethods.value.findIndex(item => item.id === id)
+      const index = paymentMethods.value.findIndex((item) => item.id === id)
       if (index !== -1) {
         paymentMethods.value.splice(index, 1)
         paymentTotal.value -= 1
@@ -583,7 +579,7 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       const response = await paymentMethodApi.setDefault(id)
 
       // 更新列表中的数据
-      paymentMethods.value = paymentMethods.value.map(item => {
+      paymentMethods.value = paymentMethods.value.map((item) => {
         if (item.id === id) {
           return response
         }
@@ -612,7 +608,7 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       await paymentMethodApi.batchDelete(ids)
 
       // 从列表中移除
-      paymentMethods.value = paymentMethods.value.filter(item => !ids.includes(item.id))
+      paymentMethods.value = paymentMethods.value.filter((item) => !ids.includes(item.id))
       paymentTotal.value -= ids.length
 
       ElMessage.success(`成功删除 ${ids.length} 个支付方式`)
@@ -753,6 +749,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
     setPartySize,
     setPaymentPage,
     setPaymentSize,
-    resetState
+    resetState,
   }
 })

@@ -100,8 +100,7 @@ export function initSentry(app: App, router: Router): void {
         /https?:\/\/127\.0\.0\.1/,
       ],
     })
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 /**

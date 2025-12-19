@@ -399,7 +399,10 @@ const getDaliJizhangOriginalPrice = () => {
       item.xiangmu_mingcheng.includes('记账') ||
       item.xiangmu_mingcheng.includes('纳税人')
   )
-  return daliJizhangItems.reduce((sum: number, item: QuoteItem) => sum + parseFloat(String(item.xiaoji)), 0)
+  return daliJizhangItems.reduce(
+    (sum: number, item: QuoteItem) => sum + parseFloat(String(item.xiaoji)),
+    0
+  )
 }
 
 const getZengzhiFuwuOriginalPrice = () => {
@@ -411,7 +414,10 @@ const getZengzhiFuwuOriginalPrice = () => {
       !item.xiangmu_mingcheng.includes('记账') &&
       !item.xiangmu_mingcheng.includes('纳税人')
   )
-  return zengzhiFuwuItems.reduce((sum: number, item: QuoteItem) => sum + parseFloat(String(item.xiaoji)), 0)
+  return zengzhiFuwuItems.reduce(
+    (sum: number, item: QuoteItem) => sum + parseFloat(String(item.xiaoji)),
+    0
+  )
 }
 
 const getDaliJizhangPriceDiff = () => {

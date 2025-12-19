@@ -2,19 +2,13 @@
   <div class="login">
     <div class="login-container">
       <h2>系统登录</h2>
-      
+
       <form @submit.prevent="handleLogin" class="login-form">
         <div class="form-group">
           <label for="email">邮箱</label>
-          <input
-            id="email"
-            v-model="form.email"
-            type="email"
-            required
-            placeholder="请输入邮箱"
-          />
+          <input id="email" v-model="form.email" type="email" required placeholder="请输入邮箱" />
         </div>
-        
+
         <div class="form-group">
           <label for="password">密码</label>
           <input
@@ -25,12 +19,12 @@
             placeholder="请输入密码"
           />
         </div>
-        
+
         <button type="submit" class="btn btn-primary" :disabled="loading">
           {{ loading ? '登录中...' : '登录' }}
         </button>
       </form>
-      
+
       <div v-if="error" class="error-message">
         {{ error }}
       </div>
@@ -57,10 +51,10 @@ const error = ref('')
 const handleLogin = async () => {
   loading.value = true
   error.value = ''
-  
+
   try {
     const result = await authStore.login(form.value)
-    
+
     if (result.success) {
       router.push('/dashboard')
     } else {

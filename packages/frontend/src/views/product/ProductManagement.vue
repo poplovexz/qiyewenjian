@@ -62,9 +62,7 @@
               <span v-if="selectedCategory" class="selected-category">
                 当前分类：{{ selectedCategory.fenlei_mingcheng }}
               </span>
-              <span v-else class="selected-category">
-                请选择左侧分类查看产品项目
-              </span>
+              <span v-else class="selected-category"> 请选择左侧分类查看产品项目 </span>
             </div>
             <div class="header-right">
               <el-button
@@ -153,7 +151,9 @@
 
           <!-- 空状态提示 -->
           <div v-if="filteredProductList.length === 0" class="empty-state">
-            <el-empty :description="selectedCategory ? '该分类下暂无产品项目' : '请选择左侧分类查看产品'">
+            <el-empty
+              :description="selectedCategory ? '该分类下暂无产品项目' : '请选择左侧分类查看产品'"
+            >
               <el-button
                 v-if="selectedCategory && hasPermission('product:create')"
                 type="primary"
@@ -238,7 +238,7 @@ const filteredProductList = computed(() => {
   if (!selectedCategory.value) {
     return []
   }
-  return productList.value.filter(product => product.fenlei_id === selectedCategory.value?.id)
+  return productList.value.filter((product) => product.fenlei_id === selectedCategory.value?.id)
 })
 
 // 根据URL参数确定产品类型
@@ -275,7 +275,7 @@ const loadCategoryList = async () => {
     const params = {
       page: 1,
       size: 100, // 后端限制最大100
-      chanpin_leixing: productType.value || undefined
+      chanpin_leixing: productType.value || undefined,
     }
 
     await productStore.fetchCategories(params)
@@ -299,7 +299,7 @@ const loadProductList = async () => {
     const params = {
       page: 1,
       size: 100, // 后端限制最大100
-      chanpin_leixing: productType.value || undefined
+      chanpin_leixing: productType.value || undefined,
     }
 
     await productStore.fetchProducts(params)
@@ -346,7 +346,7 @@ const handleDeleteCategory = async (category: ProductCategory) => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
 
@@ -394,15 +394,11 @@ const handleEditProduct = (product: Product) => {
 
 const handleDeleteProduct = async (product: Product) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除产品"${product.xiangmu_mingcheng}"吗？`,
-      '确认删除',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm(`确定要删除产品"${product.xiangmu_mingcheng}"吗？`, '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
 
     await productStore.deleteProduct(product.id)
     ElMessage.success('删除成功')
@@ -431,14 +427,18 @@ const handleStepsSuccess = () => {
 }
 
 // 监听路由变化
-watch(() => route.query.type, (newType) => {
-  // 根据URL参数重新加载数据
-  if (newType === 'zengzhi' || newType === 'daili_jizhang') {
-    selectedCategory.value = null
-    loadCategoryList()
-    loadProductList()
-  }
-}, { immediate: true })
+watch(
+  () => route.query.type,
+  (newType) => {
+    // 根据URL参数重新加载数据
+    if (newType === 'zengzhi' || newType === 'daili_jizhang') {
+      selectedCategory.value = null
+      loadCategoryList()
+      loadProductList()
+    }
+  },
+  { immediate: true }
+)
 
 // 生命周期
 onMounted(() => {

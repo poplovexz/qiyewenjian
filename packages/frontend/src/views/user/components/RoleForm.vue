@@ -31,9 +31,7 @@
           show-word-limit
         >
           <template #append>
-            <el-button @click="generateCode" :icon="Refresh">
-              重新生成
-            </el-button>
+            <el-button @click="generateCode" :icon="Refresh"> 重新生成 </el-button>
           </template>
         </el-input>
         <div class="form-tip">
@@ -41,7 +39,7 @@
           <span>角色编码会根据角色名称自动生成，也可以手动修改</span>
         </div>
       </el-form-item>
-      
+
       <el-form-item label="角色描述" prop="miaoshu">
         <el-input
           v-model="formData.miaoshu"
@@ -52,7 +50,7 @@
           show-word-limit
         />
       </el-form-item>
-      
+
       <el-form-item label="状态" prop="zhuangtai">
         <el-radio-group v-model="formData.zhuangtai">
           <el-radio label="active">启用</el-radio>
@@ -60,16 +58,11 @@
         </el-radio-group>
       </el-form-item>
     </el-form>
-    
+
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button 
-          v-if="mode !== 'view'"
-          type="primary" 
-          :loading="loading"
-          @click="handleSubmit"
-        >
+        <el-button v-if="mode !== 'view'" type="primary" :loading="loading" @click="handleSubmit">
           {{ mode === 'create' ? '创建' : '保存' }}
         </el-button>
       </div>
@@ -96,7 +89,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  role: null
+  role: null,
 })
 
 const emit = defineEmits<Emits>()
@@ -109,20 +102,20 @@ const formData = ref({
   jiaose_ming: '',
   jiaose_bianma: '',
   miaoshu: '',
-  zhuangtai: 'active'
+  zhuangtai: 'active',
 })
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 const dialogTitle = computed(() => {
   const titleMap = {
     create: '新增角色',
     edit: '编辑角色',
-    view: '查看角色'
+    view: '查看角色',
   }
   return titleMap[props.mode]
 })
@@ -131,38 +124,49 @@ const dialogTitle = computed(() => {
 const formRules: FormRules = {
   jiaose_ming: [
     { required: true, message: '请输入角色名称', trigger: 'blur' },
-    { min: 2, max: 50, message: '角色名称长度在 2 到 50 个字符', trigger: 'blur' }
+    { min: 2, max: 50, message: '角色名称长度在 2 到 50 个字符', trigger: 'blur' },
   ],
   jiaose_bianma: [
     { required: true, message: '请输入角色编码', trigger: 'blur' },
     { min: 2, max: 50, message: '角色编码长度在 2 到 50 个字符', trigger: 'blur' },
-    { pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/, message: '角色编码必须以字母开头，只能包含字母、数字和下划线', trigger: 'blur' }
+    {
+      pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
+      message: '角色编码必须以字母开头，只能包含字母、数字和下划线',
+      trigger: 'blur',
+    },
   ],
-  miaoshu: [
-    { max: 200, message: '角色描述不能超过 200 个字符', trigger: 'blur' }
-  ],
-  zhuangtai: [
-    { required: true, message: '请选择状态', trigger: 'change' }
-  ]
+  miaoshu: [{ max: 200, message: '角色描述不能超过 200 个字符', trigger: 'blur' }],
+  zhuangtai: [{ required: true, message: '请选择状态', trigger: 'change' }],
 }
 
 // 中文拼音映射表（常用字）
 const pinyinMap: Record<string, string> = {
-  '业': 'ye', '务': 'wu', '员': 'yuan',
-  '财': 'cai',
-  '管': 'guan', '理': 'li',
-  '销': 'xiao', '售': 'shou',
-  '客': 'ke', '服': 'fu',
-  '技': 'ji', '术': 'shu',
-  '产': 'chan', '品': 'pin',
-  '运': 'yun', '营': 'ying',
-  '人': 'ren', '事': 'shi',
-  '行': 'xing', '政': 'zheng',
-  '总': 'zong', '经': 'jing',
-  '副': 'fu',
-  '主': 'zhu',
-  '专': 'zhuan',
-  '助': 'zhu'
+  业: 'ye',
+  务: 'wu',
+  员: 'yuan',
+  财: 'cai',
+  管: 'guan',
+  理: 'li',
+  销: 'xiao',
+  售: 'shou',
+  客: 'ke',
+  服: 'fu',
+  技: 'ji',
+  术: 'shu',
+  产: 'chan',
+  品: 'pin',
+  运: 'yun',
+  营: 'ying',
+  人: 'ren',
+  事: 'shi',
+  行: 'xing',
+  政: 'zheng',
+  总: 'zong',
+  经: 'jing',
+  副: 'fu',
+  主: 'zhu',
+  专: 'zhuan',
+  助: 'zhu',
 }
 
 // 生成角色编码
@@ -222,24 +226,28 @@ const resetForm = () => {
     jiaose_ming: '',
     jiaose_bianma: '',
     miaoshu: '',
-    zhuangtai: 'active'
+    zhuangtai: 'active',
   }
   formRef.value?.clearValidate()
 }
 
 // 监听角色数据变化
-watch(() => props.role, (newRole) => {
-  if (newRole) {
-    formData.value = {
-      jiaose_ming: newRole.jiaose_ming || '',
-      jiaose_bianma: newRole.jiaose_bianma || '',
-      miaoshu: newRole.miaoshu || '',
-      zhuangtai: newRole.zhuangtai || 'active'
+watch(
+  () => props.role,
+  (newRole) => {
+    if (newRole) {
+      formData.value = {
+        jiaose_ming: newRole.jiaose_ming || '',
+        jiaose_bianma: newRole.jiaose_bianma || '',
+        miaoshu: newRole.miaoshu || '',
+        zhuangtai: newRole.zhuangtai || 'active',
+      }
+    } else {
+      resetForm()
     }
-  } else {
-    resetForm()
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 // 处理关闭
 const handleClose = () => {

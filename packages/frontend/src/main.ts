@@ -26,7 +26,6 @@ app.use(ElementPlus)
 
 // 全局错误处理
 app.config.errorHandler = (err, instance, info) => {
-
   // 上报到 Sentry
   if (err instanceof Error) {
     captureException(err, { component: instance?.$options?.name, info })
@@ -45,11 +44,9 @@ try {
       const { useAuthStore } = await import('./stores/modules/auth')
       const authStore = useAuthStore()
       await authStore.restoreFromStorage()
-    } catch (error) {
-    }
+    } catch (error) {}
   }, 500)
 } catch (error) {
-
   // 上报启动错误到 Sentry
   if (error instanceof Error) {
     captureException(error, { phase: 'app-mount' })

@@ -4,11 +4,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import { 
-  productCategoryApi, 
-  productApi, 
-  productStepApi 
-} from '@/api/modules/product'
+import { productCategoryApi, productApi, productStepApi } from '@/api/modules/product'
 import type {
   ProductCategory,
   ProductCategoryCreate,
@@ -22,7 +18,7 @@ import type {
   ProductDetail,
   ProductStep,
   ProductStepCreate,
-  ProductStepUpdate
+  ProductStepUpdate,
 } from '@/types/product'
 
 export const useProductStore = defineStore('product', () => {
@@ -46,22 +42,18 @@ export const useProductStore = defineStore('product', () => {
   const productDetailLoading = ref(false)
 
   // 计算属性
-  const categoryPages = computed(() => 
-    Math.ceil(categoryTotal.value / categoryPageSize.value)
-  )
+  const categoryPages = computed(() => Math.ceil(categoryTotal.value / categoryPageSize.value))
 
-  const productPages = computed(() => 
-    Math.ceil(productTotal.value / productPageSize.value)
-  )
+  const productPages = computed(() => Math.ceil(productTotal.value / productPageSize.value))
 
   // 增值产品分类
-  const zengzhiCategories = computed(() => 
-    categoryOptions.value.filter(cat => cat.chanpin_leixing === 'zengzhi')
+  const zengzhiCategories = computed(() =>
+    categoryOptions.value.filter((cat) => cat.chanpin_leixing === 'zengzhi')
   )
 
   // 代理记账产品分类
-  const dailiJizhangCategories = computed(() => 
-    categoryOptions.value.filter(cat => cat.chanpin_leixing === 'daili_jizhang')
+  const dailiJizhangCategories = computed(() =>
+    categoryOptions.value.filter((cat) => cat.chanpin_leixing === 'daili_jizhang')
   )
 
   // 产品分类管理方法
@@ -71,9 +63,9 @@ export const useProductStore = defineStore('product', () => {
       const response = await productCategoryApi.getList({
         page: categoryCurrentPage.value,
         size: categoryPageSize.value,
-        ...params
+        ...params,
       })
-      
+
       categories.value = response.items
       categoryTotal.value = response.total
       categoryCurrentPage.value = response.page
@@ -136,9 +128,9 @@ export const useProductStore = defineStore('product', () => {
       const response = await productApi.getList({
         page: productCurrentPage.value,
         size: productPageSize.value,
-        ...params
+        ...params,
       })
-      
+
       products.value = response.items
       productTotal.value = response.total
       productCurrentPage.value = response.page
@@ -255,6 +247,6 @@ export const useProductStore = defineStore('product', () => {
     updateCategoryPage,
     updateCategoryPageSize,
     updateProductPage,
-    updateProductPageSize
+    updateProductPageSize,
   }
 })

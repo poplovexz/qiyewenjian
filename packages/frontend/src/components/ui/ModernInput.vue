@@ -5,7 +5,7 @@
       <div v-if="prefixIcon" class="input-prefix">
         <component :is="prefixIcon" class="icon" />
       </div>
-      
+
       <!-- 输入框 -->
       <input
         ref="inputRef"
@@ -15,37 +15,42 @@
         :disabled="disabled"
         :readonly="readonly"
         :maxlength="maxlength"
-        :class="['input-field', { 'has-prefix': prefixIcon, 'has-suffix': suffixIcon || clearable }]"
+        :class="[
+          'input-field',
+          { 'has-prefix': prefixIcon, 'has-suffix': suffixIcon || clearable },
+        ]"
         @input="handleInput"
         @focus="handleFocus"
         @blur="handleBlur"
         @keydown="handleKeydown"
       />
-      
+
       <!-- 清除按钮 -->
       <div v-if="clearable && modelValue && !disabled" class="input-suffix" @click="handleClear">
         <svg class="icon clear-icon" viewBox="0 0 24 24">
-          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+          />
         </svg>
       </div>
-      
+
       <!-- 后置图标 -->
       <div v-else-if="suffixIcon" class="input-suffix">
         <component :is="suffixIcon" class="icon" />
       </div>
     </div>
-    
+
     <!-- 标签 -->
     <label v-if="label" class="input-label" :class="{ active: focused || modelValue }">
       {{ label }}
       <span v-if="required" class="required">*</span>
     </label>
-    
+
     <!-- 错误信息 -->
     <div v-if="error" class="input-error">
       {{ error }}
     </div>
-    
+
     <!-- 帮助文本 -->
     <div v-if="helpText && !error" class="input-help">
       {{ helpText }}
@@ -89,15 +94,15 @@ const props = withDefaults(defineProps<Props>(), {
   error: undefined,
   helpText: undefined,
   size: 'medium',
-  variant: 'outlined'
+  variant: 'outlined',
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: string | number]
-  'focus': [event: FocusEvent]
-  'blur': [event: FocusEvent]
-  'clear': []
-  'keydown': [event: KeyboardEvent]
+  focus: [event: FocusEvent]
+  blur: [event: FocusEvent]
+  clear: []
+  keydown: [event: KeyboardEvent]
 }>()
 
 const inputRef = ref<HTMLInputElement>()
@@ -110,8 +115,8 @@ const inputClasses = computed(() => [
     'input-disabled': props.disabled,
     'input-readonly': props.readonly,
     'input-error': props.error,
-    'input-focused': focused.value
-  }
+    'input-focused': focused.value,
+  },
 ])
 
 const handleInput = (event: Event) => {
@@ -151,7 +156,7 @@ const blur = () => {
 
 defineExpose({
   focus,
-  blur
+  blur,
 })
 </script>
 
@@ -404,9 +409,16 @@ defineExpose({
 
 /* 动画 */
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
 }
 
 .input-error .input-wrapper {

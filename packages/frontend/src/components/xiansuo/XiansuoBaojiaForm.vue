@@ -18,22 +18,21 @@
         <template #header>
           <span class="section-title">基本信息</span>
         </template>
-        
+
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="线索信息">
               <div class="xiansuo-info">
                 <div class="company-name">{{ xiansuo?.gongsi_mingcheng }}</div>
-                <div class="contact-info">{{ xiansuo?.lianxi_ren }} {{ xiansuo?.lianxi_dianhua }}</div>
+                <div class="contact-info">
+                  {{ xiansuo?.lianxi_ren }} {{ xiansuo?.lianxi_dianhua }}
+                </div>
               </div>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="报价名称" prop="baojia_mingcheng">
-              <el-input
-                v-model="formData.baojia_mingcheng"
-                placeholder="请输入报价名称"
-              />
+              <el-input v-model="formData.baojia_mingcheng" placeholder="请输入报价名称" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -88,11 +87,7 @@
         </div>
 
         <div v-else class="xiangmu-list">
-          <div
-            v-for="(item, index) in formData.xiangmu_list"
-            :key="index"
-            class="xiangmu-item"
-          >
+          <div v-for="(item, index) in formData.xiangmu_list" :key="index" class="xiangmu-item">
             <div class="xiangmu-header">
               <div class="xiangmu-title">
                 <span class="name">{{ item.xiangmu_mingcheng }}</span>
@@ -100,12 +95,7 @@
                   {{ item.danwei }}
                 </el-tag>
               </div>
-              <el-button
-                type="danger"
-                size="small"
-                text
-                @click="removeXiangmu(index)"
-              >
+              <el-button type="danger" size="small" text @click="removeXiangmu(index)">
                 <el-icon><Delete /></el-icon>
               </el-button>
             </div>
@@ -137,18 +127,12 @@
               </el-col>
               <el-col :span="5">
                 <el-form-item label="小计">
-                  <div class="xiaoji-display">
-                    ¥{{ calculateXiaoji(index).toFixed(2) }}
-                  </div>
+                  <div class="xiaoji-display">¥{{ calculateXiaoji(index).toFixed(2) }}</div>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="备注">
-                  <el-input
-                    v-model="item.beizhu"
-                    placeholder="项目备注"
-                    size="small"
-                  />
+                  <el-input v-model="item.beizhu" placeholder="项目备注" size="small" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -196,7 +180,7 @@ import type {
   XiansuoBaojia,
   XiansuoBaojiaXiangmuInput,
   ChanpinXiangmuOption,
-  Xiansuo
+  Xiansuo,
 } from '@/types/xiansuo'
 
 // Props
@@ -208,7 +192,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  mode: 'create'
+  mode: 'create',
 })
 
 // Emits
@@ -246,37 +230,31 @@ const formData = ref<QuoteFormState>({
   baojia_mingcheng: '',
   youxiao_qi: '',
   beizhu: '',
-  xiangmu_list: []
+  xiangmu_list: [],
 })
 
 // 表单验证规则
 const formRules: FormRules = {
-  baojia_mingcheng: [
-    { required: true, message: '请输入报价名称', trigger: 'blur' }
-  ],
-  youxiao_qi: [
-    { required: true, message: '请选择有效期', trigger: 'change' }
-  ],
+  baojia_mingcheng: [{ required: true, message: '请输入报价名称', trigger: 'blur' }],
+  youxiao_qi: [{ required: true, message: '请选择有效期', trigger: 'change' }],
   xiangmu_list: [
     {
       type: 'array',
       min: 1,
       message: '请至少添加一个服务项目',
-      trigger: 'change'
-    }
-  ]
+      trigger: 'change',
+    },
+  ],
 }
 
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 const totalAmount = computed(() => {
-  return formData.value.xiangmu_list.reduce((sum, item) =>
-    sum + item.shuliang * item.danjia
-  , 0)
+  return formData.value.xiangmu_list.reduce((sum, item) => sum + item.shuliang * item.danjia, 0)
 })
 
 // 将已选服务转换为产品选择器需要的格式
@@ -286,11 +264,11 @@ const selectedServicesList = computed<ChanpinXiangmuOption[]>(() => {
 
   const allProducts = [
     ...(productData.daili_jizhang_xiangmu || []),
-    ...(productData.zengzhi_xiangmu || [])
+    ...(productData.zengzhi_xiangmu || []),
   ]
 
   return formData.value.xiangmu_list
-    .map(item => allProducts.find(p => p.id === item.chanpin_xiangmu_id))
+    .map((item) => allProducts.find((p) => p.id === item.chanpin_xiangmu_id))
     .filter((p): p is ChanpinXiangmuOption => p !== undefined)
 })
 
@@ -321,8 +299,8 @@ const removeXiangmu = (index: number) => {
 }
 
 const handleProductSelect = (products: ChanpinXiangmuOption[]) => {
-  products.forEach(product => {
-    if (formData.value.xiangmu_list.some(item => item.chanpin_xiangmu_id === product.id)) {
+  products.forEach((product) => {
+    if (formData.value.xiangmu_list.some((item) => item.chanpin_xiangmu_id === product.id)) {
       return
     }
 
@@ -333,7 +311,7 @@ const handleProductSelect = (products: ChanpinXiangmuOption[]) => {
       danjia: product.yewu_baojia || 0,
       danwei: product.baojia_danwei,
       paixu: formData.value.xiangmu_list.length,
-      beizhu: ''
+      beizhu: '',
     }
     formData.value.xiangmu_list.push(xiangmu)
   })
@@ -349,7 +327,7 @@ const resetForm = () => {
     baojia_mingcheng: props.xiansuo ? `${props.xiansuo.gongsi_mingcheng}报价单` : '新报价单',
     youxiao_qi: defaultDate.toISOString().split('T')[0],
     beizhu: '',
-    xiangmu_list: []
+    xiangmu_list: [],
   }
 }
 
@@ -360,15 +338,15 @@ const loadBaojiaData = () => {
       baojia_mingcheng: props.baojia.baojia_mingcheng,
       youxiao_qi: props.baojia.youxiao_qi.split('T')[0], // 转换为日期格式
       beizhu: props.baojia.beizhu || '',
-      xiangmu_list: props.baojia.xiangmu_list.map(item => ({
+      xiangmu_list: props.baojia.xiangmu_list.map((item) => ({
         chanpin_xiangmu_id: item.chanpin_xiangmu_id,
         xiangmu_mingcheng: item.xiangmu_mingcheng,
         shuliang: item.shuliang,
         danjia: item.danjia,
         danwei: item.danwei,
         paixu: item.paixu,
-        beizhu: item.beizhu || ''
-      }))
+        beizhu: item.beizhu || '',
+      })),
     }
   }
 }
@@ -381,15 +359,17 @@ const handleSubmit = async () => {
     loading.value = true
 
     let result: XiansuoBaojia
-    const normalizedItems: XiansuoBaojiaXiangmuInput[] = formData.value.xiangmu_list.map((item, index) => ({
-      chanpin_xiangmu_id: item.chanpin_xiangmu_id,
-      xiangmu_mingcheng: item.xiangmu_mingcheng,
-      shuliang: item.shuliang,
-      danjia: item.danjia,
-      danwei: item.danwei,
-      paixu: item.paixu ?? index,
-      beizhu: item.beizhu
-    }))
+    const normalizedItems: XiansuoBaojiaXiangmuInput[] = formData.value.xiangmu_list.map(
+      (item, index) => ({
+        chanpin_xiangmu_id: item.chanpin_xiangmu_id,
+        xiangmu_mingcheng: item.xiangmu_mingcheng,
+        shuliang: item.shuliang,
+        danjia: item.danjia,
+        danwei: item.danwei,
+        paixu: item.paixu ?? index,
+        beizhu: item.beizhu,
+      })
+    )
 
     const youxiaoQiISO = new Date(formData.value.youxiao_qi + 'T00:00:00').toISOString()
 
@@ -399,7 +379,7 @@ const handleSubmit = async () => {
         baojia_mingcheng: formData.value.baojia_mingcheng,
         youxiao_qi: youxiaoQiISO,
         beizhu: formData.value.beizhu,
-        xiangmu_list: normalizedItems
+        xiangmu_list: normalizedItems,
       }
       result = await xiansuoStore.createBaojia(createData)
     } else {
@@ -407,7 +387,7 @@ const handleSubmit = async () => {
         baojia_mingcheng: formData.value.baojia_mingcheng,
         youxiao_qi: youxiaoQiISO,
         beizhu: formData.value.beizhu,
-        xiangmu_list: normalizedItems
+        xiangmu_list: normalizedItems,
       }
       result = await xiansuoStore.updateBaojia(props.baojia!.id, updateData)
     }
@@ -429,15 +409,18 @@ const handleClose = () => {
 }
 
 // 监听器
-watch(() => props.visible, (visible) => {
-  if (visible) {
-    if (props.mode === 'create') {
-      resetForm()
-    } else {
-      loadBaojiaData()
+watch(
+  () => props.visible,
+  (visible) => {
+    if (visible) {
+      if (props.mode === 'create') {
+        resetForm()
+      } else {
+        loadBaojiaData()
+      }
     }
   }
-})
+)
 </script>
 
 <style scoped>
@@ -475,7 +458,7 @@ watch(() => props.visible, (visible) => {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #409EFF;
+  color: #409eff;
 }
 
 .empty-state {
@@ -487,7 +470,7 @@ watch(() => props.visible, (visible) => {
 }
 
 .xiangmu-item {
-  border: 1px solid #EBEEF5;
+  border: 1px solid #ebeef5;
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
@@ -517,7 +500,7 @@ watch(() => props.visible, (visible) => {
 
 .xiaoji-display {
   font-weight: 600;
-  color: #E6A23C;
+  color: #e6a23c;
   font-size: 16px;
 }
 
@@ -539,7 +522,7 @@ watch(() => props.visible, (visible) => {
 }
 
 .total-amount {
-  color: #E6A23C;
+  color: #e6a23c;
   font-weight: 700;
   font-size: 20px;
 }

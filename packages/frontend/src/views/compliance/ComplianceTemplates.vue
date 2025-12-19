@@ -98,7 +98,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        
+
         <el-table-column prop="shixiang_mingcheng" label="事项名称" min-width="200">
           <template #default="{ row }">
             <div class="template-name">
@@ -132,7 +132,12 @@
 
         <el-table-column prop="tiqian_tixing_tianshu" label="提醒天数" width="120">
           <template #default="{ row }">
-            <el-tag v-for="day in row.tiqian_tixing_tianshu.split(',')" :key="day" size="small" class="reminder-tag">
+            <el-tag
+              v-for="day in row.tiqian_tixing_tianshu.split(',')"
+              :key="day"
+              size="small"
+              class="reminder-tag"
+            >
               {{ day }}天
             </el-tag>
           </template>
@@ -154,18 +159,10 @@
 
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleView(row)">
-              查看
-            </el-button>
-            <el-button type="primary" link @click="handleEdit(row)">
-              编辑
-            </el-button>
-            <el-button type="primary" link @click="handleCopy(row)">
-              复制
-            </el-button>
-            <el-button type="danger" link @click="handleDelete(row)">
-              删除
-            </el-button>
+            <el-button type="primary" link @click="handleView(row)"> 查看 </el-button>
+            <el-button type="primary" link @click="handleEdit(row)"> 编辑 </el-button>
+            <el-button type="primary" link @click="handleCopy(row)"> 复制 </el-button>
+            <el-button type="danger" link @click="handleDelete(row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -192,10 +189,7 @@
     />
 
     <!-- 模板详情对话框 -->
-    <TemplateDetailDialog
-      v-model:visible="showDetailDialog"
-      :template-id="viewingTemplateId"
-    />
+    <TemplateDetailDialog v-model:visible="showDetailDialog" :template-id="viewingTemplateId" />
   </div>
 </template>
 
@@ -229,13 +223,13 @@ const searchForm = reactive({
   shixiang_leixing: '',
   shenbao_zhouqi: '',
   moban_zhuangtai: '',
-  fengxian_dengji: ''
+  fengxian_dengji: '',
 })
 
 const pagination = reactive({
   page: 1,
   size: 20,
-  total: 0
+  total: 0,
 })
 
 const tableData = ref([])
@@ -254,14 +248,13 @@ const loadTemplates = async () => {
     const params = {
       page: pagination.page,
       size: pagination.size,
-      ...searchForm
+      ...searchForm,
     }
-    
+
     const response = await complianceStore.fetchTemplates(params)
     tableData.value = response.items
     pagination.total = response.total
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const handleSearch = () => {
@@ -275,7 +268,7 @@ const handleReset = () => {
     shixiang_leixing: '',
     shenbao_zhouqi: '',
     moban_zhuangtai: '',
-    fengxian_dengji: ''
+    fengxian_dengji: '',
   })
   pagination.page = 1
   loadTemplates()
@@ -312,7 +305,7 @@ const handleCopy = async (row: ComplianceTemplate) => {
       ...row,
       shixiang_mingcheng: `${row.shixiang_mingcheng}（副本）`,
       shixiang_bianma: `${row.shixiang_bianma}_COPY_${Date.now()}`,
-      moban_zhuangtai: 'draft'
+      moban_zhuangtai: 'draft',
     }
 
     delete templateData.id
@@ -323,22 +316,17 @@ const handleCopy = async (row: ComplianceTemplate) => {
 
     await complianceStore.createTemplate(templateData)
     loadTemplates()
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const handleDelete = async (row: ComplianceTemplate) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除模板"${row.shixiang_mingcheng}"吗？`,
-      '确认删除',
-      {
-        type: 'warning',
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }
-    )
-    
+    await ElMessageBox.confirm(`确定要删除模板"${row.shixiang_mingcheng}"吗？`, '确认删除', {
+      type: 'warning',
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+    })
+
     await complianceStore.deleteTemplate(row.id)
     loadTemplates()
   } catch (error) {
@@ -358,7 +346,7 @@ const getTypeTagType = (type: string) => {
     shuiwu_shenbao: 'danger',
     nianbao_shenbao: 'warning',
     zhizhao_nianjian: 'primary',
-    qita_heguishixiang: 'info'
+    qita_heguishixiang: 'info',
   }
   return typeMap[type] || 'info'
 }
@@ -368,7 +356,7 @@ const getRiskTagType = (risk: string) => {
     low: 'success',
     medium: 'warning',
     high: 'danger',
-    critical: 'danger'
+    critical: 'danger',
   }
   return riskMap[risk] || 'info'
 }
@@ -377,7 +365,7 @@ const getStatusTagType = (status: string) => {
   const statusMap = {
     active: 'success',
     inactive: 'info',
-    draft: 'warning'
+    draft: 'warning',
   }
   return statusMap[status] || 'info'
 }

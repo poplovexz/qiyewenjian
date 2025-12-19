@@ -13,9 +13,9 @@
         <p><strong>角色编码：</strong>{{ role.jiaose_bianma }}</p>
         <p><strong>角色描述：</strong>{{ role.miaoshu || '暂无描述' }}</p>
       </div>
-      
+
       <el-divider />
-      
+
       <div class="permission-section">
         <div class="section-header">
           <h4>权限分配</h4>
@@ -26,7 +26,7 @@
             <el-button size="small" @click="collapseAll">收起全部</el-button>
           </div>
         </div>
-        
+
         <el-tree
           ref="treeRef"
           :data="permissionTree"
@@ -43,8 +43,8 @@
                 <component :is="data.icon" />
               </el-icon>
               <span class="node-label">{{ node.label }}</span>
-              <el-tag 
-                v-if="data.type" 
+              <el-tag
+                v-if="data.type"
                 :type="getPermissionTypeTag(data.type)"
                 size="small"
                 class="node-tag"
@@ -56,17 +56,11 @@
         </el-tree>
       </div>
     </div>
-    
+
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button 
-          type="primary" 
-          :loading="loading"
-          @click="handleSubmit"
-        >
-          保存
-        </el-button>
+        <el-button type="primary" :loading="loading" @click="handleSubmit"> 保存 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -91,7 +85,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  role: null
+  role: null,
 })
 
 const emit = defineEmits<Emits>()
@@ -119,13 +113,13 @@ const permissionTree = ref<PermissionTreeNode[]>([])
 // 计算属性
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value)
+  set: (value) => emit('update:visible', value),
 })
 
 // 树形结构配置
 const treeProps = {
   children: 'children',
-  label: 'label'
+  label: 'label',
 }
 
 // 加载权限树数据
@@ -133,15 +127,14 @@ const loadPermissionTree = async () => {
   try {
     const tree = await permissionStore.getPermissionTree('active')
     permissionTree.value = tree
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 // 加载角色权限
 const loadRolePermissions = async (roleId: string) => {
   try {
     const permissions = await roleStore.getRolePermissions(roleId)
-    const permissionIds = permissions.map(p => p.id)
+    const permissionIds = permissions.map((p) => p.id)
     checkedPermissions.value = permissionIds
 
     // 等待下一个tick，确保树组件已经渲染
@@ -159,7 +152,7 @@ const getPermissionTypeTag = (type: string) => {
   const typeMap = {
     menu: 'primary',
     button: 'success',
-    api: 'warning'
+    api: 'warning',
   }
   return typeMap[type] || 'info'
 }
@@ -168,7 +161,7 @@ const getPermissionTypeText = (type: string) => {
   const typeMap = {
     menu: '菜单',
     button: '按钮',
-    api: '接口'
+    api: '接口',
   }
   return typeMap[type] || type
 }
@@ -185,14 +178,14 @@ const selectNone = () => {
 
 const expandAll = () => {
   const allKeys = getAllNodeKeys(permissionTree.value)
-  allKeys.forEach(key => {
+  allKeys.forEach((key) => {
     treeRef.value?.getNode(key)?.expand()
   })
 }
 
 const collapseAll = () => {
   const allKeys = getAllNodeKeys(permissionTree.value)
-  allKeys.forEach(key => {
+  allKeys.forEach((key) => {
     treeRef.value?.getNode(key)?.collapse()
   })
 }
@@ -200,7 +193,7 @@ const collapseAll = () => {
 const getAllNodeKeys = (nodes: PermissionTreeNode[]): string[] => {
   const keys: string[] = []
   const traverse = (nodeList: PermissionTreeNode[]) => {
-    nodeList.forEach(node => {
+    nodeList.forEach((node) => {
       keys.push(node.id)
       if (node.children) {
         traverse(node.children)
@@ -227,24 +220,31 @@ const findNodeById = (nodes: PermissionTreeNode[], id: string): PermissionTreeNo
 }
 
 // 监听角色变化
-watch(() => props.role, async (newRole) => {
-  if (newRole) {
-    // 加载权限树（如果还没有加载）
-    if (permissionTree.value.length === 0) {
-      await loadPermissionTree()
+watch(
+  () => props.role,
+  async (newRole) => {
+    if (newRole) {
+      // 加载权限树（如果还没有加载）
+      if (permissionTree.value.length === 0) {
+        await loadPermissionTree()
+      }
+      // 加载角色的权限数据
+      await loadRolePermissions(newRole.id)
     }
-    // 加载角色的权限数据
-    await loadRolePermissions(newRole.id)
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 // 监听对话框显示状态
-watch(() => props.visible, async (visible) => {
-  if (visible) {
-    // 对话框打开时加载权限树
-    await loadPermissionTree()
+watch(
+  () => props.visible,
+  async (visible) => {
+    if (visible) {
+      // 对话框打开时加载权限树
+      await loadPermissionTree()
+    }
   }
-})
+)
 
 // 处理关闭
 const handleClose = () => {
@@ -268,14 +268,14 @@ const handleSubmit = async () => {
     const allCheckedKeys = [...checkedKeys, ...halfCheckedKeys]
 
     // 过滤出真实的权限ID（排除分组节点）
-    const realPermissionIds = allCheckedKeys.filter(key => {
+    const realPermissionIds = allCheckedKeys.filter((key) => {
       const node = findNodeById(permissionTree.value, key)
       return node && node.is_permission === true
     })
 
     // 调用API保存角色权限
     await roleStore.updateRolePermissions(props.role.id, {
-      permission_ids: realPermissionIds
+      permission_ids: realPermissionIds,
     })
 
     ElMessage.success('权限保存成功')

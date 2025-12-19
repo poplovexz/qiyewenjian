@@ -20,7 +20,7 @@
             <el-icon><Search /></el-icon>
           </template>
         </el-input>
-        
+
         <el-select
           v-model="searchForm.kehu_zhuangtai"
           placeholder="客户状态"
@@ -32,18 +32,18 @@
           <el-option label="续约中" value="renewing" />
           <el-option label="已终止" value="terminated" />
         </el-select>
-        
+
         <el-button type="primary" @click="handleSearch">
           <el-icon><Search /></el-icon>
           搜索
         </el-button>
-        
+
         <el-button @click="handleReset">
           <el-icon><Refresh /></el-icon>
           重置
         </el-button>
       </div>
-      
+
       <div class="search-right">
         <el-button
           v-if="selectedCustomers.length > 0"
@@ -53,11 +53,7 @@
           <el-icon><Edit /></el-icon>
           批量更新状态
         </el-button>
-        <el-button
-          v-if="selectedCustomers.length > 0"
-          type="danger"
-          @click="handleBatchDelete"
-        >
+        <el-button v-if="selectedCustomers.length > 0" type="danger" @click="handleBatchDelete">
           <el-icon><Delete /></el-icon>
           批量删除
         </el-button>
@@ -83,7 +79,7 @@
           <el-icon><User /></el-icon>
         </div>
       </el-card>
-      
+
       <el-card class="stat-card">
         <div class="stat-content">
           <div class="stat-number">{{ renewingCustomers.length }}</div>
@@ -93,7 +89,7 @@
           <el-icon><Clock /></el-icon>
         </div>
       </el-card>
-      
+
       <el-card class="stat-card">
         <div class="stat-content">
           <div class="stat-number">{{ terminatedCustomers.length }}</div>
@@ -103,7 +99,7 @@
           <el-icon><Close /></el-icon>
         </div>
       </el-card>
-      
+
       <el-card class="stat-card">
         <div class="stat-content">
           <div class="stat-number">{{ total }}</div>
@@ -124,7 +120,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        
+
         <el-table-column prop="gongsi_mingcheng" label="公司名称" min-width="200">
           <template #default="{ row }">
             <div class="company-info">
@@ -133,11 +129,11 @@
             </div>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="faren_xingming" label="法人代表" width="120" />
-        
+
         <el-table-column prop="lianxi_dianhua" label="联系电话" width="130" />
-        
+
         <el-table-column prop="kehu_zhuangtai" label="客户状态" width="100">
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.kehu_zhuangtai)">
@@ -145,19 +141,19 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="fuwu_kaishi_riqi" label="服务开始" width="120">
           <template #default="{ row }">
             {{ row.fuwu_kaishi_riqi ? formatDate(row.fuwu_kaishi_riqi) : '-' }}
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="created_at" label="创建时间" width="120">
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button
@@ -177,7 +173,11 @@
               编辑
             </el-button>
             <el-dropdown
-              v-if="permission.showStatusManageButton() || permission.showServiceRecordButton() || permission.showDeleteCustomerButton()"
+              v-if="
+                permission.showStatusManageButton() ||
+                permission.showServiceRecordButton() ||
+                permission.showDeleteCustomerButton()
+              "
               @command="(command) => handleDropdownCommand(command, row)"
             >
               <el-button size="small">
@@ -185,16 +185,10 @@
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item
-                    v-if="permission.showStatusManageButton()"
-                    command="status"
-                  >
+                  <el-dropdown-item v-if="permission.showStatusManageButton()" command="status">
                     状态管理
                   </el-dropdown-item>
-                  <el-dropdown-item
-                    v-if="permission.showServiceRecordButton()"
-                    command="records"
-                  >
+                  <el-dropdown-item v-if="permission.showServiceRecordButton()" command="records">
                     服务记录
                   </el-dropdown-item>
                   <el-dropdown-item
@@ -210,7 +204,7 @@
           </template>
         </el-table-column>
       </el-table>
-      
+
       <!-- 分页 -->
       <div class="pagination-wrapper">
         <el-pagination
@@ -256,7 +250,7 @@ import {
   DataAnalysis,
   ArrowDown,
   Edit,
-  Delete
+  Delete,
 } from '@element-plus/icons-vue'
 import { useCustomerStore } from '@/stores/modules/customer'
 import { usePermission } from '@/utils/permissions'
@@ -271,7 +265,7 @@ const permission = usePermission()
 // 响应式数据
 const searchForm = ref({
   search: '',
-  kehu_zhuangtai: ''
+  kehu_zhuangtai: '',
 })
 
 const formVisible = ref(false)
@@ -281,15 +275,15 @@ const statusDialogVisible = ref(false)
 const selectedCustomers = ref<Customer[]>([])
 
 // 计算属性
-const { 
-  customers, 
-  loading, 
-  total, 
-  currentPage, 
+const {
+  customers,
+  loading,
+  total,
+  currentPage,
   pageSize,
   activeCustomers,
   renewingCustomers,
-  terminatedCustomers
+  terminatedCustomers,
 } = customerStore
 
 // 方法
@@ -300,7 +294,7 @@ const handleSearch = async () => {
 const handleReset = async () => {
   searchForm.value = {
     search: '',
-    kehu_zhuangtai: ''
+    kehu_zhuangtai: '',
   }
   await customerStore.fetchCustomers()
 }
@@ -323,7 +317,7 @@ const handleEdit = (customer: Customer) => {
 
 const handleDropdownCommand = (command: string, customer: Customer) => {
   currentCustomer.value = customer
-  
+
   switch (command) {
     case 'status':
       statusDialogVisible.value = true
@@ -345,10 +339,10 @@ const handleDelete = async (customer: Customer) => {
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }
     )
-    
+
     await customerStore.deleteCustomer(customer.id)
     await handleSearch()
   } catch (error) {
@@ -392,11 +386,11 @@ const handleBatchUpdateStatus = async () => {
       inputOptions: [
         { label: '活跃', value: 'active' },
         { label: '续约中', value: 'renewing' },
-        { label: '已终止', value: 'terminated' }
-      ]
+        { label: '已终止', value: 'terminated' },
+      ],
     })
 
-    const customerIds = selectedCustomers.value.map(customer => customer.id)
+    const customerIds = selectedCustomers.value.map((customer) => customer.id)
     await customerApi.batchUpdateStatus(customerIds, status)
     ElMessage.success('批量更新成功')
     selectedCustomers.value = []
@@ -421,7 +415,7 @@ const handleBatchDelete = async () => {
       { type: 'warning' }
     )
 
-    const customerIds = selectedCustomers.value.map(customer => customer.id)
+    const customerIds = selectedCustomers.value.map((customer) => customer.id)
     await customerApi.batchDelete(customerIds)
     ElMessage.success('批量删除成功')
     selectedCustomers.value = []
@@ -438,7 +432,7 @@ const getStatusType = (status: string) => {
   const statusMap = {
     active: 'success',
     renewing: 'warning',
-    terminated: 'danger'
+    terminated: 'danger',
   }
   return statusMap[status as keyof typeof statusMap] || 'info'
 }
@@ -447,7 +441,7 @@ const getStatusText = (status: string) => {
   const statusMap = {
     active: '活跃',
     renewing: '续约中',
-    terminated: '已终止'
+    terminated: '已终止',
   }
   return statusMap[status as keyof typeof statusMap] || status
 }

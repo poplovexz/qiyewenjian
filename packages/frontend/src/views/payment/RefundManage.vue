@@ -26,11 +26,7 @@
         </el-form-item>
 
         <el-form-item label="搜索">
-          <el-input
-            v-model="searchForm.search"
-            placeholder="退款单号/原始订单号"
-            clearable
-          />
+          <el-input v-model="searchForm.search" placeholder="退款单号/原始订单号" clearable />
         </el-form-item>
 
         <el-form-item>
@@ -59,7 +55,9 @@
           <template #default="{ row }">
             <el-tag v-if="row.tuikuan_zhuangtai === 'chenggong'" type="success">成功</el-tag>
             <el-tag v-else-if="row.tuikuan_zhuangtai === 'shibai'" type="danger">失败</el-tag>
-            <el-tag v-else-if="row.tuikuan_zhuangtai === 'chuli_zhong'" type="warning">处理中</el-tag>
+            <el-tag v-else-if="row.tuikuan_zhuangtai === 'chuli_zhong'" type="warning"
+              >处理中</el-tag
+            >
             <el-tag v-else type="info">{{ row.tuikuan_zhuangtai }}</el-tag>
           </template>
         </el-table-column>
@@ -90,32 +88,54 @@
     </el-card>
 
     <!-- 退款详情对话框 -->
-    <el-dialog
-      v-model="detailDialogVisible"
-      title="退款详情"
-      width="600px"
-    >
+    <el-dialog v-model="detailDialogVisible" title="退款详情" width="600px">
       <el-descriptions :column="1" border v-if="currentRefund">
-        <el-descriptions-item label="退款单号">{{ currentRefund.tuikuan_danhao }}</el-descriptions-item>
-        <el-descriptions-item label="原始订单号">{{ currentRefund.yuanshi_dingdan_hao }}</el-descriptions-item>
-        <el-descriptions-item label="第三方退款号">{{ currentRefund.disanfang_tuikuan_hao || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="原始金额">¥{{ currentRefund.yuanshi_jine }}</el-descriptions-item>
-        <el-descriptions-item label="退款金额">¥{{ currentRefund.tuikuan_jine }}</el-descriptions-item>
+        <el-descriptions-item label="退款单号">{{
+          currentRefund.tuikuan_danhao
+        }}</el-descriptions-item>
+        <el-descriptions-item label="原始订单号">{{
+          currentRefund.yuanshi_dingdan_hao
+        }}</el-descriptions-item>
+        <el-descriptions-item label="第三方退款号">{{
+          currentRefund.disanfang_tuikuan_hao || '-'
+        }}</el-descriptions-item>
+        <el-descriptions-item label="原始金额"
+          >¥{{ currentRefund.yuanshi_jine }}</el-descriptions-item
+        >
+        <el-descriptions-item label="退款金额"
+          >¥{{ currentRefund.tuikuan_jine }}</el-descriptions-item
+        >
         <el-descriptions-item label="退款平台">
           <el-tag v-if="currentRefund.tuikuan_pingtai === 'weixin'" type="success">微信</el-tag>
-          <el-tag v-else-if="currentRefund.tuikuan_pingtai === 'zhifubao'" type="primary">支付宝</el-tag>
+          <el-tag v-else-if="currentRefund.tuikuan_pingtai === 'zhifubao'" type="primary"
+            >支付宝</el-tag
+          >
           <el-tag v-else type="info">{{ currentRefund.tuikuan_pingtai }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="退款状态">
-          <el-tag v-if="currentRefund.tuikuan_zhuangtai === 'chenggong'" type="success">成功</el-tag>
-          <el-tag v-else-if="currentRefund.tuikuan_zhuangtai === 'shibai'" type="danger">失败</el-tag>
-          <el-tag v-else-if="currentRefund.tuikuan_zhuangtai === 'chuli_zhong'" type="warning">处理中</el-tag>
+          <el-tag v-if="currentRefund.tuikuan_zhuangtai === 'chenggong'" type="success"
+            >成功</el-tag
+          >
+          <el-tag v-else-if="currentRefund.tuikuan_zhuangtai === 'shibai'" type="danger"
+            >失败</el-tag
+          >
+          <el-tag v-else-if="currentRefund.tuikuan_zhuangtai === 'chuli_zhong'" type="warning"
+            >处理中</el-tag
+          >
           <el-tag v-else type="info">{{ currentRefund.tuikuan_zhuangtai }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="退款原因">{{ currentRefund.tuikuan_yuanyin || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="申请时间">{{ formatDateTime(currentRefund.shenqing_shijian) }}</el-descriptions-item>
-        <el-descriptions-item label="成功时间">{{ formatDateTime(currentRefund.chenggong_shijian) }}</el-descriptions-item>
-        <el-descriptions-item label="处理结果">{{ currentRefund.chuli_jieguo || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="退款原因">{{
+          currentRefund.tuikuan_yuanyin || '-'
+        }}</el-descriptions-item>
+        <el-descriptions-item label="申请时间">{{
+          formatDateTime(currentRefund.shenqing_shijian)
+        }}</el-descriptions-item>
+        <el-descriptions-item label="成功时间">{{
+          formatDateTime(currentRefund.chenggong_shijian)
+        }}</el-descriptions-item>
+        <el-descriptions-item label="处理结果">{{
+          currentRefund.chuli_jieguo || '-'
+        }}</el-descriptions-item>
         <el-descriptions-item label="错误信息" v-if="currentRefund.cuowu_xinxi">
           <el-text type="danger">{{ currentRefund.cuowu_xinxi }}</el-text>
         </el-descriptions-item>
@@ -140,14 +160,14 @@ import { formatDateTime } from '@/utils/format'
 const searchForm = reactive<RefundListParams>({
   tuikuan_zhuangtai: '',
   tuikuan_pingtai: '',
-  search: ''
+  search: '',
 })
 
 // 分页
 const pagination = reactive({
   page: 1,
   page_size: 20,
-  total: 0
+  total: 0,
 })
 
 // 退款列表
@@ -167,9 +187,9 @@ const fetchRefundList = async () => {
     const params: RefundListParams = {
       page: pagination.page,
       page_size: pagination.page_size,
-      ...searchForm
+      ...searchForm,
     }
-    
+
     const response = await refundApi.getList(params)
     refundList.value = response.items
     pagination.total = response.total
@@ -261,4 +281,3 @@ onMounted(() => {
   }
 }
 </style>
-
