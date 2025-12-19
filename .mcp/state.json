@@ -1,14 +1,13 @@
 {
   "current_state": "RUN_FIX",
-  "previous_state": "API_CODE",
+  "previous_state": "DESIGN_FREEZE",
   "design_frozen": true,
-  "frozen_at": "2025-12-19T15:40:00Z",
+  "frozen_at": "2025-12-19T16:00:00Z",
   "protected_files": [
     "AI_RULES.md",
     "ARCHITECTURE.md",
     "DOMAIN.md",
-    "FLOW.md",
-    "API_SPEC.md"
+    "FLOW.md"
   ],
   "history": [
     {
