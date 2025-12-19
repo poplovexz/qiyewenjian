@@ -415,7 +415,6 @@ const handleSubmit = async () => {
     emit('success', result)
     handleClose()
   } catch (error) {
-    console.error('提交报价失败:', error)
   } finally {
     loading.value = false
   }

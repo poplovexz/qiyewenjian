@@ -26,7 +26,6 @@ export const useNotificationStore = defineStore('notification', () => {
       unreadCount.value = response.unread_count || 0
       return unreadCount.value
     } catch (error) {
-      console.error('获取未读通知数量失败:', error)
       return 0
     }
   }
@@ -40,7 +39,6 @@ export const useNotificationStore = defineStore('notification', () => {
       total.value = response.total || 0
       return response
     } catch (error) {
-      console.error('获取通知列表失败:', error)
       ElMessage.error('获取通知列表失败')
       throw error
     } finally {
@@ -62,7 +60,6 @@ export const useNotificationStore = defineStore('notification', () => {
 
       return true
     } catch (error) {
-      console.error('标记通知为已读失败:', error)
       ElMessage.error('标记通知为已读失败')
       return false
     }
@@ -85,7 +82,6 @@ export const useNotificationStore = defineStore('notification', () => {
       ElMessage.success('已标记所有通知为已读')
       return true
     } catch (error) {
-      console.error('标记所有通知为已读失败:', error)
       ElMessage.error('标记所有通知为已读失败')
       return false
     } finally {

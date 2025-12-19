@@ -285,7 +285,6 @@ const loadCalendarData = async () => {
     )
     calendarData.value = data
   } catch (error) {
-    console.error('加载日历数据失败:', error)
   }
 }
 
@@ -294,7 +293,6 @@ const loadUpcomingItems = async () => {
     const items = await complianceStore.fetchUpcomingItems(7, selectedCustomer.value || undefined)
     upcomingItems.value = items
   } catch (error) {
-    console.error('加载即将到期事项失败:', error)
   }
 }
 
@@ -304,7 +302,6 @@ const loadCustomers = async () => {
     // customers.value = await customerStore.fetchCustomers()
     customers.value = [] // 临时空数组
   } catch (error) {
-    console.error('加载客户列表失败:', error)
   }
 }
 

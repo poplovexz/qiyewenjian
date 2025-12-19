@@ -396,7 +396,6 @@ const handleSubmit = async () => {
 
     emit('success')
   } catch (error) {
-    console.error('提交表单失败:', error)
   } finally {
     submitting.value = false
   }

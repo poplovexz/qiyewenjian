@@ -343,7 +343,6 @@ const loadSteps = async () => {
     originalSteps.value = JSON.parse(JSON.stringify(stepsList.value))
     hasChanges.value = false
   } catch (error) {
-    console.error('加载步骤列表失败:', error)
     ElMessage.error('加载步骤列表失败')
   } finally {
     loading.value = false
@@ -432,7 +431,6 @@ const handleSaveStep = async (step: EditableStep, index: number) => {
 
     delete step.originalData
   } catch (error: unknown) {
-    console.error('保存步骤失败:', error)
 
     // 提取详细的错误信息
     let errorMessage = '保存步骤失败'
@@ -472,7 +470,6 @@ const handleDeleteStep = async (step: EditableStep, index: number) => {
     stepsList.value.splice(index, 1)
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除步骤失败:', error)
       ElMessage.error('删除步骤失败')
     }
   }
@@ -558,7 +555,6 @@ const handleBatchSave = async () => {
 
         delete step.originalData
       } catch (error: unknown) {
-        console.error(`保存步骤 ${i + 1} 失败:`, error)
 
         let errorMessage = `步骤 ${i + 1}`
         if (step.buzou_mingcheng) {
@@ -586,21 +582,18 @@ const handleBatchSave = async () => {
       originalSteps.value = JSON.parse(JSON.stringify(stepsList.value))
     } else if (successCount > 0 && failCount > 0) {
       ElMessage.warning(`部分保存成功：${successCount} 个成功，${failCount} 个失败`)
-      console.error('失败的步骤:', errors)
       // 显示第一个错误
       if (errors.length > 0) {
         ElMessage.error(errors[0])
       }
     } else {
       ElMessage.error(`批量保存失败：${failCount} 个步骤保存失败`)
-      console.error('失败的步骤:', errors)
       // 显示第一个错误
       if (errors.length > 0) {
         ElMessage.error(errors[0])
       }
     }
   } catch (error) {
-    console.error('批量保存过程出错:', error)
     ElMessage.error('批量保存失败')
   } finally {
     saving.value = false

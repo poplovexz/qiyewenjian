@@ -270,7 +270,6 @@ const fetchProcessedAudits = async () => {
       processedAudits.value = []
     }
   } catch (error) {
-    console.error('获取已处理任务失败:', error)
     ElMessage.error('获取已处理任务失败')
   } finally {
     loadingProcessed.value = false
@@ -305,7 +304,6 @@ const fetchMyStatistics = async () => {
   try {
     myStatistics.value = await auditStore.fetchMyAuditStatistics()
   } catch (error) {
-    console.error('获取我的审核统计失败:', error)
   }
 }
 
@@ -314,7 +312,6 @@ const fetchOverdueCount = async () => {
     // 这里应该调用获取超期任务数量的API
     overdueCount.value = pendingAudits.value.filter((task) => isOverdue(task.expected_time)).length
   } catch (error) {
-    console.error('获取超期任务数量失败:', error)
   }
 }
 

@@ -79,7 +79,6 @@ export const useProductStore = defineStore('product', () => {
       categoryCurrentPage.value = response.page
       categoryPageSize.value = response.size
     } catch (error) {
-      console.error('获取产品分类列表失败:', error)
       ElMessage.error('获取产品分类列表失败')
     } finally {
       categoryLoading.value = false
@@ -91,7 +90,6 @@ export const useProductStore = defineStore('product', () => {
       const options = await productCategoryApi.getOptions(chanpin_leixing)
       categoryOptions.value = options
     } catch (error) {
-      console.error('获取产品分类选项失败:', error)
       ElMessage.error('获取产品分类选项失败')
     }
   }
@@ -104,7 +102,6 @@ export const useProductStore = defineStore('product', () => {
       await fetchCategoryOptions()
       return category
     } catch (error) {
-      console.error('创建产品分类失败:', error)
       throw error
     }
   }
@@ -117,7 +114,6 @@ export const useProductStore = defineStore('product', () => {
       await fetchCategoryOptions()
       return category
     } catch (error) {
-      console.error('更新产品分类失败:', error)
       throw error
     }
   }
@@ -129,7 +125,6 @@ export const useProductStore = defineStore('product', () => {
       await fetchCategories()
       await fetchCategoryOptions()
     } catch (error) {
-      console.error('删除产品分类失败:', error)
       throw error
     }
   }
@@ -149,7 +144,6 @@ export const useProductStore = defineStore('product', () => {
       productCurrentPage.value = response.page
       productPageSize.value = response.size
     } catch (error) {
-      console.error('获取产品项目列表失败:', error)
       ElMessage.error('获取产品项目列表失败')
     } finally {
       productLoading.value = false
@@ -163,7 +157,6 @@ export const useProductStore = defineStore('product', () => {
       currentProduct.value = detail
       return detail
     } catch (error) {
-      console.error('获取产品详情失败:', error)
       ElMessage.error('获取产品详情失败')
       throw error
     } finally {
@@ -178,7 +171,6 @@ export const useProductStore = defineStore('product', () => {
       await fetchProducts()
       return product
     } catch (error) {
-      console.error('创建产品项目失败:', error)
       throw error
     }
   }
@@ -190,7 +182,6 @@ export const useProductStore = defineStore('product', () => {
       await fetchProducts()
       return product
     } catch (error) {
-      console.error('更新产品项目失败:', error)
       throw error
     }
   }
@@ -201,7 +192,6 @@ export const useProductStore = defineStore('product', () => {
       ElMessage.success('产品项目删除成功')
       await fetchProducts()
     } catch (error) {
-      console.error('删除产品项目失败:', error)
       throw error
     }
   }

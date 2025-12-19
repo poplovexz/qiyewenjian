@@ -211,7 +211,6 @@ const fetchUserList = async () => {
     userList.value = response.items
     pagination.total = response.total
   } catch (error) {
-    console.error('获取用户列表失败:', error)
     ElMessage.error('获取用户列表失败')
   } finally {
     loading.value = false
@@ -284,7 +283,6 @@ const handleDelete = async (row: User) => {
     fetchUserList()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除用户失败:', error)
       ElMessage.error('删除用户失败')
     }
   }

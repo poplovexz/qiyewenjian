@@ -219,7 +219,6 @@ const handleSubmit = async () => {
     dialogVisible.value = false
     emit('success')
   } catch (error) {
-    console.error('提交失败:', error)
   } finally {
     submitting.value = false
   }

@@ -267,7 +267,6 @@ const fetchCustomerDetail = async () => {
     const recordsResponse = await customerStore.fetchCustomerServiceRecords(customerId, { page: 1, size: 10 })
     serviceRecords.value = recordsResponse.items
   } catch (error) {
-    console.error('获取客户详情失败:', error)
     ElMessage.error('获取客户详情失败')
   } finally {
     loading.value = false

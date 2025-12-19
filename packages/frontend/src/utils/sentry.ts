@@ -101,7 +101,6 @@ export function initSentry(app: App, router: Router): void {
       ],
     })
   } catch (error) {
-    console.error('[Sentry] Failed to initialize:', error)
   }
 }
 

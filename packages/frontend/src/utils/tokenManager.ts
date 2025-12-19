@@ -68,7 +68,6 @@ class TokenManager {
           this._clearAuth(true) // 静默清除
         }
       } catch (error) {
-        console.log('❌ Token刷新异常，清除认证状态')
         this._clearAuth(true) // 静默清除
       }
       this.authInitialized = true
@@ -107,7 +106,6 @@ class TokenManager {
       const now = Date.now()
       return now >= exp
     } catch (error) {
-      console.error('解析token失败:', error)
       return true // 解析失败视为过期
     }
   }
@@ -183,7 +181,6 @@ class TokenManager {
 
       return true
     } catch (error) {
-      console.error('❌ Token刷新失败:', error)
       // 清除认证状态，但不立即跳转（由request拦截器处理）
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
@@ -293,7 +290,6 @@ class TokenManager {
 
       return shouldRefresh
     } catch (error) {
-      console.error('解析token失败:', error)
       return true // 解析失败时也尝试刷新
     }
   }

@@ -59,7 +59,6 @@ instance.interceptors.request.use(
     return config
   },
   (error) => {
-    console.error('❌ 请求拦截器错误:', error)
     return Promise.reject(error)
   }
 )
@@ -114,7 +113,6 @@ instance.interceptors.response.use(
               return Promise.reject(new Error('Token刷新失败，请重新登录'))
             }
           } catch (refreshError) {
-            console.error('❌ Token刷新过程出错:', refreshError)
             ElMessage.error('认证失败，请重新登录')
             // 跳转到登录页
             if (window.location.pathname !== '/login') {

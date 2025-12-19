@@ -310,7 +310,6 @@ const fetchCustomers = async () => {
       customers.value = data.items || []
     }
   } catch (error) {
-    console.error('获取客户列表失败:', error)
   }
 }
 

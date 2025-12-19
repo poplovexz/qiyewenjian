@@ -349,7 +349,6 @@ const fetchContractDetail = async () => {
         fetchPaymentInfo(contractId),
       ])
     } catch (error) {
-      console.error('获取合同详情失败:', error)
       ElMessage.error('获取合同详情失败')
     }
   }
@@ -360,7 +359,6 @@ const fetchAuditHistory = async (contractId: string) => {
     const history = await auditStore.fetchAuditHistory('hetong', contractId)
     auditHistory.value = history
   } catch (error) {
-    console.error('获取审核历史失败:', error)
   }
 }
 
@@ -369,7 +367,6 @@ const fetchSigningInfo = async (contractId: string) => {
     const response = await contractSignApi.getByContract(contractId)
     signingInfo.value = response.data
   } catch (error) {
-    console.error('获取签署信息失败:', error)
   }
 }
 
@@ -378,7 +375,6 @@ const fetchPaymentInfo = async (contractId: string) => {
     const response = await contractPaymentApi.getByContract(contractId)
     paymentInfo.value = response.data
   } catch (error) {
-    console.error('获取支付信息失败:', error)
   }
 }
 
@@ -418,7 +414,6 @@ const handleCreateSigningLink = async () => {
       },
     })
   } catch (error) {
-    console.error('创建签署链接失败:', error)
     ElMessage.error('创建签署链接失败')
   }
 }
@@ -445,7 +440,6 @@ const handleCancelSigning = async () => {
     await fetchSigningInfo(contract.value.id)
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('取消签署失败:', error)
       ElMessage.error('取消签署失败')
     }
   }
@@ -459,7 +453,6 @@ const handleCreatePayment = async () => {
     // 暂时使用简单的提示
     ElMessage.info('支付创建功能开发中...')
   } catch (error) {
-    console.error('创建支付失败:', error)
     ElMessage.error('创建支付失败')
   }
 }
@@ -560,7 +553,6 @@ const confirmSignature = async () => {
     // 刷新合同详情
     await fetchContractDetail()
   } catch (error) {
-    console.error('签署合同失败:', error)
     ElMessage.error('签署合同失败')
   } finally {
     signing.value = false

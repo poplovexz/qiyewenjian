@@ -403,7 +403,6 @@ const handleBatchUpdateStatus = async () => {
     await handleSearch()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('批量更新失败:', error)
       ElMessage.error('批量更新失败')
     }
   }
@@ -429,7 +428,6 @@ const handleBatchDelete = async () => {
     await handleSearch()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('批量删除失败:', error)
       ElMessage.error('批量删除失败')
     }
   }

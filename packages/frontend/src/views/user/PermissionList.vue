@@ -481,7 +481,6 @@ const handleBatchEnable = async () => {
     selectedPermissions.value = []
     handleSearch()
   } catch (error) {
-    console.error('批量启用失败:', error)
     ElMessage.error('批量启用失败')
   }
 }
@@ -501,7 +500,6 @@ const handleBatchDisable = async () => {
     selectedPermissions.value = []
     handleSearch()
   } catch (error) {
-    console.error('批量禁用失败:', error)
     ElMessage.error('批量禁用失败')
   }
 }
@@ -531,7 +529,6 @@ const handleBatchDelete = async () => {
     handleSearch()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('批量删除失败:', error)
       ElMessage.error('批量删除失败')
     }
   }

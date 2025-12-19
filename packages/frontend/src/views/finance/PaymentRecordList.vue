@@ -212,7 +212,6 @@ const fetchRecordList = async () => {
     tableData.value = response.items || []
     pagination.total = response.total || 0
   } catch (error) {
-    console.error('获取流水列表失败:', error)
     ElMessage.error('获取流水列表失败')
   } finally {
     loading.value = false
@@ -267,7 +266,6 @@ const handleConfirm = async (row: PaymentRecord) => {
     fetchRecordList()
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('财务确认失败:', error)
       const axiosError = error as { message?: string }
       ElMessage.error(axiosError.message || '财务确认失败')
     }

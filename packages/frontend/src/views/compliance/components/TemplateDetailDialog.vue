@@ -235,7 +235,6 @@ const loadTemplateData = async () => {
     loading.value = true
     templateData.value = await complianceStore.fetchTemplateDetail(props.templateId)
   } catch (error) {
-    console.error('加载模板数据失败:', error)
   } finally {
     loading.value = false
   }

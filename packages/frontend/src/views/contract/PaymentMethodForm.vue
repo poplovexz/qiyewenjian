@@ -178,7 +178,6 @@ const loadPaymentConfigs = async () => {
       })
     }
   } catch (error) {
-    console.error('加载支付配置列表失败:', error)
     ElMessage.error('加载支付配置列表失败')
   }
 }

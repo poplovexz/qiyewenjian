@@ -270,8 +270,9 @@ const handleDelete = async (category: ProductCategory) => {
     
     await productStore.deleteCategory(category.id)
   } catch (error) {
+    // 用户取消操作时不显示错误
     if (error !== 'cancel') {
-      console.error('删除分类失败:', error)
+      // 错误已通过 ElMessage 显示
     }
   }
 }

@@ -313,7 +313,6 @@ const loadAvailablePaymentMethods = async () => {
       paymentMethod.value = firstOnlineMethod ? firstOnlineMethod.method : 'bank'
     }
   } catch (err: unknown) {
-    console.error('加载支付方式失败:', err)
     // 如果加载失败，使用默认支付方式
     availablePaymentMethods.value = [
       { method: 'bank', label: '银行转账', icon: 'bank', description: '通过银行转账支付' },
@@ -345,7 +344,6 @@ const loadContractInfo = async () => {
       }
     }
   } catch (err: unknown) {
-    console.error('加载合同信息失败:', err)
     const axiosError = err as { response?: { data?: { detail?: string } } }
     error.value = axiosError.response?.data?.detail || '签署链接无效或已过期'
   } finally {
@@ -465,7 +463,6 @@ const submitSignature = async () => {
     ElMessage.success('签署成功')
     nextStep()
   } catch (error: unknown) {
-    console.error('签署失败:', error)
     if (error !== 'cancel') {
       const axiosError = error as { response?: { data?: { detail?: string } } }
       ElMessage.error(axiosError.response?.data?.detail || '签署失败')
@@ -515,7 +512,6 @@ const initiatePayment = async () => {
       startPaymentStatusPolling()
     }
   } catch (error: unknown) {
-    console.error('发起支付失败:', error)
     const axiosError = error as { response?: { data?: { detail?: string } } }
     ElMessage.error(axiosError.response?.data?.detail || '发起支付失败')
   } finally {
@@ -549,10 +545,8 @@ const startPaymentStatusPolling = () => {
       } else {
       }
     } catch (error) {
-      console.error('❌ 查询支付状态失败:', error)
       // 超时错误不停止轮询，继续尝试
       if (error.code !== 'ECONNABORTED') {
-        console.error('非超时错误，停止轮询')
         stopPaymentStatusPolling()
       }
     }

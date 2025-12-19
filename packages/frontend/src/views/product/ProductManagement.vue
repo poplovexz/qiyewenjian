@@ -286,8 +286,8 @@ const loadCategoryList = async () => {
       selectedCategory.value = categoryList.value[0]
     }
   } catch (error) {
-    console.error('获取分类列表失败:', error)
-    ElMessage.error(`获取分类列表失败: ${error.message || error}`)
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    ElMessage.error(`获取分类列表失败: ${errorMsg}`)
   } finally {
     categoryLoading.value = false
   }
@@ -305,8 +305,8 @@ const loadProductList = async () => {
     await productStore.fetchProducts(params)
     productList.value = productStore.products
   } catch (error) {
-    console.error('获取产品列表失败:', error)
-    ElMessage.error(`获取产品列表失败: ${error.message || error}`)
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    ElMessage.error(`获取产品列表失败: ${errorMsg}`)
   } finally {
     productLoading.value = false
   }

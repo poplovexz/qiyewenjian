@@ -209,7 +209,6 @@ const fetchDetail = async () => {
     const decoded = JSON.parse(decodeURIComponent(escape(atob(payload)))) as XiansuoBaojiaDetail
     baojia.value = normalizeBaojia(decoded)
   } catch (errorDecode) {
-    console.error('解析分享数据失败:', errorDecode)
     error.value = '分享链接无效或已过期。'
     } finally {
       loading.value = false
@@ -229,7 +228,6 @@ const fetchDetail = async () => {
     } else {
       error.value = '加载报价详情失败，请稍后重试。'
     }
-    console.error('加载报价详情失败:', err)
   } finally {
     loading.value = false
   }
@@ -268,7 +266,6 @@ const confirmQuote = async () => {
     ElMessage.success('报价确认成功！')
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('确认报价失败:', error)
       const err = error as { message?: string }
       ElMessage.error(err.message || '确认报价失败')
     }
@@ -301,7 +298,6 @@ const rejectQuote = async () => {
     ElMessage.success('报价已拒绝')
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('拒绝报价失败:', error)
       const err = error as { message?: string }
       ElMessage.error(err.message || '拒绝报价失败')
     }

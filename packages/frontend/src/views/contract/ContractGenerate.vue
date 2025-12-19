@@ -442,7 +442,6 @@ const fetchQuoteInfo = async () => {
     // 分析报价中的服务类型并自动分割合同
     analyzeQuoteServices(quote)
   } catch (error) {
-    console.error('获取报价信息失败:', error)
     ElMessage.error('获取报价信息失败')
     handleBack()
   }
@@ -456,7 +455,6 @@ const fetchContractTemplates = async () => {
     // 自动选择默认模板
     autoSelectDefaultTemplates()
   } catch (error) {
-    console.error('获取合同模板失败:', error)
     ElMessage.error('获取合同模板失败')
   }
 }
@@ -541,7 +539,6 @@ const fetchContractParties = async () => {
     const response = await contractStore.fetchParties()
     contractParties.value = response.items
   } catch (error) {
-    console.error('获取乙方主体列表失败:', error)
     ElMessage.error('获取乙方主体列表失败')
   }
 }
@@ -657,7 +654,6 @@ const handlePreview = async () => {
 
     previewDialogVisible.value = true
   } catch (error: unknown) {
-    console.error('预览合同失败:', error)
     const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
     ElMessage.error(
       '预览合同失败: ' + (axiosError?.response?.data?.detail || axiosError?.message || '未知错误')
@@ -683,7 +679,6 @@ const handleGenerate = async () => {
     // 直接生成合同
     await generateContracts()
   } catch (error) {
-    console.error('生成合同失败:', error)
     if (error !== false) {
       // 不是表单验证错误
       ElMessage.error('生成合同失败')
@@ -726,7 +721,6 @@ const handleSubmitAudit = async () => {
     // 直接调用合同生成API，后端会自动触发审核流程
     await generateContracts()
   } catch (error: unknown) {
-    console.error('提交审核失败:', error)
     const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
     const errorMsg = axiosError?.response?.data?.detail || axiosError?.message || '提交审核失败'
     ElMessage.error(String(errorMsg))
@@ -784,7 +778,6 @@ const generateContracts = async () => {
       router.push('/contracts') // 跳转到合同列表
     }
   } catch (error: unknown) {
-    console.error('生成合同失败:', error)
     const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
     ElMessage.error(
       '生成合同失败: ' + (axiosError?.response?.data?.detail || axiosError?.message || '未知错误')

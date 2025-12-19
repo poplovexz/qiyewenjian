@@ -238,7 +238,6 @@ const fetchContractInfo = async () => {
     const response = await contractSignApi.verifyToken(token)
     contractInfo.value = response.data
   } catch (err: unknown) {
-    console.error('获取合同信息失败:', err)
     const axiosError = err as { response?: { data?: { detail?: string } } }
     error.value = axiosError.response?.data?.detail || '获取合同信息失败'
   } finally {
@@ -356,7 +355,6 @@ const handleSubmitSign = async () => {
     await fetchContractInfo()
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('合同签署失败:', error)
       ElMessage.error('合同签署失败')
     }
   } finally {

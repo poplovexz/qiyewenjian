@@ -472,7 +472,6 @@ const getContractList = async () => {
 
     pagination.total = response.total
   } catch (error) {
-    console.error('获取合同列表失败:', error)
     ElMessage.error('获取合同列表失败')
 
     // 如果API调用失败，显示空列表
@@ -575,7 +574,6 @@ const handleView = async (row: Contract) => {
     currentContract.value = response.data || response
     viewDialogVisible.value = true
   } catch (error) {
-    console.error('获取合同详情失败:', error)
     ElMessage.error('获取合同详情失败')
   } finally {
     loading.value = false
@@ -601,7 +599,6 @@ const handleEdit = async (row: Contract) => {
 
     editDialogVisible.value = true
   } catch (error) {
-    console.error('获取合同详情失败:', error)
     ElMessage.error('获取合同详情失败')
   } finally {
     loading.value = false
@@ -617,7 +614,6 @@ const handleSaveEdit = async () => {
     editDialogVisible.value = false
     getContractList()
   } catch (error) {
-    console.error('保存失败:', error)
     ElMessage.error('保存失败')
   } finally {
     saving.value = false
@@ -639,7 +635,6 @@ const handleGenerateSignLink = async (row: Contract) => {
       ElMessage.success('签署链接生成成功')
     }
   } catch (error: unknown) {
-    console.error('生成签署链接失败:', error)
     const axiosError = error as { response?: { data?: { detail?: string } } }
     const errorMsg = axiosError.response?.data?.detail || '生成签署链接失败'
     ElMessage.error(errorMsg)
@@ -659,7 +654,6 @@ const copySignLink = async () => {
     await navigator.clipboard.writeText(signLinkInfo.value.sign_link)
     ElMessage.success('链接已复制到剪贴板')
   } catch (error) {
-    console.error('复制失败:', error)
     ElMessage.error('复制失败，请手动复制')
   }
 }
@@ -700,7 +694,6 @@ const handleConfirmVoid = async () => {
     getContractList()
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('作废失败:', error)
       const axiosError = error as { response?: { data?: { detail?: string } } }
       ElMessage.error(axiosError.response?.data?.detail || '作废失败')
     }
@@ -723,7 +716,6 @@ const handleDelete = async (row: Contract) => {
     getContractList()
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('删除失败:', error)
       ElMessage.error('删除失败')
     }
   }
@@ -796,11 +788,9 @@ const handleCreateServiceOrder = async (row: Contract) => {
     } else if (resultData?.id) {
       router.push(`/service-orders/${resultData.id}`)
     } else {
-      console.warn('工单创建成功，但无法获取工单ID，无法跳转')
     }
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('创建服务工单失败:', error)
       const axiosError = error as { response?: { data?: { detail?: string } } }
       const errorMsg = axiosError.response?.data?.detail || '创建服务工单失败'
       ElMessage.error(errorMsg)
@@ -829,7 +819,6 @@ const handleViewServiceOrder = async (row: Contract) => {
       ElMessage.warning('该合同暂无关联工单')
     }
   } catch (error: unknown) {
-    console.error('获取工单失败:', error)
     const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
     const errorMsg = axiosError.response?.data?.detail || axiosError.message || '获取工单失败'
     ElMessage.error(errorMsg)

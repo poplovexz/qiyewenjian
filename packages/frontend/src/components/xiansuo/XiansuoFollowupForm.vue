@@ -230,7 +230,6 @@ const handleSubmit = async () => {
       emit('success')
     }
   } catch (error) {
-    console.error('跟进记录提交失败:', error)
   } finally {
     loading.value = false
   }

@@ -48,7 +48,6 @@ export const useAuthStore = defineStore('auth', () => {
       try {
         userInfo.value = JSON.parse(storedUserInfo)
       } catch (error) {
-        console.error('解析用户信息失败:', error)
         // 只清除用户信息，保留token
         localStorage.removeItem('user_info')
         userInfo.value = null
@@ -104,7 +103,6 @@ export const useAuthStore = defineStore('auth', () => {
       ElMessage.success(response.message || '登录成功')
       return true
     } catch (error: unknown) {
-      console.error('登录失败:', error)
       const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
       ElMessage.error(axiosError.response?.data?.detail || axiosError.message || '登录失败')
       return false
@@ -133,7 +131,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       return true
     } catch (error) {
-      console.error('刷新令牌失败:', error)
       logout()
       return false
     }
@@ -151,7 +148,6 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('user_info', JSON.stringify(user))
       return true
     } catch (error) {
-      console.error('获取用户信息失败:', error)
       return false
     }
   }
@@ -164,7 +160,6 @@ export const useAuthStore = defineStore('auth', () => {
       ElMessage.success(response.message || '密码修改成功')
       return true
     } catch (error: unknown) {
-      console.error('修改密码失败:', error)
       const axiosError = error as { response?: { data?: { detail?: string } } }
       ElMessage.error(axiosError.response?.data?.detail || '修改密码失败')
       return false
@@ -180,7 +175,6 @@ export const useAuthStore = defineStore('auth', () => {
         await authApi.logout()
       }
     } catch (error) {
-      console.error('登出请求失败:', error)
     } finally {
       // 清除状态和本地存储
       accessToken.value = ''

@@ -662,7 +662,6 @@ const runTest = async () => {
 
     ElMessage.success('测试完成')
   } catch (error: unknown) {
-    console.error('规则测试失败:', error)
     const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
     const errorMsg = axiosError.response?.data?.detail || axiosError.message || '规则测试失败'
     ElMessage.error(errorMsg)
@@ -695,7 +694,6 @@ const loadTestTemplate = async () => {
       ElMessage.warning('未找到匹配的测试模板')
     }
   } catch (error: unknown) {
-    console.error('加载测试模板失败:', error)
     const axiosError = error as { response?: { data?: { detail?: string } }; message?: string }
     const errorMsg = axiosError.response?.data?.detail || axiosError.message || '加载测试模板失败'
     ElMessage.error(errorMsg)
@@ -745,7 +743,6 @@ const fetchRuleList = async () => {
     // 这里我们使用过滤后的数量。如果需要精确分页，应该在后端过滤
     pagination.total = filteredItems.length
   } catch (error) {
-    console.error('获取审核规则列表失败:', error)
     ElMessage.error('获取审核规则列表失败')
   } finally {
     loading.value = false
@@ -774,7 +771,6 @@ const fetchWorkflowOptions = async () => {
       value: workflow.id
     }))
   } catch (error) {
-    console.error('获取审核流程选项失败:', error)
     workflowOptions.value = []
   }
 }
@@ -807,7 +803,6 @@ const handleEdit = (row: AuditRule) => {
         : row.chufa_tiaojian
       Object.assign(conditionData, condition)
     } catch (error) {
-      console.error('解析触发条件失败:', error)
     }
   }
 
@@ -821,7 +816,6 @@ const handleEdit = (row: AuditRule) => {
       actionData.auto_assign = workflow.auto_assign !== undefined ? workflow.auto_assign : true
       actionData.notification_methods = workflow.notification_methods || ['system']
     } catch (error) {
-      console.error('解析审核流程配置失败:', error)
     }
   }
 
@@ -835,7 +829,6 @@ const handleView = async (row: AuditRule) => {
     currentRule.value = response.data || response
     detailDrawerVisible.value = true
   } catch (error) {
-    console.error('获取规则详情失败:', error)
     ElMessage.error('获取规则详情失败')
   }
 }
@@ -865,7 +858,6 @@ const handleDelete = async (row: AuditRule) => {
     fetchRuleList()
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('删除失败:', error)
       // 提取详细错误信息
       let errorMsg = '删除失败'
       const axiosError = error as { response?: { data?: { detail?: string } } }
@@ -920,7 +912,6 @@ const handleSubmit = async () => {
           }
         }
       } catch (error) {
-        console.error('获取工作流模板步骤失败:', error)
         ElMessage.warning('无法获取工作流模板步骤配置，请检查模板是否存在')
       }
     }
@@ -947,7 +938,6 @@ const handleSubmit = async () => {
     dialogVisible.value = false
     fetchRuleList()
   } catch (error) {
-    console.error('保存失败:', error)
     ElMessage.error('保存失败')
   } finally {
     submitting.value = false

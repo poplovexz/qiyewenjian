@@ -151,7 +151,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
       await prefetchBaojiaForLeads(response.items)
     } catch (error) {
-      console.error('获取线索列表失败:', error)
       ElMessage.error('获取线索列表失败')
     } finally {
       loading.value = false
@@ -167,7 +166,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       cache.value.xiansuo_cache.clear()
       return true
     } catch (error) {
-      console.error('创建线索失败:', error)
       ElMessage.error('创建线索失败')
       return false
     } finally {
@@ -184,7 +182,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       cache.value.xiansuo_cache.clear()
       return true
     } catch (error) {
-      console.error('更新线索失败:', error)
       ElMessage.error('更新线索失败')
       return false
     } finally {
@@ -201,7 +198,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       cache.value.xiansuo_cache.clear()
       return true
     } catch (error) {
-      console.error('删除线索失败:', error)
       ElMessage.error('删除线索失败')
       return false
     } finally {
@@ -216,7 +212,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       ElMessage.success('线索状态更新成功')
       return true
     } catch (error) {
-      console.error('更新线索状态失败:', error)
       ElMessage.error('更新线索状态失败')
       return false
     } finally {
@@ -231,7 +226,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       ElMessage.success('线索分配成功')
       return true
     } catch (error) {
-      console.error('分配线索失败:', error)
       ElMessage.error('分配线索失败')
       return false
     } finally {
@@ -245,7 +239,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       const response = await xiansuoApi.getDetail(id)
       return response
     } catch (error) {
-      console.error('获取线索详情失败:', error)
       ElMessage.error('获取线索详情失败')
       return null
     } finally {
@@ -260,7 +253,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       const response = await xiansuoApi.getStatistics(params)
       statistics.value = response
     } catch (error) {
-      console.error('获取线索统计失败:', error)
       ElMessage.error('获取线索统计失败')
     }
   }
@@ -275,7 +267,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       currentPage.value = response.page
       pageSize.value = response.size
     } catch (error) {
-      console.error('获取线索来源列表失败:', error)
       ElMessage.error('获取线索来源列表失败')
     } finally {
       loading.value = false
@@ -304,7 +295,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       cache.value.laiyuan_loaded = true
       cache.value.laiyuan_timestamp = now
     } catch (error) {
-      console.error('获取启用线索来源失败:', error)
       ElMessage.error('获取启用线索来源失败')
     }
   }
@@ -319,7 +309,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       cache.value.laiyuan_timestamp = 0
       return true
     } catch (error) {
-      console.error('创建线索来源失败:', error)
       ElMessage.error('创建线索来源失败')
       return false
     } finally {
@@ -350,7 +339,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       cache.value.zhuangtai_loaded = true
       cache.value.zhuangtai_timestamp = now
     } catch (error) {
-      console.error('获取启用线索状态失败:', error)
       ElMessage.error('获取启用线索状态失败')
     }
   }
@@ -372,7 +360,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       currentPage.value = response.page
       pageSize.value = response.size
     } catch (error) {
-      console.error('获取线索状态列表失败:', error)
       ElMessage.error('获取线索状态列表失败')
     } finally {
       loading.value = false
@@ -385,7 +372,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       // 清除缓存，强制重新获取
       cache.value.zhuangtai_loaded = false
     } catch (error) {
-      console.error('删除线索状态失败:', error)
       ElMessage.error('删除线索状态失败')
       throw error
     }
@@ -399,7 +385,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       ElMessage.success('跟进记录创建成功')
       return true
     } catch (error) {
-      console.error('创建跟进记录失败:', error)
       ElMessage.error('创建跟进记录失败')
       return false
     } finally {
@@ -412,7 +397,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       const response = await xiansuoGenjinApi.getByXiansuo(xiansuoId)
       genjin_list.value = response
     } catch (error) {
-      console.error('获取跟进记录失败:', error)
       ElMessage.error('获取跟进记录失败')
     }
   }
@@ -470,7 +454,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
           setBaojiaList(id, list)
         } catch (error) {
-          console.warn('❌ 预取线索报价失败:', id, error)
         }
       })
     )
@@ -487,7 +470,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       setBaojiaList(xiansuoId, response)
       return response
     } catch (error) {
-      console.error('获取线索报价失败:', error)
       ElMessage.error('获取报价信息失败')
       throw error
     } finally {
@@ -507,7 +489,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       ElMessage.success('报价创建成功')
       return response
     } catch (error) {
-      console.error('创建报价失败:', error)
       ElMessage.error('创建报价失败')
       throw error
     } finally {
@@ -528,7 +509,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       ElMessage.success('报价更新成功')
       return response
     } catch (error) {
-      console.error('更新报价失败:', error)
       ElMessage.error('更新报价失败')
       throw error
     } finally {
@@ -550,7 +530,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
       ElMessage.success('报价删除成功')
     } catch (error) {
-      console.error('删除报价失败:', error)
       ElMessage.error('删除报价失败')
       throw error
     } finally {
@@ -571,7 +550,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
       return response
     } catch (error) {
-      console.error('确认报价失败:', error)
       throw error
     } finally {
       quoteLoading.value = false
@@ -591,7 +569,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
       return response
     } catch (error) {
-      console.error('拒绝报价失败:', error)
       throw error
     } finally {
       quoteLoading.value = false
@@ -606,7 +583,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
 
       return response
     } catch (error) {
-      console.error('❌ 获取产品数据失败:', error)
       ElMessage.error('获取产品数据失败')
       throw error
     }
@@ -635,7 +611,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
       current_baojia.value = response
       return response
     } catch (error) {
-      console.error('获取报价详情失败:', error)
       ElMessage.error('获取报价详情失败')
       throw error
     }
@@ -645,7 +620,6 @@ export const useXiansuoStore = defineStore('xiansuo', () => {
     try {
       return await xiansuoBaojiaApi.getDetailWithXiansuo(id)
     } catch (error) {
-      console.error('获取报价详情失败:', error)
       throw error
     }
   }

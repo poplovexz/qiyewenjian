@@ -224,7 +224,6 @@ const handleSubmit = async () => {
     ElMessage.success('审核操作提交成功')
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('提交审核失败:', error)
       ElMessage.error('提交审核失败')
     }
   } finally {

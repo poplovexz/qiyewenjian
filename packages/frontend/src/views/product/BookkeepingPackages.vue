@@ -476,7 +476,6 @@ const loadProductItemList = async () => {
       paixu: item.paixu || 0,
     }))
   } catch (error) {
-    console.error('加载产品列表失败:', error)
     ElMessage.error('加载产品列表失败')
     allProductItemList.value = []
   } finally {

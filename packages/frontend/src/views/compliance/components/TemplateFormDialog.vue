@@ -281,7 +281,6 @@ const loadTemplateData = async () => {
       fagui_yiju: template.fagui_yiju || '',
     })
   } catch (error) {
-    console.error('加载模板数据失败:', error)
   } finally {
     loading.value = false
   }
@@ -328,7 +327,6 @@ const handleSubmit = async () => {
     emit('success')
     handleClose()
   } catch (error) {
-    console.error('提交失败:', error)
   } finally {
     loading.value = false
   }

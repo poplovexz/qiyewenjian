@@ -185,7 +185,6 @@ const loadTemplateVariables = async () => {
       })
     }
   } catch (error) {
-    console.error('加载模板变量失败:', error)
     // 使用通用变量作为备选
     commonVariables.forEach((variable) => {
       variableValues[variable.name] = ''
@@ -227,7 +226,6 @@ const handlePreview = async () => {
     // 处理内容格式
     previewContent.value = formatPreviewContent(content)
   } catch (error) {
-    console.error('预览失败:', error)
     ElMessage.error('预览失败')
   } finally {
     previewLoading.value = false

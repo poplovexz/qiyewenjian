@@ -54,15 +54,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, DefineComponent } from 'vue'
 
 interface Props {
   modelValue?: string | number
   type?: 'text' | 'password' | 'email' | 'number' | 'tel' | 'url'
   label?: string
   placeholder?: string
-  prefixIcon?: any
-  suffixIcon?: any
+  prefixIcon?: DefineComponent | string
+  suffixIcon?: DefineComponent | string
   disabled?: boolean
   readonly?: boolean
   required?: boolean

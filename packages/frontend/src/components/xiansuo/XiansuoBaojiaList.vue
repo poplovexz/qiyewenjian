@@ -193,7 +193,6 @@ const loadBaojiaList = async () => {
     const list = await xiansuoStore.fetchBaojiaByXiansuo(props.xiansuo.id)
     baojiaList.value = list
   } catch (error) {
-    console.error('加载报价列表失败:', error)
   } finally {
     loading.value = false
   }
@@ -258,7 +257,6 @@ const handleCopy = async (baojia: XiansuoBaojia) => {
     ElMessage.success('报价复制成功')
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('复制报价失败:', error)
     }
   }
 }
@@ -279,7 +277,6 @@ const handleDelete = async (baojia: XiansuoBaojia) => {
     await loadBaojiaList()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除报价失败:', error)
     }
   }
 }

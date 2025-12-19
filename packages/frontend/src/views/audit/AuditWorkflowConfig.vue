@@ -426,7 +426,6 @@ const fetchWorkflowList = async () => {
     workflowList.value = response.items || []
     pagination.total = response.total || 0
   } catch (error) {
-    console.error('获取审核流程列表失败:', error)
     ElMessage.error('获取审核流程列表失败')
   } finally {
     loading.value = false
@@ -443,7 +442,6 @@ const fetchAvailableRoles = async () => {
     })
     availableRoles.value = response.items
   } catch (error) {
-    console.error('获取角色列表失败:', error)
     ElMessage.error('获取角色列表失败')
   } finally {
     rolesLoading.value = false
@@ -488,7 +486,6 @@ const handleView = async (row: Workflow) => {
     currentWorkflow.value = response.data || response
     detailDrawerVisible.value = true
   } catch (error) {
-    console.error('获取工作流详情失败:', error)
     ElMessage.error('获取工作流详情失败')
   }
 }
@@ -511,7 +508,6 @@ const handleDelete = async (row: Workflow) => {
     fetchWorkflowList()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除失败:', error)
       ElMessage.error('删除失败')
     }
   }
@@ -551,7 +547,6 @@ const handleSubmit = async () => {
     dialogVisible.value = false
     fetchWorkflowList()
   } catch (error) {
-    console.error('保存失败:', error)
     ElMessage.error('保存失败')
   } finally {
     submitting.value = false

@@ -317,7 +317,6 @@ const loadData = async () => {
     await serviceOrderStore.fetchServiceOrders(searchParams.value)
     statistics.value = await serviceOrderStore.fetchStatistics()
   } catch (error) {
-    console.error('加载数据失败:', error)
   }
 }
 
@@ -372,7 +371,6 @@ const startOrder = async (id: string) => {
     loadData()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('开始工单失败:', error)
     }
   }
 }

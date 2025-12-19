@@ -65,7 +65,6 @@ const quickLogin = async () => {
       }, 1000)
     }
   } catch (error) {
-    console.error('快速登录失败:', error)
   } finally {
     isLoading.value = false
   }

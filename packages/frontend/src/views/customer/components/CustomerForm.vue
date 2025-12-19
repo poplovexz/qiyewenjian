@@ -322,7 +322,6 @@ const handleSubmit = async () => {
     
     emit('success')
   } catch (error) {
-    console.error('表单提交失败:', error)
   } finally {
     loading.value = false
   }

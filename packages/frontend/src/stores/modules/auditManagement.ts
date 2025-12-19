@@ -92,7 +92,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       auditRules.value = response.items
       auditRulesTotal.value = response.total
     } catch (error) {
-      console.error('获取审核规则列表失败:', error)
       ElMessage.error('获取审核规则列表失败')
     } finally {
       loading.value = false
@@ -108,7 +107,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       ElMessage.success('审核规则创建成功')
       return response
     } catch (error) {
-      console.error('创建审核规则失败:', error)
       ElMessage.error('创建审核规则失败')
       throw error
     } finally {
@@ -127,7 +125,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       ElMessage.success('审核规则更新成功')
       return response
     } catch (error) {
-      console.error('更新审核规则失败:', error)
       ElMessage.error('更新审核规则失败')
       throw error
     } finally {
@@ -146,7 +143,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       }
       ElMessage.success('审核规则删除成功')
     } catch (error) {
-      console.error('删除审核规则失败:', error)
       ElMessage.error('删除审核规则失败')
       throw error
     } finally {
@@ -162,7 +158,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       auditWorkflows.value = response.items
       auditWorkflowsTotal.value = response.total
     } catch (error) {
-      console.error('获取审核流程列表失败:', error)
       ElMessage.error('获取审核流程列表失败')
     } finally {
       loading.value = false
@@ -177,7 +172,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       currentAuditWorkflow.value = response
       return response
     } catch (error) {
-      console.error('获取审核流程详情失败:', error)
       ElMessage.error('获取审核流程详情失败')
       throw error
     } finally {
@@ -194,7 +188,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       pendingAudits.value = Array.isArray(responseData) ? responseData : responseData.items || []
       return response
     } catch (error) {
-      console.error('获取待审核任务失败:', error)
       ElMessage.error('获取待审核任务失败')
       throw error
     }
@@ -218,9 +211,7 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       ElMessage.success('审核操作处理成功')
       return result
     } catch (error: unknown) {
-      console.error('处理审核操作失败:', error)
       const axiosError = error as { response?: { data?: { detail?: string } } }
-      console.error('错误详情:', axiosError.response?.data)
       ElMessage.error(axiosError.response?.data?.detail || '处理审核操作失败')
       throw error
     } finally {
@@ -242,7 +233,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
 
       ElMessage.success('审核流程取消成功')
     } catch (error) {
-      console.error('取消审核流程失败:', error)
       ElMessage.error('取消审核流程失败')
       throw error
     } finally {
@@ -258,7 +248,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       auditRecords.value = response.items
       auditRecordsTotal.value = response.total
     } catch (error) {
-      console.error('获取审核记录列表失败:', error)
       ElMessage.error('获取审核记录列表失败')
     } finally {
       loading.value = false
@@ -271,7 +260,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       const response = await auditRecordApi.getList({ workflow_id: workflowId })
       return response
     } catch (error) {
-      console.error('获取审核记录失败:', error)
       ElMessage.error('获取审核记录失败')
       throw error
     }
@@ -284,7 +272,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       auditStatistics.value = response
       return response
     } catch (error) {
-      console.error('获取审核统计失败:', error)
       ElMessage.error('获取审核统计失败')
       throw error
     }
@@ -295,7 +282,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       const response = await auditRecordApi.getMyStatistics(params)
       return response
     } catch (error) {
-      console.error('获取我的审核统计失败:', error)
       ElMessage.error('获取我的审核统计失败')
       throw error
     }
@@ -307,7 +293,6 @@ export const useAuditManagementStore = defineStore('auditManagement', () => {
       const response = await auditWorkflowApi.getHistory(auditType, relatedId)
       return response
     } catch (error) {
-      console.error('获取审核历史失败:', error)
       ElMessage.error('获取审核历史失败')
       throw error
     }

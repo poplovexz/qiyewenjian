@@ -68,7 +68,6 @@ const handleLogin = async () => {
     }
   } catch (err) {
     error.value = '登录过程中发生错误'
-    console.error('登录错误:', err)
   } finally {
     loading.value = false
   }

@@ -124,7 +124,6 @@ const loadUsers = async () => {
     const response = await request.get('/users/')
     users.value = response.items || []
   } catch (error) {
-    console.error('加载用户列表失败:', error)
     ElMessage.error('加载用户列表失败')
   }
 }
@@ -157,7 +156,6 @@ const handleConfirm = async () => {
         emit('update:modelValue', false)
         formRef.value?.resetFields()
       } catch (error) {
-        console.error('分配任务项失败:', error)
         ElMessage.error('分配任务项失败')
       } finally {
         loading.value = false

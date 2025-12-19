@@ -211,7 +211,6 @@ const handleLogin = async () => {
       localStorage.removeItem('username')
     }
   } catch (err: unknown) {
-    console.error('登录失败:', err)
     const loginError = err as { message?: string }
     error.value = loginError.message || '登录失败，请检查用户名和密码'
   }

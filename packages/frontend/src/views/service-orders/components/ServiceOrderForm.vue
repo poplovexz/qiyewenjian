@@ -239,7 +239,6 @@ const loadData = async () => {
     customers.value = []
     users.value = []
   } catch (error) {
-    console.error('加载数据失败:', error)
   }
 }
 
@@ -267,7 +266,6 @@ const handleSubmit = async () => {
 
     emit('success')
   } catch (error) {
-    console.error('提交失败:', error)
   } finally {
     loading.value = false
   }

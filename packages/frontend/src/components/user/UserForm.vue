@@ -239,7 +239,6 @@ const fetchUserDetail = async () => {
       zhuangtai: userInfo.zhuangtai
     })
   } catch (error) {
-    console.error('获取用户详情失败:', error)
     ElMessage.error('获取用户详情失败')
   } finally {
     loading.value = false
@@ -287,7 +286,6 @@ const handleSubmit = async () => {
     
     emit('success')
   } catch (error) {
-    console.error('提交失败:', error)
     ElMessage.error(props.mode === 'create' ? '创建用户失败' : '更新用户失败')
   } finally {
     submitting.value = false

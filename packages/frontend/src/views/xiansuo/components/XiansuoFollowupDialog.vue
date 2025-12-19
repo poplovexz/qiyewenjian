@@ -218,7 +218,6 @@ const handleSubmit = async () => {
       }
     }
   } catch (error) {
-    console.error('添加跟进记录失败:', error)
   } finally {
     submitting.value = false
   }

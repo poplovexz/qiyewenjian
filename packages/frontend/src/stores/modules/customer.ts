@@ -59,7 +59,6 @@ export const useCustomerStore = defineStore('customer', () => {
 
       return response
     } catch (error) {
-      console.error('获取客户列表失败:', error)
       ElMessage.error('获取客户列表失败')
       throw error
     } finally {
@@ -74,7 +73,6 @@ export const useCustomerStore = defineStore('customer', () => {
       currentCustomer.value = response.data
       return response.data
     } catch (error) {
-      console.error('获取客户详情失败:', error)
       ElMessage.error('获取客户详情失败')
       throw error
     } finally {
@@ -94,7 +92,6 @@ export const useCustomerStore = defineStore('customer', () => {
       ElMessage.success('客户创建成功')
       return response.data
     } catch (error) {
-      console.error('创建客户失败:', error)
       ElMessage.error('创建客户失败')
       throw error
     } finally {
@@ -121,7 +118,6 @@ export const useCustomerStore = defineStore('customer', () => {
       ElMessage.success('客户信息更新成功')
       return response.data
     } catch (error) {
-      console.error('更新客户失败:', error)
       ElMessage.error('更新客户失败')
       throw error
     } finally {
@@ -149,7 +145,6 @@ export const useCustomerStore = defineStore('customer', () => {
       ElMessage.success('客户删除成功')
       return true
     } catch (error) {
-      console.error('删除客户失败:', error)
       ElMessage.error('删除客户失败')
       throw error
     } finally {
@@ -176,7 +171,6 @@ export const useCustomerStore = defineStore('customer', () => {
       ElMessage.success('客户状态更新成功')
       return response.data
     } catch (error) {
-      console.error('更新客户状态失败:', error)
       ElMessage.error('更新客户状态失败')
       throw error
     } finally {
@@ -192,7 +186,6 @@ export const useCustomerStore = defineStore('customer', () => {
       serviceRecords.value = response.items
       return response
     } catch (error) {
-      console.error('获取服务记录失败:', error)
       ElMessage.error('获取服务记录失败')
       throw error
     } finally {
@@ -207,7 +200,6 @@ export const useCustomerStore = defineStore('customer', () => {
       serviceRecords.value = response.items
       return response
     } catch (error) {
-      console.error('获取客户服务记录失败:', error)
       ElMessage.error('获取客户服务记录失败')
       throw error
     } finally {
@@ -226,7 +218,6 @@ export const useCustomerStore = defineStore('customer', () => {
       ElMessage.success('服务记录创建成功')
       return response.data
     } catch (error) {
-      console.error('创建服务记录失败:', error)
       ElMessage.error('创建服务记录失败')
       throw error
     } finally {
@@ -248,7 +239,6 @@ export const useCustomerStore = defineStore('customer', () => {
       ElMessage.success('服务记录更新成功')
       return response.data
     } catch (error) {
-      console.error('更新服务记录失败:', error)
       ElMessage.error('更新服务记录失败')
       throw error
     } finally {
@@ -270,7 +260,6 @@ export const useCustomerStore = defineStore('customer', () => {
       ElMessage.success('处理状态更新成功')
       return response.data
     } catch (error) {
-      console.error('更新处理状态失败:', error)
       ElMessage.error('更新处理状态失败')
       throw error
     } finally {

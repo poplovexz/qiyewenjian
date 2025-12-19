@@ -121,7 +121,6 @@ const fetchRecords = async () => {
     const response = await auditRecordApi.getByWorkflow(props.workflowId)
     records.value = response.data || []
   } catch (error) {
-    console.error('获取审批记录失败:', error)
     ElMessage.error('获取审批记录失败')
   } finally {
     loading.value = false

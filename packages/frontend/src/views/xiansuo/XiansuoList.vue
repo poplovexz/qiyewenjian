@@ -606,13 +606,13 @@ const loadContractStatuses = async () => {
             contractStatusMap.value.set(lead.id, response)
           }
         } catch (error) {
-          console.error(`加载线索 ${lead.id} 的合同状态失败:`, error)
+          // 单个线索的合同状态加载失败，继续处理其他线索
         }
       })
 
     await Promise.all(promises)
   } catch (error) {
-    console.error('加载合同状态失败:', error)
+    // 合同状态加载失败，继续显示其他数据
   }
 }
 
@@ -741,7 +741,7 @@ const handleCreateBaojia = async (xiansuo: Xiansuo) => {
     currentBaojiaXiansuo.value = xiansuo
     baojiaFormVisible.value = true
   } catch (error) {
-    console.error('准备创建报价失败:', error)
+    ElMessage.error('准备创建报价失败')
   }
 }
 
@@ -757,7 +757,7 @@ const handleViewBaojia = async (xiansuo: Xiansuo) => {
       list.find((item) => !item.is_expired && item.baojia_zhuangtai !== 'rejected') || list[0]
     router.push({ name: 'QuotePreview', params: { id: target.id } })
   } catch (error) {
-    console.error('查看报价失败:', error)
+    ElMessage.error('查看报价失败')
   }
 }
 
@@ -778,7 +778,6 @@ const handleCopyQuoteLink = async (xiansuo: Xiansuo) => {
     await navigator.clipboard.writeText(link)
     ElMessage.success('报价链接已复制，可发送给客户')
   } catch (error) {
-    console.error('复制报价链接失败:', error)
     ElMessage.error('复制报价链接失败')
   }
 }
@@ -802,7 +801,7 @@ const handleEditBaojia = async (xiansuo: Xiansuo) => {
     currentBaojiaXiansuo.value = xiansuo
     baojiaFormVisible.value = true
   } catch (error) {
-    console.error('准备编辑报价失败:', error)
+    ElMessage.error('准备编辑报价失败')
   }
 }
 
@@ -880,7 +879,6 @@ const handleViewAudit = async (xiansuo: Xiansuo) => {
       ElMessage.info('请在审核任务列表中查看相关审核')
     }
   } catch (error: unknown) {
-    console.error('查看审核失败:', error)
     ElMessage.error('查看审核失败')
   }
 }
@@ -891,7 +889,6 @@ const handleViewContract = async (xiansuo: Xiansuo) => {
     // 直接跳转到合同列表页面
     router.push('/contracts')
   } catch (error: unknown) {
-    console.error('跳转到合同页面失败:', error)
     ElMessage.error('跳转失败')
   }
 }
@@ -918,7 +915,6 @@ const handleGenerateContract = async (xiansuo: Xiansuo) => {
       query: { baojia_id: acceptedBaojia.id },
     })
   } catch (error: unknown) {
-    console.error('跳转到合同生成页面失败:', error)
     const err = error as { message?: string }
     ElMessage.error('跳转失败: ' + (err?.message || '未知错误'))
   } finally {
@@ -1023,7 +1019,6 @@ onMounted(async () => {
   // 检查认证状态
   const authStore = useAuthStore()
   if (!authStore.isAuthenticated) {
-    console.warn('用户未认证，尝试恢复认证状态')
     await authStore.restoreFromStorage()
 
     if (!authStore.isAuthenticated) {
@@ -1045,8 +1040,6 @@ onMounted(async () => {
     // 加载合同状态
     await loadContractStatuses()
   } catch (error) {
-    console.error('线索列表页面初始化失败:', error)
-
     // 如果是401错误，提示重新登录
     if ((error as any)?.response?.status === 401) {
       ElMessage.error('登录已过期，请重新登录')

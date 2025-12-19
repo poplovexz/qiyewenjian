@@ -107,7 +107,6 @@ const fetchUserInfo = async () => {
     // 设置当前用户的角色
     selectedRoles.value = userInfo.value.roles?.map(role => role.id) || []
   } catch (error) {
-    console.error('获取用户信息失败:', error)
     ElMessage.error('获取用户信息失败')
   }
 }
@@ -118,7 +117,6 @@ const fetchAvailableRoles = async () => {
     const response = await roleApi.getRoleList({ page: 1, size: 100 })
     availableRoles.value = response.items
   } catch (error) {
-    console.error('获取角色列表失败:', error)
     ElMessage.error('获取角色列表失败')
   }
 }
@@ -152,7 +150,6 @@ const handleSubmit = async () => {
     ElMessage.success('角色分配成功')
     emit('success')
   } catch (error) {
-    console.error('角色分配失败:', error)
     ElMessage.error('角色分配失败')
   } finally {
     submitting.value = false

@@ -170,7 +170,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       currentPage.value = response.data.page
       return response.data
     } catch (error) {
-      console.error('获取服务工单列表失败:', error)
       ElMessage.error('获取服务工单列表失败')
       throw error
     } finally {
@@ -187,7 +186,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       currentServiceOrder.value = response
       return response
     } catch (error) {
-      console.error('获取服务工单详情失败:', error)
       ElMessage.error('获取服务工单详情失败')
       throw error
     } finally {
@@ -203,7 +201,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       ElMessage.success('创建服务工单成功')
       return response.data
     } catch (error) {
-      console.error('创建服务工单失败:', error)
       ElMessage.error('创建服务工单失败')
       throw error
     } finally {
@@ -219,7 +216,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       ElMessage.success('基于合同创建服务工单成功')
       return response.data
     } catch (error) {
-      console.error('基于合同创建服务工单失败:', error)
       ElMessage.error('基于合同创建服务工单失败')
       throw error
     } finally {
@@ -235,7 +231,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       ElMessage.success('更新服务工单成功')
       return response.data
     } catch (error) {
-      console.error('更新服务工单失败:', error)
       ElMessage.error('更新服务工单失败')
       throw error
     } finally {
@@ -260,7 +255,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       // 响应拦截器已经返回了 response.data，所以这里直接使用 response
       return response
     } catch (error) {
-      console.error('分配工单失败:', error)
       ElMessage.error('分配工单失败')
       throw error
     } finally {
@@ -276,7 +270,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       ElMessage.success('开始工单成功')
       return response.data
     } catch (error) {
-      console.error('开始工单失败:', error)
       ElMessage.error('开始工单失败')
       throw error
     } finally {
@@ -301,7 +294,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       // 响应拦截器已经返回了 response.data，所以这里直接使用 response
       return response
     } catch (error) {
-      console.error('完成工单失败:', error)
       ElMessage.error('完成工单失败')
       throw error
     } finally {
@@ -319,7 +311,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       ElMessage.success('取消工单成功')
       return response.data
     } catch (error) {
-      console.error('取消工单失败:', error)
       ElMessage.error('取消工单失败')
       throw error
     } finally {
@@ -338,7 +329,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       ElMessage.success('添加评论成功')
       return response.data
     } catch (error) {
-      console.error('添加评论失败:', error)
       ElMessage.error('添加评论失败')
       throw error
     } finally {
@@ -362,7 +352,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       ElMessage.success('分配任务项成功')
       return response
     } catch (error) {
-      console.error('分配任务项失败:', error)
       ElMessage.error('分配任务项失败')
       throw error
     } finally {
@@ -382,7 +371,6 @@ export const useServiceOrderStore = defineStore('serviceOrder', () => {
       statistics.value = response.data
       return response.data
     } catch (error) {
-      console.error('获取统计信息失败:', error)
       ElMessage.error('获取统计信息失败')
       throw error
     } finally {

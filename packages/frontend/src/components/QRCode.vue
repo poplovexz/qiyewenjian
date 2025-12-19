@@ -26,7 +26,6 @@ const generateQRCode = async () => {
       }
     })
   } catch (error) {
-    console.error('生成二维码失败:', error)
   }
 }
 

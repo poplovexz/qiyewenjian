@@ -219,7 +219,6 @@ const handleSearch = async () => {
       zhuangtai: searchForm.value.zhuangtai
     })
   } catch (error) {
-    console.error('获取状态列表失败:', error)
     ElMessage.error('获取状态列表失败')
   }
 }

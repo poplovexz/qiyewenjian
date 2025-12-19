@@ -294,7 +294,6 @@ const loadServiceRecords = async () => {
     serviceRecords.value = response.items
     pagination.value.total = response.total
   } catch (error) {
-    console.error('加载服务记录失败:', error)
     ElMessage.error('加载服务记录失败')
   } finally {
     loading.value = false
@@ -306,7 +305,6 @@ const loadStatistics = async () => {
     const stats = await serviceRecordApi.getStatistics()
     statistics.value = stats
   } catch (error) {
-    console.error('加载统计数据失败:', error)
   }
 }
 
@@ -353,7 +351,6 @@ const handleDelete = async (record: ServiceRecord) => {
     loadStatistics()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除服务记录失败:', error)
       ElMessage.error('删除失败')
     }
   }
@@ -384,7 +381,6 @@ const handleBatchUpdateStatus = async () => {
     loadStatistics()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('批量更新失败:', error)
       ElMessage.error('批量更新失败')
     }
   }
@@ -411,7 +407,6 @@ const handleBatchDelete = async () => {
     loadStatistics()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('批量删除失败:', error)
       ElMessage.error('批量删除失败')
     }
   }

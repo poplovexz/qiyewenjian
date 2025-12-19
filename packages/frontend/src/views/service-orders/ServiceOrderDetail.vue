@@ -285,7 +285,6 @@ const loadData = async () => {
   try {
     await serviceOrderStore.fetchServiceOrderDetail(orderId)
   } catch (error) {
-    console.error('加载工单详情失败:', error)
     ElMessage.error('加载工单详情失败')
   }
 }
@@ -304,7 +303,6 @@ const startOrder = async () => {
     loadData()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('开始工单失败:', error)
     }
   }
 }
@@ -321,7 +319,6 @@ const addComment = async () => {
     commentForm.content = ''
     loadData()
   } catch (error) {
-    console.error('添加评论失败:', error)
   } finally {
     commentLoading.value = false
   }

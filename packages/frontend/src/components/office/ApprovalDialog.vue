@@ -206,7 +206,6 @@ const handleSubmit = async () => {
       fujian_lujing: form.fujian_lujing
     })
   } catch (error) {
-    console.error('表单验证失败:', error)
   } finally {
     submitting.value = false
   }

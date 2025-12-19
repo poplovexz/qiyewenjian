@@ -234,7 +234,6 @@ const refreshMatrix = async () => {
     
     ElMessage.success('审批矩阵刷新成功')
   } catch (error) {
-    console.error('获取审批矩阵失败:', error)
     ElMessage.error('获取审批矩阵失败')
   }
 }
@@ -277,7 +276,6 @@ const testAssignment = async (level: ApprovalLevel) => {
       ElMessage.warning(result.message)
     }
   } catch (error) {
-    console.error('测试分配失败:', error)
     ElMessage.error('测试分配失败')
   }
 }
@@ -312,7 +310,6 @@ const testApprovalChain = async () => {
     
     ElMessage.success('审批链测试完成')
   } catch (error) {
-    console.error('测试审批链失败:', error)
     ElMessage.error('测试审批链失败')
   } finally {
     testing.value = false
@@ -336,7 +333,6 @@ watch(selectedRuleType, async (newType) => {
       const data = await response.json()
       approvalLevels.value = data.config
     } catch (error) {
-      console.error('获取审批级别失败:', error)
       ElMessage.error('获取审批级别失败')
     }
   }

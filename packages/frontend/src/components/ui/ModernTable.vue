@@ -205,11 +205,13 @@ interface Column {
   width?: string
   align?: 'left' | 'center' | 'right'
   sortable?: boolean
-  formatter?: (value: any) => string
+  formatter?: (value: unknown) => string
 }
 
+type TableRow = Record<string, unknown>
+
 interface Props {
-  data: any[]
+  data: TableRow[]
   columns: Column[]
   title?: string
   description?: string
@@ -219,7 +221,7 @@ interface Props {
   filterable?: boolean
   pagination?: boolean
   pageSize?: number
-  rowKey?: string | ((row: any) => string)
+  rowKey?: string | ((row: TableRow) => string)
   rowClickable?: boolean
   emptyText?: string
   size?: 'small' | 'medium' | 'large'
@@ -243,7 +245,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'row-click': [row: any, index: number]
+  'row-click': [row: TableRow, index: number]
   'selection-change': [selectedRows: string[]]
   'sort-change': [sortBy: string, sortOrder: 'asc' | 'desc']
 }>()
@@ -369,14 +371,15 @@ const isIndeterminate = computed(() => {
 })
 
 // 方法
-const getRowKey = (row: any, index: number): string => {
+const getRowKey = (row: TableRow, index: number): string => {
   if (typeof props.rowKey === 'function') {
     return props.rowKey(row)
   }
-  return row[props.rowKey] || String(index)
+  const key = props.rowKey as string
+  return String(row[key] || index)
 }
 
-const formatCellValue = (value: any, column: Column): string => {
+const formatCellValue = (value: unknown, column: Column): string => {
   if (column.formatter) {
     return column.formatter(value)
   }
@@ -394,11 +397,11 @@ const handleSort = (key: string) => {
     sortBy.value = key
     sortOrder.value = 'asc'
   }
-  
+
   emit('sort-change', sortBy.value, sortOrder.value)
 }
 
-const handleRowClick = (row: any, index: number) => {
+const handleRowClick = (row: TableRow, index: number) => {
   if (props.rowClickable) {
     emit('row-click', row, index)
   }

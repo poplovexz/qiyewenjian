@@ -189,7 +189,6 @@ const handleSubmit = async () => {
     emit('success')
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('完成工单失败:', error)
     }
   } finally {
     loading.value = false

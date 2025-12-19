@@ -54,7 +54,6 @@ export const usePermissionStore = defineStore('permission', () => {
 
       return response
     } catch (error) {
-      console.error('获取权限列表失败:', error)
       ElMessage.error('获取权限列表失败')
       throw error
     } finally {
@@ -70,7 +69,6 @@ export const usePermissionStore = defineStore('permission', () => {
       permissionTree.value = tree
       return tree
     } catch (error) {
-      console.error('获取权限树失败:', error)
       ElMessage.error('获取权限树失败')
       throw error
     } finally {
@@ -85,7 +83,6 @@ export const usePermissionStore = defineStore('permission', () => {
       const permission = await permissionAPI.getPermissionById(id)
       return permission
     } catch (error) {
-      console.error('获取权限详情失败:', error)
       ElMessage.error('获取权限详情失败')
       throw error
     } finally {
@@ -102,7 +99,6 @@ export const usePermissionStore = defineStore('permission', () => {
       await getPermissionList() // 刷新列表
       return permission
     } catch (error) {
-      console.error('创建权限失败:', error)
       ElMessage.error('创建权限失败')
       throw error
     } finally {
@@ -119,7 +115,6 @@ export const usePermissionStore = defineStore('permission', () => {
       await getPermissionList() // 刷新列表
       return permission
     } catch (error) {
-      console.error('更新权限失败:', error)
       ElMessage.error('更新权限失败')
       throw error
     } finally {
@@ -135,7 +130,6 @@ export const usePermissionStore = defineStore('permission', () => {
       ElMessage.success('权限删除成功')
       await getPermissionList() // 刷新列表
     } catch (error) {
-      console.error('删除权限失败:', error)
       ElMessage.error('删除权限失败')
       throw error
     } finally {
@@ -152,7 +146,6 @@ export const usePermissionStore = defineStore('permission', () => {
       )
       return permissions
     } catch (error) {
-      console.error('获取权限失败:', error)
       ElMessage.error('获取权限失败')
       throw error
     }
@@ -165,7 +158,6 @@ export const usePermissionStore = defineStore('permission', () => {
       statistics.value = stats
       return stats
     } catch (error) {
-      console.error('获取权限统计失败:', error)
       ElMessage.error('获取权限统计失败')
       throw error
     }

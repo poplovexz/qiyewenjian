@@ -201,7 +201,6 @@ const handleDelete = async (role: Role) => {
     await roleStore.deleteRole(role.id)
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除角色失败:', error)
     }
   }
 }

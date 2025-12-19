@@ -372,7 +372,6 @@ const fetchOptions = async () => {
       departments.value = deptData.items || []
     }
   } catch (error) {
-    console.error('获取选项数据失败:', error)
   }
 }
 

@@ -348,8 +348,9 @@ const handleDelete = async (product: Product) => {
     
     await productStore.deleteProduct(product.id)
   } catch (error) {
+    // 用户取消操作时不显示错误
     if (error !== 'cancel') {
-      console.error('删除产品失败:', error)
+      // 错误已通过 ElMessage 显示
     }
   }
 }

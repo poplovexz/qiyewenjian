@@ -122,7 +122,6 @@ const loadUsers = async () => {
     const response = await request.get('/users/')
     users.value = response.items || []
   } catch (error) {
-    console.error('加载用户列表失败:', error)
     ElMessage.error('加载用户列表失败')
   }
 }
@@ -153,7 +152,6 @@ const handleSubmit = async () => {
     
     emit('success')
   } catch (error) {
-    console.error('分配工单失败:', error)
   } finally {
     loading.value = false
   }

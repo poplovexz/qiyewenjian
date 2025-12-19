@@ -47,7 +47,6 @@ export const useAuditStore = defineStore('audit', () => {
       auditRules.value = response.data.items
       return response.data
     } catch (error) {
-      console.error('获取审核规则失败:', error)
       throw error
     } finally {
       loading.value = false
@@ -60,7 +59,6 @@ export const useAuditStore = defineStore('audit', () => {
       const response = await auditRuleApi.getActiveByType(type)
       return response.data
     } catch (error) {
-      console.error('获取审核规则失败:', error)
       throw error
     }
   }
@@ -73,7 +71,6 @@ export const useAuditStore = defineStore('audit', () => {
       await fetchAuditRules() // 刷新列表
       return response.data
     } catch (error) {
-      console.error('创建审核规则失败:', error)
       throw error
     } finally {
       loading.value = false
@@ -88,7 +85,6 @@ export const useAuditStore = defineStore('audit', () => {
       await fetchAuditRules() // 刷新列表
       return response.data
     } catch (error) {
-      console.error('更新审核规则失败:', error)
       throw error
     } finally {
       loading.value = false
@@ -102,7 +98,6 @@ export const useAuditStore = defineStore('audit', () => {
       await auditRuleApi.delete(id)
       await fetchAuditRules() // 刷新列表
     } catch (error) {
-      console.error('删除审核规则失败:', error)
       throw error
     } finally {
       loading.value = false
@@ -117,7 +112,6 @@ export const useAuditStore = defineStore('audit', () => {
       auditWorkflows.value = response.data.items
       return response.data
     } catch (error) {
-      console.error('获取审核工作流失败:', error)
       throw error
     } finally {
       loading.value = false
@@ -130,7 +124,6 @@ export const useAuditStore = defineStore('audit', () => {
       const response = await auditWorkflowApi.getMyPendingTasks(params)
       return response.data
     } catch (error) {
-      console.error('获取待审核任务失败:', error)
       throw error
     }
   }
@@ -142,7 +135,6 @@ export const useAuditStore = defineStore('audit', () => {
       currentWorkflow.value = response.data
       return response.data
     } catch (error) {
-      console.error('获取审核工作流详情失败:', error)
       throw error
     }
   }
@@ -154,7 +146,6 @@ export const useAuditStore = defineStore('audit', () => {
       const response = await auditWorkflowApi.create(auditData)
       return response.data
     } catch (error) {
-      console.error('提交审核申请失败:', error)
       throw error
     } finally {
       loading.value = false
@@ -174,7 +165,6 @@ export const useAuditStore = defineStore('audit', () => {
 
       return response.data
     } catch (error) {
-      console.error('处理审核操作失败:', error)
       throw error
     } finally {
       loading.value = false
@@ -187,7 +177,6 @@ export const useAuditStore = defineStore('audit', () => {
       const response = await auditWorkflowApi.getHistory(auditType, relatedId)
       return response.data
     } catch (error) {
-      console.error('获取审核历史失败:', error)
       throw error
     }
   }
@@ -205,7 +194,6 @@ export const useAuditStore = defineStore('audit', () => {
       
       return response.data
     } catch (error) {
-      console.error('取消审核流程失败:', error)
       throw error
     } finally {
       loading.value = false
@@ -218,7 +206,6 @@ export const useAuditStore = defineStore('audit', () => {
       const response = await auditWorkflowApi.getStatisticsOverview()
       return response.data
     } catch (error) {
-      console.error('获取审核统计失败:', error)
       throw error
     }
   }
@@ -249,7 +236,6 @@ export const useAuditStore = defineStore('audit', () => {
 
       return results
     } catch (error) {
-      console.error('批量审核操作失败:', error)
       throw error
     } finally {
       loading.value = false
@@ -262,7 +248,6 @@ export const useAuditStore = defineStore('audit', () => {
       const response = await auditRuleApi.getActiveByType(ruleType)
       return response.data
     } catch (error) {
-      console.error('获取审核规则配置失败:', error)
       throw error
     }
   }
@@ -289,7 +274,6 @@ export const useAuditStore = defineStore('audit', () => {
 
       return { needsAudit: false }
     } catch (error) {
-      console.error('检查审核需求失败:', error)
       throw error
     }
   }
@@ -319,7 +303,6 @@ export const useAuditStore = defineStore('audit', () => {
       
       return false
     } catch (error) {
-      console.error('检查触发条件失败:', error)
       return false
     }
   }

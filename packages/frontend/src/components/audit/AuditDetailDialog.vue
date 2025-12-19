@@ -232,7 +232,6 @@ const fetchWorkflowDetail = async () => {
     // 使用流程详情中的审核记录
     auditRecords.value = detail.shenhe_jilu || []
   } catch (error) {
-    console.error('获取审核流程详情失败:', error)
     ElMessage.error('获取审核流程详情失败')
   } finally {
     loading.value = false
@@ -261,7 +260,6 @@ const handleCancel = async () => {
     emit('success')
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      console.error('取消审核流程失败:', error)
       ElMessage.error('取消审核流程失败')
     }
   }

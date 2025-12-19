@@ -212,7 +212,6 @@ const handleSubmit = async () => {
     emit('success')
     handleClose()
   } catch (error) {
-    console.error('角色状态更新失败:', error)
     ElMessage.error('角色状态更新失败')
   } finally {
     loading.value = false

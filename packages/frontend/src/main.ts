@@ -26,9 +26,6 @@ app.use(ElementPlus)
 
 // 全局错误处理
 app.config.errorHandler = (err, instance, info) => {
-  console.error('Vue Error:', err)
-  console.error('Component:', instance)
-  console.error('Info:', info)
 
   // 上报到 Sentry
   if (err instanceof Error) {
@@ -49,11 +46,9 @@ try {
       const authStore = useAuthStore()
       await authStore.restoreFromStorage()
     } catch (error) {
-      console.warn('⚠️ 认证初始化失败，但不影响应用使用:', error)
     }
   }, 500)
 } catch (error) {
-  console.error('❌ 应用挂载失败:', error)
 
   // 上报启动错误到 Sentry
   if (error instanceof Error) {
@@ -64,9 +59,7 @@ try {
   try {
     localStorage.clear()
     app.mount('#app')
-    console.log('✅ 应用重新挂载成功')
   } catch (retryError) {
-    console.error('❌ 应用重新挂载也失败:', retryError)
     if (retryError instanceof Error) {
       captureException(retryError, { phase: 'app-mount-retry' })
     }

@@ -324,7 +324,6 @@ const loadData = async () => {
     // 加载待处理数量
     await loadPendingCount()
   } catch (error: unknown) {
-    console.error('加载数据失败:', error)
     const axiosError = error as { response?: { data?: { detail?: string } } }
     ElMessage.error(axiosError.response?.data?.detail || '加载数据失败')
   } finally {
@@ -344,7 +343,6 @@ const loadPendingCount = async () => {
     })
     pendingCount.value = response.data?.total || response.total || 0
   } catch (error) {
-    console.error('加载待处理数量失败:', error)
   }
 }
 
@@ -428,7 +426,6 @@ const handleSubmitVoucher = async () => {
     uploadDialogVisible.value = false
     loadData()
   } catch (error: unknown) {
-    console.error('提交失败:', error)
     if (error !== 'cancel') {
       const axiosError = error as { response?: { data?: { detail?: string } } }
       ElMessage.error(axiosError.response?.data?.detail || '提交失败')

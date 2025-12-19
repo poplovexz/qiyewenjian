@@ -78,7 +78,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       
       return response
     } catch (error) {
-      console.error('获取合同列表失败:', error)
       ElMessage.error('获取合同列表失败')
       throw error
     } finally {
@@ -94,7 +93,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       currentContract.value = response
       return response
     } catch (error) {
-      console.error('获取合同详情失败:', error)
       ElMessage.error('获取合同详情失败')
       throw error
     } finally {
@@ -115,7 +113,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       ElMessage.success('合同创建成功')
       return response
     } catch (error) {
-      console.error('创建合同失败:', error)
       ElMessage.error('创建合同失败')
       throw error
     } finally {
@@ -148,7 +145,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       ElMessage.success('基于报价生成合同成功')
       return response
     } catch (error: unknown) {
-      console.error('基于报价生成合同失败:', error)
       const axiosError = error as { response?: { status?: number }; message?: string }
 
       // 检查是否是400错误（重复创建）
@@ -169,7 +165,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       const response = await contractApi.checkContractByQuote(baojiaId)
       return response.data
     } catch (error) {
-      console.error('检查报价合同状态失败:', error)
       throw error
     }
   }
@@ -196,7 +191,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       ElMessage.success('合同更新成功')
       return response
     } catch (error) {
-      console.error('更新合同失败:', error)
       ElMessage.error('更新合同失败')
       throw error
     } finally {
@@ -224,7 +218,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       
       ElMessage.success('合同删除成功')
     } catch (error) {
-      console.error('删除合同失败:', error)
       ElMessage.error('删除合同失败')
       throw error
     } finally {
@@ -239,7 +232,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       const response = await contractApi.preview(data)
       return response.content
     } catch (error) {
-      console.error('预览合同失败:', error)
       ElMessage.error('预览合同失败')
       throw error
     } finally {
@@ -267,7 +259,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       ElMessage.success('合同签署成功')
       return response
     } catch (error) {
-      console.error('签署合同失败:', error)
       ElMessage.error('签署合同失败')
       throw error
     } finally {
@@ -295,7 +286,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       ElMessage.success('合同状态更新成功')
       return response
     } catch (error) {
-      console.error('更新合同状态失败:', error)
       ElMessage.error('更新合同状态失败')
       throw error
     } finally {
@@ -315,7 +305,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       
       ElMessage.success(`成功删除 ${ids.length} 个合同`)
     } catch (error) {
-      console.error('批量删除合同失败:', error)
       ElMessage.error('批量删除合同失败')
       throw error
     } finally {
@@ -342,7 +331,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
 
       return response
     } catch (error) {
-      console.error('获取乙方主体列表失败:', error)
       ElMessage.error('获取乙方主体列表失败')
       throw error
     } finally {
@@ -358,7 +346,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       currentParty.value = response
       return response
     } catch (error) {
-      console.error('获取乙方主体详情失败:', error)
       ElMessage.error('获取乙方主体详情失败')
       throw error
     } finally {
@@ -379,7 +366,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       ElMessage.success('乙方主体创建成功')
       return response
     } catch (error) {
-      console.error('创建乙方主体失败:', error)
       ElMessage.error('创建乙方主体失败')
       throw error
     } finally {
@@ -407,7 +393,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       ElMessage.success('乙方主体更新成功')
       return response
     } catch (error) {
-      console.error('更新乙方主体失败:', error)
       ElMessage.error('更新乙方主体失败')
       throw error
     } finally {
@@ -435,7 +420,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
 
       ElMessage.success('乙方主体删除成功')
     } catch (error) {
-      console.error('删除乙方主体失败:', error)
       ElMessage.error('删除乙方主体失败')
       throw error
     } finally {
@@ -455,7 +439,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
 
       ElMessage.success(`成功删除 ${ids.length} 个乙方主体`)
     } catch (error) {
-      console.error('批量删除乙方主体失败:', error)
       ElMessage.error('批量删除乙方主体失败')
       throw error
     } finally {
@@ -497,7 +480,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
 
       return response
     } catch (error) {
-      console.error('获取支付方式列表失败:', error)
       ElMessage.error('获取支付方式列表失败')
       throw error
     } finally {
@@ -513,7 +495,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       currentPaymentMethod.value = response
       return response
     } catch (error) {
-      console.error('获取支付方式详情失败:', error)
       ElMessage.error('获取支付方式详情失败')
       throw error
     } finally {
@@ -534,7 +515,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       ElMessage.success('支付方式创建成功')
       return response
     } catch (error) {
-      console.error('创建支付方式失败:', error)
       ElMessage.error('创建支付方式失败')
       throw error
     } finally {
@@ -562,7 +542,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       ElMessage.success('支付方式更新成功')
       return response
     } catch (error) {
-      console.error('更新支付方式失败:', error)
       ElMessage.error('更新支付方式失败')
       throw error
     } finally {
@@ -590,7 +569,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
 
       ElMessage.success('支付方式删除成功')
     } catch (error) {
-      console.error('删除支付方式失败:', error)
       ElMessage.error('删除支付方式失败')
       throw error
     } finally {
@@ -620,7 +598,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
       ElMessage.success('默认支付方式设置成功')
       return response
     } catch (error) {
-      console.error('设置默认支付方式失败:', error)
       ElMessage.error('设置默认支付方式失败')
       throw error
     } finally {
@@ -640,7 +617,6 @@ export const useContractManagementStore = defineStore('contractManagement', () =
 
       ElMessage.success(`成功删除 ${ids.length} 个支付方式`)
     } catch (error) {
-      console.error('批量删除支付方式失败:', error)
       ElMessage.error('批量删除支付方式失败')
       throw error
     } finally {

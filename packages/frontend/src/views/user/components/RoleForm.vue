@@ -267,7 +267,6 @@ const handleSubmit = async () => {
     emit('success')
     handleClose()
   } catch (error) {
-    console.error('角色操作失败:', error)
     ElMessage.error(props.mode === 'create' ? '角色创建失败' : '角色更新失败')
   } finally {
     loading.value = false

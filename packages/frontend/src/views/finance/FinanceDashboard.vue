@@ -187,7 +187,6 @@ const fetchStatistics = async () => {
     const response = await request.get('/payment-orders/statistics')
     statistics.value = response
   } catch (error) {
-    console.error('获取统计信息失败:', error)
     ElMessage.error('获取统计信息失败')
   }
 }
@@ -201,7 +200,6 @@ const fetchRecentOrders = async () => {
     })
     recentOrders.value = response.items || []
   } catch (error) {
-    console.error('获取最近订单失败:', error)
     ElMessage.error('获取最近订单失败')
   } finally {
     loading.value = false

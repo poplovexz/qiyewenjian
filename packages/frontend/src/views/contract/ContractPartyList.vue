@@ -289,7 +289,6 @@ const fetchParties = async () => {
       zhuti_leixing: searchForm.zhuti_leixing || undefined
     })
   } catch (error) {
-    console.error('获取乙方主体列表失败:', error)
   }
 }
 
@@ -314,7 +313,6 @@ const handleView = async (party: ContractParty) => {
     await contractStore.fetchPartyDetail(party.id)
     detailDialogVisible.value = true
   } catch (error) {
-    console.error('获取主体详情失败:', error)
   }
 }
 
@@ -345,7 +343,6 @@ const handleDelete = async (party: ContractParty) => {
     await fetchParties()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除主体失败:', error)
     }
   }
 }
@@ -368,7 +365,6 @@ const handleBatchDelete = async () => {
     await fetchParties()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('批量删除主体失败:', error)
     }
   }
 }

@@ -177,7 +177,6 @@ const fetchUserDetail = async () => {
     loading.value = true
     userInfo.value = await userApi.getUserById(props.userId)
   } catch (error) {
-    console.error('获取用户详情失败:', error)
     ElMessage.error('获取用户详情失败')
   } finally {
     loading.value = false

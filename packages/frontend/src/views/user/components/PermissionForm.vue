@@ -550,7 +550,6 @@ const handleSubmit = async () => {
     emit('success')
     handleClose()
   } catch (error) {
-    console.error('权限操作失败:', error)
     ElMessage.error(props.mode === 'create' ? '权限创建失败' : '权限更新失败')
   } finally {
     loading.value = false

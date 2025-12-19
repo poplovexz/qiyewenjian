@@ -184,7 +184,6 @@ const loadBaojiaDetail = async () => {
     loading.value = true
     baojia.value = await xiansuoStore.getBaojiaDetailWithXiansuo(props.baojiaId)
   } catch (error) {
-    console.error('加载报价详情失败:', error)
     ElMessage.error('加载报价详情失败')
   } finally {
     loading.value = false
@@ -240,7 +239,6 @@ const handleCopyLink = async () => {
     await navigator.clipboard.writeText(link)
     ElMessage.success('分享链接已复制，可发送给客户查看报价')
   } catch (error) {
-    console.error('复制分享链接失败:', error)
     ElMessage.error('复制分享链接失败')
   }
 }

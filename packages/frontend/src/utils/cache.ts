@@ -130,7 +130,6 @@ export class LocalStorageCache {
       }
       localStorage.setItem(this.getKey(key), JSON.stringify(item))
     } catch (error) {
-      console.warn('LocalStorage缓存设置失败:', error)
     }
   }
 
@@ -155,7 +154,6 @@ export class LocalStorageCache {
 
       return item.data
     } catch (error) {
-      console.warn('LocalStorage缓存获取失败:', error)
       return null
     }
   }
@@ -175,7 +173,6 @@ export class LocalStorageCache {
       localStorage.removeItem(this.getKey(key))
       return true
     } catch (error) {
-      console.warn('LocalStorage缓存删除失败:', error)
       return false
     }
   }
@@ -192,7 +189,6 @@ export class LocalStorageCache {
         }
       })
     } catch (error) {
-      console.warn('LocalStorage缓存清空失败:', error)
     }
   }
 
@@ -221,7 +217,6 @@ export class LocalStorageCache {
         }
       })
     } catch (error) {
-      console.warn('LocalStorage缓存清理失败:', error)
     }
   }
 }

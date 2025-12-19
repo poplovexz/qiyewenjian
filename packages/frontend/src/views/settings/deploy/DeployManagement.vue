@@ -613,7 +613,6 @@ const startPolling = () => {
         loadHistory()
       }
     } catch (error) {
-      console.error('轮询部署状态失败:', error)
     }
   }, 3000) // 每3秒轮询一次
 }

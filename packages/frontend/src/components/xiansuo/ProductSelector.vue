@@ -249,12 +249,10 @@ const loadProductData = async () => {
 
     // 验证数据是否加载成功
     if (!productData.value) {
-      console.error('产品数据加载后仍为空')
       ElMessage.error('产品数据加载失败，请刷新页面重试')
     } else {
     }
   } catch (error) {
-    console.error('加载产品数据失败:', error)
     ElMessage.error('加载服务项目失败')
   } finally {
     loading.value = false

@@ -341,7 +341,6 @@ const fetchInitialData = async () => {
       }
     }
   } catch (error) {
-    console.error('获取初始数据失败:', error)
     ElMessage.error('获取初始数据失败')
   } finally {
     loading.value = false
@@ -355,7 +354,6 @@ const handleTemplateChange = async (templateId: string) => {
     // 获取模板变量配置
     const variables = await templateStore.getTemplateVariables(templateId)
   } catch (error) {
-    console.error('获取模板变量失败:', error)
   }
 }
 
@@ -402,7 +400,6 @@ const previewTemplate = async () => {
     previewContent.value = content
     previewDialogVisible.value = true
   } catch (error) {
-    console.error('预览模板失败:', error)
     ElMessage.error('预览模板失败')
   } finally {
     previewing.value = false
@@ -435,7 +432,6 @@ const handleSave = async () => {
 
     handleBack()
   } catch (error) {
-    console.error('保存合同失败:', error)
     if (error !== false) {
       // 不是表单验证错误
       ElMessage.error('保存合同失败')
@@ -460,7 +456,6 @@ const handleSaveAndSign = async () => {
     ElMessage.success('合同创建成功')
     router.push(`/contracts/${contract.id}`)
   } catch (error) {
-    console.error('保存合同失败:', error)
     if (error !== false) {
       // 不是表单验证错误
       ElMessage.error('保存合同失败')

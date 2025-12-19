@@ -130,7 +130,6 @@ const loadSalesUsers = async () => {
     })
     salesUsers.value = response.items || []
   } catch (error) {
-    console.error('加载销售人员列表失败:', error)
     ElMessage.error('加载销售人员列表失败')
     // 使用模拟数据作为备选
     salesUsers.value = [
@@ -185,7 +184,6 @@ const handleSubmit = async () => {
     emit('success')
     handleClose()
   } catch (error) {
-    console.error('分配线索失败:', error)
     ElMessage.error('分配线索失败')
   } finally {
     submitting.value = false

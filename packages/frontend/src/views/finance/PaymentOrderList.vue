@@ -288,7 +288,6 @@ const fetchOrderList = async () => {
     tableData.value = response.items || []
     pagination.total = response.total || 0
   } catch (error) {
-    console.error('获取订单列表失败:', error)
     ElMessage.error('获取订单列表失败')
   } finally {
     loading.value = false

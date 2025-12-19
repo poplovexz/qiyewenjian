@@ -1011,11 +1011,9 @@ router.beforeEach(async (to, _from, next) => {
       try {
         const success = await authStore.getCurrentUser()
         if (!success) {
-          console.warn('获取用户信息失败，但继续导航')
           // 暂时不强制退出，允许继续导航
         }
       } catch (error) {
-        console.error('获取用户信息失败:', error)
         // 暂时不强制退出，允许继续导航
       }
     }

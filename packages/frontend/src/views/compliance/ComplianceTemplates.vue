@@ -261,7 +261,6 @@ const loadTemplates = async () => {
     tableData.value = response.items
     pagination.total = response.total
   } catch (error) {
-    console.error('加载模板列表失败:', error)
   }
 }
 
@@ -325,7 +324,6 @@ const handleCopy = async (row: ComplianceTemplate) => {
     await complianceStore.createTemplate(templateData)
     loadTemplates()
   } catch (error) {
-    console.error('复制模板失败:', error)
   }
 }
 
@@ -345,7 +343,6 @@ const handleDelete = async (row: ComplianceTemplate) => {
     loadTemplates()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除模板失败:', error)
     }
   }
 }

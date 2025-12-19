@@ -134,7 +134,6 @@ const loadPermissionTree = async () => {
     const tree = await permissionStore.getPermissionTree('active')
     permissionTree.value = tree
   } catch (error) {
-    console.error('加载权限树失败:', error)
   }
 }
 
@@ -151,7 +150,6 @@ const loadRolePermissions = async (roleId: string) => {
       treeRef.value.setCheckedKeys(permissionIds)
     }
   } catch (error) {
-    console.error('加载角色权限失败:', error)
     checkedPermissions.value = []
   }
 }
@@ -284,7 +282,6 @@ const handleSubmit = async () => {
     emit('success')
     handleClose()
   } catch (error) {
-    console.error('权限保存失败:', error)
     ElMessage.error('权限保存失败')
   } finally {
     loading.value = false

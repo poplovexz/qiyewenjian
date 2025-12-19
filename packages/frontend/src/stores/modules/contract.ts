@@ -99,7 +99,6 @@ export const useContractStore = defineStore('contract', () => {
 
       return response
     } catch (error) {
-      console.error('获取合同模板列表失败:', error)
       ElMessage.error('获取合同模板列表失败')
       throw error
     } finally {
@@ -115,7 +114,6 @@ export const useContractStore = defineStore('contract', () => {
       currentTemplate.value = response
       return response
     } catch (error) {
-      console.error('获取合同模板详情失败:', error)
       ElMessage.error('获取合同模板详情失败')
       throw error
     } finally {
@@ -136,7 +134,6 @@ export const useContractStore = defineStore('contract', () => {
       ElMessage.success('合同模板创建成功')
       return response
     } catch (error) {
-      console.error('创建合同模板失败:', error)
       ElMessage.error('创建合同模板失败')
       throw error
     } finally {
@@ -164,7 +161,6 @@ export const useContractStore = defineStore('contract', () => {
       ElMessage.success('合同模板更新成功')
       return response
     } catch (error) {
-      console.error('更新合同模板失败:', error)
       ElMessage.error('更新合同模板失败')
       throw error
     } finally {
@@ -192,7 +188,6 @@ export const useContractStore = defineStore('contract', () => {
       
       ElMessage.success('合同模板删除成功')
     } catch (error) {
-      console.error('删除合同模板失败:', error)
       ElMessage.error('删除合同模板失败')
       throw error
     } finally {
@@ -220,7 +215,6 @@ export const useContractStore = defineStore('contract', () => {
       ElMessage.success('模板状态更新成功')
       return response
     } catch (error) {
-      console.error('更新模板状态失败:', error)
       ElMessage.error('更新模板状态失败')
       throw error
     } finally {
@@ -235,7 +229,6 @@ export const useContractStore = defineStore('contract', () => {
       const response = await contractTemplateApi.preview(id, variables)
       return response.content
     } catch (error) {
-      console.error('预览合同模板失败:', error)
       ElMessage.error('预览合同模板失败')
       throw error
     } finally {
@@ -249,7 +242,6 @@ export const useContractStore = defineStore('contract', () => {
       const response = await contractTemplateApi.getVariables(id)
       return response.variables
     } catch (error) {
-      console.error('获取模板变量失败:', error)
       ElMessage.error('获取模板变量失败')
       throw error
     }
@@ -262,7 +254,6 @@ export const useContractStore = defineStore('contract', () => {
       statistics.value = response
       return response
     } catch (error) {
-      console.error('获取统计信息失败:', error)
       ElMessage.error('获取统计信息失败')
       throw error
     }
@@ -280,7 +271,6 @@ export const useContractStore = defineStore('contract', () => {
       
       ElMessage.success(`成功删除 ${ids.length} 个合同模板`)
     } catch (error) {
-      console.error('批量删除合同模板失败:', error)
       ElMessage.error('批量删除合同模板失败')
       throw error
     } finally {
@@ -303,7 +293,6 @@ export const useContractStore = defineStore('contract', () => {
       
       ElMessage.success(`成功更新 ${ids.length} 个合同模板状态`)
     } catch (error) {
-      console.error('批量更新状态失败:', error)
       ElMessage.error('批量更新状态失败')
       throw error
     } finally {

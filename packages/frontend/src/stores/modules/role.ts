@@ -52,7 +52,6 @@ export const useRoleStore = defineStore('role', () => {
 
       return response
     } catch (error) {
-      console.error('获取角色列表失败:', error)
       ElMessage.error('获取角色列表失败')
       throw error
     } finally {
@@ -67,7 +66,6 @@ export const useRoleStore = defineStore('role', () => {
       const role = await roleAPI.getRoleById(id)
       return role
     } catch (error) {
-      console.error('获取角色详情失败:', error)
       ElMessage.error('获取角色详情失败')
       throw error
     } finally {
@@ -84,7 +82,6 @@ export const useRoleStore = defineStore('role', () => {
       await getRoleList() // 刷新列表
       return role
     } catch (error) {
-      console.error('创建角色失败:', error)
       ElMessage.error('创建角色失败')
       throw error
     } finally {
@@ -101,7 +98,6 @@ export const useRoleStore = defineStore('role', () => {
       await getRoleList() // 刷新列表
       return role
     } catch (error) {
-      console.error('更新角色失败:', error)
       ElMessage.error('更新角色失败')
       throw error
     } finally {
@@ -117,7 +113,6 @@ export const useRoleStore = defineStore('role', () => {
       ElMessage.success('角色删除成功')
       await getRoleList() // 刷新列表
     } catch (error) {
-      console.error('删除角色失败:', error)
       ElMessage.error('删除角色失败')
       throw error
     } finally {
@@ -134,7 +129,6 @@ export const useRoleStore = defineStore('role', () => {
       await getRoleList() // 刷新列表
       return role
     } catch (error) {
-      console.error('更新角色状态失败:', error)
       ElMessage.error('更新角色状态失败')
       throw error
     } finally {
@@ -148,7 +142,6 @@ export const useRoleStore = defineStore('role', () => {
       const response = await roleAPI.getRolePermissions(id)
       return response.permissions
     } catch (error) {
-      console.error('获取角色权限失败:', error)
       ElMessage.error('获取角色权限失败')
       throw error
     }
@@ -161,7 +154,6 @@ export const useRoleStore = defineStore('role', () => {
       await roleAPI.updateRolePermissions(id, data)
       ElMessage.success('角色权限更新成功')
     } catch (error) {
-      console.error('更新角色权限失败:', error)
       ElMessage.error('更新角色权限失败')
       throw error
     } finally {

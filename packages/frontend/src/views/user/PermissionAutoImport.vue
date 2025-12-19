@@ -255,7 +255,6 @@ const scanPermissions = () => {
     scannedPermissions.value = permissions
     ElMessage.success(`扫描完成，发现 ${permissions.length} 个权限`)
   } catch (error) {
-    console.error('扫描失败:', error)
     ElMessage.error('扫描失败')
   } finally {
     scanning.value = false
@@ -358,7 +357,6 @@ const importPermissions = async () => {
     selectedPermissions.value = []
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('导入失败:', error)
       ElMessage.error('导入失败')
     }
   } finally {

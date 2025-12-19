@@ -50,7 +50,6 @@ const testPaymentMethodsApi = async () => {
     apiResult.value = response
     ElMessage.success('API调用成功')
   } catch (error) {
-    console.error('API调用失败:', error)
     apiError.value = error
     ElMessage.error('API调用失败')
   } finally {

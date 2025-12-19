@@ -260,7 +260,6 @@ const fetchPartyDetail = async () => {
         })
       }
     } catch (error) {
-      console.error('获取主体详情失败:', error)
       ElMessage.error('获取主体详情失败')
     } finally {
       loading.value = false
@@ -286,7 +285,6 @@ const handleSave = async () => {
 
     handleBack()
   } catch (error) {
-    console.error('保存乙方主体失败:', error)
     if (error !== false) {
       // 不是表单验证错误
       ElMessage.error('保存乙方主体失败')

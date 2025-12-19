@@ -217,7 +217,6 @@ const handleSubmit = async () => {
     ElMessage.success('客户状态变更成功')
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('状态变更失败:', error)
     }
   } finally {
     loading.value = false
