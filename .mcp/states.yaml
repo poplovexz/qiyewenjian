@@ -9,29 +9,29 @@ INIT:
   role: system
   description: "系统初始化状态"
   next: ARCH_GEN
-  
+
 # ============================================
 # 状态 2: 生成骨架 (ARCH_GEN)
 # ============================================
 ARCH_GEN:
   role: product_architect
   description: "产品架构师生成设计文档骨架"
-  
+
   input:
     - description: "用户业务描述（可为空）"
-  
+
   tasks:
     - generate_file: AI_RULES.md
     - generate_file: ARCHITECTURE.md
     - generate_file: DOMAIN.md
     - generate_file: FLOW.md
-  
+
   constraints:
     - no_code
     - no_tech_stack
     - conservative_design
     - self_consistent
-  
+
   output_required: true
   next: ARCH_REVIEW
 
@@ -41,24 +41,24 @@ ARCH_GEN:
 ARCH_REVIEW:
   role: architecture_auditor
   description: "架构审计师审查设计文档"
-  
+
   read_only:
     - AI_RULES.md
     - ARCHITECTURE.md
     - DOMAIN.md
     - FLOW.md
-  
+
   checks:
-    - concept_conflict        # 概念冲突检查
-    - responsibility_overlap  # 职责重叠检查
-    - state_dead_end         # 状态死锁检查
-    - dependency_cycle       # 依赖循环检查
-  
+    - concept_conflict # 概念冲突检查
+    - responsibility_overlap # 职责重叠检查
+    - state_dead_end # 状态死锁检查
+    - dependency_cycle # 依赖循环检查
+
   on_conflict:
     action: modify_existing_files
     allow_new_files: false
     report_to_user: true
-  
+
   on_pass:
     next: DESIGN_FREEZE
 
@@ -68,14 +68,14 @@ ARCH_REVIEW:
 DESIGN_FREEZE:
   role: chief_architect
   description: "首席架构师冻结设计文档"
-  
+
   action:
     - freeze_files:
         - AI_RULES.md
         - ARCHITECTURE.md
         - DOMAIN.md
         - FLOW.md
-    
+
     - append_to_file:
         file: ARCHITECTURE.md
         section: DESIGN_FREEZE
@@ -84,7 +84,7 @@ DESIGN_FREEZE:
           allowed_changes: "code_only"
           forbidden: "structural_change"
           frozen_at: "{TIMESTAMP}"
-  
+
   next: DOMAIN_CODE
 
 # ============================================
@@ -93,7 +93,7 @@ DESIGN_FREEZE:
 DOMAIN_CODE:
   role: backend_engineer
   description: "后端工程师编写 Domain 层代码"
-  
+
   rules:
     - must_follow: AI_RULES.md
     - read_only:
@@ -105,13 +105,13 @@ DOMAIN_CODE:
         - service_code
         - database_migration
         - tests
-  
+
   output:
     directory: packages/backend/src/models/
-  
+
   on_uncertainty:
     action: stop_and_report
-  
+
   next: SERVICE_CODE
 
 # ============================================
@@ -120,7 +120,7 @@ DOMAIN_CODE:
 SERVICE_CODE:
   role: backend_engineer
   description: "后端工程师编写 Service 层代码"
-  
+
   rules:
     - cannot_modify: packages/backend/src/models/
     - must_follow: FLOW.md
@@ -128,10 +128,10 @@ SERVICE_CODE:
         - ARCHITECTURE.md
         - DOMAIN.md
         - FLOW.md
-  
+
   output:
     directory: packages/backend/src/services/
-  
+
   next: API_CODE
 
 # ============================================
@@ -140,17 +140,17 @@ SERVICE_CODE:
 API_CODE:
   role: backend_engineer
   description: "后端工程师编写 API 层代码"
-  
+
   rules:
     - minimal_api_only
     - no_business_logic
-    - cannot_modify: 
+    - cannot_modify:
         - packages/backend/src/models/
         - packages/backend/src/services/
-  
+
   output:
     directory: packages/backend/src/api/
-  
+
   next: RUN_FIX
 
 # ============================================
@@ -159,26 +159,25 @@ API_CODE:
 RUN_FIX:
   role: maintenance_engineer
   description: "维护工程师修复运行时错误"
-  
+
   input:
     error_log: required
-  
+
   rules:
     - minimal_diff
     - no_design_change
     - follow_design_freeze
-  
+
   constraints:
     max_files: 3
     max_lines_per_file: 50
     max_total_lines: 100
     max_iterations: 10
-  
+
   loop:
     until: system_runs
     max_attempts: 10
-  
+
   on_design_conflict:
     action: stop_and_report
     message: "发现设计问题，需要解冻设计文档"
-
